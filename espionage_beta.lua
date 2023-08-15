@@ -188,8 +188,9 @@ local chouyou_trigger = fk.CreateTriggerSkill{
   mute = true,
   events = {fk.SkillEffect},
   can_trigger = function(self, event, target, player, data)
-    return target:getMark("@@chouyou") ~= 0 and table.contains(target:getMark("@@chouyou"), player.id) and not player.dead and
+    return target and target:getMark("@@chouyou") ~= 0 and table.contains(target:getMark("@@chouyou"), player.id) and not player.dead and
       target:hasSkill(data.name, true) and not data.attached_equip and data.name[1] ~= "#" and data.name[#data.name] ~= "&" and
+      not data:isInstanceOf(ViewAsSkill) and  --FIXME: 转化技！
       not table.contains({Skill.Limited, Skill.Wake, Skill.Quest}, data.frequency)
   end,
   on_cost = function(self, event, target, player, data)
@@ -264,8 +265,117 @@ Fk:loadTranslationTable{
   ["#chouyou_prohibit"] = "%from 不允许 %to 发动 “%arg”！",
 }
 
+local dongzhuo = General(extension, "es__dongzhuo", "qun", 7)
+local tuicheng = fk.CreateViewAsSkill{
+  name = "tuicheng",
+  anim_type = "control",
+  pattern = "sincere_treat",
+  prompt = "#tuicheng",
+  card_filter = function(self, to_select, selected)
+    return false
+  end,
+  view_as = function(self, cards)
+    local card = Fk:cloneCard("sincere_treat")
+    card.skillName = self.name
+    return card
+  end,
+  before_use = function(self, player, use)
+    player.room:loseHp(player, 1, self.name)
+  end,
+}
+local yaoling = fk.CreateTriggerSkill{
+  name = "yaoling",
+  anim_type = "control",
+  events = {fk.EventPhaseEnd},
+  can_trigger = function(self, event, target, player, data)
+    return target == player and player:hasSkill(self.name) and player.phase == Player.Play
+  end,
+  on_cost = function(self, event, target, player, data)
+    local to = player.room:askForChoosePlayers(player, table.map(player.room:getOtherPlayers(player), function(p)
+      return p.id end), 1, 1, "#yaoling-choose", self.name, true)
+    if #to > 0 then
+      self.cost_data = to[1]
+      return true
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    room:changeMaxHp(player, -1)
+    local to = room:getPlayerById(self.cost_data)
+    if player.dead or to.dead then return end
+    local dest = room:askForChoosePlayers(player, table.map(room:getOtherPlayers(to), function(p)
+      return p.id end), 1, 1, "#yaoling-dest::"..to.id, self.name, false)
+    if #dest > 0 then
+      dest = dest[1]
+    else
+      dest = player.id
+    end
+    local use = room:askForUseCard(to, "slash", "slash", "#yaoling-use:"..player.id..":"..dest, true, {must_targets = {dest}})
+    if use then
+      room:useCard(use)
+    else
+      if not to:isNude() then
+        room:doIndicate(player.id, {to.id})
+        local card = room:askForCardChosen(player, to, "he", self.name)
+        room:throwCard({card}, self.name, to, player)
+      end
+    end
+  end,
+}
+local shicha = fk.CreateTriggerSkill{
+  name = "shicha",
+  anim_type = "negative",
+  frequency = Skill.Compulsory,
+  events = {fk.EventPhaseStart},
+  can_trigger = function(self, event, target, player, data)
+    return target == player and player:hasSkill(self.name) and player.phase == Player.Discard and
+      player:usedSkillTimes("tuicheng", Player.HistoryTurn) == 0 and player:usedSkillTimes("yaoling", Player.HistoryTurn) == 0
+  end,
+  on_use = function(self, event, target, player, data)
+    player.room:setPlayerMark(player, "shicha-turn", 1)
+  end,
+}
+local shicha_maxcards = fk.CreateMaxCardsSkill{
+  name = "#shicha_maxcards",
+  fixed_func = function(self, player)
+    if player:getMark("shicha-turn") > 0 then
+      return 1
+    end
+  end
+}
+local yongquan = fk.CreateTriggerSkill{
+  name = "yongquan$",
+  anim_type = "support",
+  events = {fk.EventPhaseStart},
+  can_trigger = function(self, event, target, player, data)
+    return target == player and player:hasSkill(self.name) and player.phase == Player.Finish and
+      table.find(player.room:getOtherPlayers(player), function(p) return p.kingdom == "qun" and not p:isNude() end)
+  end,
+  on_cost = function(self, event, target, player, data)
+    return true
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    room:doIndicate(player.id, table.map(table.filter(room:getOtherPlayers(player), function(p)
+      return p.kingdom == "qun" end), function(p) return p.id end))
+    for _, p in ipairs(room:getOtherPlayers(player)) do
+      if player.dead then return end
+      if p.kingdom == "qun" and not p:isNude() and not p.dead then
+        local card = room:askForCard(p, 1, 1, true, self.name, true, ".", "#yongquan-give:"..player.id)
+        if #card > 0 then
+          room:obtainCard(player, card[1], false, fk.ReasonGive)
+        end
+      end
+    end
+  end,
+}
+shicha:addRelatedSkill(shicha_maxcards)
+dongzhuo:addSkill(tuicheng)
+dongzhuo:addSkill(yaoling)
+dongzhuo:addSkill(shicha)
+dongzhuo:addSkill(yongquan)
 Fk:loadTranslationTable{
-  ["es__dongzhuo"] = "董卓",--7血！
+  ["es__dongzhuo"] = "董卓",
   ["tuicheng"] = "推诚",
   [":tuicheng"] = "你可以失去1点体力，视为使用一张【推心置腹】。",
   ["yaoling"] = "耀令",
@@ -274,6 +384,11 @@ Fk:loadTranslationTable{
   [":shicha"] = "锁定技，弃牌阶段开始时，若你本回合〖推诚〗和〖耀令〗均未发动，你本回合手牌上限改为1。",
   ["yongquan"] = "拥权",
   [":yongquan"] = "主公技，结束阶段，其他群势力角色可以依次交给你一张牌。",
+  ["#tuicheng"] = "推诚：你可以失去1点体力，视为使用一张【推心置腹】",
+  ["#yaoling-choose"] = "耀令：减1点体力上限选择一名角色，其需对你指定的角色使用【杀】或你弃置其一张牌",
+  ["#yaoling-dest"] = "耀令：选择令 %dest 使用【杀】的目标",
+  ["#yaoling-use"] = "耀令：对 %dest 使用【杀】，否则 %src 弃置你一张牌",
+  ["#yongquan-give"] = "拥权：你可以交给 %src 一张牌",
 }
 
 Fk:loadTranslationTable{
