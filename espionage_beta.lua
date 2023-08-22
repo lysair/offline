@@ -51,8 +51,8 @@ Fk:loadTranslationTable{
 
 Fk:loadTranslationTable{
   ["es__caohong"] = "曹洪",
-  ["lifeng"] = "厉锋",
-  [":lifeng"] = "出牌阶段限一次，你可以获得弃牌堆中的一张装备牌。你可以赠予手牌或装备区内的装备牌。",
+  ["lifengs"] = "厉锋",
+  [":lifengs"] = "出牌阶段限一次，你可以获得弃牌堆中的一张装备牌。你可以赠予手牌或装备区内的装备牌。",
 }
 
 Fk:loadTranslationTable{
