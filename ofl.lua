@@ -88,10 +88,10 @@ local ofl__chongxu = fk.CreateActiveSkill{
       (self.interaction.data == "ofl__chongxu_no" and Fk:getCardById(cards[1]).color ~= Fk:getCardById(cards[2]).color) then
       local all_choices = {"ofl__chongxu_get", "miaojian_update", "lianhuas_update"}
       local choices = table.simpleClone(all_choices)
-      if player:getMark("@miaojian") == "miaojian3" then
+      if player:getMark("@miaojian") == "status3" then
         table.removeOne(choices, "miaojian_update")
       end
-      if player:getMark("@lianhuas") == "lianhuas3" then
+      if player:getMark("@lianhuas") == "status3" then
         table.removeOne(choices, "lianhuas_update")
       end
       local choice = room:askForChoice(player, choices, self.name, "", false, all_choices)
@@ -102,15 +102,15 @@ local ofl__chongxu = fk.CreateActiveSkill{
       else
         if choice == "miaojian_update" then
           if player:getMark("@miaojian") == 0 then
-            room:setPlayerMark(player, "@miaojian", "miaojian2")
+            room:setPlayerMark(player, "@miaojian", "status2")
           else
-            room:setPlayerMark(player, "@miaojian", "miaojian3")
+            room:setPlayerMark(player, "@miaojian", "status3")
           end
         elseif choice == "lianhuas_update" then
           if player:getMark("@lianhuas") == 0 then
-            room:setPlayerMark(player, "@lianhuas", "lianhuas2")
+            room:setPlayerMark(player, "@lianhuas", "status2")
           else
-            room:setPlayerMark(player, "@lianhuas", "lianhuas3")
+            room:setPlayerMark(player, "@lianhuas", "status3")
           end
         end
         room:moveCards({
@@ -141,9 +141,9 @@ local miaojian = fk.CreateViewAsSkill{
   prompt = function (self, selected, selected_cards)
     if Self:getMark("@miaojian") == 0 then
       return "#miaojian1"
-    elseif Self:getMark("@miaojian") == "miaojian2" then
+    elseif Self:getMark("@miaojian") == "status2" then
       return "#miaojian2"
-    elseif Self:getMark("@miaojian") == "miaojian3" then
+    elseif Self:getMark("@miaojian") == "status3" then
       return "#miaojian3"
     end
   end,
@@ -159,13 +159,13 @@ local miaojian = fk.CreateViewAsSkill{
         elseif self.interaction.data == "ex_nihilo" then
           return card.type == Card.TypeTrick
         end
-      elseif Self:getMark("@miaojian") == "miaojian2" then
+      elseif Self:getMark("@miaojian") == "status2" then
         if self.interaction.data == "stab__slash" then
           return card.type == Card.TypeBasic
         elseif self.interaction.data == "ex_nihilo" then
           return card.type ~= Card.TypeBasic
         end
-      elseif Self:getMark("@miaojian") == "miaojian3" then
+      elseif Self:getMark("@miaojian") == "status3" then
         return false
       end
     end
@@ -173,7 +173,7 @@ local miaojian = fk.CreateViewAsSkill{
   view_as = function(self, cards)
     if not self.interaction.data then return end
     local card = Fk:cloneCard(self.interaction.data)
-    if Self:getMark("@miaojian") == 0 or Self:getMark("@miaojian") == "miaojian2" then
+    if Self:getMark("@miaojian") == 0 or Self:getMark("@miaojian") == "status2" then
       if #cards ~= 1 then return end
       card:addSubcard(cards[1])
     end
@@ -201,7 +201,7 @@ local lianhuas = fk.CreateTriggerSkill{
     local room = player.room
     player:drawCards(1, self.name)
     if player.dead or player:getMark("@lianhuas") == 0 then return end
-    if player:getMark("@lianhuas") == "lianhuas2" then
+    if player:getMark("@lianhuas") == "status2" then
       local judge = {
         who = player,
         reason = self.name,
@@ -211,7 +211,7 @@ local lianhuas = fk.CreateTriggerSkill{
       if judge.card.suit == Card.Spade then
         AimGroup:cancelTarget(data, player.id)
       end
-    elseif player:getMark("@lianhuas") == "lianhuas3" then
+    elseif player:getMark("@lianhuas") == "status3" then
       local from = room:getPlayerById(data.from)
       if from.dead or from:isNude() or
         #room:askForDiscard(from, 1, 1, true, self.name, true, ".", "#lianhuas-discard:"..player.id) == 0 then
@@ -244,11 +244,9 @@ Fk:loadTranslationTable{
   ["#miaojian2"] = "妙剑：你可以将基本牌当刺【杀】、非基本牌当【无中生有】使用",
   ["#miaojian3"] = "妙剑：你可以视为使用一张刺【杀】或【无中生有】",
   ["@miaojian"] = "妙剑",
-  ["miaojian2"] = "妙剑二阶",
-  ["miaojian3"] = "妙剑三阶",
   ["@lianhuas"] = "莲华",
-  ["lianhuas2"] = "莲华二阶",
-  ["lianhuas3"] = "莲华三阶",
+  ["status2"] = "二阶",
+  ["status3"] = "三阶",
   ["#lianhuas-discard"] = "莲华：你需弃置一张牌，否则 %src 取消此【杀】",
 
   ["$ofl__chongxu1"] = "阳炁冲三关，斩尸除阴魔。",
@@ -303,6 +301,30 @@ Fk:loadTranslationTable{
 
   ["#rom__zhenglian-ask"] = "征敛：交给 %src 一张牌，否则有可能被其要求弃牌",
   ["#rom__zhenglian-discard"] = "征敛：你可以令一名选择否的角色弃置 %arg 张牌",
+}
+
+Fk:loadTranslationTable{
+  ["ofl__wangyun"] = "王允",
+  ["ofl__lianji"] = "连计",
+  [":ofl__lianji"] = "出牌阶段结束时，若你本阶段使用牌类别数不小于：1，你可以令一名角色摸一张牌；2.你可以回复1点体力；3.你可以令一名其他角色"..
+  "代替你执行本回合剩余阶段。",
+  ["ofl__moucheng"] = "谋逞",
+  [":ofl__moucheng"] = "每回合限一次，你可以将一张黑色牌当【借刀杀人】使用。",
+}
+--国战转身份的官盗：钟会 孟达 孙綝 文钦
+
+Fk:loadTranslationTable{
+  ["ofl__caoanmin"] = "曹安民",
+  ["kuishe"] = "窥舍",
+  [":kuishe"] = "出牌阶段限一次，你可以选择一名其他角色一张牌，将此牌交给另一名角色，然后失去牌的角色可以对你使用一张【杀】。",
+}
+
+Fk:loadTranslationTable{
+  ["longyufei"] = "龙羽飞",
+  ["longyi"] = "龙裔",
+  [":longyi"] = "你可以将所有手牌当任意一张基本牌使用或打出，若其中有：锦囊牌，你摸一张牌；装备牌，此牌不可被响应。",
+  ["zhenjue"] = "阵绝",
+  [":zhenjue"] = "一名角色结束阶段，若你没有手牌，你可以令其选择一项：1.弃置一张牌；2.你摸一张牌。",
 }
 
 return extension

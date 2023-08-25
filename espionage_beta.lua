@@ -199,7 +199,7 @@ local chouyou_trigger = fk.CreateTriggerSkill{
   on_use = function(self, event, target, player, data)
     local room = player.room
     if not room:askForSkillInvoke(player, "chouyou", nil, "#chouyou-control::"..target.id..":"..data.name) then
-      room:broadcastSkillInvoke("chouyou")
+      player:broadcastSkillInvoke("chouyou")
       room:notifySkillInvoked(player, "chouyou")
       room:doIndicate(player.id, {target.id})
       --room:setPlayerMark(target, "chouyou-phase", data.name)
@@ -401,4 +401,42 @@ Fk:loadTranslationTable{
   ["es__renwang"] = "人望",
   [":es__renwang"] = "出牌阶段限一次，你可以选择弃牌堆中一张黑色基本牌，令一名角色获得之。",
 }
+
+Fk:loadTranslationTable{
+  ["es__xuyou"] = "许攸",
+  ["es__shicai"] = "恃才",
+  [":es__shicai"] = "①出牌阶段限一次，你可以弃置一张牌，展示并获得牌堆顶牌；当你本回合失去此牌时，此技能视为未发动过。②你的回合内牌堆顶牌对你可见。",
+  ["chenggong"] = "逞功",
+  [":chenggong"] = "当一名角色使用牌指定目标后，若目标数大于一，你可以令其摸一张牌。",
+  ["zezhu"] = "择主",
+  [":zezhu"] = "出牌阶段限一次，你可以获得主公区域内一张牌，然后交给其一张牌。",
+}
+
+Fk:loadTranslationTable{
+  ["es__zhenji"] = "甄姬",
+  ["es__luoshen"] = "洛神",
+  [":es__luoshen"] = "准备阶段，你可以判定，并获得生效后的判定牌，然后若你本次以此法获得的牌颜色均相同，你可以重复此流程。",
+}
+
+Fk:loadTranslationTable{
+  ["es__jiaxu"] = "贾诩",
+  ["es__zhenlve"] = "缜略",
+  [":es__zhenlve"] = "锁定技，你不能成为延时锦囊牌的目标，你使用的普通锦囊牌不能被响应。",
+  ["es__jianshu"] = "间书",
+  [":es__jianshu"] = "出牌阶段限一次，你可以将一张手牌交给一名其他角色，令其与你选择的另一名其他角色拼点，没赢的角色失去1点体力。",
+  ["es__yongdi"] = "拥嫡",
+  [":es__yongdi"] = "限定技，准备阶段，你可以令一名男性角色加1点体力上限并回复1点体力，然后其获得其武将牌上的主公技。",
+}
+
+Fk:loadTranslationTable{
+  ["es__caocao"] = "曹操",
+  ["xiandao"] = "献刀",
+  [":xiandao"] = "每回合限一次，你赠予其他角色牌时，你可以令其本回合不能使用此花色的牌，然后若此牌为：锦囊牌，你摸两张牌；"..
+  "装备牌，你获得其另一张牌；武器牌，你对其造成1点伤害。",
+  ["sancai"] = "散财",
+  [":sancai"] = "出牌阶段限一次，你可以展示所有手牌，若均为同一类别，你可以将其中一张牌赠予其他角色。",
+  ["yibing"] = "义兵",
+  [":yibing"] = "当你于摸牌阶段外获得牌后，你可以将这些牌当无距离次数限制的【杀】使用。",
+}
+
 return extension
