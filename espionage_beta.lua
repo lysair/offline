@@ -103,11 +103,96 @@ Fk:loadTranslationTable{
   ["#jianglie-discard"] = "将烈：选择你要弃置手牌的颜色",
 }
 
+local ganning = General(extension, "es__ganning", "wu", 4)
+local jielve = fk.CreateViewAsSkill{
+  name = "jielve",
+  anim_type = "control",
+  prompt = "#jielve",
+  card_filter = function(self, to_select, selected)
+    if #selected == 1 then
+      return Fk:getCardById(to_select).color == Fk:getCardById(selected[1]).color
+    elseif #selected > 1 then
+      return false
+    end
+    return true
+  end,
+  view_as = function(self, cards)
+    if #cards ~= 2 then return end
+    local card = Fk:cloneCard("looting")
+    card:addSubcards(cards)
+    card.skillName = self.name
+    return card
+  end,
+  enabled_at_play = function(self, player)
+    return player:usedSkillTimes(self.name, Player.HistoryPhase) == 0 and not player:isNude()
+  end,
+}
+local jielve__lootingSkill = fk.CreateActiveSkill{
+  name = "jielve__looting_skill",
+  target_num = 1,
+  mod_target_filter = function(self, to_select, selected, user, card, distance_limited)
+    return to_select ~= user and not Fk:currentRoom():getPlayerById(to_select):isKongcheng()
+  end,
+  target_filter = function(self, to_select)
+    return to_select ~= Self.id and not Fk:currentRoom():getPlayerById(to_select):isKongcheng()
+  end,
+  on_effect = function(self, room, effect)
+    local player = room:getPlayerById(effect.from)
+    local target = room:getPlayerById(effect.to)
+    if player.dead or target.dead or target:isKongcheng() then return end
+    target:showCards(target:getCardIds("h"))
+    if player.dead or target.dead or target:isKongcheng() then return end
+    local id = room:askForCardChosen(player, target, {card_data = {{target.general, target:getCardIds("h")}}}, self.name)
+    local targets = table.map(room:getOtherPlayers(target), function(p) return p.id end)
+    local to = room:askForChoosePlayers(player, targets, 1, 1,
+      "#jielve__looting-choose::"..target.id..":"..Fk:getCardById(id, true):toLogString(), self.name, true)
+    if #to > 0 then
+      room:obtainCard(to[1], id, false, fk.ReasonGive)
+    else
+      room:damage({
+        from = player,
+        to = target,
+        card = effect.card,
+        damage = 1,
+        skillName = self.name
+      })
+    end
+  end
+}
+local jielve_trigger = fk.CreateTriggerSkill{
+  name = "#jielve_trigger",
+  main_skill = jielve,
+  mute = true,
+  events = {fk.PreCardEffect},
+  can_trigger = function(self, event, target, player, data)
+    return player:hasSkill("jielve") and data.from == player.id and data.card.trueName == "looting"
+  end,
+  on_cost = function(self, event, target, player, data)
+    return true
+  end,
+  on_use = function(self, event, target, player, data)
+    local card = data.card:clone()
+    local c = table.simpleClone(data.card)
+    for k, v in pairs(c) do
+      if card[k] == nil then
+        card[k] = v
+      end
+    end
+    card.skill = jielve__lootingSkill
+    data.card = card
+  end,
+}
+Fk:addSkill(jielve__lootingSkill)
+jielve:addRelatedSkill(jielve_trigger)
+ganning:addSkill(jielve)
 Fk:loadTranslationTable{
   ["es__ganning"] = "甘宁",
   ["jielve"] = "劫掠",
-  [":jielve"] = "出牌阶段限一次，你可以将两张相同颜色的牌当【趁火打劫】使用。你使用的【趁火打劫】效果改为：目标角色展示所有手牌，"..
-  "你选择一项：1.将此牌交给另一名角色；2.你对其造成1点伤害。",
+  [":jielve"] = "出牌阶段限一次，你可以将两张相同颜色的牌当【趁火打劫】使用。你使用【趁火打劫】效果改为：目标角色展示所有手牌，你选择一项："..
+  "1.将其中一张牌交给另一名角色；2.你对其造成1点伤害。",
+  ["#jielve"] = "劫掠：你可以将两张相同颜色的牌当【趁火打劫】使用",
+  ["jielve__looting_skill"] = "趁火打劫",
+  ["#jielve__looting-choose"] = "趁火打劫：选择一名角色将%arg交给其，或点“取消”对 %dest 造成1点伤害",
 }
 
 local sunluban = General(extension, "es__sunluban", "wu", 3, 3, General.Female)
@@ -412,6 +497,45 @@ Fk:loadTranslationTable{
   [":zezhu"] = "出牌阶段限一次，你可以获得主公区域内一张牌，然后交给其一张牌。",
 }
 
+local zhenji = General(extension, "es__zhenji", "wei", 3, 3, General.Female)
+local es__luoshen = fk.CreateTriggerSkill{
+  name = "es__luoshen",
+  anim_type = "drawcard",
+  events = {fk.EventPhaseStart},
+  can_trigger = function(self, event, target, player, data)
+    return target == player and player:hasSkill(self.name) and player.phase == Player.Start
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    local color = ""
+    local pattern = ".|.|."
+    while true do
+      if color == "red" then
+        pattern = ".|.|heart,diamond"
+      elseif color == "black" then
+        pattern = ".|.|spade,club"
+      end
+      local judge = {
+        who = player,
+        reason = self.name,
+        pattern = pattern,
+        skipdrop = true,
+      }
+      room:judge(judge)
+      if color == "" then
+        color = judge.card:getColorString()
+      end
+      if room:getCardArea(judge.card.id) == Card.DiscardPile and not player.dead then
+        room:obtainCard(player.id, judge.card.id, true, fk.ReasonJustMove)
+      end
+      if judge.card:getColorString() ~= color or player.dead or not room:askForSkillInvoke(player, self.name) then
+        break
+      end
+    end
+  end,
+}
+zhenji:addSkill(es__luoshen)
+zhenji:addSkill("qingguo")
 Fk:loadTranslationTable{
   ["es__zhenji"] = "甄姬",
   ["es__luoshen"] = "洛神",
