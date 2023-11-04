@@ -12,7 +12,7 @@ local ofl__fuding = fk.CreateTriggerSkill{
   events = {fk.EnterDying, fk.AfterDying},
   can_trigger = function(self, event, target, player, data)
     if event == fk.EnterDying then
-      return player:hasSkill(self.name) and target ~= player and not player:isNude() and
+      return player:hasSkill(self) and target ~= player and not player:isNude() and
         player:usedSkillTimes(self.name, Player.HistoryRound) == 0
     else
       return not target.dead and data.extra_data and data.extra_data.ofl__fuding and data.extra_data.ofl__fuding[1] == player.id and
@@ -216,7 +216,7 @@ local ofl__wuku = fk.CreateTriggerSkill{
   frequency = Skill.Compulsory,
   events = {fk.CardUsing, fk.BeforeCardsMove},
   can_trigger = function(self, event, target, player, data)
-    if player:hasSkill(self.name) and player:getMark("@wuku") < 3 then
+    if player:hasSkill(self) and player:getMark("@wuku") < 3 then
       if event == fk.CardUsing then
         return target == player and data.card.type == Card.TypeEquip
       else
@@ -260,7 +260,7 @@ local ofl__sanchen = fk.CreateTriggerSkill{
   frequency = Skill.Wake,
   events = {fk.EventPhaseStart},
   can_trigger = function(self, event, target, player, data)
-    return target == player and player:hasSkill(self.name) and
+    return target == player and player:hasSkill(self) and
       (player.phase == Player.Start or player.phase == Player.Finish) and
       player:usedSkillTimes(self.name, Player.HistoryGame) == 0
   end,
@@ -412,7 +412,7 @@ local ofl__tianyi = fk.CreateTriggerSkill{
   frequency = Skill.Wake,
   events = {fk.EventPhaseStart},
   can_trigger = function(self, event, target, player, data)
-    return target == player and player:hasSkill(self.name) and
+    return target == player and player:hasSkill(self) and
       player.phase == Player.Start and
       player:usedSkillTimes(self.name, Player.HistoryGame) == 0
   end,
@@ -448,7 +448,7 @@ local ofl__huishig = fk.CreateTriggerSkill{
   frequency = Skill.Limited,
   events = {fk.EnterDying},
   can_trigger = function(self, event, target, player, data)
-    return target == player and player:hasSkill(self.name) and player:usedSkillTimes(self.name, Player.HistoryGame) == 0
+    return target == player and player:hasSkill(self) and player:usedSkillTimes(self.name, Player.HistoryGame) == 0
   end,
   on_cost = function(self, event, target, player, data)
     local to = player.room:askForChoosePlayers(player, table.map(player.room.alive_players, function(p)
@@ -502,7 +502,7 @@ local ofl__lingce = fk.CreateTriggerSkill{
   frequency = Skill.Compulsory,
   events = {fk.CardUsing, fk.PreCardEffect},
   can_trigger = function(self, event, target, player, data)
-    if player:hasSkill(self.name) and data.card:isCommonTrick() and
+    if player:hasSkill(self) and data.card:isCommonTrick() and
       player.room:getTag("Zhinang") and table.contains(player.room:getTag("Zhinang"), data.card.name) then
       if event == fk.CardUsing then
         return true
@@ -524,7 +524,7 @@ local ofl__dinghan = fk.CreateTriggerSkill{
   anim_type = "special",
   events = {fk.EventPhaseStart},
   can_trigger = function(self, event, target, player, data)
-    return target == player and player:hasSkill(self.name) and player.phase == Player.Start
+    return target == player and player:hasSkill(self) and player.phase == Player.Start
   end,
   on_cost = function(self, event, target, player, data)
     return player.room:askForSkillInvoke(player, self.name, nil, "#ofl__dinghan-invoke")
@@ -590,7 +590,7 @@ local juanjia = fk.CreateTriggerSkill{
   frequency = Skill.Compulsory,
   events = {fk.GamePrepared},
   can_trigger = function(self, event, target, player, data)
-    return player:hasSkill(self.name)
+    return player:hasSkill(self)
   end,
   on_use = function(self, event, target, player, data)
     local room = player.room

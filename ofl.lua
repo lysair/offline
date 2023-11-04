@@ -12,7 +12,7 @@ local conqueror = fk.CreateTriggerSkill{
   anim_type = "offensive",
   events = {fk.TargetSpecified},
   can_trigger = function(self, event, target, player, data)
-    return target == player and player:hasSkill(self.name) and data.card.trueName == "slash" and
+    return target == player and player:hasSkill(self) and data.card.trueName == "slash" and
       not player.room:getPlayerById(data.to).dead
   end,
   on_cost = function(self, event, target, player, data)
@@ -192,7 +192,7 @@ local lianhuas = fk.CreateTriggerSkill{
   events = {fk.TargetConfirming},
   anim_type = "defensive",
   can_trigger = function(self, event, target, player, data)
-    return target == player and player:hasSkill(self.name) and data.card.trueName == "slash"
+    return target == player and player:hasSkill(self) and data.card.trueName == "slash"
   end,
   on_cost = function(self, event, target, player, data)
     return true
@@ -265,7 +265,7 @@ local rom__zhenglian = fk.CreateTriggerSkill{
   events = {fk.EventPhaseStart},
   anim_type = "control",
   can_trigger = function(self, event, target, player, data)
-    return target == player and player:hasSkill(self.name) and player.phase == Player.Start 
+    return target == player and player:hasSkill(self) and player.phase == Player.Start 
   end,
   on_use = function(self, event, target, player, data)
     local room = player.room

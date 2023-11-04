@@ -67,7 +67,7 @@ local jianglie = fk.CreateTriggerSkill{
   anim_type = "offensive",
   events = {fk.TargetSpecified},
   can_trigger = function(self, event, target, player, data)
-    if target == player and player:hasSkill(self.name) and player.phase == Player.Play and
+    if target == player and player:hasSkill(self) and player.phase == Player.Play and
       data.card.trueName == "slash" and data.firstTarget and player:usedSkillTimes(self.name, Player.HistoryPhase) == 0 then
       local to = player.room:getPlayerById(data.to)
       return not to.dead and not to:isKongcheng()
@@ -202,13 +202,13 @@ local jiaozong = fk.CreateProhibitSkill{
   is_prohibited = function(self, from, to, card)
     if from.phase == Player.Play and card.color == Card.Red and from:getMark("jiaozong-phase") == 0 then
       return table.find(Fk:currentRoom().alive_players, function(p)
-        return p:hasSkill(self.name) and p ~= from and p ~= to
+        return p:hasSkill(self) and p ~= from and p ~= to
       end)--桃子无中、装备等需要特判
     end
   end,
   prohibit_use = function(self, player, card)
     if player.phase == Player.Play and card.color == Card.Red and player:getMark("jiaozong-phase") == 0 then
-      return table.find(Fk:currentRoom().alive_players, function(p) return p:hasSkill(self.name) and p ~= player end) and
+      return table.find(Fk:currentRoom().alive_players, function(p) return p:hasSkill(self) and p ~= player end) and
         (card.type == Card.TypeEquip or table.contains({"peach", "ex_nihilo", "lightning", "analeptic", "foresight"}, card.trueName))
     end
   end,
@@ -236,7 +236,7 @@ local chouyou = fk.CreateTriggerSkill{
   anim_type = "control",
   events = {fk.TargetConfirming},
   can_trigger = function(self, event, target, player, data)
-    return target == player and player:hasSkill(self.name) and data.card.trueName == "slash" and #player.room.alive_players > 2
+    return target == player and player:hasSkill(self) and data.card.trueName == "slash" and #player.room.alive_players > 2
   end,
   on_cost = function(self, event, target, player, data)
     local room = player.room
@@ -373,7 +373,7 @@ local yaoling = fk.CreateTriggerSkill{
   anim_type = "control",
   events = {fk.EventPhaseEnd},
   can_trigger = function(self, event, target, player, data)
-    return target == player and player:hasSkill(self.name) and player.phase == Player.Play
+    return target == player and player:hasSkill(self) and player.phase == Player.Play
   end,
   on_cost = function(self, event, target, player, data)
     local to = player.room:askForChoosePlayers(player, table.map(player.room:getOtherPlayers(player), function(p)
@@ -413,7 +413,7 @@ local shicha = fk.CreateTriggerSkill{
   frequency = Skill.Compulsory,
   events = {fk.EventPhaseStart},
   can_trigger = function(self, event, target, player, data)
-    return target == player and player:hasSkill(self.name) and player.phase == Player.Discard and
+    return target == player and player:hasSkill(self) and player.phase == Player.Discard and
       player:usedSkillTimes("tuicheng", Player.HistoryTurn) == 0 and player:usedSkillTimes("yaoling", Player.HistoryTurn) == 0
   end,
   on_use = function(self, event, target, player, data)
@@ -433,7 +433,7 @@ local yongquan = fk.CreateTriggerSkill{
   anim_type = "support",
   events = {fk.EventPhaseStart},
   can_trigger = function(self, event, target, player, data)
-    return target == player and player:hasSkill(self.name) and player.phase == Player.Finish and
+    return target == player and player:hasSkill(self) and player.phase == Player.Finish and
       table.find(player.room:getOtherPlayers(player), function(p) return p.kingdom == "qun" and not p:isNude() end)
   end,
   on_cost = function(self, event, target, player, data)
@@ -503,7 +503,7 @@ local es__luoshen = fk.CreateTriggerSkill{
   anim_type = "drawcard",
   events = {fk.EventPhaseStart},
   can_trigger = function(self, event, target, player, data)
-    return target == player and player:hasSkill(self.name) and player.phase == Player.Start
+    return target == player and player:hasSkill(self) and player.phase == Player.Start
   end,
   on_use = function(self, event, target, player, data)
     local room = player.room
