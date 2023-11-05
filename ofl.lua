@@ -259,7 +259,6 @@ Fk:loadTranslationTable{
 }
 
 local liuhong = General(extension, "rom__liuhong", "qun", 4)
-
 local rom__zhenglian = fk.CreateTriggerSkill{
   name = "rom__zhenglian",
   events = {fk.EventPhaseStart},
@@ -291,14 +290,11 @@ local rom__zhenglian = fk.CreateTriggerSkill{
     end
   end
 }
-
 liuhong:addSkill(rom__zhenglian)
-
 Fk:loadTranslationTable{
   ["rom__liuhong"] = "刘宏",
   ["rom__zhenglian"] = "征敛",
   [":rom__zhenglian"] = "准备阶段，你可以令所有其他角色依次选择是否交给你一张牌。所有角色选择完毕后，你可以令一名选择否的角色弃置X张牌（X为选择否的角色数）。",
-
   ["#rom__zhenglian-ask"] = "征敛：交给 %src 一张牌，否则有可能被其要求弃牌",
   ["#rom__zhenglian-discard"] = "征敛：你可以令一名选择否的角色弃置 %arg 张牌",
 }
@@ -325,6 +321,335 @@ Fk:loadTranslationTable{
   [":longyi"] = "你可以将所有手牌当任意一张基本牌使用或打出，若其中有：锦囊牌，你摸一张牌；装备牌，此牌不可被响应。",
   ["zhenjue"] = "阵绝",
   [":zhenjue"] = "一名角色结束阶段，若你没有手牌，你可以令其选择一项：1.弃置一张牌；2.你摸一张牌。",
+}
+
+local godjiaxu = General(extension, "godjiaxu", "god", 4)
+local function UpdateLianpo(player)
+  local room = player.room
+  local roles = player:getMark("lianpoj_exist_roles")
+  if roles[1] > roles[2] and roles[1] > roles[3] then
+    room:setPlayerMark(player, "@lianpoj", "lord+loyalist")
+  elseif roles[2] > roles[1] and roles[2] > roles[3] then
+    room:setPlayerMark(player, "@lianpoj", "rebel")
+  elseif roles[3] > roles[1] and roles[3] > roles[2] then
+    room:setPlayerMark(player, "@lianpoj", "renegade")
+  elseif roles[1] == roles[2] and roles[1] > roles[3] then
+    room:setPlayerMark(player, "@lianpoj", "lianpoj12")
+  elseif roles[1] == roles[3] and roles[1] > roles[2] then
+    room:setPlayerMark(player, "@lianpoj", "lianpoj13")
+  elseif roles[2] == roles[3] and roles[2] > roles[1] then
+    room:setPlayerMark(player, "@lianpoj", "lianpoj23")
+  else
+    room:setPlayerMark(player, "@lianpoj", "lianpoj123")
+  end
+end
+local function LianpoJudge(player, role)
+  if player:getMark("@lianpoj") == 0 then return false end
+  if role == "loyalist" then
+    return table.contains({"lord+loyalist", "lianpoj12", "lianpoj13", "lianpoj123"}, player:getMark("@lianpoj"))
+  elseif role == "rebel" then
+    return table.contains({"rebel", "lianpoj12", "lianpoj23", "lianpoj123"}, player:getMark("@lianpoj"))
+  end
+  return false
+end
+local lianpoj = fk.CreateTriggerSkill{
+  name = "lianpoj",
+  anim_type = "special",
+  frequency = Skill.Compulsory,
+  events = {fk.RoundStart, fk.EnterDying, fk.Deathed},
+  can_trigger = function (self, event, target, player, data)
+    if player:hasSkill(self) then
+      if event == fk.RoundStart then
+        return player:getMark("lianpoj_extra_roles") ~= {0, 0, 0}
+      elseif event == fk.EnterDying then
+        return LianpoJudge(player, "loyalist")
+      elseif event == fk.Deathed then
+        return table.contains({"lianpoj12", "lianpoj13", "lianpoj23", "lianpoj123"}, player:getMark("@lianpoj")) and
+          data.damage and data.damage.from and not data.damage.from.dead
+      end
+    end
+  end,
+  on_use = function (self, event, target, player, data)
+    local room = player.room
+    if event == fk.RoundStart then
+      local exist_roles, extra_roles = player:getMark("lianpoj_exist_roles"), player:getMark("lianpoj_extra_roles")
+      local roles = {"loyalist", "rebel", "renegade"}
+      local choices = {}
+      for i = 1, 3, 1 do
+        if extra_roles[i] > 0 then
+          table.insert(choices, roles[i])
+        end
+      end
+      local choice = room:askForChoice(player, choices, self.name, "#lianpoj-choice", false, {"lord", "loyalist", "rebel", "renegade"})
+      local new_role = table.indexOf(roles, choice)
+      local extra = player:getMark(self.name)
+      if extra == 0 then
+        exist_roles[new_role] = exist_roles[new_role] + 1
+        extra_roles[new_role] = extra_roles[new_role] - 1
+      else
+        local orig_role = table.indexOf(roles, extra)
+        exist_roles[new_role] = exist_roles[new_role] + 1
+        exist_roles[orig_role] = exist_roles[orig_role] - 1
+        extra_roles[new_role] = extra_roles[new_role] - 1
+        extra_roles[orig_role] = extra_roles[orig_role] + 1
+      end
+      room:doBroadcastNotify("ShowToast", Fk:translate("lianpoj_choice")..Fk:translate(choice))
+      room:setPlayerMark(player, self.name, choice)
+      room:setPlayerMark(player, "lianpoj_exist_roles", exist_roles)
+      room:setPlayerMark(player, "lianpoj_extra_roles", extra_roles)
+      UpdateLianpo(player)
+    elseif event == fk.EnterDying then
+      player:broadcastSkillInvoke("wansha")
+      room:notifySkillInvoked(player, self.name)
+    elseif event == fk.Deathed then
+      local p = data.damage.from
+      local choices = {"draw2"}
+      if p:isWounded() then
+        table.insert(choices, "recover")
+      end
+      local choice = room:askForChoice(p, choices, self.name)
+      if choice == "draw2" then
+        p:drawCards(2, self.name)
+      else
+        room:recover({
+          who = p,
+          num = 1,
+          recoverBy = p,
+          skillName = self.name
+        })
+      end
+    end
+  end,
+
+  refresh_events = {fk.GameStart, fk.EventAcquireSkill, fk.BeforeGameOverJudge},
+  can_refresh = function(self, event, target, player, data)
+    if player:hasSkill(self, true) then
+      if event == fk.EventAcquireSkill then
+        return target == player and data == self
+      else
+        return true
+      end
+    end
+  end,
+  on_refresh = function(self, event, target, player, data)
+    local room = player.room
+    if event == fk.GameStart or event == fk.EventAcquireSkill then
+      local exist_roles, extra_roles = {0, 0, 0}, {0, 0, 0}
+      if room.settings.gameMode == "aaa_role_mode" or room.settings.gameMode == "vanished_dragon" then
+        local loyalist, rebel, renegade = 0, 0, 0
+        for _, p in ipairs(room.players) do
+          if p.role == "lord" or p.role == "loyalist" then
+            loyalist = loyalist + 1
+          elseif p.role == "rebel" then
+            rebel = rebel + 1
+          elseif p.role == "renegade" then
+            renegade = renegade + 1
+          end
+        end
+        exist_roles = {loyalist, rebel, renegade}
+        extra_roles = {4 - loyalist, 4 - rebel, 2 - renegade}
+      elseif room.settings.gameMode == "m_1v2_mode" then
+        exist_roles = {1, 2, 0}
+        extra_roles = {0, 0, 0}
+      elseif room.settings.gameMode == "m_2v2_mode" then
+        exist_roles = {2, 2, 0}
+        extra_roles = {0, 0, 0}
+      else
+        exist_roles = {0, 0, 0}
+        extra_roles = {0, 0, 0}
+      end
+      room:setPlayerMark(player, "lianpoj_exist_roles", exist_roles)
+      room:setPlayerMark(player, "lianpoj_extra_roles", extra_roles)
+      UpdateLianpo(player)
+    else
+      local exist_roles, extra_roles = player:getMark("lianpoj_exist_roles"), player:getMark("lianpoj_extra_roles")
+      if target.role == "lord" or target.role == "loyalist" then
+        exist_roles[1] = exist_roles[1] - 1
+        extra_roles[1] = extra_roles[1] + 1
+      elseif target.role == "rebel" then
+        exist_roles[2] = exist_roles[2] - 1
+        extra_roles[2] = extra_roles[2] + 1
+      elseif target.role == "renegade" then
+        exist_roles[3] = exist_roles[3] - 1
+        extra_roles[3] = extra_roles[3] + 1
+      end
+      room:setPlayerMark(player, "lianpoj_exist_roles", exist_roles)
+      room:setPlayerMark(player, "lianpoj_extra_roles", extra_roles)
+      UpdateLianpo(player)
+    end
+  end,
+}
+local lianpoj_maxcards = fk.CreateMaxCardsSkill{
+  name = "#lianpoj_maxcards",
+  frequency = Skill.Compulsory,
+  correct_func = function(self, player)
+    local n = 0
+    for _, p in ipairs(Fk:currentRoom().alive_players) do
+      if LianpoJudge(p, "rebel") and p ~= player then
+        n = n - 1
+      end
+    end
+    return n
+  end,
+}
+local lianpoj_targetmod = fk.CreateTargetModSkill{
+  name = "#lianpoj_targetmod",
+  frequency = Skill.Compulsory,
+  residue_func = function(self, player, skill, scope)
+    if skill.trueName == "slash_skill" and scope == Player.HistoryPhase then
+      local n = 0
+      for _, p in ipairs(Fk:currentRoom().alive_players) do
+        if LianpoJudge(p, "rebel") then
+          n = n + 1
+        end
+      end
+      return n
+    end
+  end,
+}
+local lianpoj_attackrange = fk.CreateAttackRangeSkill{
+  name = "#lianpoj_attackrange",
+  frequency = Skill.Compulsory,
+  correct_func = function (self, from, to)
+    local n = 0
+    for _, p in ipairs(Fk:currentRoom().alive_players) do
+      if LianpoJudge(p, "rebel") then
+        n = n + 1
+      end
+    end
+    return n
+  end,
+}
+local lianpoj_prohibit = fk.CreateProhibitSkill{
+  name = "#lianpoj_prohibit",
+  is_prohibited = function (self, from, to, card)
+    if card and card.name == "peach" and from ~= to then
+      return table.find(Fk:currentRoom().alive_players, function(p)
+        return LianpoJudge(p, "loyalist") and p ~= from
+      end)
+    end
+  end,
+  prohibit_use = function(self, player, card)
+    if card and card.name == "peach" and not player.dying and
+      table.find(Fk:currentRoom().alive_players, function(p) return LianpoJudge(p, "loyalist") and p ~= player end) then
+      for _, p in ipairs(Fk:currentRoom().alive_players) do
+        if p.dying then
+          return true
+        end
+      end
+    end
+  end,
+}
+local zhaoluan = fk.CreateActiveSkill{
+  name = "zhaoluan",
+  mute = true,
+  frequency = Skill.Limited,
+  card_num = 0,
+  target_num = 1,
+  prompt = function(self)
+    return "#zhaoluan-damage::"..Self:getMark(self.name)
+  end,
+  can_use = function(self, player)
+    return player:getMark(self.name) ~= 0 and player:getMark("zhaoluan-phase") == 0 and --这里不能用usedSkillTimes
+      not Fk:currentRoom():getPlayerById(player:getMark(self.name)).dead
+  end,
+  card_filter = function(self, to_select, selected)
+    return false
+  end,
+  target_filter = function(self, to_select, selected, selected_cards)
+    return #selected == 0
+  end,
+  on_use = function(self, room, effect)
+    local player = room:getPlayerById(effect.from)
+    local target = room:getPlayerById(effect.tos[1])
+    room:setPlayerMark(player, "zhaoluan-phase", 1)
+    local src = room:getPlayerById(player:getMark(self.name))
+    player:broadcastSkillInvoke(self.name)
+    room:notifySkillInvoked(player, self.name, "offensive")
+    room:doIndicate(player.id, {src.id})
+    room:doIndicate(src.id, {target.id})
+    room:changeMaxHp(src, -1)
+    room:damage{
+      from = src,
+      to = target,
+      damage = 1,
+      skillName = self.name,
+    }
+  end,
+}
+local zhaoluan_trigger = fk.CreateTriggerSkill{
+  name = "#zhaoluan_trigger",
+  anim_type = "special",
+  frequency = Skill.Limited,
+  main_skill = zhaoluan,
+  events = {fk.AskForPeachesDone},
+  can_trigger = function(self, event, target, player, data)
+    return player:hasSkill(self) and not target.dead and target.hp < 1 and player:getMark("zhaoluan") == 0
+  end,
+  on_cost = function(self, event, target, player, data)
+    return player.room:askForSkillInvoke(player, "zhaoluan", nil, "#zhaoluan-invoke::"..target.id)
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    room:doIndicate(player.id, {target.id})
+    room:setPlayerMark(player, "zhaoluan", target.id)  --FIXME: 谨防刷新限定技
+    room:changeMaxHp(target, 3)
+    local skills = {}
+    for _, s in ipairs(target.player_skills) do
+      if not (s.attached_equip or s.name[#s.name] == "&") and s.frequency ~= Skill.Compulsory then
+        table.insertIfNeed(skills, s.name)
+      end
+    end
+    if room.settings.gameMode == "m_1v2_mode" and target.role == "lord" then
+      table.removeOne(skills, "m_feiyang")
+      table.removeOne(skills, "m_bahu")
+    end
+    if #skills > 0 then
+      room:handleAddLoseSkills(target, "-"..table.concat(skills, "|-"), nil, true, false)
+    end
+    if not target.dead and target.hp < 3 then
+      room:recover({
+        who = target,
+        num = math.min(3, target.maxHp) - target.hp,
+        recoverBy = player,
+        skillName = self.name,
+      })
+    end
+    if not target.dead then
+      target:drawCards(4, self.name)
+    end
+  end,
+}
+lianpoj:addRelatedSkill(lianpoj_maxcards)
+lianpoj:addRelatedSkill(lianpoj_targetmod)
+lianpoj:addRelatedSkill(lianpoj_attackrange)
+lianpoj:addRelatedSkill(lianpoj_prohibit)
+zhaoluan:addRelatedSkill(zhaoluan_trigger)
+godjiaxu:addSkill(lianpoj)
+godjiaxu:addSkill(zhaoluan)
+Fk:loadTranslationTable{
+  ["godjiaxu"] = "神贾诩",
+  ["lianpoj"] = "炼魄",
+  [":lianpoj"] = "锁定技，若场上的最大阵营为：<br>反贼，其他角色手牌上限-1，所有角色出牌阶段使用【杀】次数上限+1、攻击范围+1；<br>"..
+  "主忠，其他角色不能对除其以外的角色使用【桃】；<br>多个最大阵营，其他角色死亡后，伤害来源摸两张牌或回复1点体力。<br>"..
+  "每轮开始时，你展示一张未加入游戏的身份牌或一张已死亡角色的身份牌，本轮视为该阵营角色数+1。",
+  ["zhaoluan"] = "兆乱",
+  [":zhaoluan"] = "限定技，一名角色濒死结算后，若其仍处于濒死状态，你可以令其加3点体力上限并失去所有非锁定技，回复体力至3并摸四张牌。"..
+  "出牌阶段限一次，你可以令该角色减1点体力上限，其对一名你选择的角色造成1点伤害。",
+  ["@lianpoj"] = "大阵营",
+  ["lianpoj_multi"] = "多个",
+  ["#lianpoj-choice"] = "炼魄：选择本轮视为增加的一个身份",
+  ["lianpoj_choice"] = "本轮视为人数+1的身份是：",
+  ["loyalist"] = "忠臣",
+  ["rebel"] = "反贼",
+  ["renegade"] = "内奸",
+  ["lianpoj12"] = "主忠 反",
+  ["lianpoj13"] = "主忠 内",
+  ["lianpoj23"] = "反 内",
+  ["lianpoj123"] = "主忠 反 内",
+  ["#zhaoluan_trigger"] = "兆乱",
+  ["#zhaoluan-invoke"] = "兆乱：%dest 即将死亡，你可以令其复活并操纵其进行攻击！",
+  ["#zhaoluan-damage"] = "兆乱：你可以令 %dest 减1点体力上限，其对你指定的一名角色造成1点伤害！",
 }
 
 return extension
