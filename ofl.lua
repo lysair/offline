@@ -380,18 +380,19 @@ local lianpoj = fk.CreateTriggerSkill{
           table.insert(choices, roles[i])
         end
       end
+      if #choices == 0 then return end
       local choice = room:askForChoice(player, choices, self.name, "#lianpoj-choice", false, {"lord", "loyalist", "rebel", "renegade"})
       local new_role = table.indexOf(roles, choice)
       local extra = player:getMark(self.name)
       if extra == 0 then
-        exist_roles[new_role] = (exist_roles[new_role] or 0) + 1
-        extra_roles[new_role] = (extra_roles[new_role] or 0) - 1
+        exist_roles[new_role] = exist_roles[new_role] + 1
+        extra_roles[new_role] = extra_roles[new_role] - 1
       else
         local orig_role = table.indexOf(roles, extra)
-        exist_roles[new_role] = (exist_roles[new_role] or 0) + 1
-        exist_roles[orig_role] = (exist_roles[orig_role] or 0) - 1
-        extra_roles[new_role] = (extra_roles[new_role] or 0) - 1
-        extra_roles[orig_role] = (extra_roles[orig_role] or 0) + 1
+        exist_roles[new_role] = exist_roles[new_role] + 1
+        exist_roles[orig_role] = exist_roles[orig_role] - 1
+        extra_roles[new_role] = extra_roles[new_role] - 1
+        extra_roles[orig_role] = extra_roles[orig_role] + 1
       end
       room:doBroadcastNotify("ShowToast", Fk:translate("lianpoj_choice")..Fk:translate(choice))
       room:setPlayerMark(player, self.name, choice)
