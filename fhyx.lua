@@ -531,7 +531,12 @@ local ofl__dinghan = fk.CreateTriggerSkill{
   end,
   on_use = function(self, event, target, player, data)
     local room = player.room
-    local zhinang = table.simpleClone(room:getTag("Zhinang"))
+    local zhinang = room:getTag("Zhinang")
+    if zhinang then
+      zhinang = table.simpleClone(zhinang)
+    else
+      zhinang = {"ex_nihilo", "dismantlement", "nullification"}
+    end
     local choice = room:askForChoice(player, room:getTag("Zhinang"), self.name, "#ofl__dinghan-remove")
     table.removeOne(zhinang, choice)
     local choices = table.simpleClone(room:getTag("TrickNames"))

@@ -4,6 +4,7 @@ extension.extensionName = "offline"
 Fk:loadTranslationTable{
   ["ofl"] = "线下",
   ["rom"] = "风花雪月",
+  ["chaos"] = "文和乱武",
 }
 
 local caesar = General(extension, "caesar", "god", 4)
@@ -651,6 +652,140 @@ Fk:loadTranslationTable{
   ["#zhaoluan_trigger"] = "兆乱",
   ["#zhaoluan-invoke"] = "兆乱：%dest 即将死亡，你可以令其复活并操纵其进行攻击！",
   ["#zhaoluan-damage"] = "兆乱：你可以令 %dest 减1点体力上限，其对你指定的一名角色造成1点伤害！",
+}
+local jiaxu = General(extension, "chaos__jiaxu", "qun", 3)
+local miesha = fk.CreateTriggerSkill{
+  name = "miesha",
+  anim_type = "offensive",
+  events = {fk.DamageCaused},
+  frequency = Skill.Compulsory,
+  can_trigger = function(self, event, target, player, data)
+    return target == player and player:hasSkill(self) and data.to.hp == 1 and data.to ~= player
+  end,
+  on_use = function(self, event, target, player, data)
+    player:broadcastSkillInvoke("wansha")
+    data.damage = data.damage + 1
+  end,
+}
+jiaxu:addSkill(miesha)
+jiaxu:addSkill("luanwu")
+jiaxu:addSkill("weimu")
+Fk:loadTranslationTable{
+  ["chaos__jiaxu"] = "贾诩",
+  ["miesha"] = "灭杀",
+  [":miesha"] = "锁定技，当你对一名其他角色造成伤害时，若其体力值为1，你令伤害值+1。",
+}
+
+local lijue = General(extension, "chaos__lijue", "qun", 4, 6)
+local feixiong = fk.CreateTriggerSkill{
+  name = "feixiong",
+  anim_type = "offensive",
+  events = {fk.EventPhaseStart},
+  can_trigger = function(self, event, target, player, data)
+    if not (target == player and player:hasSkill(self) and player.phase == Player.Play and not player:isKongcheng()) then return end
+    local targets = table.map(table.filter(player.room:getOtherPlayers(player), function (p)
+      return not p:isKongcheng()
+    end), Util.IdMapper)
+    if #targets > 0 then
+      self.cost_data = targets
+      return true
+    end
+  end,
+  on_cost = function(self, event, target, player, data)
+    local targets = self.cost_data
+    local target = player.room:askForChoosePlayers(player, targets, 1, 1, "#feixiong-ask", self.name, true)
+    if #target > 0 then
+      self.cost_data = target[1]
+      return true
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    player:broadcastSkillInvoke("langxi")
+    local target = room:getPlayerById(self.cost_data)
+    local pindian = player:pindian({target}, self.name)
+    local from = pindian.results[target.id].winner
+    if from then
+      local to = from == player and target or player
+      room:damage{
+        from = from,
+        to = to,
+        damage = 1,
+        skillName = self.name,
+      }
+    end
+  end,
+}
+
+local cesuan = fk.CreateTriggerSkill{
+  name = "cesuan",
+  anim_type = "defensive",
+  events = {fk.DamageInflicted},
+  frequency = Skill.Compulsory,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    player:broadcastSkillInvoke("yisuan")
+    if player.hp < player.maxHp then
+      room:changeMaxHp(player, -1)
+    else
+      room:changeMaxHp(player, -1)
+      player:drawCards(1, self.name)
+    end
+    return true
+  end,
+}
+
+lijue:addSkill(feixiong)
+lijue:addSkill(cesuan)
+
+Fk:loadTranslationTable{
+  ["chaos__lijue"] = "李傕",
+  ["feixiong"] = "飞熊",
+  [":feixiong"] = "出牌阶段开始时，你可与一名其他角色拼点，拼点赢的角色对拼点未赢的角色造成1点伤害。",
+  ["cesuan"] = "策算",
+  [":cesuan"] = "锁定技，当你受到伤害时，你防止此伤害，若你的体力：小于体力上限，你减1点体力上限；不小于体力上限，你减1点体力上限，摸一张牌。",
+
+  ["#feixiong-ask"] = "飞熊：你可与一名其他角色拼点，拼点赢的角色对拼点未赢的角色造成1点伤害",
+}
+
+local zhangji = General(extension, "chaos__zhangji", "qun", 4)
+local lulue = fk.CreateActiveSkill{
+  name = "lulue",
+  anim_type = "offensive",
+  can_use = function(self, player)
+    return player:usedSkillTimes(self.name, Player.HistoryPhase) == 0
+  end,
+  card_filter = function(self, to_select, selected)
+    return not Self:prohibitDiscard(Fk:getCardById(to_select))
+  end,
+  target_filter = function(self, to_select, selected, cards)
+    if #cards == 0 or to_select == Self.id then return end
+    local target = Fk:currentRoom():getPlayerById(to_select)
+    return #cards == #target:getCardIds(Player.Equip)
+  end,
+  target_num = 1,
+  min_card_num = 1,
+  max_card_num = 999,
+  on_use = function(self, room, effect)
+    local from = room:getPlayerById(effect.from)
+    local to = room:getPlayerById(effect.tos[1])
+    from:broadcastSkillInvoke("lveming")
+    room:throwCard(effect.cards, self.name, from, from)
+    if not from.dead and not to.dead then
+      room:damage{
+        from = from,
+        to = to,
+        damage = 1,
+        skillName = self.name,
+      }
+    end
+  end,
+}
+zhangji:addSkill(lulue)
+Fk:loadTranslationTable{
+  ["chaos__zhangji"] = "张济",
+  ["lulue"] = "掳掠",
+  [":lulue"] = "出牌阶段限一次，你可选择一名装备区里有牌的其他角色并弃置X张牌（X为其装备区里的牌数），对其造成1点伤害。",
 }
 
 return extension
