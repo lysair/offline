@@ -653,6 +653,193 @@ Fk:loadTranslationTable{
   ["#zhaoluan-invoke"] = "兆乱：%dest 即将死亡，你可以令其复活并操纵其进行攻击！",
   ["#zhaoluan-damage"] = "兆乱：你可以令 %dest 减1点体力上限，其对你指定的一名角色造成1点伤害！",
 }
+
+local caojinyu = General(extension, "ofl__caojinyu", "wei", 3, 3, General.Female)
+local yuqi = fk.CreateTriggerSkill{
+  name = "ofl__yuqi",
+  anim_type = "masochism",
+  events = {fk.Damaged},
+  can_trigger = function(self, event, target, player, data)
+    return player:hasSkill(self) and not target.dead and player:usedSkillTimes(self.name) < 2 and
+    (target == player or player:distanceTo(target) <= player:getMark("ofl__yuqi1"))
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    local n1, n2, n3 = player:getMark("ofl__yuqi2"), player:getMark("ofl__yuqi3"), player:getMark("ofl__yuqi4")
+    if n1 < 2 and n2 < 1 and n3 < 1 then
+      return false
+    end
+    local cards = room:getNCards(n1)
+    local result = room:askForCustomDialog(player, self.name,
+    "packages/tenyear/qml/YuqiBox.qml", {
+      cards,
+      target.general, n2,
+      player.general, n3,
+    })
+    local top, bottom
+    if result ~= "" then
+      local d = json.decode(result)
+      top = d[2]
+      bottom = d[3]
+    else
+      top = {cards[1]}
+      bottom = {cards[2]}
+    end
+    local moveInfos = {}
+    if #top > 0 then
+      table.insert(moveInfos, {
+        ids = top,
+        to = target.id,
+        toArea = Card.PlayerHand,
+        moveReason = fk.ReasonGive,
+        proposer = player.id,
+        skillName = self.name,
+      })
+      for _, id in ipairs(top) do
+        table.removeOne(cards, id)
+      end
+    end
+    if #bottom > 0 then
+      table.insert(moveInfos, {
+        ids = bottom,
+        to = player.id,
+        toArea = Card.PlayerHand,
+        moveReason = fk.ReasonJustMove,
+        proposer = player.id,
+        skillName = self.name,
+      })
+      for _, id in ipairs(bottom) do
+        table.removeOne(cards, id)
+      end
+    end
+    if #cards > 0 then
+      for i = #cards, 1, -1 do
+        table.insert(room.draw_pile, 1, cards[i])
+      end
+    end
+    room:moveCards(table.unpack(moveInfos))
+  end,
+
+  refresh_events = {fk.EventLoseSkill, fk.EventAcquireSkill},
+  can_refresh = function(self, event, target, player, data)
+    return player == target and data == self
+  end,
+  on_refresh = function(self, event, target, player, data)
+    local room = player.room
+    if event == fk.EventAcquireSkill then
+      room:setPlayerMark(player, "ofl__yuqi1", 0)
+      room:setPlayerMark(player, "ofl__yuqi2", 3)
+      room:setPlayerMark(player, "ofl__yuqi3", 1)
+      room:setPlayerMark(player, "ofl__yuqi4", 1)
+      room:setPlayerMark(player, "@" .. self.name, string.format("%d-%d-%d-%d", 0, 3, 1, 1))
+    else
+      room:setPlayerMark(player, "ofl__yuqi1", 0)
+      room:setPlayerMark(player, "ofl__yuqi2", 0)
+      room:setPlayerMark(player, "ofl__yuqi3", 0)
+      room:setPlayerMark(player, "ofl__yuqi4", 0)
+      room:setPlayerMark(player, "@" .. self.name, 0)
+    end
+  end,
+}
+local function AddYuqi(player, skillName, num)
+  local room = player.room
+  local choices = {}
+  for i = 1, 4, 1 do
+    if player:getMark("ofl__yuqi" .. tostring(i)) < 5 then
+      table.insert(choices, "ofl__yuqi" .. tostring(i))
+    end
+  end
+  if #choices > 0 then
+    local choice = room:askForChoice(player, choices, skillName)
+    local x = player:getMark(choice)
+    if x + num < 4 then
+      x = x + num
+    else
+      x = 3
+    end
+    room:setPlayerMark(player, choice, x)
+    room:setPlayerMark(player, "@ofl__yuqi", string.format("%d-%d-%d-%d",
+    player:getMark("ofl__yuqi1"),
+    player:getMark("ofl__yuqi2"),
+    player:getMark("ofl__yuqi3"),
+    player:getMark("ofl__yuqi4")))
+  end
+end
+local shanshen = fk.CreateTriggerSkill{
+  name = "ofl__shanshen",
+  anim_type = "control",
+  events = {fk.Death},
+  can_trigger = function(self, event, target, player, data)
+    return player:hasSkill(self) and target ~= player and not player.dead
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    AddYuqi(player, self.name, 2)
+    if target:getMark(self.name) == 0 and player:isWounded() then
+      room:recover{
+        who = player,
+        num = 1,
+        skillName = self.name,
+      }
+    end
+  end,
+  refresh_events = {fk.DamageCaused},
+  can_refresh = function(self, event, target, player, data)
+    return target == player and target:hasSkill(self) and data.to:getMark(self.name) == 0
+  end,
+  on_refresh = function(self, event, target, player, data)
+      player.room:setPlayerMark(data.to, self.name, 1)
+  end,
+}
+local xianjing = fk.CreateTriggerSkill{
+  name = "ofl__xianjing",
+  anim_type = "control",
+  events = {fk.EventPhaseStart},
+  can_trigger = function(self, event, target, player, data)
+    if target == player and player:hasSkill(self) and player.phase == Player.Start then
+      for i = 1, 4, 1 do
+        if player:getMark("yuqi" .. tostring(i)) < 5 then
+          return true
+        end
+      end
+    end
+    return false
+  end,
+  on_use = function(self, event, target, player, data)
+    AddYuqi(player, self.name, 1)
+    if not player:isWounded() then
+      AddYuqi(player, self.name, 1)
+    end
+  end,
+}
+caojinyu:addSkill(yuqi)
+caojinyu:addSkill(shanshen)
+caojinyu:addSkill(xianjing)
+Fk:loadTranslationTable{
+  ["ofl__caojinyu"] = "曹金玉",
+  ["ofl__yuqi"] = "隅泣",
+  [":ofl__yuqi"] = "每回合限两次，当一名角色受到伤害后，若你与其距离0或者更少，你可以观看牌堆顶的3张牌，将其中至多1张交给受伤角色，"..
+  "至多1张自己获得，剩余的牌放回牌堆顶。",
+  ["ofl__shanshen"] = "善身",
+  [":ofl__shanshen"] = "当有角色死亡时，你可令〖隅泣〗中的一个数字+2（单项不能超过3）。然后若你没有对死亡角色造成过伤害，你回复1点体力。",
+  ["ofl__xianjing"] = "娴静",
+  [":ofl__xianjing"] = "准备阶段，你可令〖隅泣〗中的一个数字+1（单项不能超过3）。若你满体力值，则再令〖隅泣〗中的一个数字+1。",
+  ["@ofl__yuqi"] = '<font color="#7ABEEA">隅泣</font>',
+  ["ofl__yuqi1"] = "距离",
+  ["ofl__yuqi2"] = "观看牌数",
+  ["ofl__yuqi3"] = "交给受伤角色牌数",
+  ["ofl__yuqi4"] = "自己获得牌数",
+  ["#ofl__yuqi"] = "隅泣：请分配卡牌，余下的牌以原顺序置于牌堆顶",
+
+  ["$ofl__yuqi1"] = "玉儿摔倒了，要阿娘抱抱。",
+  ["$ofl__yuqi2"] = "这么漂亮的雪花，为什么只能在寒冬呢？",
+  ["$ofl__shanshen1"] = "人家只想做安安静静的小淑女。",
+  ["$ofl__shanshen2"] = "雪花纷飞，独存寒冬。",
+  ["$ofl__xianjing1"] = "得父母之爱，享公主之礼遇。",
+  ["$ofl__xianjing2"] = "哼，可不要小瞧女孩子啊。",
+  ["~ofl__caojinyu"] = "娘亲，雪人不怕冷吗？",
+}
+
 local jiaxu = General(extension, "chaos__jiaxu", "qun", 3)
 local miesha = fk.CreateTriggerSkill{
   name = "miesha",
