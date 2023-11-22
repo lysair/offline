@@ -614,4 +614,237 @@ Fk:loadTranslationTable{
   [":cuijue"] = "出牌阶段对每名角色限一次，你可以弃置一张牌，对攻击范围内距离最远的一名其他角色造成1点伤害。",
 }
 
+
+local ofl__godmachao = General(extension, "ofl__godmachao", "god", 4)
+local getHorse = function (room, player, mark, n)
+  local old = player:getMark(mark)
+  room:setPlayerMark(player, mark, old + n)
+  if old == 0 then
+    local slot = (mark == "@ofl__jun") and Player.OffensiveRideSlot or Player.DefensiveRideSlot
+    room:abortPlayerArea(player, slot)
+  else
+    room.logic:trigger("fk.OflShouliMarkChanged", player, {n = old + n})
+  end
+end
+local loseAllHorse = function (room, player, mark)
+  room:setPlayerMark(player, mark, 0)
+  local slot = (mark == "@ofl__jun") and Player.OffensiveRideSlot or Player.DefensiveRideSlot
+  room:resumePlayerArea(player, slot)
+end
+local ofl__shouli = fk.CreateViewAsSkill{
+  name = "ofl__shouli",
+  pattern = "slash,jink",
+  prompt = "#ofl__shouli-promot",
+  interaction = function()
+    local names = {}
+    local pat = Fk.currentResponsePattern
+    if ((pat == nil and not Self:prohibitUse(Fk:cloneCard("slash"))) or (pat and Exppattern:Parse(pat):matchExp("slash")))
+    and Self:getMark("ofl__shouli_slash-turn") == 0
+    and table.find(Fk:currentRoom().alive_players, function(p) return p ~= Self and p:getMark("@ofl__jun") > 0 end) then
+      table.insert(names, "slash")
+    end
+    if pat and Exppattern:Parse(pat):matchExp("jink")
+    and Self:getMark("ofl__shouli_jink-turn") == 0
+    and table.find(Fk:currentRoom().alive_players, function(p) return p ~= Self and p:getMark("@ofl__li") > 0 end) then
+      table.insert(names, "jink")
+    end
+    if #names == 0 then return end
+    return UI.ComboBox {choices = names}
+  end,
+  view_as = function(self)
+    if self.interaction.data == nil then return end
+    local card = Fk:cloneCard(self.interaction.data)
+    card.skillName = self.name
+    return card
+  end,
+  before_use = function(self, player, use)
+    local room = player.room
+    use.extraUse = true
+    local mark = (use.card.trueName == "slash") and "@ofl__jun" or "@ofl__li"
+    room:addPlayerMark(player, "ofl__shouli_"..use.card.trueName.."-turn")
+    local targets = table.filter(room:getOtherPlayers(player), function (p)
+      return p:getMark(mark) > 0
+    end)
+    if #targets > 0 then
+      local tos = room:askForChoosePlayers(player, table.map(targets, Util.IdMapper), 1, 1, "#ofl__shouli-horse:::" .. mark, self.name, false, true)
+      if #tos > 0 then
+        local to = room:getPlayerById(tos[1])
+        local next = to:getNextAlive()
+        local last = to:getLastAlive()
+        local choice = room:askForChoice(player, {"ofl__shouli_next:"..next.id, "ofl__shouli_last:"..last.id}, self.name,
+        "#ofl__shouli-move::"..to.id..":"..mark)
+        local receiver = choice:startsWith("ofl__shouli_next") and next or last
+        local n = to:getMark(mark)
+        loseAllHorse (room, to, mark)
+        getHorse (room, receiver, mark, n)
+      end
+    end
+  end,
+  enabled_at_play = function(self, player)
+    return player:getMark("ofl__shouli_slash-turn") == 0 and table.find(Fk:currentRoom().alive_players, function(p)
+      return p ~= player and p:getMark("@ofl__jun") > 0
+    end)
+  end,
+  enabled_at_response = function(self, player)
+    local pat = Fk.currentResponsePattern
+    if not pat then return end
+    if Exppattern:Parse(pat):matchExp("slash") and player:getMark("ofl__shouli_slash-turn") == 0 then
+      return table.find(Fk:currentRoom().alive_players, function(p)
+        return p ~= player and p:getMark("@ofl__jun") > 0
+      end)
+    end
+    if Exppattern:Parse(pat):matchExp("jink") and player:getMark("ofl__shouli_jink-turn") == 0 then
+      return table.find(Fk:currentRoom().alive_players, function(p)
+        return p ~= player and p:getMark("@ofl__li") > 0
+      end)
+    end
+  end,
+}
+local ofl__shouli_trigger = fk.CreateTriggerSkill{
+  name = "#ofl__shouli_trigger",
+  events = {fk.GameStart, fk.DrawNCards, fk.TargetSpecified, fk.Damaged,fk.DamageInflicted, fk.DamageCaused},
+  mute = true,
+  main_skill = ofl__shouli,
+  can_trigger = function(self, event, target, player, data)
+    if event == fk.GameStart then
+      return player:hasSkill(self)
+    elseif event == fk.DrawNCards then
+      return player:hasSkill(self) and target == player and (player:getMark("@ofl__jun") > 1 or player:getMark("@ofl__li") > 1)
+    elseif event == fk.TargetSpecified then
+      return target == player and player:hasSkill(self) and data.card.trueName == "slash" and player:getMark("@ofl__jun") > 2
+    elseif event == fk.Damaged then
+      return player:hasSkill(self) and target == player and (data.damageType ~= fk.NormalDamage
+      or (data.card and (data.card.name == "savage_assault" or data.card.name == "archery_attack")))
+      and (player:getMark("@ofl__jun") > 0 or player:getMark("@ofl__li") > 0) and player:getNextAlive() ~= player
+    else
+      return player:hasSkill(self) and target == player and player:getMark("@ofl__li") > 2
+    end
+  end,
+  on_cost = function() return true end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    player:broadcastSkillInvoke(ofl__shouli.name)
+    room:notifySkillInvoked(player, ofl__shouli.name)
+    if event == fk.GameStart then
+      local horse = {"@ofl__jun", "@ofl__jun", "@ofl__jun", "@ofl__li", "@ofl__li", "@ofl__li", "@ofl__li"}
+      for _, p in ipairs(room:getOtherPlayers(player)) do
+        if not player.dead and not p.dead and #horse > 0 then
+          local mark = table.remove(horse, math.random(1, #horse))
+          getHorse (room, p, mark, 1)
+        end
+      end
+    elseif event == fk.DrawNCards then
+      local n = 0
+      if player:getMark("@ofl__jun") > 1 then n = n + 1 end
+      if player:getMark("@ofl__li") > 1 then n = n + 1 end
+      data.n = data.n + n
+    elseif event == fk.TargetSpecified then
+      local to = room:getPlayerById(data.to)
+      room:addPlayerMark(to, MarkEnum.UncompulsoryInvalidity .. "-turn")
+      room:addPlayerMark(to, "@@ofl__shouli_tieji-turn")
+    elseif event == fk.Damaged then
+      local jun = player:getMark("@ofl__jun")
+      if jun > 0 then
+        loseAllHorse (room, player, "@ofl__jun")
+        getHorse (room, player:getLastAlive(), "@ofl__jun", jun)
+      end
+      local li = player:getMark("@ofl__li")
+      if li > 0 then
+        loseAllHorse (room, player, "@ofl__li")
+        getHorse (room, player:getNextAlive(), "@ofl__li", li)
+      end
+    else
+      local n = player:getMark("@ofl__li")
+      if n > 2 then
+        data.damageType = fk.ThunderDamage
+      end
+      if n > 3 then
+        data.damage = data.damage + 1
+      end
+    end
+  end,
+}
+local ofl__shouli_distance = fk.CreateDistanceSkill{
+  name = "#ofl__shouli_distance",
+  correct_func = function(self, from, to)
+    if from:hasSkill(self) and from:getMark("@ofl__jun") > 0 then
+      return -1
+    end
+    if to:hasSkill(self) and to:getMark("@ofl__li") > 0 then
+      return 1
+    end
+  end,
+}
+local ofl__shouli_targetmod = fk.CreateTargetModSkill{
+  name = "#ofl__shouli_targetmod",
+  bypass_times = function(self, player, skill, scope, card)
+    return table.contains(card.skillNames, "ofl__shouli")
+  end,
+  bypass_distances = function(self, player, skill, card)
+    return table.contains(card.skillNames, "ofl__shouli")
+  end,
+}
+ofl__shouli:addRelatedSkill(ofl__shouli_trigger)
+ofl__shouli:addRelatedSkill(ofl__shouli_distance)
+ofl__shouli:addRelatedSkill(ofl__shouli_targetmod)
+ofl__godmachao:addSkill(ofl__shouli)
+-- 耦了!
+local ofl__hengwu = fk.CreateTriggerSkill{
+  name = "ofl__hengwu",
+  anim_type = "drawcard",
+  frequency = Skill.Compulsory,
+  events = {"fk.OflShouliMarkChanged"},
+  can_trigger = function (self, event, target, player, data)
+    return player:hasSkill(self)
+  end,
+  on_use = function (self, event, target, player, data)
+    player:drawCards(data.n, self.name)
+  end,
+}
+ofl__godmachao:addSkill(ofl__hengwu)
+Fk:loadTranslationTable{
+  ["ofl__godmachao"] = "神马超",
+  ["ofl__shouli"] = "狩骊",
+  ["#ofl__shouli_trigger"] = "狩骊",
+  ["#ofl__shouli_delay"] = "狩骊",
+  [":ofl__shouli"] = "①游戏开始时，所有其他角色随机获得1枚“狩骊”标记。"..
+  "<br>②每回合各限一次，你可以选择一项：1.移动一名其他角色的所有“骏”至其上家或下家，并视为使用或打出一张无距离和次数限制的【杀】；2.移动一名其他角色的所有“骊”至其上家或下家，并视为使用或打出一张【闪】。"..
+  "<br>③“狩骊”标记包括4枚“骊”和3枚“骏”，获得“骏”/“骊”时废除装备区的进攻/防御坐骑栏，失去所有“骏”/“骊”时恢复之。"..
+  "<br>④若你的“骏”数量大于0，你与其他角色的距离-1；大于1，摸牌阶段，你多摸一张牌；大于2，当你使用【杀】指定目标后，该角色本回合非锁定技失效。"..
+  "<br>⑤若你的“骊”数量大于0，其他角色与你的距离+1；大于1，摸牌阶段，你多摸一张牌；大于2，你造成或受到的伤害均视为雷电伤害；大于3，你造成或受到的伤害+1。"..
+  "<br>⑥当你受到属性伤害或【南蛮入侵】、【万箭齐发】造成的伤害后，你的所有“骏”移动至你上家，所有“骊”移动至你下家。",
+  ["ofl__hengwu"] = "横骛",
+  [":ofl__hengwu"] = "锁定技，有“骏”/“骊”的角色获得“骏”/“骊”后，你摸X张牌（X为其拥有该标记的数量）。",
+
+  ["@ofl__jun"] = "骏",
+  ["@ofl__li"] = "骊",
+  ["@@ofl__shouli_tieji-turn"] = "狩骊封技",
+  ["ofl__shouli_last"] = "上家:%src",
+  ["ofl__shouli_next"] = "下家:%src",
+  ["#ofl__shouli-promot"] = "狩骊：移动一名其他角色的所有“骏”/“骊”，视为使用或打出【杀】/【闪】",
+  ["#ofl__shouli-horse"] = "狩骊：选择一名有 %arg 标记的其他角色",
+  ["#ofl__shouli-move"] = "狩骊：将 %dest 所有 %arg 标记移动至其上家或下家",
+
+  ["$ofl__shouli1"] = "饲骊胡肉，饮骥虏血，一骑可定万里江山！",
+  ["$ofl__shouli2"] = "折兵为弭，纫甲为服，此箭可狩在野之龙！",
+  ["$ofl__hengwu1"] = "此身独傲，天下无不可敌之人，无不可去之地！",
+  ["$ofl__hengwu2"] = "神威天降，世间无不可驭之雷，无不可降之马！",
+  ["~ofl__godmachao"] = "以战入圣，贪战而亡。",
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 return extension
