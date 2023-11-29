@@ -1,6 +1,8 @@
 local extension = Package("ofl")
 extension.extensionName = "offline"
 
+local U = require "packages/utility/utility"
+
 Fk:loadTranslationTable{
   ["ofl"] = "线下",
   ["rom"] = "风花雪月",
@@ -373,7 +375,7 @@ local lianpoj = fk.CreateTriggerSkill{
   on_use = function (self, event, target, player, data)
     local room = player.room
     if event == fk.RoundStart then
-      local exist_roles, extra_roles = player:getMark("lianpoj_exist_roles"), player:getMark("lianpoj_extra_roles")
+      local exist_roles, extra_roles = U.getMark(player, "lianpoj_exist_roles"), U.getMark(player, "lianpoj_extra_roles")
       local roles = {"loyalist", "rebel", "renegade"}
       local choices = {}
       for i = 1, 3, 1 do
