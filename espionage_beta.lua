@@ -167,9 +167,7 @@ local jielve_trigger = fk.CreateTriggerSkill{
   can_trigger = function(self, event, target, player, data)
     return player:hasSkill("jielve") and data.from == player.id and data.card.trueName == "looting"
   end,
-  on_cost = function(self, event, target, player, data)
-    return true
-  end,
+  on_cost = Util.TrueFunc,
   on_use = function(self, event, target, player, data)
     local card = data.card:clone()
     local c = table.simpleClone(data.card)
@@ -278,9 +276,7 @@ local chouyou_trigger = fk.CreateTriggerSkill{
       not data:isInstanceOf(ViewAsSkill) and  --FIXME: 转化技！
       not table.contains({Skill.Limited, Skill.Wake, Skill.Quest}, data.frequency)
   end,
-  on_cost = function(self, event, target, player, data)
-    return true
-  end,
+  on_cost = Util.TrueFunc,
   on_use = function(self, event, target, player, data)
     local room = player.room
     if not room:askForSkillInvoke(player, "chouyou", nil, "#chouyou-control::"..target.id..":"..data.name) then
@@ -356,9 +352,7 @@ local tuicheng = fk.CreateViewAsSkill{
   anim_type = "control",
   pattern = "sincere_treat",
   prompt = "#tuicheng",
-  card_filter = function(self, to_select, selected)
-    return false
-  end,
+  card_filter = Util.FalseFunc,
   view_as = function(self, cards)
     local card = Fk:cloneCard("sincere_treat")
     card.skillName = self.name
@@ -436,9 +430,7 @@ local yongquan = fk.CreateTriggerSkill{
     return target == player and player:hasSkill(self) and player.phase == Player.Finish and
       table.find(player.room:getOtherPlayers(player), function(p) return p.kingdom == "qun" and not p:isNude() end)
   end,
-  on_cost = function(self, event, target, player, data)
-    return true
-  end,
+  on_cost = Util.TrueFunc,
   on_use = function(self, event, target, player, data)
     local room = player.room
     room:doIndicate(player.id, table.map(table.filter(room:getOtherPlayers(player), function(p)
@@ -490,11 +482,11 @@ Fk:loadTranslationTable{
 Fk:loadTranslationTable{
   ["es__xuyou"] = "许攸",
   ["es__shicai"] = "恃才",
-  [":es__shicai"] = "①出牌阶段限一次，你可以弃置一张牌，展示并获得牌堆顶牌；当你本回合失去此牌时，此技能视为未发动过。②你的回合内牌堆顶牌对你可见。",
-  ["chenggong"] = "逞功",
-  [":chenggong"] = "当一名角色使用牌指定目标后，若目标数大于一，你可以令其摸一张牌。",
-  ["zezhu"] = "择主",
-  [":zezhu"] = "出牌阶段限一次，你可以获得主公区域内一张牌，然后交给其一张牌。",
+  [":es__shicai"] = "①出牌阶段限一次，你可以弃置一张牌，亮出牌堆顶牌并获得之；当你本回合失去此牌时，此技能视为未发动过。②你的回合内牌堆顶牌对你可见。",
+  ["es__chenggong"] = "逞功",
+  [":es__chenggong"] = "当一名角色使用牌指定目标后，若目标数大于一，你可以令其摸一张牌。",
+  ["es__zezhu"] = "择主",
+  [":es__zezhu"] = "出牌阶段限一次，你可以获得主公区域内一张牌，然后交给其一张牌。",
 }
 
 local zhenji = General(extension, "es__zhenji", "wei", 3, 3, General.Female)
@@ -540,16 +532,6 @@ Fk:loadTranslationTable{
   ["es__zhenji"] = "甄姬",
   ["es__luoshen"] = "洛神",
   [":es__luoshen"] = "准备阶段，你可以判定，并获得生效后的判定牌，然后若你本次以此法获得的牌颜色均相同，你可以重复此流程。",
-}
-
-Fk:loadTranslationTable{
-  ["es__jiaxu"] = "贾诩",
-  ["es__zhenlve"] = "缜略",
-  [":es__zhenlve"] = "锁定技，你不能成为延时锦囊牌的目标，你使用的普通锦囊牌不能被响应。",
-  ["es__jianshu"] = "间书",
-  [":es__jianshu"] = "出牌阶段限一次，你可以将一张手牌交给一名其他角色，令其与你选择的另一名其他角色拼点，没赢的角色失去1点体力。",
-  ["es__yongdi"] = "拥嫡",
-  [":es__yongdi"] = "限定技，准备阶段，你可以令一名男性角色加1点体力上限并回复1点体力，然后其获得其武将牌上的主公技。",
 }
 
 Fk:loadTranslationTable{
