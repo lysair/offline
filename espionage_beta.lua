@@ -831,7 +831,7 @@ local yibing = fk.CreateTriggerSkill{
   anim_type = "offensive",
   events = {fk.AfterCardsMove},
   can_trigger = function(self, event, target, player, data)
-    if player:hasSkill(self) then
+    if player:hasSkill(self) and player:getMark(self.name) == 0 then
       for _, move in ipairs(data) do
         if move.to == player.id and move.toArea == Player.Hand and player.phase ~= Player.Draw then
           for _, info in ipairs(move.moveInfo) do
@@ -864,7 +864,20 @@ local yibing = fk.CreateTriggerSkill{
     end
   end,
   on_use = function(self, event, target, player, data)
-    player.room:useCard(self.cost_data)
+    local room = player.room
+    room:setPlayerMark(player, self.name, 1)
+    local use = self.cost_data
+    use.extra_data = use.extra_data or {}
+    use.extra_data.yibing_user = player.id
+    player.room:useCard(use)
+  end,
+
+  refresh_events = {fk.CardUseFinished},
+  can_refresh = function (self, event, target, player, data)
+    return data.extra_data and data.extra_data.yibing_user == player.id
+  end,
+  on_refresh = function (self, event, target, player, data)
+    player.room:setPlayerMark(player, self.name, 0)
   end,
 }
 xiandao:addRelatedSkill(xiandao_prohibit)
@@ -879,7 +892,7 @@ Fk:loadTranslationTable{
   ["sancai"] = "散财",
   [":sancai"] = "出牌阶段限一次，你可以展示所有手牌，若均为同一类别，你可以将其中一张牌赠予其他角色。",
   ["yibing"] = "义兵",
-  [":yibing"] = "当你于摸牌阶段外获得牌后，你可以将这些牌当无距离次数限制的【杀】使用。",
+  [":yibing"] = "当你于摸牌阶段外获得牌后，你可以将这些牌当无距离次数限制的【杀】使用，此【杀】结算结束前，你不能发动〖义兵〗。",-- 高达插结的权宜之策
   ["#xiandao-trigger"] = "献刀：你即将赠予 %dest %arg，是否对其发动“献刀”？",
   ["@xiandao-turn"] = "献刀",
   ["#sancai"] = "散财：展示所有手牌，若均为同一类别，你可以将其中一张赠予其他角色",
