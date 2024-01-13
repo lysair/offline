@@ -145,6 +145,7 @@ Fk:loadTranslationTable{
 }
 
 local zhangfei = General(extension, "es__zhangfei", "shu", 4)
+zhangfei.hidden = true
 local mangji = fk.CreateTriggerSkill{
   name = "mangji",
   anim_type = "offensive",
@@ -320,6 +321,7 @@ Fk:loadTranslationTable{
 }
 
 local sunluban = General(extension, "es__sunluban", "wu", 3, 3, General.Female)
+sunluban.hidden = true
 local jiaozong = fk.CreateProhibitSkill{
   name = "jiaozong",
   frequency = Skill.Compulsory,
@@ -711,6 +713,7 @@ Fk:loadTranslationTable{
 }
 
 local caocao = General(extension, "es__caocao", "qun", 4)
+caocao.hidden = true
 local xiandao = fk.CreateTriggerSkill{
   name = "xiandao",
   anim_type = "control",
