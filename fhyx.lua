@@ -5,6 +5,8 @@ Fk:loadTranslationTable{
   ["fhyx"] = "线下-飞鸿映雪",
 }
 
+local U = require "packages/utility/utility"
+
 local bianfuren = General(extension, "ofl__bianfuren", "wei", 3, 3, General.Female)
 local ofl__fuding = fk.CreateTriggerSkill{
   name = "ofl__fuding",
@@ -412,29 +414,17 @@ local ofl__tianyi = fk.CreateTriggerSkill{
       player:usedSkillTimes(self.name, Player.HistoryGame) == 0
   end,
   can_wake = function(self, event, target, player, data)
-    return table.every(player.room.alive_players, function(p) return p:getMark(self.name) > 0 end)
+    return table.every(player.room.alive_players, function(p)
+      return #U.getActualDamageEvents(player.room, 1, function(e) return e.data[1].to == p end, Player.HistoryGame) > 0
+    end)
   end,
   on_use = function(self, event, target, player, data)
     local room = player.room
     if player.maxHp < 10 then
       room:changeMaxHp(player, 10 - player.maxHp)
     end
-    local to = room:askForChoosePlayers(player, table.map(room.alive_players, function(p)
-      return p.id end), 1, 1, "#ofl__tianyi-choose", self.name, false)
-    if #to > 0 then
-      to = to[1]
-    else
-      to = player.id
-    end
-    room:handleAddLoseSkills(room:getPlayerById(to), "zuoxing", nil, true, false)
-  end,
-
-  refresh_events = {fk.Damaged},
-  can_refresh = function(self, event, target, player, data)
-    return target == player and player:getMark(self.name) == 0
-  end,
-  on_refresh = function(self, event, target, player, data)
-    player.room:setPlayerMark(player, self.name, 1)
+    local tos = room:askForChoosePlayers(player, table.map(room.alive_players, Util.IdMapper), 1, 1, "#ofl__tianyi-choose", self.name, false)
+    room:handleAddLoseSkills(room:getPlayerById(tos[1]), "zuoxing", nil, true, false)
   end,
 }
 local ofl__huishig = fk.CreateTriggerSkill{
