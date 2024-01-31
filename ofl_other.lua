@@ -1157,7 +1157,7 @@ Fk:loadTranslationTable{
 
 local zhangji = General(extension, "chaos__zhangji", "qun", 4)
 local lulue = fk.CreateActiveSkill{
-  name = "lulue",
+  name = "chaos__lulue",
   anim_type = "offensive",
   can_use = function(self, player)
     return player:usedSkillTimes(self.name, Player.HistoryPhase) == 0
@@ -1176,7 +1176,7 @@ local lulue = fk.CreateActiveSkill{
   on_use = function(self, room, effect)
     local from = room:getPlayerById(effect.from)
     local to = room:getPlayerById(effect.tos[1])
-    from:broadcastSkillInvoke("lveming")
+    from:broadcastSkillInvoke("lueming")
     room:throwCard(effect.cards, self.name, from, from)
     if not from.dead and not to.dead then
       room:damage{
@@ -1191,8 +1191,8 @@ local lulue = fk.CreateActiveSkill{
 zhangji:addSkill(lulue)
 Fk:loadTranslationTable{
   ["chaos__zhangji"] = "张济",
-  ["lulue"] = "掳掠",
-  [":lulue"] = "出牌阶段限一次，你可选择一名装备区里有牌的其他角色并弃置X张牌（X为其装备区里的牌数），对其造成1点伤害。",
+  ["chaos__lulue"] = "掳掠",
+  [":chaos__lulue"] = "出牌阶段限一次，你可选择一名装备区里有牌的其他角色并弃置X张牌（X为其装备区里的牌数），对其造成1点伤害。",
 }
 
 local sgsh__jianggan = General(extension, "sgsh__jianggan", "wei", 3)
