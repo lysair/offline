@@ -134,7 +134,7 @@ local ofl__shameng = fk.CreateActiveSkill{
     return player:usedSkillTimes(self.name, Player.HistoryPhase) == 0 and not player:isKongcheng()
   end,
   card_filter = function(self, to_select, selected)
-    return #selected < 2
+    return #selected < 2 and table.contains(Self:getCardIds("h"), to_select)
   end,
   target_filter = function(self, to_select, selected, selected_cards)
     return #selected == 0 and to_select ~= Self.id and not Fk:currentRoom():getPlayerById(to_select):isKongcheng()
@@ -193,6 +193,7 @@ local ofl__shameng = fk.CreateActiveSkill{
 chenzhen:addSkill(ofl__shameng)
 Fk:loadTranslationTable{
   ["ofl__chenzhen"] = "陈震",
+  ["#ofl__chenzhen"] = "歃盟使节",
   ["ofl__shameng"] = "歃盟",
   [":ofl__shameng"] = "出牌阶段限一次，你可以展示一至两张手牌，然后令一名其他角色展示一至两张手牌，若如此做，你可以弃置这些牌，你摸等同于其中"..
   "花色数的牌，令该角色摸等同于其中类别数的牌。",
