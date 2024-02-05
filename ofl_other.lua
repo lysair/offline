@@ -362,6 +362,7 @@ local lianpoj = fk.CreateTriggerSkill{
   anim_type = "special",
   frequency = Skill.Compulsory,
   events = {fk.RoundStart, fk.EnterDying, fk.Deathed},
+  mute = true,
   can_trigger = function (self, event, target, player, data)
     if player:hasSkill(self) then
       if event == fk.RoundStart then
@@ -376,7 +377,9 @@ local lianpoj = fk.CreateTriggerSkill{
   end,
   on_use = function (self, event, target, player, data)
     local room = player.room
+    room:notifySkillInvoked(player, self.name)
     if event == fk.RoundStart then
+      player:broadcastSkillInvoke(self.name, math.random(1, 2))
       local exist_roles, extra_roles = U.getMark(player, "lianpoj_exist_roles"), U.getMark(player, "lianpoj_extra_roles")
       local roles = {"loyalist", "rebel", "renegade"}
       local choices = {}
@@ -405,9 +408,10 @@ local lianpoj = fk.CreateTriggerSkill{
       room:setPlayerMark(player, "lianpoj_extra_roles", extra_roles)
       UpdateLianpo(player)
     elseif event == fk.EnterDying then
-      player:broadcastSkillInvoke("wansha")
+      player:broadcastSkillInvoke(self.name, 3)
       room:notifySkillInvoked(player, self.name)
     elseif event == fk.Deathed then
+      player:broadcastSkillInvoke(self.name, 4)
       local p = data.damage.from
       local choices = {"draw2"}
       if p:isWounded() then
@@ -570,7 +574,7 @@ local zhaoluan = fk.CreateActiveSkill{
     local target = room:getPlayerById(effect.tos[1])
     room:setPlayerMark(player, "zhaoluan-phase", 1)
     local src = room:getPlayerById(player:getMark(self.name))
-    player:broadcastSkillInvoke(self.name)
+    player:broadcastSkillInvoke(self.name, math.random(3, 4))
     room:notifySkillInvoked(player, self.name, "offensive")
     room:doIndicate(player.id, {src.id})
     room:doIndicate(src.id, {target.id})
@@ -588,6 +592,7 @@ local zhaoluan_trigger = fk.CreateTriggerSkill{
   anim_type = "special",
   frequency = Skill.Limited,
   main_skill = zhaoluan,
+  mute = true,
   events = {fk.AskForPeachesDone},
   can_trigger = function(self, event, target, player, data)
     return player:hasSkill(self) and not target.dead and target.hp < 1 and player:getMark("zhaoluan") == 0
@@ -599,6 +604,8 @@ local zhaoluan_trigger = fk.CreateTriggerSkill{
     local room = player.room
     room:doIndicate(player.id, {target.id})
     room:setPlayerMark(player, "zhaoluan", target.id)  --FIXME: 谨防刷新限定技
+    player:broadcastSkillInvoke("zhaoluan", math.random(1, 2))
+    room:notifySkillInvoked(player, "zhaoluan", "big")
     room:changeMaxHp(target, 3)
     local skills = {}
     for _, s in ipairs(target.player_skills) do
@@ -635,6 +642,7 @@ godjiaxu:addSkill(lianpoj)
 godjiaxu:addSkill(zhaoluan)
 Fk:loadTranslationTable{
   ["godjiaxu"] = "神贾诩",
+  ["cv:godjiaxu"] = "酉良",
   ["lianpoj"] = "炼魄",
   [":lianpoj"] = "锁定技，若场上的最大阵营为：<br>反贼，其他角色手牌上限-1，所有角色出牌阶段使用【杀】次数上限+1、攻击范围+1；<br>"..
   "主忠，其他角色不能对除其以外的角色使用【桃】；<br>多个最大阵营，其他角色死亡后，伤害来源摸两张牌或回复1点体力。<br>"..
@@ -656,6 +664,16 @@ Fk:loadTranslationTable{
   ["#zhaoluan_trigger"] = "兆乱",
   ["#zhaoluan-invoke"] = "兆乱：%dest 即将死亡，你可以令其复活并操纵其进行攻击！",
   ["#zhaoluan-damage"] = "兆乱：你可以令 %dest 减1点体力上限，其对你指定的一名角色造成1点伤害！",
+
+  ["$lianpoj1"] = "圣人伏阳汞炼魄，飞阴铅拘魂。",
+  ["$lianpoj2"] = "荡荡古今魂，湛湛紫云天。",
+  ["$lianpoj3"] = "北辰居其所，谁人可囊血射之？",
+  ["$lianpoj4"] = "大火在中，其明胜月，今邀诸君共掇。",
+  ["$zhaoluan1"] = "杀汝，活汝，吾一念之间。",
+  ["$zhaoluan2"] = "故山千岫，折得清香。故人，还不醒转？",
+  ["$zhaoluan3"] = "汝之形名，悉吾所赐，须奉骨报偿！",
+  ["$zhaoluan4"] = "心在柙中，不知窍数，取出与吾把示。",
+  ["~godjiaxu"] = "虎兕出于柙，龟玉毁于椟中，谁之过与？",
 }
 
 local caojinyu = General(extension, "ofl__caojinyu", "wei", 3, 3, General.Female)
