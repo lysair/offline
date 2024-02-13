@@ -35,9 +35,7 @@ local ofl__fuding = fk.CreateTriggerSkill{
   on_use = function(self, event, target, player, data)
     local room = player.room
     if event == fk.EnterDying then
-      local dummy = Fk:cloneCard("dilu")
-      dummy:addSubcards(self.cost_data)
-      room:obtainCard(target, dummy, false, fk.ReasonGive)
+      room:moveCardTo(self.cost_data, Card.PlayerHand, target, fk.ReasonGive, self.name)
       data.extra_data = data.extra_data or {}
       data.extra_data.ofl__fuding = {player.id, #self.cost_data}
     else
@@ -90,9 +88,16 @@ local ofl__yuejian = fk.CreateViewAsSkill{
 local ofl__yuejian_record = fk.CreateTriggerSkill{
   name = "#ofl__yuejian_record",
 
-  refresh_events = {fk.AfterCardUseDeclared},
+  refresh_events = {fk.AfterCardUseDeclared, fk.EventAcquireSkill},
   can_refresh = function(self, event, target, player, data)
-    return target == player and data.card.type == Card.TypeBasic and player:getMark("ofl__yuejian-round") == 0
+    if event == fk.AfterCardUseDeclared then
+      return target == player and data.card.type == Card.TypeBasic and player:getMark("ofl__yuejian-round") == 0
+    elseif target == player and data == self and player:getMark("ofl__yuejian-round") == 0 and player.room:getTag("RoundCount") then
+      return #player.room.logic:getEventsOfScope(GameEvent.UseCard, 1, function(e)
+        local use = e.data[1]
+        return use.from == player.id and use.card.type == Card.TypeBasic
+      end, Player.HistoryRound) > 0
+    end
   end,
   on_refresh = function(self, event, target, player, data)
     player.room:setPlayerMark(player, "ofl__yuejian-round", 1)
@@ -114,6 +119,8 @@ bianfuren:addSkill(ofl__fuding)
 bianfuren:addSkill(ofl__yuejian)
 Fk:loadTranslationTable{
   ["ofl__bianfuren"] = "卞夫人",
+  ["#ofl__bianfuren"] = "内助贤后",
+  ["illustrator:ofl__bianfuren"] = "云涯", -- 史诗皮肤 蝶恋琵琶
   ["ofl__fuding"] = "抚定",
   [":ofl__fuding"] = "每轮限一次，当一名其他角色进入濒死状态时，你可以交给其至多五张牌，若如此做，当其脱离濒死状态时，你摸等量牌并回复1点体力。",
   ["ofl__yuejian"] = "约俭",
@@ -202,12 +209,125 @@ Fk:loadTranslationTable{
   ["#ofl__shameng-discard"] = "歃盟：是否弃置这些牌令双方摸牌？你摸%arg张，%dest摸%arg2张",
 }
 
+--[[
+local sunshao = General:new(extension, "ofl__sunshao", "wu", 3)
+local ofl__dingyi = fk.CreateTriggerSkill{
+  name = "ofl__dingyi",
+  events = {fk.RoundStart},
+  can_trigger = function(self, event, target, player, data)
+    return player:hasSkill(self)
+  end,
+  on_use = function(self, event, target, player)
+    local room = player.room
+    player:drawCards(1, self.name)
+    if player.dead or player:isNude() then return end
+    local targets, suits = {}, {"nosuit"}
+    for _, p in ipairs(room.alive_players) do
+      if #p:getPile(self.name) > 0 then
+        table.insert(suits, Fk:getCardById(p:getPile(self.name)[1]):getSuitString())
+      else
+        table.insert(targets, p.id)
+      end
+    end
+    if #targets == 0 or #suits == 5 then return false end
+    local tos, cardId = room:askForChooseCardAndPlayers(player, targets, 1, 1, ".|.|^("..table.concat(suits,",")..")", "#ofl__dingyi-use", self.name, true)
+    if #tos > 0 and cardId then
+      local to = room:getPlayerById(tos[1])
+      to:addToPile(self.name, cardId, true, self.name)
+      room:broadcastProperty(to, "MaxCards")
+    end
+  end,
+}
+local ofl__dingyi_delay = fk.CreateTriggerSkill{
+  name = "#ofl__dingyi_delay",
+  mute = true,
+  events = {fk.DrawNCards, fk.AfterDying},
+  can_trigger = function(self, event, target, player, data)
+    if target == player and #player:getPile("ofl__dingyi") > 0 then
+      if event == fk.DrawNCards then
+        return Fk:getCardById(player:getPile("ofl__dingyi")[1]).suit == Card.Diamond
+      elseif Fk:getCardById(player:getPile("ofl__dingyi")[1]).suit == Card.Heart and player:isWounded() then
+        local dat = player.room.logic:getEventsOfScope(GameEvent.Dying, 1, function(e)
+          return e.data[1].who == player.id
+        end, Player.HistoryTurn)
+        return #dat > 0 and dat[1].data[1] == data
+      end
+    end
+  end,
+  on_cost = Util.TrueFunc,
+  on_use = function(self, event, target, player, data)
+    if event == fk.DrawNCards then
+      data.n = data.n + 2
+    else
+      player.room:recover({
+        who = player,
+        num = math.min(player:getLostHp(), 2),
+        recoverBy = player,
+        skillName = "dingyi",
+      })
+    end
+  end,
+}
+local ofl__dingyi_maxcards = fk.CreateMaxCardsSkill{
+  name = "#ofl__dingyi_maxcards",
+  correct_func = function(self, player)
+    if #player:getPile("ofl__dingyi") > 0 and Fk:getCardById(player:getPile("ofl__dingyi")[1]).suit == Card.Spade then
+      return 4
+    end
+  end,
+}
+local ofl__dingyi_targetmod = fk.CreateTargetModSkill{
+  name = "#ofl__dingyi_targetmod",
+  bypass_distances = function(self, player)
+    return #player:getPile("ofl__dingyi") > 0 and Fk:getCardById(player:getPile("ofl__dingyi")[1]).suit == Card.Club
+  end,
+}
+ofl__dingyi:addRelatedSkill(ofl__dingyi_delay)
+ofl__dingyi:addRelatedSkill(ofl__dingyi_maxcards)
+ofl__dingyi:addRelatedSkill(ofl__dingyi_targetmod)
+sunshao:addSkill(ofl__dingyi)
+local zuici = fk.CreateTriggerSkill{
+  name = "ofl__zuici",
+  anim_type = "masochism",
+  events = {fk.Damaged},
+  can_trigger = function(self, event, target, player, data)
+    return target == player and player:hasSkill(self.name) and data.from and not data.from.dead and data.from:getMark("@dingyi") ~= 0
+  end,
+  on_cost = function(self, event, target, player, data)
+    local choice = player.room:askForChoice(player, {"Cancel", "dismantlement", "ex_nihilo", "nullification"}, self.name,
+      "#zuici-invoke::"..data.from.id)
+    if choice ~= "Cancel" then
+      self.cost_data = choice
+      return true
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    room:doIndicate(player.id, {data.from.id})
+    room:setPlayerMark(data.from, "@dingyi", 0)
+    local cards = room:getCardsFromPileByRule(self.cost_data)
+    if #cards > 0 then
+      room:moveCards({
+        ids = cards,
+        to = data.from.id,
+        toArea = Card.PlayerHand,
+        moveReason = fk.ReasonJustMove,
+        proposer = player.id,
+        skillName = self.name,
+      })
+    end
+  end,
+}
+--]]
+
 Fk:loadTranslationTable{
   ["ofl__sunshao"] = "孙邵",
   ["ofl__dingyi"] = "定仪",
   [":ofl__dingyi"] = "每轮开始时，你可以摸一张牌，然后将一张与“定仪”牌花色均不同的牌置于一名没有“定仪”牌的角色武将牌旁。有“定仪”牌的角色根据花色"..
   "获得对应效果：<br>♠，手牌上限+4；<br><font color='red'>♥</font>，每回合首次脱离濒死状态时，回复2点体力；♣，使用牌无距离限制；"..
   "<font color='red'>♦</font>，摸牌阶段多摸两张牌。",
+  ["#ofl__dingyi-use"] = "定仪：一张与“定仪”牌花色均不同的牌置于一名角色武将牌旁",
+  ["#ofl__dingyi_delay"] = "定仪",
   ["ofl__zuici"] = "罪辞",
   [":ofl__zuici"] = "当你受到伤害后，你可以获得一名角色的“定仪”牌，然后你从额外牌堆选择一张智囊牌令其获得。",
 }
@@ -324,10 +444,10 @@ local ofl__miewu = fk.CreateViewAsSkill{
     room:setPlayerMark(player, "@$ofl__miewu-turn", mark)
   end,
   enabled_at_play = function(self, player)
-    return player:getMark("@wuku") > 0
+    return player:getMark("@wuku") > 0 and not player:isNude()
   end,
   enabled_at_response = function(self, player, response)
-    return player:getMark("@wuku") > 0
+    return player:getMark("@wuku") > 0 and not player:isNude()
   end,
 }
 duyu:addSkill(ofl__wuku)
