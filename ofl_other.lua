@@ -329,33 +329,35 @@ Fk:loadTranslationTable{
 }
 
 local godjiaxu = General(extension, "godjiaxu", "god", 4)
+
+---@param player ServerPlayer
 local function UpdateLianpo(player)
   local room = player.room
-  local roles = player:getMark("lianpoj_exist_roles")
-  if roles[1] > roles[2] and roles[1] > roles[3] then
-    room:setPlayerMark(player, "@lianpoj", "lord+loyalist")
-  elseif roles[2] > roles[1] and roles[2] > roles[3] then
-    room:setPlayerMark(player, "@lianpoj", "rebel")
-  elseif roles[3] > roles[1] and roles[3] > roles[2] then
-    room:setPlayerMark(player, "@lianpoj", "renegade")
-  elseif roles[1] == roles[2] and roles[1] > roles[3] then
-    room:setPlayerMark(player, "@lianpoj", "lianpoj12")
-  elseif roles[1] == roles[3] and roles[1] > roles[2] then
-    room:setPlayerMark(player, "@lianpoj", "lianpoj13")
-  elseif roles[2] == roles[3] and roles[2] > roles[1] then
-    room:setPlayerMark(player, "@lianpoj", "lianpoj23")
-  else
-    room:setPlayerMark(player, "@lianpoj", "lianpoj123")
+  local exist_roles = table.map(room.alive_players, function(p) return p.role end)
+  if type(room:getBanner("@lianpoj_add")) == "table" then
+    table.insertTable(exist_roles, room:getBanner("@lianpoj_add"))
   end
-end
-local function LianpoJudge(player, role)
-  if player:getMark("@lianpoj") == 0 then return false end
-  if role == "loyalist" then
-    return table.contains({"lord+loyalist", "lianpoj12", "lianpoj13", "lianpoj123"}, player:getMark("@lianpoj"))
-  elseif role == "rebel" then
-    return table.contains({"rebel", "lianpoj12", "lianpoj23", "lianpoj123"}, player:getMark("@lianpoj"))
+  local rolos = {0, 0, 0}
+  for _, role in ipairs(exist_roles) do
+    if role == "lord" or role == "loyalist" then
+      rolos[1] = rolos[1] + 1
+    elseif role == "rebel" then
+      rolos[2] = rolos[2] + 1
+    elseif role == "renegade" then
+      rolos[3] = rolos[3] + 1
+    end
   end
-  return false
+  local max_num = 0
+  for i = 1, 3 do
+    max_num = math.max(max_num, rolos[i])
+  end
+  local max_roles = {}
+  for i = 1, 3 do
+    if rolos[i] == max_num then
+      table.insert(max_roles, "lianpoj"..i)
+    end
+  end
+  room:setPlayerMark(player, "@lianpoj", max_roles)
 end
 local lianpoj = fk.CreateTriggerSkill{
   name = "lianpoj",
@@ -366,12 +368,12 @@ local lianpoj = fk.CreateTriggerSkill{
   can_trigger = function (self, event, target, player, data)
     if player:hasSkill(self) then
       if event == fk.RoundStart then
-        return player:getMark("lianpoj_extra_roles") ~= {0, 0, 0}
+        return true
       elseif event == fk.EnterDying then
-        return LianpoJudge(player, "loyalist")
+        return table.contains(U.getMark(player, "@lianpoj"), "lianpoj1")
       elseif event == fk.Deathed then
-        return table.contains({"lianpoj12", "lianpoj13", "lianpoj23", "lianpoj123"}, player:getMark("@lianpoj")) and
-          data.damage and data.damage.from and not data.damage.from.dead
+        return #U.getMark(player, "@lianpoj") > 1
+        and data.damage and data.damage.from and not data.damage.from.dead
       end
     end
   end,
@@ -380,32 +382,44 @@ local lianpoj = fk.CreateTriggerSkill{
     room:notifySkillInvoked(player, self.name)
     if event == fk.RoundStart then
       player:broadcastSkillInvoke(self.name, math.random(1, 2))
-      local exist_roles, extra_roles = U.getMark(player, "lianpoj_exist_roles"), U.getMark(player, "lianpoj_extra_roles")
-      local roles = {"loyalist", "rebel", "renegade"}
+      local all_roles = {"lord", "loyalist", "rebel", "renegade"}
+      local rolesMap = {["lord"] = 0, ["loyalist"] = 0, ["rebel"] = 0, ["renegade"] = 0}
+      if table.contains({"aaa_role_mode", "aab_role_mode", "vanished_dragon"}, room.settings.gameMode) then
+        rolesMap = {["lord"] = 1, ["loyalist"] = 3, ["rebel"] = 4, ["renegade"] = 2}
+        for _, p in ipairs(room.players) do
+          if rolesMap[p.role] then
+            rolesMap[p.role] = math.max(0, rolesMap[p.role] - 1)
+          end
+        end
+      end
+      for _, p in ipairs(room.players) do
+        if p.dead and table.contains(all_roles, p.role) then
+          rolesMap[p.role] = rolesMap[p.role] + 1
+        end
+      end
+      if type(room:getBanner("@lianpoj_add")) == "table" then
+        for _, p in ipairs(room:getBanner("@lianpoj_add")) do
+          if rolesMap[p.role] then
+            rolesMap[p.role] = rolesMap[p.role] - 1
+          end
+        end
+      end
       local choices = {}
-      for i = 1, 3, 1 do
-        if extra_roles[i] > 0 then
-          table.insert(choices, roles[i])
+      for _, role in ipairs(all_roles) do
+        if rolesMap[role] > 0 then
+          table.insert(choices, role)
         end
       end
       if #choices == 0 then return end
-      local choice = room:askForChoice(player, choices, self.name, "#lianpoj-choice", false, {"lord", "loyalist", "rebel", "renegade"})
-      local new_role = table.indexOf(roles, choice)
-      local extra = player:getMark(self.name)
-      if extra == 0 then
-        exist_roles[new_role] = exist_roles[new_role] + 1
-        extra_roles[new_role] = extra_roles[new_role] - 1
-      else
-        local orig_role = table.indexOf(roles, extra)
-        exist_roles[new_role] = exist_roles[new_role] + 1
-        exist_roles[orig_role] = exist_roles[orig_role] - 1
-        extra_roles[new_role] = extra_roles[new_role] - 1
-        extra_roles[orig_role] = extra_roles[orig_role] + 1
-      end
-      room:doBroadcastNotify("ShowToast", Fk:translate("lianpoj_choice")..Fk:translate(choice))
-      room:setPlayerMark(player, self.name, choice)
-      room:setPlayerMark(player, "lianpoj_exist_roles", exist_roles)
-      room:setPlayerMark(player, "lianpoj_extra_roles", extra_roles)
+      local choice = room:askForChoice(player, choices, self.name, "#lianpoj-choice", false, all_roles)
+      room:sendLog{
+        type = "#LianpojAddRole",
+        arg = choice,
+        toast = true,
+      }
+      local banner = type(room:getBanner("@lianpoj_add")) == "table" and room:getBanner("@lianpoj_add") or {}
+      table.insert(banner, choice)
+      room:setBanner("@lianpoj_add", banner)
       UpdateLianpo(player)
     elseif event == fk.EnterDying then
       player:broadcastSkillInvoke(self.name, 3)
@@ -431,9 +445,13 @@ local lianpoj = fk.CreateTriggerSkill{
     end
   end,
 
-  refresh_events = {fk.GameStart, fk.EventAcquireSkill, fk.BeforeGameOverJudge},
+  refresh_events = {fk.GameStart, fk.EventAcquireSkill, fk.BeforeGameOverJudge, fk.AfterPlayerRevived, fk.RoundEnd, fk.EventLoseSkill},
   can_refresh = function(self, event, target, player, data)
-    if player:hasSkill(self, true) then
+    if event == fk.RoundEnd then
+      return type(player.room:getBanner("@lianpoj_add")) == "table"
+    elseif event == fk.EventLoseSkill then
+      return target == player and data == self
+    elseif player:hasSkill(self, true) then
       if event == fk.EventAcquireSkill then
         return target == player and data == self
       else
@@ -443,48 +461,16 @@ local lianpoj = fk.CreateTriggerSkill{
   end,
   on_refresh = function(self, event, target, player, data)
     local room = player.room
-    if event == fk.GameStart or event == fk.EventAcquireSkill then
-      local exist_roles, extra_roles = {0, 0, 0}, {0, 0, 0}
-      if room.settings.gameMode == "aaa_role_mode" or room.settings.gameMode == "vanished_dragon" then
-        local loyalist, rebel, renegade = 0, 0, 0
-        for _, p in ipairs(room.players) do
-          if p.role == "lord" or p.role == "loyalist" then
-            loyalist = loyalist + 1
-          elseif p.role == "rebel" then
-            rebel = rebel + 1
-          elseif p.role == "renegade" then
-            renegade = renegade + 1
-          end
+    if event == fk.RoundEnd then
+      room:setBanner("@lianpoj_add", 0)
+      for _, p in ipairs(room.alive_players) do
+        if p:hasSkill(self, true) then
+          UpdateLianpo(p)
         end
-        exist_roles = {loyalist, rebel, renegade}
-        extra_roles = {4 - loyalist, 4 - rebel, 2 - renegade}
-      elseif room.settings.gameMode == "m_1v2_mode" then
-        exist_roles = {1, 2, 0}
-        extra_roles = {0, 0, 0}
-      elseif room.settings.gameMode == "m_2v2_mode" then
-        exist_roles = {2, 2, 0}
-        extra_roles = {0, 0, 0}
-      else
-        exist_roles = {0, 0, 0}
-        extra_roles = {0, 0, 0}
       end
-      room:setPlayerMark(player, "lianpoj_exist_roles", exist_roles)
-      room:setPlayerMark(player, "lianpoj_extra_roles", extra_roles)
-      UpdateLianpo(player)
+    elseif event == fk.EventLoseSkill then
+      room:setPlayerMark(player, "@lianpoj", 0)
     else
-      local exist_roles, extra_roles = player:getMark("lianpoj_exist_roles"), player:getMark("lianpoj_extra_roles")
-      if target.role == "lord" or target.role == "loyalist" then
-        exist_roles[1] = exist_roles[1] - 1
-        extra_roles[1] = extra_roles[1] + 1
-      elseif target.role == "rebel" then
-        exist_roles[2] = exist_roles[2] - 1
-        extra_roles[2] = extra_roles[2] + 1
-      elseif target.role == "renegade" then
-        exist_roles[3] = exist_roles[3] - 1
-        extra_roles[3] = extra_roles[3] + 1
-      end
-      room:setPlayerMark(player, "lianpoj_exist_roles", exist_roles)
-      room:setPlayerMark(player, "lianpoj_extra_roles", extra_roles)
       UpdateLianpo(player)
     end
   end,
@@ -495,7 +481,7 @@ local lianpoj_maxcards = fk.CreateMaxCardsSkill{
   correct_func = function(self, player)
     local n = 0
     for _, p in ipairs(Fk:currentRoom().alive_players) do
-      if LianpoJudge(p, "rebel") and p ~= player then
+      if table.contains(U.getMark(p, "@lianpoj"), "lianpoj2") and p ~= player then
         n = n - 1
       end
     end
@@ -509,7 +495,7 @@ local lianpoj_targetmod = fk.CreateTargetModSkill{
     if skill.trueName == "slash_skill" and scope == Player.HistoryPhase then
       local n = 0
       for _, p in ipairs(Fk:currentRoom().alive_players) do
-        if LianpoJudge(p, "rebel") then
+        if table.contains(U.getMark(p, "@lianpoj"), "lianpoj2") then
           n = n + 1
         end
       end
@@ -523,7 +509,7 @@ local lianpoj_attackrange = fk.CreateAttackRangeSkill{
   correct_func = function (self, from, to)
     local n = 0
     for _, p in ipairs(Fk:currentRoom().alive_players) do
-      if LianpoJudge(p, "rebel") then
+      if table.contains(U.getMark(p, "@lianpoj"), "lianpoj2") then
         n = n + 1
       end
     end
@@ -533,20 +519,10 @@ local lianpoj_attackrange = fk.CreateAttackRangeSkill{
 local lianpoj_prohibit = fk.CreateProhibitSkill{
   name = "#lianpoj_prohibit",
   is_prohibited = function (self, from, to, card)
-    if card and card.name == "peach" and from ~= to then
+    if card and card.name == "peach" and from ~= to and to.dying then
       return table.find(Fk:currentRoom().alive_players, function(p)
-        return LianpoJudge(p, "loyalist") and p ~= from
+        return table.contains(U.getMark(p, "@lianpoj"), "lianpoj1") and p ~= from
       end)
-    end
-  end,
-  prohibit_use = function(self, player, card)
-    if card and card.name == "peach" and not player.dying and
-      table.find(Fk:currentRoom().alive_players, function(p) return LianpoJudge(p, "loyalist") and p ~= player end) then
-      for _, p in ipairs(Fk:currentRoom().alive_players) do
-        if p.dying then
-          return true
-        end
-      end
     end
   end,
 }
@@ -563,9 +539,7 @@ local zhaoluan = fk.CreateActiveSkill{
     return player:getMark(self.name) ~= 0 and player:getMark("zhaoluan-phase") == 0 and --这里不能用usedSkillTimes
       not Fk:currentRoom():getPlayerById(player:getMark(self.name)).dead
   end,
-  card_filter = function(self, to_select, selected)
-    return false
-  end,
+  card_filter = Util.FalseFunc,
   target_filter = function(self, to_select, selected, selected_cards)
     return #selected == 0
   end,
@@ -609,7 +583,7 @@ local zhaoluan_trigger = fk.CreateTriggerSkill{
     room:changeMaxHp(target, 3)
     local skills = {}
     for _, s in ipairs(target.player_skills) do
-      if not (s.attached_equip or s.name[#s.name] == "&") and s.frequency ~= Skill.Compulsory then
+      if not (s.attached_equip or s.name[#s.name] == "&") and s.frequency ~= Skill.Compulsory and s.frequency ~= Skill.Wake then
         table.insertIfNeed(skills, s.name)
       end
     end
@@ -620,7 +594,7 @@ local zhaoluan_trigger = fk.CreateTriggerSkill{
     if #skills > 0 then
       room:handleAddLoseSkills(target, "-"..table.concat(skills, "|-"), nil, true, false)
     end
-    if not target.dead and target.hp < 3 then
+    if not target.dead and target.hp < 3 and target:isWounded() then
       room:recover({
         who = target,
         num = math.min(3, target.maxHp) - target.hp,
@@ -650,17 +624,13 @@ Fk:loadTranslationTable{
   ["zhaoluan"] = "兆乱",
   [":zhaoluan"] = "限定技，一名角色濒死结算后，若其仍处于濒死状态，你可以令其加3点体力上限并失去所有非锁定技，回复体力至3并摸四张牌。"..
   "出牌阶段限一次，你可以令该角色减1点体力上限，其对一名你选择的角色造成1点伤害。",
-  ["@lianpoj"] = "大阵营",
-  ["lianpoj_multi"] = "多个",
+  ["@lianpoj"] = "炼魄",
+  ["@lianpoj_add"] = "炼魄增加",
   ["#lianpoj-choice"] = "炼魄：选择本轮视为增加的一个身份",
-  ["lianpoj_choice"] = "本轮视为人数+1的身份是：",
-  ["loyalist"] = "忠臣",
-  ["rebel"] = "反贼",
-  ["renegade"] = "内奸",
-  ["lianpoj12"] = "主忠 反",
-  ["lianpoj13"] = "主忠 内",
-  ["lianpoj23"] = "反 内",
-  ["lianpoj123"] = "主忠 反 内",
+  ["#LianpojAddRole"] = "“炼魄”本轮视为人数+1的身份是：%arg",
+  ["lianpoj1"] = "主忠",
+  ["lianpoj2"] = "反",
+  ["lianpoj3"] = "内",
   ["#zhaoluan_trigger"] = "兆乱",
   ["#zhaoluan-invoke"] = "兆乱：%dest 即将死亡，你可以令其复活并操纵其进行攻击！",
   ["#zhaoluan-damage"] = "兆乱：你可以令 %dest 减1点体力上限，其对你指定的一名角色造成1点伤害！",
