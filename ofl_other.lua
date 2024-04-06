@@ -1039,7 +1039,6 @@ Fk:loadTranslationTable{
 }
 
 local caoren = General(extension, "ofl__caoren", "wei", 4)
-
 local lizhong_nullification = fk.CreateViewAsSkill{
   name = "lizhong&",
   anim_type = "defensive",
@@ -1072,7 +1071,6 @@ local lizhong_active = fk.CreateActiveSkill{
     U.canMoveCardIntoEquip(Fk:currentRoom():getPlayerById(to_select), selected_cards[1], false)
   end,
 }
-
 local lizhong = fk.CreateTriggerSkill{
   name = "lizhong",
   anim_type = "support",
@@ -1105,8 +1103,11 @@ local lizhong = fk.CreateTriggerSkill{
     }, false)
     if ret then
       local tos = ret.targets
-      room:sortPlayersByAction(tos)
-      table.insert(tos, 1, player.id)
+      if #tos == 0 then
+        table.insert(tos, player.id)
+      else
+        room:sortPlayersByAction(tos)
+      end
       for _, pid in ipairs(tos) do
         local p = room:getPlayerById(pid)
         if not p.dead then
@@ -1169,7 +1170,8 @@ local juesui = fk.CreateTriggerSkill{
   anim_type = "support",
   events = {fk.EnterDying},
   can_trigger = function(self, event, target, player, data)
-    return player:hasSkill(self) and not target.dead and not table.contains(U.getMark(player, "juesui_used"), target.id)
+    return player:hasSkill(self) and not target.dead and not table.contains(U.getMark(player, "juesui_used"), target.id) and
+    #target:getAvailableEquipSlots() > 0
   end,
   on_cost = function(self, event, target, player, data)
     local room = player.room
@@ -1210,13 +1212,14 @@ caoren:addSkill(juesui)
 Fk:loadTranslationTable{
   ["ofl__caoren"] = "曹仁",
   ["lizhong"] = "厉众",
-  [":lizhong"] = "结束阶段，你可选择任意项：1.将任意张装备牌置入任意名角色的装备区；2.令你和任意名装备区里有牌的角色各摸一张牌，"..
+  [":lizhong"] = "结束阶段，你可选择任意项：1.将任意张装备牌置入任意名角色的装备区；2.令你或任意名装备区里有牌的角色各摸一张牌，"..
   "以此法摸牌的角色本轮内手牌上限+2且可以将装备区里的牌当【无懈可击】使用。",
   ["juesui"] = "玦碎",
   [":juesui"] = "当一名角色进入濒死状态时，若你未对其发动过此技能，你可以令其选择是否回复体力至1点并废除所有装备栏。"..
   "若其如此做，其本局游戏内可以将黑色非基本牌当无次数限制的【杀】使用或打出。",
+  ["lizhong_active"] = "厉众",
   ["#lizhong-put"] = "厉众：将装备牌置入一名角色的装备区",
-  ["#lizhong-choose"] = "厉众：与任意名装备区里有牌的角色各摸一张牌",
+  ["#lizhong-choose"] = "厉众：选择任意名装备区里有牌的角色各摸一张牌，若不选角色则为你",
   ["@@lizhong-round"] = "厉众",
   ["#juesui-invoke"] = "是否对 %dest 发动 玦碎，令其可以回复体力至1点并废除所有装备栏",
   ["#juesui-accept"] = "玦碎：是否将体力值回复体力至1点并废除所有装备栏",
