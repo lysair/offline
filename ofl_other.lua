@@ -662,21 +662,9 @@ local yuqi = fk.CreateTriggerSkill{
       return false
     end
     local cards = room:getNCards(n1)
-    local result = room:askForCustomDialog(player, self.name,
-    "packages/tenyear/qml/YuqiBox.qml", {
-      cards,
-      target.general, n2,
-      player.general, n3,
-    })
-    local top, bottom
-    if result ~= "" then
-      local d = json.decode(result)
-      top = d[2]
-      bottom = d[3]
-    else
-      top = {cards[1]}
-      bottom = {cards[2]}
-    end
+    local result = U.askForArrangeCards(player, self.name, {cards, "Top", target.general, player.general}, "#ofl__yuqi",
+    false, 0, {n1, n2, n3}, {0, 1, 1})
+    local top, bottom = result[2], result[3]
     local moveInfos = {}
     if #top > 0 then
       table.insert(moveInfos, {
@@ -821,7 +809,7 @@ Fk:loadTranslationTable{
   ["ofl__yuqi2"] = "观看牌数",
   ["ofl__yuqi3"] = "交给受伤角色牌数",
   ["ofl__yuqi4"] = "自己获得牌数",
-  ["#ofl__yuqi"] = "隅泣：请分配卡牌，余下的牌以原顺序置于牌堆顶",
+  ["#ofl__yuqi"] = "隅泣：请分配卡牌，余下的牌置于牌堆顶",
 
   ["$ofl__yuqi1"] = "玉儿摔倒了，要阿娘抱抱。",
   ["$ofl__yuqi2"] = "这么漂亮的雪花，为什么只能在寒冬呢？",
@@ -1048,6 +1036,197 @@ Fk:loadTranslationTable{
   ["$ofl__hengwu1"] = "此身独傲，天下无不可敌之人，无不可去之地！",
   ["$ofl__hengwu2"] = "神威天降，世间无不可驭之雷，无不可降之马！",
   ["~ofl__godmachao"] = "以战入圣，贪战而亡。",
+}
+
+local caoren = General(extension, "ofl__caoren", "wei", 4)
+
+local lizhong_nullification = fk.CreateViewAsSkill{
+  name = "lizhong&",
+  anim_type = "defensive",
+  pattern = "nullification",
+  prompt = "#lizhong-viewas",
+  card_filter = function(self, to_select, selected)
+    return #selected == 0 and Fk:currentRoom():getCardArea(to_select) == Player.Equip
+  end,
+  view_as = function(self, cards)
+    if #cards ~= 1 then return end
+    local c = Fk:cloneCard("nullification")
+    c.skillName = self.name
+    c:addSubcard(cards[1])
+    return c
+  end,
+  enabled_at_play = Util.FalseFunc,
+  enabled_at_response = function (self, player)
+    return #player.player_cards[Player.Equip] > 0
+  end,
+}
+local lizhong_active = fk.CreateActiveSkill{
+  name = "lizhong_active",
+  card_num = 1,
+  target_num = 1,
+  card_filter = function(self, to_select, selected)
+    return #selected == 0 and Fk:getCardById(to_select).type == Card.TypeEquip
+  end,
+  target_filter = function(self, to_select, selected, selected_cards)
+    return #selected == 0 and #selected_cards == 1 and
+    U.canMoveCardIntoEquip(Fk:currentRoom():getPlayerById(to_select), selected_cards[1], false)
+  end,
+}
+
+local lizhong = fk.CreateTriggerSkill{
+  name = "lizhong",
+  anim_type = "support",
+  events = {fk.EventPhaseStart},
+  can_trigger = function(self, event, target, player, data)
+    return target == player and player.phase == Player.Finish and player:hasSkill(self)
+  end,
+  on_cost = Util.TrueFunc,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    local lizhong_use = true
+    while true do
+      local success, dat = room:askForUseActiveSkill(player, "lizhong_active", "#lizhong-put")
+      if success then
+        room:moveCardTo(dat.cards[1], Card.PlayerEquip, room:getPlayerById(dat.targets[1]), fk.ReasonPut, self.name, "", true, player.id)
+        lizhong_use = false
+      else
+        break
+      end
+      if player.dead then return false end
+    end
+    local _, ret = room:askForUseActiveSkill(player, "choose_players_skill", "#lizhong-choose", true, {
+      targets = table.map(table.filter(room.alive_players, function (p)
+        return #p.player_cards[Player.Equip] > 0
+      end), Util.IdMapper),
+      num = 2,
+      min_num = 0,
+      pattern = "",
+      skillName = self.name
+    }, false)
+    if ret then
+      local tos = ret.targets
+      room:sortPlayersByAction(tos)
+      table.insert(tos, 1, player.id)
+      for _, pid in ipairs(tos) do
+        local p = room:getPlayerById(pid)
+        if not p.dead then
+          p:drawCards(1, self.name)
+          if not p.dead then
+            if p:getMark("@@lizhong-round") == 0 then
+              room:setPlayerMark(p, "@@lizhong-round", 1)
+              room:addPlayerMark(p, "AddMaxCards-round", 2)
+            end
+            if not p:hasSkill("lizhong&") then
+              room:handleAddLoseSkills(p, "lizhong&", nil, false, true)
+              room.logic:getCurrentEvent():findParent(GameEvent.Round):addCleaner(function()
+                room:handleAddLoseSkills(player, "-lizhong&", nil, false, true)
+              end)
+            end
+          end
+        end
+      end
+    end
+    if lizhong_use then
+      while true do
+        local success, dat = room:askForUseActiveSkill(player, "lizhong_active", "#lizhong-put")
+        if success then
+          room:moveCardTo(dat.cards[1], Card.PlayerEquip, room:getPlayerById(dat.targets[1]), fk.ReasonPut, self.name, "", true, player.id)
+        else
+          break
+        end
+        if player.dead then return false end
+      end
+    end
+  end,
+}
+local juesui_slash = fk.CreateViewAsSkill{
+  name = "juesui&",
+  anim_type = "offensive",
+  pattern = "slash",
+  prompt = "#juesui-viewas",
+  card_filter = function(self, to_select, selected)
+    if #selected == 0 then
+      local card = Fk:getCardById(to_select)
+      return card.color == Card.Black and card.type ~= Card.TypeBasic
+    end
+  end,
+  view_as = function(self, cards)
+    if #cards ~= 1 then return end
+    local card = Fk:cloneCard("slash")
+    card.skillName = self.name
+    card:addSubcard(cards[1])
+    return card
+  end,
+}
+local juesui_targetmod = fk.CreateTargetModSkill{
+  name = "#juesui_targetmod",
+  bypass_times = function(self, player, skill, scope, card)
+    return table.contains(card.skillNames, "juesui&")
+  end,
+}
+local juesui = fk.CreateTriggerSkill{
+  name = "juesui",
+  anim_type = "support",
+  events = {fk.EnterDying},
+  can_trigger = function(self, event, target, player, data)
+    return player:hasSkill(self) and not target.dead and not table.contains(U.getMark(player, "juesui_used"), target.id)
+  end,
+  on_cost = function(self, event, target, player, data)
+    local room = player.room
+    if room:askForSkillInvoke(player, self.name, nil, "#juesui-invoke::"..target.id) then
+      room:doIndicate(player.id, {target.id})
+      return true
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    local mark = U.getMark(player, "juesui_used")
+    table.insert(mark, target.id)
+    room:setPlayerMark(player, "juesui_used", mark)
+    if player ~= target and not room:askForSkillInvoke(target, self.name, nil, "#juesui-accept") then return false end
+    room:recover({
+      who = target,
+      num = 1 - target.hp,
+      recoverBy = player,
+      skillName = self.name
+    })
+    if target.dead then return false end
+    local eqipSlots = target:getAvailableEquipSlots()
+    if #eqipSlots > 0 then
+      room:abortPlayerArea(target, eqipSlots)
+    end
+    if target.dead then return false end
+    room:setPlayerMark(target, "@@juesui", 1)
+    room:handleAddLoseSkills(target, "juesui&", nil, false, true)
+  end,
+}
+Fk:addSkill(lizhong_active)
+Fk:addSkill(lizhong_nullification)
+juesui_slash:addRelatedSkill(juesui_targetmod)
+Fk:addSkill(juesui_slash)
+caoren:addSkill(lizhong)
+caoren:addSkill(juesui)
+
+Fk:loadTranslationTable{
+  ["ofl__caoren"] = "曹仁",
+  ["lizhong"] = "厉众",
+  [":lizhong"] = "结束阶段，你可选择任意项：1.将任意张装备牌置入任意名角色的装备区；2.令你和任意名装备区里有牌的角色各摸一张牌，"..
+  "以此法摸牌的角色本轮内手牌上限+2且可以将装备区里的牌当【无懈可击】使用。",
+  ["juesui"] = "玦碎",
+  [":juesui"] = "当一名角色进入濒死状态时，若你未对其发动过此技能，你可以令其选择是否回复体力至1点并废除所有装备栏。"..
+  "若其如此做，其本局游戏内可以将黑色非基本牌当无次数限制的【杀】使用或打出。",
+  ["#lizhong-put"] = "厉众：将装备牌置入一名角色的装备区",
+  ["#lizhong-choose"] = "厉众：与任意名装备区里有牌的角色各摸一张牌",
+  ["@@lizhong-round"] = "厉众",
+  ["#juesui-invoke"] = "是否对 %dest 发动 玦碎，令其可以回复体力至1点并废除所有装备栏",
+  ["#juesui-accept"] = "玦碎：是否将体力值回复体力至1点并废除所有装备栏",
+  ["@@juesui"] = "玦碎",
+  ["lizhong&"] = "厉众",
+  [":lizhong&"] = "你本轮内可以将装备区里的牌当【无懈可击】使用。",
+  ["juesui&"] = "玦碎",
+  [":juesui&"] = "你可以将黑色非基本牌当无次数限制的【杀】使用或打出。",
+  ["#lizhong-viewas"] = "发动 厉众，将装备区里的牌当【无懈可击】使用",
+  ["#juesui-viewas"] = "发动 玦碎，将黑色非基本牌当无次数限制的【杀】使用或打出",
 }
 
 local jiaxu = General(extension, "chaos__jiaxu", "qun", 3)
