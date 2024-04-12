@@ -1231,7 +1231,128 @@ Fk:loadTranslationTable{
   ["#lizhong-viewas"] = "发动 厉众，将装备区里的牌当【无懈可击】使用",
   ["#juesui-viewas"] = "发动 玦碎，将黑色非基本牌当无次数限制的【杀】使用或打出",
 }
-
+local guanyu = General:new(extension, "ofl__guanyu", "shu", 4)
+local chaojue = fk.CreateTriggerSkill{
+  name = "chaojue",
+  anim_type = "offensive",
+  events = {fk.EventPhaseStart},
+  can_trigger = function(self, event, target, player, data)
+    return target == player and player:hasSkill(self) and player.phase == Player.Start and not player:isKongcheng()
+  end,
+  on_cost = function(self, event, target, player, data)
+    local card = player.room:askForDiscard(player, 1, 1, false, self.name, true, ".", "#chaojue-invoke", true)
+    if #card > 0 then
+      self.cost_data = card[1]
+      return true
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    room:throwCard(self.cost_data, self.name, player, player)
+    if player.dead then return end
+    local mark = player:getNextAlive():getMark("@chaojue-turn")
+    if mark == 0 then mark = {} end
+    if Fk:getCardById(self.cost_data).suit ~= Card.NoSuit then
+      table.insertIfNeed(mark, Fk:getCardById(self.cost_data):getSuitString(true))
+    end
+    for _, p in ipairs(room:getOtherPlayers(player)) do
+      room:doIndicate(player.id, {p.id})
+      room:setPlayerMark(p, "@chaojue-turn", mark)
+    end
+    for _, p in ipairs(room:getOtherPlayers(player)) do
+      if player.dead then return end
+      local cards = room:askForCard(p, 1, 1, false, self.name, true, ".|.|"..Fk:getCardById(self.cost_data):getSuitString(), "#chaojue-cost::"..player.id..":"..Fk:getCardById(self.cost_data):getSuitString(), true)
+      if #cards > 0 then
+        room:obtainCard(player, cards, true, fk.ReasonPrey)
+      else
+        room:addPlayerMark(p, "@@chaojue-turn")
+        room:addPlayerMark(p, MarkEnum.UncompulsoryInvalidity .. "-turn")
+      end
+    end
+  end,
+}
+local chaojuejue_prohibit = fk.CreateProhibitSkill{
+  name = "#chaojuejue_prohibit",
+  prohibit_use = function(self, player, card)
+    return player:getMark("@chaojue-turn") ~= 0 and table.contains(player:getMark("@chaojue-turn"), card:getSuitString(true))
+  end,
+  prohibit_response = function(self, player, card)
+    return player:getMark("@chaojue-turn") ~= 0 and table.contains(player:getMark("@chaojue-turn"), card:getSuitString(true))
+  end,
+}
+local junshen_targetmod = fk.CreateTargetModSkill{
+  name = "#junshen_targetmod",
+  bypass_distances = function (self, player, skill, card, to)
+    return player:hasSkill("junshen") and skill.trueName == "slash_skill" and card.suit == Card.Diamond
+  end,
+  extra_target_func = function(self, player, skill, card)
+    if player:hasSkill("junshen") and skill.trueName == "slash_skill" and card.suit == Card.Heart then
+      return 1
+    end
+  end,
+}
+local junshen_trigger = fk.CreateTriggerSkill{
+  name = "#junshen_trigger",
+  anim_type = "offensive",
+  events = {fk.DamageCaused},
+  on_cost = Util.TrueFunc,
+  can_trigger = function(self, event, target, player, data)
+    return target == player and player:hasSkill("junshen") and data.card and data.card.trueName == "slash" and table.contains(data.card.skillNames, "junshen") and not data.chain 
+  end,
+  on_use = function(self, event, target, player, data) 
+    local room = player.room
+    if #data.to:getCardIds("e") == 0 then
+      data.damage = data.damage + 1
+    else
+    
+      local choices = {"junshen_choice1","junshen_choice2"}
+      local choice = room:askForChoice(data.to, choices, self.name, "#junshen-choice:" .. player.id)
+      if choice == "junshen_choice1" then
+         data.damage = data.damage + 1
+      elseif choice == "junshen_choice2" then
+        data.to:throwAllCards("e")
+      end
+    end
+  end,
+}
+local junshen = fk.CreateViewAsSkill{
+  name = "junshen",
+  anim_type = "offensive",
+  pattern = "slash",
+  card_filter = function(self, to_select, selected)
+    if #selected == 1 then return false end
+    return Fk:getCardById(to_select).color == Card.Red
+  end,
+  view_as = function(self, cards)
+    if #cards ~= 1 then
+      return nil
+    end
+    local c = Fk:cloneCard("slash")
+    c.skillName = self.name
+    c:addSubcard(cards[1])
+    return c
+  end,
+}
+junshen:addRelatedSkill(junshen_trigger)
+junshen:addRelatedSkill(junshen_targetmod)
+chaojue:addRelatedSkill(chaojuejue_prohibit)
+guanyu:addSkill(chaojue)
+guanyu:addSkill(junshen)
+Fk:loadTranslationTable{
+  ["ofl__guanyu"] = "关羽",
+  ["chaojue"] = "超绝",
+  [":chaojue"] = "准备阶段，你可以弃置一张手牌，令所有其他角色本回合不能使用或打出与此牌花色相同的牌，然后这些角色依次选择一项:1.展示并交给你一张相同花色的手牌; 2.其本回合内所有非锁定技失效。",
+  ["@@chaojue-turn"] ="被超绝",
+  ["@chaojue-turn"] = "超绝",
+  ["#chaojue-invoke"] = "超绝:是否弃置一张手牌，令所有其他角色本回合不能使用或打出该花色的牌?",
+  ["#chaojue-cost"] = "超绝：你需交给%dest一张%arg手牌，否则本回合你的非锁定技失效",
+  ["junshen"] = "军神",
+  ["#junshen_trigger"] = "军神",
+  [":junshen"] = "你可以将一张红色牌当做【杀】使用或打出。;当你以此法使用【杀】对一名角色造成伤害时，其需选择一项:1.弃置装备区内的所有牌; 2.令此伤害+1。; 你使用<font color='red'>♦</font>【杀】无距离限制，<font color='red'> ♥️</font>【杀】可以多选择一个目标。",
+ ["#junshen-choice"] = "军神: 弃置装备区的所有牌或者令%src 对你造成的伤害+1。",
+ ["junshen_choice1"] = "弃置装备",
+ ["junshen_choice2"] = "受伤+1"
+}
 local jiaxu = General(extension, "chaos__jiaxu", "qun", 3)
 local miesha = fk.CreateTriggerSkill{
   name = "miesha",
