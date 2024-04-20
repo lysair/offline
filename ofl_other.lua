@@ -1252,19 +1252,22 @@ local chaojue = fk.CreateTriggerSkill{
   end,
   on_use = function(self, event, target, player, data)
     local room = player.room
+    local card = Fk:getCardById(self.cost_data)
     room:throwCard(self.cost_data, self.name, player, player)
     if player.dead then return end
     local mark = player:getNextAlive():getMark("@chaojue-turn")
     if mark == 0 then mark = {} end
-    if Fk:getCardById(self.cost_data).suit ~= Card.NoSuit then
-      table.insertIfNeed(mark, Fk:getCardById(self.cost_data):getSuitString(true))
+    if card.suit ~= Card.NoSuit then
+      table.insertIfNeed(mark, card:getSuitString(true))
     end
-    for _, p in ipairs(room:getOtherPlayers(player)) do
+    local targets = room:getOtherPlayers(player)
+    for _, p in ipairs(targets) do
       room:setPlayerMark(p, "@chaojue-turn", mark)
     end
-    for _, p in ipairs(room:getOtherPlayers(player)) do
+    for _, p in ipairs(targets) do
       if player.dead then return end
-      local cards = room:askForCard(p, 1, 1, false, self.name, true, ".|.|"..Fk:getCardById(self.cost_data):getSuitString(), "#chaojue-cost::"..player.id..":"..Fk:getCardById(self.cost_data):getSuitString(), true)
+      local cards = room:askForCard(p, 1, 1, false, self.name, true,
+      ".|.|"..card:getSuitString(), "#chaojue-cost::"..player.id..":"..card:getSuitString())
       if #cards > 0 then
         room:obtainCard(player, cards, true, fk.ReasonPrey, player.id)
       else
