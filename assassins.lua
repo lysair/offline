@@ -173,5 +173,149 @@ Fk:loadTranslationTable{
   ["#duanzhi-invoke"] = "断指：你可以弃置 %src 至多两张牌，然后失去1点体力",
 }
 
+local fuhuanghou = General(extension, "tqt__fuhuanghou", "qun", 3, 3, General.Female)
+
+local mixin = fk.CreateActiveSkill{
+  name = "mixin",
+  anim_type = "offensive",
+  can_use = function(self, player)
+    return player:usedSkillTimes(self.name, Player.HistoryPhase) == 0
+  end,
+  prompt = "#mixin",
+  card_num = 1,
+  card_filter = function(self, to_select, selected)
+    return #selected == 0 and table.contains(Self.player_cards[Player.Hand], to_select)
+  end,
+  target_num = 2,
+  target_filter = function(self, to_select, selected, cards)
+    if #cards ~= 1 then return end
+    if #selected == 0 then
+      return to_select ~= Self.id
+    elseif #selected == 1 then
+      return selected[1] ~= Self.id
+    end
+  end,
+  on_use = function(self, room, effect)
+    local player = room:getPlayerById(effect.from)
+    local to = room:getPlayerById(effect.tos[1])
+    local victim = room:getPlayerById(effect.tos[2])
+    room:moveCardTo(effect.cards, Player.Hand, to, fk.ReasonGive, self.name, nil, false, player.id)
+    if to.dead or victim.dead then return end
+    local use = room:askForUseCard(to, "slash", "slash", "#mixin-slash:"..victim.id, true, {bypass_distances = true, exclusive_targets = {victim.id}})
+    if use then
+      use.extraUse = true
+      room:useCard(use)
+    elseif not victim.dead and not to:isKongcheng() then
+      local card = room:askForCardChosen(victim, to, { card_data = { { "$Hand", to.player_cards[Player.Hand] } } }, self.name)
+      room:moveCardTo(card, Player.Hand, victim, fk.ReasonPrey, self.name, nil, false, victim.id)
+    end
+  end,
+}
+fuhuanghou:addSkill(mixin)
+
+local cangni = fk.CreateTriggerSkill{
+  name = "cangni",
+  anim_type = "defensive",
+  events = {fk.EventPhaseStart, fk.AfterCardsMove},
+  can_trigger = function(self, event, target, player, data)
+    if not player:hasSkill(self) then return end
+    if event == fk.EventPhaseStart then
+      return player.phase == Player.Discard
+    else
+      local current = player.room.current
+      if current ~= player and not current.dead and not player.faceup then
+        local choices = {}
+        for _, move in ipairs(data) do
+          if move.to == player.id and move.toArea == Player.Hand and player:getMark("cangni_draw-turn") == 0 then
+            table.insertIfNeed(choices, "draw")
+          end
+          if move.from == player.id then
+            for _, info in ipairs(move.moveInfo) do
+              if (info.fromArea == Player.Equip and move.toArea ~= Player.Hand)
+              or (info.fromArea == Player.Hand and move.toArea ~= Player.Equip) then
+                table.insertIfNeed(choices, "discard")
+              end
+            end
+          end
+        end
+        if #choices > 0 then
+          if #choices == 1 and choices[1] == "discard" and current:isNude() then return end
+          self.cost_data = choices
+          return true
+        end
+      end
+    end
+  end,
+  on_cost = function (self, event, target, player, data)
+    local room = player.room
+    if event == fk.EventPhaseStart then
+      return room:askForSkillInvoke(player, self.name)
+    else
+      local choices = {}
+      for _, choice in ipairs(self.cost_data) do
+        if room:askForSkillInvoke(player, self.name, nil, "#cangni-"..choice..":"..room.current.id) then
+          table.insert(choices, choice)
+        end
+      end
+      if #choices > 0 then
+        self.cost_data = choices
+        return true
+      end
+    end
+  end,
+  on_use = function (self, event, target, player, data)
+    local room = player.room
+    if event == fk.EventPhaseStart then
+      if (player.hp == player.maxHp) or room:askForChoice(player, {"recover","draw2"}, self.name) == "draw2" then
+        player:drawCards(2, self.name)
+      else
+        room:recover({
+          who = player,
+          num = 1,
+          recoverBy = player,
+          skillName = self.name
+        })
+      end
+      if not player.dead then
+        player:turnOver()
+      end
+    else
+      if table.contains(self.cost_data, "draw") then
+        room:setPlayerMark(player, "cangni_draw-turn", 1)
+      end
+      local current = room.current
+      for _, choice in ipairs(self.cost_data) do
+        if current.dead then break end
+        if choice == "draw" then
+          current:drawCards(1, self.name)
+        else
+          room:askForDiscard(current, 1, 1, true, self.name, false)
+        end
+      end
+    end
+  end,
+}
+fuhuanghou:addSkill(cangni)
+
+Fk:loadTranslationTable{
+  ["tqt__fuhuanghou"] = "伏皇后",
+  ["#tqt__fuhuanghou"] = "誓死除奸恶",
+	["designer:tqt__fuhuanghou"] = "凌天翼",
+	["illustrator:tqt__fuhuanghou"] = "G.G.G.",
+
+	["mixin"] = "密信",
+	[":mixin"] = "出牌阶段限一次，你可以将一张手牌交给一名其他角色，该角色须对你选择的另一名角色使用一张【杀】（无距离限制），否则你选择的角色观看其手牌并获得其中一张。",
+	["#mixin"] = "密信：先选交给牌的角色，再选其需要使用【杀】的目标",
+	["#mixin-slash"] = "密信：你需对 %src 使用一张【杀】，否则其观看你手牌并获得其中一张",
+	["@@duyi-turn"] = "毒医",
+
+	["cangni"] = "藏匿",
+	[":cangni"] = "弃牌阶段开始时，你可以回复1点体力或摸两张牌，然后将你的武将牌翻面；其他角色的回合内，当你获得（每回合限一次）/失去一次牌时，若你的武将牌背面朝上，你可以令该角色摸/弃置一张牌。 ",
+  ["#cangni-invoke"] = "藏匿：你可以回复1点体力或摸两张牌，然后将武将牌翻面",
+  ["#cangni-draw"] = "藏匿：你可以令 %src 摸一张牌。",
+  ["#cangni-discard"] = "藏匿：你可以令 %src 弃置一张牌。",
+}
+
+
 
 return extension
