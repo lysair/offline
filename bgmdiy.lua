@@ -274,5 +274,192 @@ Fk:loadTranslationTable{
   [":tuqi"] = "锁定技，准备阶段开始时，若你的武将牌上有“扈”，你将所有“扈”置入弃牌堆，本回合你与其他角色的距离-X，若X小于或等于2，你摸一张牌。（X为以此法置入弃牌堆的“扈”的数量）",
 }
 
+local liuxie = General(extension, "bgm__liuxie", "qun", 4)
+
+local huangen = fk.CreateTriggerSkill{
+  name = "huangen",
+  anim_type = "defensive",
+  events = {fk.TargetSpecifying},
+  can_trigger = function(self, event, target, player, data)
+    return player:hasSkill(self) and data.firstTarget and player.hp > 0 and
+    data.card.type == Card.TypeTrick and #AimGroup:getAllTargets(data.tos) > 1
+  end,
+  on_cost = function(self, event, target, player, data)
+    local tos = player.room:askForChoosePlayers(player, AimGroup:getAllTargets(data.tos), 1, player.hp, "#huangen-choose:::"..player.hp, self.name, true)
+    if #tos > 0 then
+      player.room:sortPlayersByAction(tos)
+      self.cost_data = tos
+      return true
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    for _, pid in ipairs(self.cost_data) do
+      AimGroup:cancelTarget(data, pid)
+      local p = room:getPlayerById(pid)
+      if not p.dead then
+        p:drawCards(1, self.name)
+      end
+    end
+    return table.contains(self.cost_data, data.to)
+  end,
+}
+liuxie:addSkill(huangen)
+
+local hantong = fk.CreateActiveSkill{
+  name = "hantong",
+  card_num = 1,
+  target_num = 0,
+  prompt = "#hantong-jijiang",
+  expand_pile = "bgm_edict",
+  derived_piles = "bgm_edict",
+  card_filter = function(self, to_select, selected)
+    return #selected == 0 and Self:getPileNameOfId(to_select) == "bgm_edict"
+  end,
+  can_use = function(self, player)
+    return #player:getPile("bgm_edict") > 0 and not player:hasSkill("jijiang", true)
+  end,
+  on_use = function(self, room, effect)
+    local player = room:getPlayerById(effect.from)
+    room:moveCards({
+      ids = effect.cards,
+      from = player.id,
+      toArea = Card.DiscardPile,
+      moveReason = fk.ReasonPutIntoDiscardPile,
+      skillName = self.name,
+      proposer = player.id,
+    })
+    if player.dead then return end
+    room:handleAddLoseSkills(player, "jijiang")
+    room.logic:getCurrentEvent():findParent(GameEvent.Turn):addCleaner(function()
+      room:handleAddLoseSkills(player, "-jijiang")
+    end)
+  end,
+}
+local hantong_trigger = fk.CreateTriggerSkill{
+  name = "#hantong_trigger",
+  events = {fk.EventPhaseEnd, fk.EventPhaseStart, fk.AskForCardUse, fk.AskForCardResponse, fk.PreHpRecover},
+  mute = true,
+  main_skill = hantong,
+  can_trigger = function(self, event, target, player, data)
+    if not (target == player and player:hasSkill(hantong)) then return end
+    if event == fk.EventPhaseEnd then
+      if player.phase == Player.Discard then
+        local ids = {}
+        local logic = player.room.logic
+        logic:getEventsOfScope(GameEvent.MoveCards, 1, function (e)
+          for _, move in ipairs(e.data) do
+            if move.from == player.id and move.moveReason == fk.ReasonDiscard and move.skillName == "game_rule" then
+              for _, info in ipairs(move.moveInfo) do
+                if player.room:getCardArea(info.cardId) == Card.DiscardPile then
+                  table.insertIfNeed(ids, info.cardId)
+                end
+              end
+            end
+          end
+          return false
+        end, Player.HistoryPhase)
+        if #ids > 0 then
+          self.cost_data = ids
+          return true
+        end
+      end
+    elseif #player:getPile("bgm_edict") > 0 then
+      if event == fk.PreHpRecover then
+        if not player:hasSkill("jiuyuan", true) and data.card and data.card.trueName == "peach" and
+        data.recoverBy and data.recoverBy.kingdom == "wu" and data.recoverBy ~= player then
+          self.cost_data = {"jiuyuan"}
+          return true
+        end
+      elseif event == fk.EventPhaseStart then
+        if not player:hasSkill("xueyi", true) and player.phase == Player.Discard
+        and table.find(player.room.alive_players, function (p) return p ~= player and p.kingdom == "qun" end) then
+          self.cost_data = {"xueyi"}
+          return true
+        end
+      else
+        local list = {}
+        if not player:hasSkill("hujia", true) and (data.extraData == nil or data.extraData.hujia_ask == nil)
+          and (data.cardName == "jink" or (data.pattern and Exppattern:Parse(data.pattern):matchExp("jink|0|nosuit|none")))
+          and table.find(player.room.alive_players, function (p) return p ~= player and p.kingdom == "wei" end) then
+          table.insert(list, "hujia")
+        end
+        if not player:hasSkill("jijiang", true)
+          and (data.cardName == "slash" or (data.pattern and Exppattern:Parse(data.pattern):matchExp("slash|0|nosuit|none")))
+          and table.find(player.room.alive_players, function (p) return p ~= player and p.kingdom == "shu" end) then
+          table.insert(list, "jijiang")
+        end
+        if #list > 0 then
+          self.cost_data = list
+          return true
+        end
+      end
+    end
+  end,
+  on_cost = function(self, event, target, player, data)
+    local room = player.room
+    if event == fk.EventPhaseEnd then
+      return room:askForSkillInvoke(player, self.name, nil, "#hantong-invoke")
+    else
+      local x = 1
+      local prompt = "#hantong-cost:::"..self.cost_data[1]
+      if #self.cost_data > 1 then
+        prompt = "#hantong-two"
+        x = 2
+      end
+      local cards = room:askForCard(player, 1, x, false, self.name, true, ".|.|.|bgm_edict", prompt, "bgm_edict")
+      if #cards > 0 then
+        local choices = (#cards == #self.cost_data) and self.cost_data or
+        {room:askForChoice(player, self.cost_data, self.name, "#hantong-choice")}
+        self.cost_data = {cards, choices}
+        return true
+      end
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    if event == fk.EventPhaseEnd then
+      player:addToPile("bgm_edict", self.cost_data, true, self.name)
+    else
+      room:moveCards({
+        ids = self.cost_data[1],
+        from = player.id,
+        toArea = Card.DiscardPile,
+        moveReason = fk.ReasonPutIntoDiscardPile,
+        skillName = self.name,
+        proposer = player.id,
+      })
+      if player.dead then return end
+      local skills = self.cost_data[2]
+      room:handleAddLoseSkills(player, table.concat(skills, "|"))
+      room.logic:getCurrentEvent():findParent(GameEvent.Turn):addCleaner(function()
+        room:handleAddLoseSkills(player, "-"..table.concat(skills, "|-"))
+      end)
+    end
+  end,
+}
+hantong:addRelatedSkill(hantong_trigger)
+liuxie:addSkill(hantong)
+
+Fk:loadTranslationTable{
+  ["bgm__liuxie"] = "刘协",
+  ["#bgm__liuxie"] = "汉献帝",
+	["designer:bgm__liuxie"] = "姚以轩",
+	["illustrator:bgm__liuxie"] = "XXX",
+
+  ["huangen"] = "皇恩",
+  [":huangen"] = "当锦囊牌指定指定多于一个目标时，你可以取消至多X个目标（X为你的体力值），然后这些角色各摸一张牌。",
+  ["#huangen-choose"] = "皇恩：你可以取消至多 %arg 的目标，并令这些角色各摸一张牌",
+  ["hantong"] = "汉统",
+  [":hantong"] = "弃牌阶段结束时，你可以将此阶段内你因游戏规则弃置的牌置于武将牌上，称为“诏”。你可以移去一张“诏”，获得〖护驾〗，〖激将〗，〖救援〗或〖血裔〗直到回合结束。 ",
+  ["bgm_edict"] = "诏",
+  ["#hantong-jijiang"] = "汉统：你可以移去一张“诏”，获得〖激将〗直到回合结束",
+  ["#hantong-invoke"] = "汉统：你可以将此阶段内弃置的牌置于武将牌上称为“诏”",
+  ["#hantong-cost"] = "汉统：你可以移去一张“诏”，获得〖%arg〗直到回合结束",
+  ["#hantong-two"] = "汉统：你可以移去至多两张“诏”，获得〖护驾〗或〖激将〗直到回合结束",
+  ["#hantong-choice"] = "汉统：选择你要获得的技能",
+  ["#hantong_trigger"] = "汉统",
+}
+
 
 return extension
