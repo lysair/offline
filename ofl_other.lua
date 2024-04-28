@@ -674,6 +674,7 @@ local yuqi = fk.CreateTriggerSkill{
         moveReason = fk.ReasonGive,
         proposer = player.id,
         skillName = self.name,
+        visiblePlayers = player.id,
       })
       for _, id in ipairs(top) do
         table.removeOne(cards, id)
@@ -725,7 +726,7 @@ local function AddYuqi(player, skillName, num)
   local room = player.room
   local choices = {}
   for i = 1, 4, 1 do
-    if player:getMark("ofl__yuqi" .. tostring(i)) < 5 then
+    if player:getMark("ofl__yuqi" .. tostring(i)) < 3 then
       table.insert(choices, "ofl__yuqi" .. tostring(i))
     end
   end
@@ -755,20 +756,18 @@ local shanshen = fk.CreateTriggerSkill{
   on_use = function(self, event, target, player, data)
     local room = player.room
     AddYuqi(player, self.name, 2)
-    if target:getMark(self.name) == 0 and player:isWounded() then
+    if player:isWounded() and #U.getActualDamageEvents(player.room, 1, function(e)
+      local damage = e.data[1]
+      if damage.from == player and damage.to == target then
+        return true
+      end
+    end, nil, 0) == 0 then
       room:recover{
         who = player,
         num = 1,
         skillName = self.name,
       }
     end
-  end,
-  refresh_events = {fk.DamageCaused},
-  can_refresh = function(self, event, target, player, data)
-    return target == player and target:hasSkill(self) and data.to:getMark(self.name) == 0
-  end,
-  on_refresh = function(self, event, target, player, data)
-      player.room:setPlayerMark(data.to, self.name, 1)
   end,
 }
 local xianjing = fk.CreateTriggerSkill{
@@ -1096,7 +1095,7 @@ local lizhong = fk.CreateTriggerSkill{
       targets = table.map(table.filter(room.alive_players, function (p)
         return #p.player_cards[Player.Equip] > 0
       end), Util.IdMapper),
-      num = 2,
+      num = 998,
       min_num = 0,
       pattern = "",
       skillName = self.name
@@ -1120,7 +1119,7 @@ local lizhong = fk.CreateTriggerSkill{
             if not p:hasSkill("lizhong&") then
               room:handleAddLoseSkills(p, "lizhong&", nil, false, true)
               room.logic:getCurrentEvent():findParent(GameEvent.Round):addCleaner(function()
-                room:handleAddLoseSkills(player, "-lizhong&", nil, false, true)
+                room:handleAddLoseSkills(p, "-lizhong&", nil, false, true)
               end)
             end
           end
