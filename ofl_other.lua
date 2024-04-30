@@ -101,9 +101,7 @@ local ofl__chongxu = fk.CreateActiveSkill{
       end
       local choice = room:askForChoice(player, choices, self.name, "", false, all_choices)
       if choice == "ofl__chongxu_get" then
-        local dummy = Fk:cloneCard("dilu")
-        dummy:addSubcards(cards)
-        room:obtainCard(player, dummy, true, fk.ReasonJustMove)
+        room:obtainCard(player, cards, true, fk.ReasonJustMove)
       else
         if choice == "miaojian_update" then
           if player:getMark("@miaojian") == 0 then
@@ -1317,7 +1315,7 @@ local junshen_trigger = fk.CreateTriggerSkill{
   can_trigger = function(self, event, target, player, data)
     if target ~= player or not player:hasSkill(junshen) then return false end
     if event == fk.AfterCardTargetDeclared then
-      if data.card.trueName ~= "slash" then return false end
+      if data.card.trueName ~= "slash" or data.card.suit ~= Card.Heart then return false end
       local current_targets = TargetGroup:getRealTargets(data.tos)
       for _, p in ipairs(player.room.alive_players) do
         if not table.contains(current_targets, p.id) and not player:isProhibited(p, data.card) and
@@ -1572,9 +1570,7 @@ local sgsh__daoshu = fk.CreateActiveSkill{
           skillName = self.name,
         }
       elseif player.dead or room:askForSkillInvoke(target, self.name, nil, "#sgsh__daoshu-give:"..player.id.."::"..choice) then
-        local dummy = Fk:cloneCard("dilu")
-        dummy:addSubcards(cards)
-        room:moveCardTo(dummy, Card.PlayerHand, player, fk.ReasonGive, self.name, nil, true, target.id)
+        room:moveCardTo(cards, Card.PlayerHand, player, fk.ReasonGive, self.name, nil, true, target.id)
       else
         room:damage{
           from = player,

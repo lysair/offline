@@ -510,10 +510,7 @@ local ofl__huishi = fk.CreateActiveSkill{
     if #cards == 0 then return end
     local to = room:askForChoosePlayers(player, targets, 1, 1, "#ofl__huishi-give", self.name, true)
     if #to > 0 then
-      to = to[1]
-      local dummy = Fk:cloneCard("dilu")
-      dummy:addSubcards(table.map(cards, function(card) return card:getEffectiveId() end))
-      room:obtainCard(to, dummy, true, fk.ReasonGive)
+      room:obtainCard(to[1], cards, true, fk.ReasonGive)
     else
       room:moveCards({
         ids = table.map(cards, function(card) return card:getEffectiveId() end),
