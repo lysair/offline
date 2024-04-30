@@ -310,14 +310,24 @@ local hantong = fk.CreateActiveSkill{
   name = "hantong",
   card_num = 1,
   target_num = 0,
-  prompt = "#hantong-jijiang",
+  prompt = "#hantong-active",
   expand_pile = "bgm_edict",
   derived_piles = "bgm_edict",
+  interaction = function(self)
+    local names = table.filter({"jijiang","hujia","xueyi","jiuyuan"}, function (skill)
+      return not Self:hasSkill(skill, true)
+    end)
+    if #names > 0 then
+      return UI.ComboBox { choices = names }
+    end
+  end,
   card_filter = function(self, to_select, selected)
     return #selected == 0 and Self:getPileNameOfId(to_select) == "bgm_edict"
   end,
   can_use = function(self, player)
-    return #player:getPile("bgm_edict") > 0 and not player:hasSkill("jijiang", true)
+    return #player:getPile("bgm_edict") > 0 and table.find({"jijiang","hujia","xueyi","jiuyuan"}, function (skill)
+      return not player:hasSkill(skill, true)
+    end)
   end,
   on_use = function(self, room, effect)
     local player = room:getPlayerById(effect.from)
@@ -330,10 +340,12 @@ local hantong = fk.CreateActiveSkill{
       proposer = player.id,
     })
     if player.dead then return end
-    room:handleAddLoseSkills(player, "jijiang")
+    local skill = self.interaction.data
+    room:handleAddLoseSkills(player, skill)
     room.logic:getCurrentEvent():findParent(GameEvent.Turn):addCleaner(function()
-      room:handleAddLoseSkills(player, "-jijiang")
+      room:handleAddLoseSkills(player, "-"..skill)
     end)
+    player:broadcastSkillInvoke(skill)
   end,
 }
 local hantong_trigger = fk.CreateTriggerSkill{
@@ -453,7 +465,7 @@ Fk:loadTranslationTable{
   ["hantong"] = "汉统",
   [":hantong"] = "弃牌阶段结束时，你可以将此阶段内你因游戏规则弃置的牌置于武将牌上，称为“诏”。你可以移去一张“诏”，获得〖护驾〗，〖激将〗，〖救援〗或〖血裔〗直到回合结束。 ",
   ["bgm_edict"] = "诏",
-  ["#hantong-jijiang"] = "汉统：你可以移去一张“诏”，获得〖激将〗直到回合结束",
+  ["#hantong-active"] = "汉统：你可以移去一张“诏”，本回合获得〖护驾〗，〖激将〗，〖救援〗或〖血裔〗",
   ["#hantong-invoke"] = "汉统：你可以将此阶段内弃置的牌置于武将牌上称为“诏”",
   ["#hantong-cost"] = "汉统：你可以移去一张“诏”，获得〖%arg〗直到回合结束",
   ["#hantong-two"] = "汉统：你可以移去至多两张“诏”，获得〖护驾〗或〖激将〗直到回合结束",
