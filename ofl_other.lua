@@ -534,17 +534,18 @@ local zhaoluan = fk.CreateActiveSkill{
     return "#zhaoluan-damage::"..Self:getMark(self.name)
   end,
   can_use = function(self, player)
-    return player:getMark(self.name) ~= 0 and player:getMark("zhaoluan-phase") == 0 and --这里不能用usedSkillTimes
-      not Fk:currentRoom():getPlayerById(player:getMark(self.name)).dead
+    return player:getMark(self.name) ~= 0 and not Fk:currentRoom():getPlayerById(player:getMark(self.name)).dead
   end,
   card_filter = Util.FalseFunc,
-  target_filter = function(self, to_select, selected, selected_cards)
-    return #selected == 0
+  target_filter = function(self, to_select, selected)
+    return #selected == 0 and not table.contains(U.getMark(Self, "zhaoluan_target-phase"), to_select)
   end,
   on_use = function(self, room, effect)
     local player = room:getPlayerById(effect.from)
     local target = room:getPlayerById(effect.tos[1])
-    room:setPlayerMark(player, "zhaoluan-phase", 1)
+    local mark = U.getMark(player, "zhaoluan_target-phase")
+    table.insert(mark, target.id)
+    room:setPlayerMark(player, "zhaoluan_target-phase", mark)
     local src = room:getPlayerById(player:getMark(self.name))
     player:broadcastSkillInvoke(self.name, math.random(3, 4))
     room:notifySkillInvoked(player, self.name, "offensive")
@@ -614,14 +615,17 @@ godjiaxu:addSkill(lianpoj)
 godjiaxu:addSkill(zhaoluan)
 Fk:loadTranslationTable{
   ["godjiaxu"] = "神贾诩",
+  ["#godjiaxu"] = "倒悬云衢",
   ["cv:godjiaxu"] = "酉良",
+	["illustrator:godjiaxu"] = "鬼画府",
+
   ["lianpoj"] = "炼魄",
   [":lianpoj"] = "锁定技，若场上的最大阵营为：<br>反贼，其他角色手牌上限-1，所有角色出牌阶段使用【杀】次数上限+1、攻击范围+1；<br>"..
   "主忠，其他角色不能对除其以外的角色使用【桃】；<br>多个最大阵营，其他角色死亡后，伤害来源摸两张牌或回复1点体力。<br>"..
   "每轮开始时，你展示一张未加入游戏的身份牌或一张已死亡角色的身份牌，本轮视为该阵营角色数+1。",
   ["zhaoluan"] = "兆乱",
   [":zhaoluan"] = "限定技，一名角色濒死结算后，若其仍处于濒死状态，你可以令其加3点体力上限并失去所有非锁定技，回复体力至3并摸四张牌。"..
-  "出牌阶段限一次，你可以令该角色减1点体力上限，其对一名你选择的角色造成1点伤害。",
+  "出牌阶段对每名角色限一次，你可以令该角色减1点体力上限，其对一名你选择的角色造成1点伤害。",
   ["@lianpoj"] = "炼魄",
   ["@lianpoj_add"] = "炼魄增加",
   ["#lianpoj-choice"] = "炼魄：选择本轮视为增加的一个身份",
