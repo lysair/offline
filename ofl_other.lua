@@ -443,7 +443,7 @@ local lianpoj = fk.CreateTriggerSkill{
     end
   end,
 
-  refresh_events = {fk.GameStart, fk.EventAcquireSkill, fk.BeforeGameOverJudge, fk.AfterPlayerRevived, fk.RoundEnd, fk.EventLoseSkill},
+  refresh_events = {fk.GameStart, fk.EventAcquireSkill, fk.GameOverJudge, fk.AfterPlayerRevived, fk.RoundEnd, fk.EventLoseSkill},
   can_refresh = function(self, event, target, player, data)
     if event == fk.RoundEnd then
       return type(player.room:getBanner("@lianpoj_add")) == "table"
