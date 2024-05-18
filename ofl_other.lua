@@ -617,7 +617,7 @@ Fk:loadTranslationTable{
   ["godjiaxu"] = "神贾诩",
   ["#godjiaxu"] = "倒悬云衢",
   ["cv:godjiaxu"] = "酉良",
-	["illustrator:godjiaxu"] = "鬼画府",
+  ["illustrator:godjiaxu"] = "鬼画府",
 
   ["lianpoj"] = "炼魄",
   [":lianpoj"] = "锁定技，若场上的最大阵营为：<br>反贼，其他角色手牌上限-1，所有角色出牌阶段使用【杀】次数上限+1、攻击范围+1；<br>"..

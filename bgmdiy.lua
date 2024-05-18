@@ -93,8 +93,8 @@ simazhao:addSkill(langgu)
 Fk:loadTranslationTable{
   ["bgm__simazhao"] = "司马昭",
   ["#bgm__simazhao"] = "狼子野心",
-	["designer:bgm__simazhao"] = "尹昭晨",
-	["illustrator:bgm__simazhao"] = "YellowKiss",
+  ["designer:bgm__simazhao"] = "尹昭晨",
+  ["illustrator:bgm__simazhao"] = "YellowKiss",
 
   ["bgm__zhaoxin"] = "昭心",
   [":bgm__zhaoxin"] = "摸牌阶段结束时，你可以展示所有手牌：若如此做，视为你使用一张【杀】。",
@@ -186,8 +186,8 @@ wangyuanji:addSkill(shude)
 Fk:loadTranslationTable{
   ["bgm__wangyuanji"] = "王元姬",
   ["#bgm__wangyuanji"] = "文明皇后",
-	["designer:bgm__wangyuanji"] = "尹昭晨",
-	["illustrator:bgm__wangyuanji"] = "YellowKiss",
+  ["designer:bgm__wangyuanji"] = "尹昭晨",
+  ["illustrator:bgm__wangyuanji"] = "YellowKiss",
 
   ["fuluan"] = "扶乱",
   [":fuluan"] = "出牌阶段限一次，若你未于本阶段使用过【杀】，你可以弃置三张相同花色的牌并选择攻击范围内的一名角色：若如此做，该角色将武将牌翻面，你不能使用【杀】直到回合结束。 ",
@@ -263,8 +263,8 @@ gongsunzan:addSkill(tuqi)
 Fk:loadTranslationTable{
   ["bgm__gongsunzan"] = "公孙瓒",
   ["#bgm__gongsunzan"] = "白马将军",
-	["designer:bgm__gongsunzan"] = "爱放泡的鱼",
-	["illustrator:bgm__gongsunzan"] = "XXX",
+  ["designer:bgm__gongsunzan"] = "爱放泡的鱼",
+  ["illustrator:bgm__gongsunzan"] = "XXX",
 
   ["bgm__yicong"] = "义从",
   [":bgm__yicong"] = "弃牌阶段结束时，你可以将至少一张牌置于武将牌上，称为“扈”。其他角色与你的距离+X。（X为“扈”的数量）",
@@ -456,8 +456,8 @@ liuxie:addSkill(hantong)
 Fk:loadTranslationTable{
   ["bgm__liuxie"] = "刘协",
   ["#bgm__liuxie"] = "汉献帝",
-	["designer:bgm__liuxie"] = "姚以轩",
-	["illustrator:bgm__liuxie"] = "XXX",
+  ["designer:bgm__liuxie"] = "姚以轩",
+  ["illustrator:bgm__liuxie"] = "XXX",
 
   ["huangen"] = "皇恩",
   [":huangen"] = "当锦囊牌指定指定多于一个目标时，你可以取消至多X个目标（X为你的体力值），然后这些角色各摸一张牌。",

@@ -61,13 +61,13 @@ fuwan:addSkill(chizhong)
 Fk:loadTranslationTable{
   ["#tqt__fuwan"] = "沉毅的国丈",
   ["tqt__fuwan"] = "伏完",
-	["designer:tqt__fuwan"] = "凌天翼",
-	["illustrator:tqt__fuwan"] = "LiuHeng",
-	["fengyin"] = "奉印",
-	[":fengyin"] = "其他角色的回合开始时，若其当前的体力值不小于你，你可以交给其一张【杀】，令其跳过其出牌阶段和弃牌阶段。",
-	["#fengyin"] = "奉印: 你可以交给 %dest 一张【杀】，跳过其出牌阶段和弃牌阶段",
-	["chizhong"] = "持重",
-	[":chizhong"] = "锁定技，你的手牌上限等于你的体力上限；有角色死亡时，你加1点体力上限。",
+  ["designer:tqt__fuwan"] = "凌天翼",
+  ["illustrator:tqt__fuwan"] = "LiuHeng",
+  ["fengyin"] = "奉印",
+  [":fengyin"] = "其他角色的回合开始时，若其当前的体力值不小于你，你可以交给其一张【杀】，令其跳过其出牌阶段和弃牌阶段。",
+  ["#fengyin"] = "奉印: 你可以交给 %dest 一张【杀】，跳过其出牌阶段和弃牌阶段",
+  ["chizhong"] = "持重",
+  [":chizhong"] = "锁定技，你的手牌上限等于你的体力上限；有角色死亡时，你加1点体力上限。",
 }
 
 
@@ -160,16 +160,16 @@ jiben:addSkill(duanzhi)
 Fk:loadTranslationTable{
   ["tqt__jiping"] = "吉本",
   ["#tqt__jiping"] = "誓死除奸恶",
-	["designer:tqt__jiping"] = "凌天翼",
-	["illustrator:tqt__jiping"] = "Aimer彩三",
+  ["designer:tqt__jiping"] = "凌天翼",
+  ["illustrator:tqt__jiping"] = "Aimer彩三",
 
-	["duyi"] = "毒医",
-	[":duyi"] = "出牌阶段限一次，你可以亮出牌堆顶的一张牌并交给一名角色，若此牌为黑色，该角色不能使用或打出其手牌，直到回合结束。",
-	["#duyi"] = "毒医: 你可以亮出牌堆顶的一张牌并交给一名角色",
-	["#duyi-choose"] = "毒医: 将 %arg 交给一名角色",
-	["@@duyi-turn"] = "毒医",
-	["duanzhi"] = "断指",
-	[":duanzhi"] = "当你成为其他角色使用的牌的目标后，你可以弃置其至多两张牌，然后你失去1点体力。",
+  ["duyi"] = "毒医",
+  [":duyi"] = "出牌阶段限一次，你可以亮出牌堆顶的一张牌并交给一名角色，若此牌为黑色，该角色不能使用或打出其手牌，直到回合结束。",
+  ["#duyi"] = "毒医: 你可以亮出牌堆顶的一张牌并交给一名角色",
+  ["#duyi-choose"] = "毒医: 将 %arg 交给一名角色",
+  ["@@duyi-turn"] = "毒医",
+  ["duanzhi"] = "断指",
+  [":duanzhi"] = "当你成为其他角色使用的牌的目标后，你可以弃置其至多两张牌，然后你失去1点体力。",
   ["#duanzhi-invoke"] = "断指：你可以弃置 %src 至多两张牌，然后失去1点体力",
 }
 
@@ -300,17 +300,17 @@ fuhuanghou:addSkill(cangni)
 Fk:loadTranslationTable{
   ["tqt__fuhuanghou"] = "伏皇后",
   ["#tqt__fuhuanghou"] = "誓死除奸恶",
-	["designer:tqt__fuhuanghou"] = "凌天翼",
-	["illustrator:tqt__fuhuanghou"] = "G.G.G.",
+  ["designer:tqt__fuhuanghou"] = "凌天翼",
+  ["illustrator:tqt__fuhuanghou"] = "G.G.G.",
 
-	["mixin"] = "密信",
-	[":mixin"] = "出牌阶段限一次，你可以将一张手牌交给一名其他角色，该角色须对你选择的另一名角色使用一张【杀】（无距离限制），否则你选择的角色观看其手牌并获得其中一张。",
-	["#mixin"] = "密信：先选交给牌的角色，再选其需要使用【杀】的目标",
-	["#mixin-slash"] = "密信：你需对 %src 使用一张【杀】，否则其观看你手牌并获得其中一张",
-	["@@duyi-turn"] = "毒医",
+  ["mixin"] = "密信",
+  [":mixin"] = "出牌阶段限一次，你可以将一张手牌交给一名其他角色，该角色须对你选择的另一名角色使用一张【杀】（无距离限制），否则你选择的角色观看其手牌并获得其中一张。",
+  ["#mixin"] = "密信：先选交给牌的角色，再选其需要使用【杀】的目标",
+  ["#mixin-slash"] = "密信：你需对 %src 使用一张【杀】，否则其观看你手牌并获得其中一张",
+  ["@@duyi-turn"] = "毒医",
 
-	["cangni"] = "藏匿",
-	[":cangni"] = "弃牌阶段开始时，你可以回复1点体力或摸两张牌，然后将你的武将牌翻面；其他角色的回合内，当你获得（每回合限一次）/失去一次牌时，若你的武将牌背面朝上，你可以令该角色摸/弃置一张牌。 ",
+  ["cangni"] = "藏匿",
+  [":cangni"] = "弃牌阶段开始时，你可以回复1点体力或摸两张牌，然后将你的武将牌翻面；其他角色的回合内，当你获得（每回合限一次）/失去一次牌时，若你的武将牌背面朝上，你可以令该角色摸/弃置一张牌。 ",
   ["#cangni-invoke"] = "藏匿：你可以回复1点体力或摸两张牌，然后将武将牌翻面",
   ["#cangni-draw"] = "藏匿：你可以令 %src 摸一张牌。",
   ["#cangni-discard"] = "藏匿：你可以令 %src 弃置一张牌。",
