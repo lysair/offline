@@ -400,7 +400,7 @@ local chouyou_trigger = fk.CreateTriggerSkill{
   events = {fk.SkillEffect},
   can_trigger = function(self, event, target, player, data)
     return target and target:getMark("@@chouyou") ~= 0 and table.contains(target:getMark("@@chouyou"), player.id) and not player.dead and
-      target:hasSkill(data, true) and not data.attached_equip and not data.name:startsWith("#") and not data.name:endsWith("&") and
+      target:hasSkill(data, true) and data:isPlayerSkill(target) and not data.name:startsWith("#") and
       not data:isInstanceOf(ViewAsSkill) and  --FIXME: 转化技！
       not table.contains({Skill.Limited, Skill.Wake, Skill.Quest}, data.frequency)
   end,

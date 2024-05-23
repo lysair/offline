@@ -582,7 +582,7 @@ local zhaoluan_trigger = fk.CreateTriggerSkill{
     room:changeMaxHp(target, 3)
     local skills = {}
     for _, s in ipairs(target.player_skills) do
-      if not (s.attached_equip or s.name[#s.name] == "&") and s.frequency ~= Skill.Compulsory and s.frequency ~= Skill.Wake then
+      if s:isPlayerSkill(target) and s.frequency ~= Skill.Compulsory and s.frequency ~= Skill.Wake then
         table.insertIfNeed(skills, s.name)
       end
     end
