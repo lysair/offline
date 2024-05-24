@@ -17,7 +17,7 @@ local conqueror = fk.CreateTriggerSkill{
   anim_type = "offensive",
   events = {fk.TargetSpecified},
   can_trigger = function(self, event, target, player, data)
-    return target == player and player:hasSkill(self) and data.card.trueName == "slash" and
+    return target == player and player:hasSkill(self) and data.card.trueName == "slash" and data.to ~= player.id and
       not player.room:getPlayerById(data.to).dead
   end,
   on_cost = function(self, event, target, player, data)
@@ -31,20 +31,17 @@ local conqueror = fk.CreateTriggerSkill{
   on_use = function(self, event, target, player, data)
     local room = player.room
     local to = room:getPlayerById(data.to)
-    if to:isNude() then
-      data.disresponsiveList = data.disresponsiveList or {}
-      table.insert(data.disresponsiveList, data.to)
-    else
+    if not to:isNude() then
       local card = room:askForCard(to, 1, 1, true, self.name, true, ".|.|.|.|.|"..self.cost_data,
         "#conqueror-give:"..player.id.."::"..self.cost_data)
       if #card > 0 then
-        room:obtainCard(player.id, card[1], true, fk.ReasonGive)
-        return true
-      else
-        data.disresponsiveList = data.disresponsiveList or {}
-        table.insert(data.disresponsiveList, data.to)
+        room:obtainCard(player.id, card[1], true, fk.ReasonGive, to.id, self.name)
+        table.insertIfNeed(data.nullifiedTargets, data.to)
+        return
       end
     end
+    data.disresponsiveList = data.disresponsiveList or {}
+    table.insert(data.disresponsiveList, data.to)
   end,
 }
 caesar:addSkill(conqueror)
