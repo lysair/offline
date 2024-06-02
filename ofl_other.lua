@@ -1783,4 +1783,321 @@ Fk:loadTranslationTable{
   [":sgsh__jinghe"] = "当一名其他角色获得随机副将武将牌前，你可以令其改为观看两张未加入游戏的武将牌并选择一张作为副将。",
 }
 
+local zhouji = General(extension, "ofl__zhouji", "wu", 3, 3, General.Female)
+local ofl__yanmouz = fk.CreateTriggerSkill{
+  name = "ofl__yanmouz",
+  anim_type = "drawcard",
+  events = {fk.AfterCardsMove},
+  can_trigger = function(self, event, target, player, data)
+    if player:hasSkill(self) then
+      local dat = 1
+      local ids = {}
+      local room = player.room
+      for _, move in ipairs(data) do
+        if move.toArea == Card.DiscardPile then
+          if move.moveReason == fk.ReasonDiscard and move.from and move.from ~= player.id then
+            for _, info in ipairs(move.moveInfo) do
+              if (info.fromArea == Card.PlayerHand or info.fromArea == Card.PlayerEquip) and
+                (Fk:getCardById(info.cardId).name == "fire__slash" or Fk:getCardById(info.cardId).trueName == "fire_attack") and
+                room:getCardArea(info.cardId) == Card.DiscardPile then
+                table.insertIfNeed(ids, info.cardId)
+              end
+            end
+          elseif move.moveReason == fk.ReasonJudge then
+            local judge_event = room.logic:getCurrentEvent():findParent(GameEvent.Judge)
+            if judge_event and judge_event.data[1].who ~= player then
+              for _, info in ipairs(move.moveInfo) do
+                if info.fromArea == Card.Processing and
+                  (Fk:getCardById(info.cardId).name == "fire__slash" or Fk:getCardById(info.cardId).trueName == "fire_attack") and
+                  room:getCardArea(info.cardId) == Card.DiscardPile then
+                  table.insertIfNeed(ids, info.cardId)
+                end
+              end
+            end
+          end
+        elseif move.to == player.id and move.toArea == Player.Hand then
+          for _, info in ipairs(move.moveInfo) do
+            if (Fk:getCardById(info.cardId).name == "fire__slash" or Fk:getCardById(info.cardId).trueName == "fire_attack") then
+              table.insertIfNeed(ids, info.cardId)
+              dat = 2
+            end
+          end
+        end
+      end
+      ids = U.moveCardsHoldingAreaCheck(room, ids)
+      if #ids > 0 then
+        self.cost_data = {ids, dat}
+        return true
+      end
+    end
+  end,
+  on_cost = function(self, event, target, player, data)
+    local room = player.room
+    if self.cost_data[2] == 1 then
+      return room:askForSkillInvoke(player, self.name, nil, "#ofl__yanmouz-invoke")
+    else
+      local use = U.askForUseRealCard(room, player, self.cost_data[1], ".", self.name, "#ofl__yanmouz-use",
+      { bypass_times = false, extraUse = false }, true)
+      if use then
+        self.cost_data = {use, 2}
+        return true
+      end
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    if self.cost_data[2] == 1 then
+      local ids = table.simpleClone(self.cost_data[1])
+      if #ids == 0 then return end
+      local cards, _ = U.askforChooseCardsAndChoice(player, ids, {"OK"}, self.name, "#ofl__yanmouz-choose", {"get_all"}, 1, #ids)
+      if #cards > 0 then
+        ids = cards
+      end
+      room:moveCardTo(ids, Card.PlayerHand, player, fk.ReasonPrey, self.name)
+    else
+      room:useCard(table.simpleClone(self.cost_data[1]))
+    end
+  end,
+}
+local ofl__zhanyan = fk.CreateActiveSkill{
+  name = "ofl__zhanyan",
+  anim_type = "offensive",
+  card_num = 0,
+  target_num = 0,
+  prompt = function(self, card)
+    return "#ofl__zhanyan-active"
+  end,
+  can_use = function(self, player)
+    return player:usedSkillTimes(self.name, Player.HistoryPhase) == 0 and
+      table.find(Fk:currentRoom().alive_players, function(p) return player:inMyAttackRange(p) end)
+  end,
+  card_filter = Util.FalseFunc,
+  on_use = function(self, room, effect)
+    local player = room:getPlayerById(effect.from)
+    local targets = table.filter(room:getOtherPlayers(player), function(p)
+      return player:inMyAttackRange(p) end)
+    if #targets == 0 then return end
+    room:doIndicate(player.id, table.map(targets, Util.IdMapper))
+    local n1, n2 = 0, 0
+    for _, target in ipairs(targets) do
+      if not target.dead then
+        local expand_pile = table.filter(room.discard_pile, function(id)
+          return Fk:getCardById(id).name == "fire__slash" or Fk:getCardById(id).trueName == "fire_attack"
+        end)
+        local card = room:askForCard(target, 1, 1, false, self.name, true, ".|.|.|.|fire__slash;fire_attack",
+          "#ofl__zhanyan-put", expand_pile)
+        if #card == 1 then
+          if table.contains(target:getCardIds(Player.Hand), card[1]) then
+            n2 = n2 + 1
+            room:moveCards({
+              ids = card,
+              from = target.id,
+              toArea = Card.DrawPile,
+              moveReason = fk.ReasonPut,
+              skillName = self.name,
+              proposer = target.id,
+              moveVisible = true,
+            })
+          else
+            room:moveCards({
+              ids = card,
+              toArea = Card.DrawPile,
+              moveReason = fk.ReasonPut,
+              skillName = self.name,
+              proposer = target.id,
+              moveVisible = true,
+            })
+          end
+        else
+          n1 = n1 + 1
+          room:damage{
+            from = player,
+            to = target,
+            damage = 1,
+            damageType = fk.FireDamage,
+            skillName = self.name,
+          }
+        end
+      end
+    end
+    if not player.dead and n1 ~= 0 and n2 ~= 0 then
+      player:drawCards(math.min(n1, n2), self.name)
+    end
+  end,
+}
+local ofl__yuhuo = fk.CreateTriggerSkill{
+  name = "ofl__yuhuo",
+  anim_type = "defensive",
+  frequency = Skill.Compulsory,
+  events = {fk.DamageInflicted},
+  can_trigger = function(self, _, target, player, data)
+    return target == player and player:hasSkill(self) and data.damageType == fk.FireDamage
+  end,
+  on_use = Util.TrueFunc,
+}
+local ofl__yuhuo_maxcards = fk.CreateMaxCardsSkill{
+  name = "#ofl__yuhuo_maxcards",
+  main_skill = ofl__yuhuo,
+  exclude_from = function(self, player, card)
+    return player:hasSkill(self) and (card.name == "fire__slash" or card.trueName == "fire_attack")
+  end,
+}
+ofl__yuhuo:addRelatedSkill(ofl__yuhuo_maxcards)
+zhouji:addSkill(ofl__yanmouz)
+zhouji:addSkill(ofl__zhanyan)
+zhouji:addSkill(ofl__yuhuo)
+Fk:loadTranslationTable{
+  ["ofl__zhouji"] = "周姬",
+  ["#ofl__zhouji"] = "江东的红莲",
+  ["illustrator:ofl__zhouji"] = "xerez",
+  ["ofl__yanmouz"] = "炎谋",
+  [":ofl__yanmouz"] = "当其他角色的【火攻】、火【杀】因弃置或判定而置入弃牌堆后，你可以获得之；当你获得牌后，你可以使用其中一张【火攻】或火【杀】。",
+  ["ofl__zhanyan"] = "绽焰",
+  [":ofl__zhanyan"] = "出牌阶段限一次，你可以令你攻击范围内的所有角色依次选择一项：1.你对其造成1点火焰伤害；2.将手牌或弃牌堆中的一张"..
+  "【火攻】或火【杀】置于牌堆顶。选择完成后，你摸X张牌（X为被选择次数较少的项被选择的次数）。",
+  ["ofl__yuhuo"] = "驭火",
+  [":ofl__yuhuo"] = "锁定技，防止你受到的火焰伤害；你手牌中的【火攻】和火【杀】不计入手牌上限。",
+
+  ["#ofl__yanmouz-invoke"] = "炎谋：你可以获得其中的【火攻】和火【杀】",
+  ["#ofl__yanmouz-use"] = "炎谋：你可以使用其中一张【火攻】或火【杀】",
+  ["#ofl__yanmouz-choose"] = "炎谋：选择要获得的牌",
+  ["#ofl__zhanyan-active"] = "绽焰：令攻击范围内的角色选择受到火焰伤害或将【火攻】或火【杀】置于牌堆顶",
+  ["#ofl__zhanyan-put"] = "绽焰：将一张【火攻】或火【杀】置于牌堆顶，点“取消”则受到1点火焰伤害",
+}
+
+local ehuan = General(extension, "ofl__ehuan", "qun", 4)
+ehuan.subkingdom = "shu"
+local ofl__diwan = fk.CreateTriggerSkill{
+  name = "ofl__diwan",
+  anim_type = "drawcard",
+  events = {fk.TargetSpecified},
+  can_trigger = function(self, event, target, player, data)
+    return target == player and player:hasSkill(self) and player:usedSkillTimes(self.name, Player.HistoryTurn) == 0 and
+      data.card.trueName == "slash" and data.firstTarget and
+      #AimGroup:getAllTargets(data.tos) > 0
+  end,
+  on_use = function(self, event, target, player, data)
+    player:drawCards(#AimGroup:getAllTargets(data.tos), self.name)
+  end,
+}
+local ofl__suiluan = fk.CreateTriggerSkill{
+  name = "ofl__suiluan",
+  anim_type = "offensive",
+  events = {fk.AfterCardTargetDeclared},
+  can_trigger = function(self, event, target, player, data)
+    if target == player and player:hasSkill(self) and data.card.trueName == "slash" then
+      local current_targets = TargetGroup:getRealTargets(data.tos)
+      for _, p in ipairs(player.room.alive_players) do
+        if not table.contains(current_targets, p.id) and not player:isProhibited(p, data.card) and
+            data.card.skill:modTargetFilter(p.id, current_targets, data.from, data.card, true) then
+          return true
+        end
+      end
+    end
+  end,
+  on_cost = function(self, event, target, player, data)
+    local room = player.room
+    local current_targets = TargetGroup:getRealTargets(data.tos)
+    local targets = {}
+    for _, p in ipairs(room.alive_players) do
+      if not table.contains(current_targets, p.id) and not player:isProhibited(p, data.card) and
+          data.card.skill:modTargetFilter(p.id, current_targets, data.from, data.card, true) then
+        table.insert(targets, p.id)
+      end
+    end
+    local tos = room:askForChoosePlayers(player, targets, 1, 2, "#ofl__suiluan-choose:::"..data.card:toLogString(), self.name, true)
+    if #tos > 0 then
+      self.cost_data = tos
+      return true
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    data.extra_data = data.extra_data or {}
+    data.extra_data.ofl__suiluan = player.id
+    table.insertTable(data.tos, table.map(self.cost_data, function(p) return {p} end))
+  end,
+}
+local ofl__suiluan_delay = fk.CreateTriggerSkill{
+  name = "#ofl__suiluan_delay",
+  mute = true,
+  events = {fk.CardUseFinished, fk.Damaged},
+  can_trigger = function(self, event, target, player, data)
+    if target == player then
+      if event == fk.CardUseFinished then
+        return data.extra_data and data.extra_data.ofl__suiluan and data.extra_data.ofl__suiluan == player.id and
+          #TargetGroup:getRealTargets(data.tos) > 0 and table.find(TargetGroup:getRealTargets(data.tos), function(id)
+            return not player.room:getPlayerById(id).dead and player.room:getPlayerById(id):canUseTo(Fk:cloneCard("slash"), player)
+          end)
+      elseif data.card and player.kingdom ~= "shu" then
+        local room = player.room
+        local card_event = room.logic:getCurrentEvent():findParent(GameEvent.UseCard)
+        if not card_event then return false end
+        local use = card_event.data[1]
+        return use.extra_data and use.extra_data.ofl__suiluan_use and use.extra_data.ofl__suiluan_use == player.id
+      end
+    end
+  end,
+  on_cost = Util.TrueFunc,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    if event == fk.CardUseFinished then
+      for _, id in ipairs(TargetGroup:getRealTargets(data.tos)) do
+        if player.dead then return end
+        local p = room:getPlayerById(id)
+        if not p.dead and p:canUseTo(Fk:cloneCard("slash"), player) then
+          local use = room:askForUseCard(p, "ofl__suiluan", "slash", "#ofl__suiluan-use:"..player.id, true, {must_targets = {player.id}})
+          if use then
+            use.extra_data = use.extra_data or {}
+            use.extra_data.ofl__suiluan_use = player.id
+            room:useCard(use)
+          end
+        end
+      end
+    else
+      room:changeKingdom(player, "shu", true)
+    end
+  end,
+}
+local ofl__conghan = fk.CreateTriggerSkill{
+  name = "ofl__conghan",
+  events = {fk.Damage},
+  can_trigger = function(self, event, target, player, data)
+    return player:hasSkill(self) and target.seat == 1 and
+      player:canUseTo(Fk:cloneCard("slash"), data.to, {bypass_distances = true, bypass_times = true})
+  end,
+  on_cost = function(self, event, target, player, data)
+    local use = player.room:askForUseCard(player, self.name, "slash", "#ofl__conghan-use::"..data.to.id, true,
+      { must_targets = {data.to.id}, bypass_distances = true, bypass_times = true })
+    if use then
+      self.cost_data = use
+      return true
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    player.room:useCard(self.cost_data)
+  end,
+}
+ofl__suiluan:addRelatedSkill(ofl__suiluan_delay)
+ofl__suiluan:addAttachedKingdom("qun")
+ofl__conghan:addAttachedKingdom("shu")
+ehuan:addSkill(ofl__diwan)
+ehuan:addSkill(ofl__suiluan)
+ehuan:addSkill(ofl__conghan)
+Fk:loadTranslationTable{
+  ["ofl__ehuan"] = "鄂焕",
+  ["#ofl__ehuan"] = "牙门汉将",
+  ["illustrator:ofl__ehuan"] = "小强",
+  ["ofl__diwan"] = "敌万",
+  [":ofl__diwan"] = "每回合限一次，当你使用【杀】指定目标后，你可以摸X张牌（X为此牌的目标数）。",
+  ["ofl__suiluan"] = "随乱",
+  [":ofl__suiluan"] = "群势力技，你使用【杀】可以多指定至多两个目标，若如此做，此【杀】结算后，所有目标角色依次可以对你使用一张【杀】，"..
+  "当你以此法受到伤害后，你变更势力至蜀。",
+  ["ofl__conghan"] = "从汉",
+  [":ofl__conghan"] = "蜀势力技，当一号位造成伤害后，你可以对受到此伤害的角色使用一张【杀】。",
+
+  ["#ofl__suiluan-choose"] = "随乱：你可以为此%arg额外指定至多两个目标",
+  ["#ofl__suiluan-use"] = "随乱：你可以对 %src 使用一张【杀】",
+  ["#ofl__conghan-use"] = "从汉：你可以对 %dest 使用一张【杀】",
+}
+
 return extension
