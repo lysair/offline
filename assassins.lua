@@ -62,13 +62,18 @@ Fk:loadTranslationTable{
   ["#tqt__fuwan"] = "沉毅的国丈",
   ["tqt__fuwan"] = "伏完",
   ["designer:tqt__fuwan"] = "凌天翼",
+  ["cv:tqt__fuwan"] = "KEVIN",
   ["illustrator:tqt__fuwan"] = "LiuHeng",
   ["fengyin"] = "奉印",
   [":fengyin"] = "其他角色的回合开始时，若其当前的体力值不小于你，你可以交给其一张【杀】，令其跳过其出牌阶段和弃牌阶段。",
   ["#fengyin"] = "奉印: 你可以交给 %dest 一张【杀】，跳过其出牌阶段和弃牌阶段",
   ["chizhong"] = "持重",
   [":chizhong"] = "锁定技，你的手牌上限等于你的体力上限；有角色死亡时，你加1点体力上限。",
-}
+  ["$fengyin1"] = "政在曹公，外家岂敢据此尊位。",
+  ["$fengyin2"] = "天子都许，时局已安，某自当解绶奉印。",
+  ["$chizhong1"] = "遭逢翻覆，兵凶不休，独志不可夺。",
+  ["$chizhong2"] = "秉节持重，大义在肩，唯百舍重茧。",
+  ["~tqt__fuwan"] = "曹孟德，何相逼至此？",}
 
 
 local jiben = General(extension, "tqt__jiping", "qun", 3)
