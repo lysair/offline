@@ -1939,7 +1939,7 @@ local ofl__yuhuo_maxcards = fk.CreateMaxCardsSkill{
   name = "#ofl__yuhuo_maxcards",
   main_skill = ofl__yuhuo,
   exclude_from = function(self, player, card)
-    return player:hasSkill(self) and (card.name == "fire__slash" or card.trueName == "fire_attack")
+    return player:hasSkill("ofl__yuhuo") and (card.name == "fire__slash" or card.trueName == "fire_attack")
   end,
 }
 ofl__yuhuo:addRelatedSkill(ofl__yuhuo_maxcards)
@@ -1965,7 +1965,7 @@ Fk:loadTranslationTable{
   ["#ofl__zhanyan-put"] = "绽焰：将一张【火攻】或火【杀】置于牌堆顶，点“取消”则受到1点火焰伤害",
 }
 
-local ehuan = General(extension, "ofl__ehuan", "qun", 4)
+local ehuan = General(extension, "ofl__ehuan", "qun", 5)
 ehuan.subkingdom = "shu"
 local ofl__diwan = fk.CreateTriggerSkill{
   name = "ofl__diwan",
