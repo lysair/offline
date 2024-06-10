@@ -1837,7 +1837,7 @@ local ofl__yanmouz = fk.CreateTriggerSkill{
       return room:askForSkillInvoke(player, self.name, nil, "#ofl__yanmouz-invoke")
     else
       local use = U.askForUseRealCard(room, player, self.cost_data[1], ".", self.name, "#ofl__yanmouz-use",
-      { bypass_times = false, extraUse = false }, true)
+      { bypass_times = true, extraUse = true }, true)
       if use then
         self.cost_data = {use, 2}
         return true
@@ -2062,7 +2062,10 @@ local ofl__conghan = fk.CreateTriggerSkill{
   name = "ofl__conghan",
   events = {fk.Damage},
   can_trigger = function(self, event, target, player, data)
-    return player:hasSkill(self) and target.seat == 1 and
+    return
+      player:hasSkill(self) and
+      target and
+      target.seat == 1 and
       player:canUseTo(Fk:cloneCard("slash"), data.to, {bypass_distances = true, bypass_times = true})
   end,
   on_cost = function(self, event, target, player, data)
