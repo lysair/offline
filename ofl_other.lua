@@ -1399,6 +1399,80 @@ Fk:loadTranslationTable{
   ["junshen_choice1"] = "弃置装备",
   ["junshen_choice2"] = "受伤+1",
 }
+
+local lvchang = General(extension, "ofl__lvchang", "wei", 4)
+local ofl__juwu = fk.CreateTriggerSkill{
+  name = "ofl__juwu",
+  anim_type = "defensive",
+  frequency = Skill.Compulsory,
+  events = {fk.PreCardEffect},
+  can_trigger = function(self, event, target, player, data)
+    if player:hasSkill(self) and (data.card.name == "slash" or data.card.name == "stab__slash") and
+      player.id == data.to and data.from then
+      local from = player.room:getPlayerById(data.from)
+      return not from.dead and #table.filter(player.room.alive_players, function(p)
+        return from:inMyAttackRange(p)
+      end) > 2
+    end
+  end,
+  on_use = Util.TrueFunc,
+}
+local ofl__shouxiang = fk.CreateTriggerSkill{
+  name = "ofl__shouxiang",
+  anim_type = "drawcard",
+  events = {fk.DrawNCards},
+  on_cost = function(self, event, target, player, data)
+    local n = #table.filter(player.room.alive_players, function(p)
+      return p:inMyAttackRange(player)
+    end)
+    return player.room:askForSkillInvoke(player, self.name, nil, "#ofl__shouxiang-invoke:::"..n)
+  end,
+  on_use = function(self, event, target, player, data)
+    local n = #table.filter(player.room.alive_players, function(p)
+      return p:inMyAttackRange(player)
+    end)
+    data.n = data.n + math.min(n, 3)
+    player:skip(Player.Play)
+  end,
+}
+local ofl__shouxiang_delay = fk.CreateTriggerSkill{
+  name = "#ofl__shouxiang",
+  mute = true,
+  events = {fk.EventPhaseStart},
+  can_trigger = function(self, event, target, player, data)
+    return target == player and player.phase == Player.Discard and player:usedSkillTimes("ofl__shouxiang", Player.HistoryTurn) > 0 and
+      not player:isKongcheng() and
+      #table.filter(player.room.alive_players, function(p)
+        return p:inMyAttackRange(player)
+      end) > 0
+  end,
+  on_cost = Util.TrueFunc,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    local n = #table.filter(player.room.alive_players, function(p)
+      return p:inMyAttackRange(player)
+    end)
+    n = math.min(n, 3)
+    U.askForDistribution(player, player:getCardIds("h"), room:getOtherPlayers(player), self.name, 0, n, "#ofl__shouxiang-give:::"..n,
+      "", false, 1)
+  end,
+}
+ofl__shouxiang:addRelatedSkill(ofl__shouxiang_delay)
+lvchang:addSkill(ofl__juwu)
+lvchang:addSkill(ofl__shouxiang)
+Fk:loadTranslationTable{
+  ["ofl__lvchang"] = "吕常",
+  ["#ofl__lvchang"] = "险守襄阳",
+  ["illustrator:ofl__lvchang"] = "戚屹",
+  ["ofl__juwu"] = "拒武",
+  [":ofl__juwu"] = "锁定技，若一名角色攻击范围内包含至少三名角色，该角色对你使用的无属性【杀】无效。",
+  ["ofl__shouxiang"] = "守襄",
+  [":ofl__shouxiang"] = "摸牌阶段，你可以多摸X张牌，然后跳过你的出牌阶段。若如此做，此回合的弃牌阶段开始时，你可以交给至多X名角色各一张手牌"..
+  "（X为攻击范围内含有你的角色数且至多为3）。",
+  ["#ofl__shouxiang-invoke"] = "守襄：你可以多摸%arg张牌并跳过出牌阶段，弃牌阶段开始时可以将牌交给其他角色",
+  ["#ofl__shouxiang-give"] = "守襄：你可以交给%arg名角色各一张手牌",
+}
+
 local jiaxu = General(extension, "chaos__jiaxu", "qun", 3)
 local miesha = fk.CreateTriggerSkill{
   name = "miesha",
