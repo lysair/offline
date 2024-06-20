@@ -57,6 +57,7 @@ local langgu = fk.CreateTriggerSkill{
     room:doIndicate(player.id, {data.from.id})
     local all = data.from:getCardIds("h")
     local cards = table.filter(all, function(id) return Fk:getCardById(id).suit == judge.card.suit end)
+    if #cards < 1 then return end
     local throw, choice = U.askforChooseCardsAndChoice(player, cards, {"OK"}, self.name, "#langgu-card", {"langgu_all", "Cancel"},
     1, #cards, all)
     if choice == "langgu_all" then
