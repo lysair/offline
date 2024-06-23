@@ -7,6 +7,83 @@ Fk:loadTranslationTable{
 
 local U = require "packages/utility/utility"
 
+local fhyx_pile = {
+  {"slash", Card.Club, 4},
+  {"thunder__slash", Card.Spade, 4},
+  {"fire__slash", Card.Heart, 4},
+  {"jink", Card.Diamond, 2},
+  {"peach", Card.Heart, 6},
+  {"analeptic", Card.Spade, 9},
+  {"ex_nihilo", Card.Heart, 8},
+  {"amazing_grace", Card.Heart, 4},
+  {"dismantlement", Card.Spade, 3},
+  {"snatch", Card.Diamond, 3},
+  {"fire_attack", Card.Diamond, 2},
+  {"duel", Card.Diamond, 1},
+  {"savage_assault", Card.Spade, 13},
+  {"archery_attack", Card.Heart, 1},
+  {"nullification", Card.Heart, 13},
+  {"indulgence", Card.Heart, 6},
+  {"supply_shortage", Card.Spade, 10},
+  {"iron_chain", Card.Club, 12},
+  {"lightning", Card.Heart, 12},
+  {"collateral", Card.Club, 13},
+  {"god_salvation", Card.Heart, 1},
+  {"eight_diagram", Card.Spade, 2},
+  {"nioh_shield", Card.Club, 2},
+  {"vine", Card.Spade, 2},
+  {"silver_lion", Card.Club, 1},
+  {"dilu", Card.Club, 5},
+  {"chitu", Card.Heart, 5},
+  {"dayuan", Card.Spade, 13},
+  {"zixing", Card.Diamond, 13},
+  {"hualiu", Card.Diamond, 13},
+  {"zhuahuangfeidian", Card.Heart, 13},
+  {"jueying", Card.Spade, 5},
+  {"crossbow", Card.Diamond, 1},
+  {"qinggang_sword", Card.Spade, 6},
+  {"guding_blade", Card.Spade, 1},
+  {"ice_sword", Card.Spade, 2},
+  {"double_swords", Card.Spade, 2},
+  {"blade", Card.Spade, 5},
+  {"spear", Card.Spade, 12},
+  {"axe", Card.Diamond, 5},
+  {"fan", Card.Diamond, 1},
+  {"halberd", Card.Diamond, 12},
+  {"kylin_bow", Card.Heart, 5},
+}
+local function PrepareExtraPile(room)
+  if room.tag["fhyx_extra_pile"] then return end
+  local all_names = {}
+  for _, card in ipairs(Fk.cards) do
+    if not table.contains(room.disabled_packs, card.package.name) and not card.is_derived then
+      table.insertIfNeed(all_names, card.name)
+    end
+  end
+  local cards = {}
+  for _, name in ipairs(all_names) do
+    local c = table.filter(fhyx_pile, function(card)
+      return card[1] == name
+    end)
+    if #c > 0 then
+      table.insert(cards, c[1])
+    else
+      table.insert(cards, {name, math.random(1, 4), math.random(1, 13)})
+    end
+  end
+  U.prepareDeriveCards(room, cards, "fhyx_extra_pile")
+  room:setBanner("@$fhyx_extra_pile", table.simpleClone(room.tag["fhyx_extra_pile"]))
+end
+local function SetFhyxExtraPileBanner(room)
+  local ids = table.filter(room.tag["fhyx_extra_pile"], function(id)
+    return room:getCardArea(id) == Card.Void
+  end)
+  room:setBanner("@$fhyx_extra_pile", ids)
+end
+Fk:loadTranslationTable{
+  ["@$fhyx_extra_pile"] = "额外牌堆",
+}
+
 local bianfuren = General(extension, "ofl__bianfuren", "wei", 3, 3, General.Female)
 local ofl__fuding = fk.CreateTriggerSkill{
   name = "ofl__fuding",
@@ -209,7 +286,7 @@ Fk:loadTranslationTable{
   ["#ofl__shameng-discard"] = "歃盟：是否弃置这些牌令双方摸牌？你摸%arg张，%dest摸%arg2张",
 }
 
---[[
+
 local sunshao = General:new(extension, "ofl__sunshao", "wu", 3)
 local ofl__dingyi = fk.CreateTriggerSkill{
   name = "ofl__dingyi",
@@ -230,7 +307,8 @@ local ofl__dingyi = fk.CreateTriggerSkill{
       end
     end
     if #targets == 0 or #suits == 5 then return false end
-    local tos, cardId = room:askForChooseCardAndPlayers(player, targets, 1, 1, ".|.|^("..table.concat(suits,",")..")", "#ofl__dingyi-use", self.name, true)
+    local tos, cardId = room:askForChooseCardAndPlayers(player, targets, 1, 1, ".|.|^("..table.concat(suits,",")..")",
+      "#ofl__dingyi-use", self.name, true)
     if #tos > 0 and cardId then
       local to = room:getPlayerById(tos[1])
       to:addToPile(self.name, cardId, true, self.name)
@@ -263,7 +341,7 @@ local ofl__dingyi_delay = fk.CreateTriggerSkill{
         who = player,
         num = math.min(player:getLostHp(), 2),
         recoverBy = player,
-        skillName = "dingyi",
+        skillName = "ofl__dingyi",
       })
     end
   end,
@@ -282,54 +360,82 @@ local ofl__dingyi_targetmod = fk.CreateTargetModSkill{
     return #player:getPile("ofl__dingyi") > 0 and Fk:getCardById(player:getPile("ofl__dingyi")[1]).suit == Card.Club
   end,
 }
-ofl__dingyi:addRelatedSkill(ofl__dingyi_delay)
-ofl__dingyi:addRelatedSkill(ofl__dingyi_maxcards)
-ofl__dingyi:addRelatedSkill(ofl__dingyi_targetmod)
-sunshao:addSkill(ofl__dingyi)
-local zuici = fk.CreateTriggerSkill{
+local ofl__zuici = fk.CreateTriggerSkill{
   name = "ofl__zuici",
   anim_type = "masochism",
   events = {fk.Damaged},
   can_trigger = function(self, event, target, player, data)
-    return target == player and player:hasSkill(self.name) and data.from and not data.from.dead and data.from:getMark("@dingyi") ~= 0
+    return target == player and player:hasSkill(self.name) and
+      table.find(player.room.alive_players, function(p)
+        return #p:getPile("ofl__dingyi") > 0
+      end)
   end,
   on_cost = function(self, event, target, player, data)
-    local choice = player.room:askForChoice(player, {"Cancel", "dismantlement", "ex_nihilo", "nullification"}, self.name,
-      "#zuici-invoke::"..data.from.id)
-    if choice ~= "Cancel" then
-      self.cost_data = choice
+    local targets = table.map(table.filter(player.room.alive_players, function(p)
+      return #p:getPile("ofl__dingyi") > 0
+    end),
+    Util.IdMapper)
+    local to = player.room:askForChoosePlayers(player, targets, 1, 1, "#ofl__zuici-choose", self.name, true)
+    if #to > 0 then
+      self.cost_data = to[1]
       return true
     end
   end,
   on_use = function(self, event, target, player, data)
     local room = player.room
-    room:doIndicate(player.id, {data.from.id})
-    room:setPlayerMark(data.from, "@dingyi", 0)
-    local cards = room:getCardsFromPileByRule(self.cost_data)
-    if #cards > 0 then
-      room:moveCards({
-        ids = cards,
-        to = data.from.id,
-        toArea = Card.PlayerHand,
-        moveReason = fk.ReasonJustMove,
-        proposer = player.id,
-        skillName = self.name,
-      })
+    local to = room:getPlayerById(self.cost_data)
+    room:moveCardTo(to:getPile("ofl__dingyi"), Card.PlayerHand, player, fk.ReasonJustMove, self.name, "", true, player.id)
+    if player.dead or to.dead then return end
+    local cards = table.filter(player.room:getBanner("@$fhyx_extra_pile"), function(id)
+      return table.contains({"ex_nihilo", "dismantlement", "nullification"}, Fk:getCardById(id).name)
+    end)
+    if #cards == 0 then return end
+    local card = room:askForCard(player, 1, 1, false, self.name, false, ".|.|.|.|.|.|"..table.concat(cards, ","),
+      "#ofl__zuici-give::"..to.id, cards)
+    room:moveCardTo(card, Card.PlayerHand, to, fk.ReasonJustMove, self.name, "", true, player.id)
+  end,
+
+  refresh_events = {fk.EventAcquireSkill, fk.AfterCardsMove},
+  can_refresh = function(self, event, target, player, data)
+    if event == fk.EventAcquireSkill then
+      return target == player and data == self
+    else
+      for _, move in ipairs(data) do
+        for _, info in ipairs(move.moveInfo) do
+          if player.room.tag["fhyx_extra_pile"] and
+            table.contains(player.room.tag["fhyx_extra_pile"], info.cardId) then
+            return player.seat == 1
+          end
+        end
+      end
+    end
+  end,
+  on_refresh = function(self, event, target, player, data)
+    if event == fk.EventAcquireSkill then
+      PrepareExtraPile(player.room)
+    else
+      SetFhyxExtraPileBanner(player.room)  --偷懒
     end
   end,
 }
---]]
-
+ofl__dingyi:addRelatedSkill(ofl__dingyi_delay)
+ofl__dingyi:addRelatedSkill(ofl__dingyi_maxcards)
+ofl__dingyi:addRelatedSkill(ofl__dingyi_targetmod)
+sunshao:addSkill(ofl__dingyi)
+sunshao:addSkill(ofl__zuici)
 Fk:loadTranslationTable{
   ["ofl__sunshao"] = "孙邵",
   ["ofl__dingyi"] = "定仪",
   [":ofl__dingyi"] = "每轮开始时，你可以摸一张牌，然后将一张与“定仪”牌花色均不同的牌置于一名没有“定仪”牌的角色武将牌旁。有“定仪”牌的角色根据花色"..
-  "获得对应效果：<br>♠，手牌上限+4；<br><font color='red'>♥</font>，每回合首次脱离濒死状态时，回复2点体力；♣，使用牌无距离限制；"..
+  "获得对应效果：<br>♠，手牌上限+4；<br><font color='red'>♥</font>，每回合首次脱离濒死状态时，回复2点体力；<br>♣，使用牌无距离限制；<br>"..
   "<font color='red'>♦</font>，摸牌阶段多摸两张牌。",
-  ["#ofl__dingyi-use"] = "定仪：一张与“定仪”牌花色均不同的牌置于一名角色武将牌旁",
-  ["#ofl__dingyi_delay"] = "定仪",
   ["ofl__zuici"] = "罪辞",
   [":ofl__zuici"] = "当你受到伤害后，你可以获得一名角色的“定仪”牌，然后你从额外牌堆选择一张智囊牌令其获得。",
+  ["#ofl__dingyi-use"] = "定仪：将一张“定仪”牌置于一名角色武将牌旁，根据花色其获得效果<br>♠ 手牌上限+4；<font color='red'>♥</font> "..
+  "脱离濒死时回复体力<br>♣ 使用牌无距离限制；<font color='red'>♦</font> 摸牌阶段多摸两张牌",
+  ["#ofl__dingyi_delay"] = "定仪",
+  ["#ofl__zuici-choose"] = "罪辞：你可以获得一名角色的“定仪”牌，然后从额外牌堆选择一张智囊牌令其获得",
+  ["#ofl__zuici-give"] = "罪辞：选择一张智囊牌令 %dest 获得",
 }
 
 local duyu = General(extension, "ofl__duyu", "qun", 4)
@@ -465,13 +571,118 @@ Fk:loadTranslationTable{
   ["@$ofl__miewu-turn"] = "灭吴",
 }
 
+local luotong = General(extension, "ofl__luotong", "wu", 4)
+local ofl__minshi = fk.CreateActiveSkill{
+  name = "ofl__minshi",
+  anim_type = "support",
+  card_num = 0,
+  target_num = 0,
+  prompt = function(self, card)
+    return "#ofl__minshi-active"
+  end,
+  can_use = function(self, player)
+    return player:usedSkillTimes(self.name, Player.HistoryPhase) == 0 and
+      table.find(Fk:currentRoom().alive_players, function(p)
+        return p:getHandcardNum() < p.hp
+      end) and
+      table.find(Fk:currentRoom():getBanner("@$fhyx_extra_pile"), function(id)
+        return Fk:getCardById(id).type == Card.TypeBasic
+      end)
+  end,
+  card_filter = Util.FalseFunc,
+  on_use = function(self, room, effect)
+    local player = room:getPlayerById(effect.from)
+    local targets = table.filter(room:getAlivePlayers(), function(p)
+      return p:getHandcardNum() < p.hp end)
+    if #targets == 0 then return end
+    room:doIndicate(player.id, table.map(targets, Util.IdMapper))
+    local cards = table.filter(room:getBanner("@$fhyx_extra_pile"), function(id)
+      return Fk:getCardById(id).type == Card.TypeBasic
+    end)
+    cards = table.random(cards, 3)
+    if #cards == 0 then return end
+    for _, id in ipairs(cards) do
+      room:setCardMark(Fk:getCardById(id), MarkEnum.DestructIntoDiscard, 1)
+    end
+    local result = U.askForDistribution(player, cards, targets, self.name, 1, #cards, "#ofl__minshi-give", cards, false)
+    local n = #table.filter(targets, function(p)
+      return #result[tostring(p.id)] == 0
+    end)
+    if n > 0 and not player.dead then
+      room:loseHp(player, n, self.name)
+    end
+  end,
+}
+local ofl__minshi_trigger = fk.CreateTriggerSkill{
+  name = "#ofl__minshi_trigger",
+
+  refresh_events = {fk.EventAcquireSkill, fk.AfterCardsMove},
+  can_refresh = function(self, event, target, player, data)
+    if event == fk.EventAcquireSkill then
+      return target == player and data == self
+    else
+      for _, move in ipairs(data) do
+        for _, info in ipairs(move.moveInfo) do
+          if player.room.tag["fhyx_extra_pile"] and
+            table.contains(player.room.tag["fhyx_extra_pile"], info.cardId) then
+            return player.seat == 1
+          end
+        end
+      end
+    end
+  end,
+  on_refresh = function(self, event, target, player, data)
+    if event == fk.EventAcquireSkill then
+      PrepareExtraPile(player.room)
+    else
+      SetFhyxExtraPileBanner(player.room)  --偷懒
+    end
+  end,
+}
+local ofl__xianming = fk.CreateTriggerSkill{
+  name = "ofl__xianming",
+  anim_type = "drawcard",
+  events = {fk.BeforeCardsMove},
+  can_trigger = function(self, event, target, player, data)
+    if player:hasSkill(self) and player:usedSkillTimes(self.name, Player.HistoryTurn) == 0 then
+      local ids = {}
+      for _, move in ipairs(data) do
+        for _, info in ipairs(move.moveInfo) do
+          if info.fromArea == Card.Void and player.room:getBanner("@$fhyx_extra_pile") and
+            table.contains(player.room:getBanner("@$fhyx_extra_pile"), info.cardId) then
+            table.insertIfNeed(ids, info.cardId)
+          end
+        end
+      end
+      return #table.filter(player.room:getBanner("@$fhyx_extra_pile"), function(id)
+        return Fk:getCardById(id).type == Card.TypeBasic
+      end) == #ids
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    player:drawCards(2, self.name)
+    if player:isWounded() and not player.dead then
+      player.room:recover{
+        who = player,
+        num = 1,
+        recoverBy = player,
+        skillName = self.name
+      }
+    end
+  end,
+}
+ofl__minshi:addRelatedSkill(ofl__minshi_trigger)
+luotong:addSkill(ofl__minshi)
+luotong:addSkill(ofl__xianming)
 Fk:loadTranslationTable{
   ["ofl__luotong"] = "骆统",
   ["ofl__minshi"] = "悯施",
   [":ofl__minshi"] = "出牌阶段限一次，你可以选择所有手牌数少于体力值的角色并观看额外牌堆中至多三张基本牌，然后你可以依次将其中任意张牌"..
   "交给任意角色。然后你选择的角色中每有一名未获得牌的角色，你失去1点体力。",
   ["ofl__xianming"] = "显名",
-  [":ofl__xianming"] = "每回合限一次，当额外牌堆中失去最后一张基本牌时，你可以摸两张牌并回复1点体力。",
+  [":ofl__xianming"] = "每回合限一次，当额外牌堆中失去最后一张基本牌时，你可以摸两张牌并回复1点体力。",  --移动牌时移动牌神将
+  ["#ofl__minshi-active"] = "悯施：观看额外牌堆的三张基本牌，任意交给手牌数小于体力值的角色",
+  ["#ofl__minshi-give"] = "悯施：分配这些牌，每有一名没获得牌的目标角色，你失去1点体力",
 }
 
 local godguojia = General(extension, "ofl__godguojia", "god", 3)
