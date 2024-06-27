@@ -661,7 +661,7 @@ local yuqi = fk.CreateTriggerSkill{
       return false
     end
     local cards = room:getNCards(n1)
-    local result = U.askForArrangeCards(player, self.name, {cards, "Top", target.general, player.general}, "#ofl__yuqi",
+    local result = room:askForArrangeCards(player, self.name, {cards, "Top", target.general, player.general}, "#ofl__yuqi",
     false, 0, {n1, n2, n3}, {0, 1, 1})
     local top, bottom = result[2], result[3]
     local moveInfos = {}
@@ -1364,9 +1364,9 @@ local junshen_trigger = fk.CreateTriggerSkill{
         local choices = {"junshen_choice1", "junshen_choice2"}
         local choice = room:askForChoice(data.to, choices, "junshen", "#junshen-choice:" .. player.id)
         if choice == "junshen_choice1" then
-          data.damage = data.damage + 1
-        elseif choice == "junshen_choice2" then
           data.to:throwAllCards("e")
+        elseif choice == "junshen_choice2" then
+          data.damage = data.damage + 1
         end
       end
     end
