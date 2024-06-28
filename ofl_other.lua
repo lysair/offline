@@ -1606,6 +1606,213 @@ Fk:loadTranslationTable{
   [":chaos__lulue"] = "出牌阶段限一次，你可选择一名装备区里有牌的其他角色并弃置X张牌（X为其装备区里的牌数），对其造成1点伤害。",
 }
 
+local sgsh__huanhua_blacklist = {
+  "zuoci", "ol_ex__zuoci", "js__xushao", "shichangshi",
+}
+
+local nanhualaoxian = General(extension, "sgsh__nanhualaoxian", "qun", 3)
+local sgsh__jidao = fk.CreateTriggerSkill{
+  name = "sgsh__jidao",
+  anim_type = "drawcard",
+  events = {fk.PropertyChange},
+  can_trigger = function(self, event, target, player, data)
+    return player:hasSkill(self) and player.general == "sgsh__nanhualaoxian" and target.deputyGeneral ~= "" and
+      data.deputyGeneral and data.deputyGeneral == ""
+  end,
+  on_use = function(self, event, target, player, data)
+    player:drawCards(1, self.name)
+  end,
+}
+local sgsh__feisheng = fk.CreateTriggerSkill{
+  name = "sgsh__feisheng",
+  anim_type = "drawcard",
+  events = {fk.PropertyChange},
+  can_trigger = function(self, event, target, player, data)
+    return target == player and player:hasSkill(self) and player.deputyGeneral == "sgsh__nanhualaoxian" and
+      data.deputyGeneral and data.deputyGeneral == ""
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    local choices = {"draw2"}
+    if player:isWounded() then
+      table.insert(choices, "recover")
+    end
+    local choice = room:askForChoice(player, choices, self.name)
+    if choice == "draw2" then
+      player:drawCards(2, self.name)
+    else
+      room:recover({
+        who = player,
+        num = 1,
+        recoverBy = player,
+        skillName = self.name
+      })
+    end
+  end,
+}
+local sgsh__jinghe = fk.CreateTriggerSkill{
+  name = "sgsh__jinghe",
+  anim_type = "support",
+  events = {fk.BeforePropertyChange},
+  can_trigger = function(self, event, target, player, data)
+    return player:hasSkill(self) and data.deputyGeneral and data.deputyGeneral ~= "" and not target.dead
+  end,
+  on_cost = function(self, event, target, player, data)
+    return player.room:askForSkillInvoke(player, self.name, nil, "#sgsh__jinghe-invoke::"..target.id)
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    room:doIndicate(player.id, {target.id})
+    local generals = room:getNGenerals(2)
+    local general = room:askForGeneral(target, generals, 1, true)
+    if general == nil then
+      general = table.random(generals)
+    end
+    table.removeOne(generals, general)
+    room:returnToGeneralPile(generals)
+    data.deputyGeneral = general
+  end,
+}
+local sgsh__huanhua = fk.CreateTriggerSkill{
+  name = "sgsh__huanhua",
+  mute = true,
+  frequency = Skill.Compulsory,
+  events = {fk.Damaged},
+  can_trigger = function(self, event, target, player, data)
+    return target == player and not player.dead
+  end,
+  on_trigger = function(self, event, target, player, data)  --假装不是技能
+    local room = player.room
+    for i = 1, data.damage do
+      if player.dead then break end
+      if player.deputyGeneral == "" then
+        local generals = table.filter(room.general_pile, function(name)
+          return not table.contains(sgsh__huanhua_blacklist, name)
+        end)
+        local general = table.random(generals)
+        table.removeOne(room.general_pile, general)
+        room:changeHero(player, general, false, true, true, false, false)
+      else
+        room:returnToGeneralPile({player.deputyGeneral})
+        room:changeHero(player, "", false, true, true, false, false)
+      end
+    end
+  end,
+}
+nanhualaoxian:addSkill(sgsh__jidao)
+nanhualaoxian:addSkill(sgsh__feisheng)
+nanhualaoxian:addSkill(sgsh__jinghe)
+nanhualaoxian:addSkill(sgsh__huanhua)
+Fk:loadTranslationTable{
+  ["sgsh__nanhualaoxian"] = "幻南华老仙",
+  ["#sgsh__nanhualaoxian"] = "虚步太清",
+  ["illustrator:sgsh__nanhualaoxian"] = "鬼画府",
+
+  ["sgsh__jidao"] = "祭祷",
+  [":sgsh__jidao"] = "主将技，当一名角色的副将被移除时，你可以摸一张牌。",
+  ["sgsh__feisheng"] = "飞升",
+  [":sgsh__feisheng"] = "副将技，当此武将牌被移除时，你可以回复1点体力或摸两张牌。",
+  ["sgsh__jinghe"] = "经合",
+  [":sgsh__jinghe"] = "当一名其他角色获得副将武将牌前，你可以令其改为观看两张未加入游戏的武将牌并选择一张作为副将。",
+  ["sgsh__huanhua"] = "幻化",
+  [":sgsh__huanhua"] = "锁定技，当一名角色受到1点伤害后，若其没有副将，其从未加入游戏的武将牌中随机获得一张作为副将；若其已有副将，则移除其副将。"..
+  "此技能不会失效。",  --原本是一个逆天的四将模式，魔改一下
+  ["#sgsh__jinghe-invoke"] = "经合：%dest 即将获得随机副将，是否改为其观看两张并选择一张作为副将？",
+
+  ["$sgsh__jidao"] = "含气求道，祸福难料，且与阁下共参之。",
+  ["$sgsh__feisheng"] = "蕴气修德，其理易现，容吾为君讲解一二。",
+  ["$sgsh__jinghe1"] = "此经所书晦涩难明，吾偶有所悟，愿为君陈之。",
+  ["$sgsh__jinghe2"] = "大音希声，大象无形，天理难明，以经合之。",
+  ["~sgsh__nanhualaoxian"] = "此理闻所未闻，参不透啊。",
+}
+
+local sgsh__zuoci = General(extension, "sgsh__zuoci", "qun", 3)
+local sgsh__huashen = fk.CreateActiveSkill{
+  name = "sgsh__huashen",
+  prompt = "#sgsh__huashen",
+  target_num = 1,
+  can_use = function(self, player)
+    return player:usedSkillTimes(self.name, Player.HistoryPhase) == 0
+  end,
+  card_filter = Util.FalseFunc,
+  target_filter = function(self, to_select, selected)
+    return #selected == 0 and to_select ~= Self.id
+  end,
+  on_use = function(self, room, effect)
+    local player = room:getPlayerById(effect.from)
+    local target = room:getPlayerById(effect.tos[1])
+    local skills = Fk.generals[target.general]:getSkillNameList()
+      if Fk.generals[target.deputyGeneral] then
+        table.insertTableIfNeed(skills, Fk.generals[target.deputyGeneral]:getSkillNameList())
+      end
+      skills = table.filter(skills, function(skill_name)
+        local skill = Fk.skills[skill_name]
+        return not player:hasSkill(skill, true) and (#skill.attachedKingdom == 0 or table.contains(skill.attachedKingdom, player.kingdom))
+      end)
+      if #skills > 0 then
+        local skill = room:askForChoice(player, skills, self.name, "#sgsh__huashen-choice", true)
+        room:setPlayerMark(player, "@sgsh__huashen-turn", skill)
+        room:handleAddLoseSkills(player, skill, nil, true, false)
+      end
+  end,
+}
+local sgsh__huashen_delay = fk.CreateTriggerSkill {
+  name = "#sgsh__huashen_delay",
+
+  refresh_events = {fk.TurnEnd},
+  can_refresh = function(self, event, target, player, data)
+    return target == player and player:getMark("@sgsh__huashen-turn") ~= 0
+  end,
+  on_refresh = function(self, event, target, player, data)
+    local skill = player:getMark("@sgsh__huashen-turn")
+    player.room:handleAddLoseSkills(player, "-"..skill, nil, true, true)
+  end,
+}
+local sgsh__xinsheng = fk.CreateTriggerSkill{
+  name = "sgsh__xinsheng",
+  anim_type = "special",
+  events = {fk.EventPhaseStart},
+  can_trigger = function(self, event, target, player, data)
+    return target == player and player:hasSkill(self) and player.phase == Player.Start and
+      player.general == "sgsh__zuoci" and player.deputyGeneral ~= ""
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    room:returnToGeneralPile({player.deputyGeneral})
+    room:changeHero(player, "", false, true, true, false, false)
+    if player.dead then return end
+    local generals = table.filter(room.general_pile, function(name)
+      return not table.contains(sgsh__huanhua_blacklist, name)
+    end)
+    local general = table.random(generals)
+    table.removeOne(room.general_pile, general)
+    room:changeHero(player, general, false, true, true, false, false)
+  end,
+}
+sgsh__huashen:addRelatedSkill(sgsh__huashen_delay)
+sgsh__zuoci:addSkill(sgsh__huashen)
+sgsh__zuoci:addSkill(sgsh__xinsheng)
+sgsh__zuoci:addSkill("sgsh__huanhua")
+Fk:loadTranslationTable{
+  ["sgsh__zuoci"] = "幻左慈",
+  ["#sgsh__zuoci"] = "谜之仙人",
+  ["illustrator:sgsh__zuoci"] = "JanusLausDeo",
+
+  ["sgsh__huashen"] = "化身",
+  [":sgsh__huashen"] = "出牌阶段限一次，你可以选择一名其他角色，声明其武将牌上的一个技能，你获得此技能直到回合结束。",
+  ["sgsh__xinsheng"] = "新生",
+  [":sgsh__xinsheng"] = "主将技，准备阶段，你可以移除副将，然后随机获得一张未加入游戏的武将牌作为副将。",
+  ["#sgsh__huashen"] = "化身：获得一名其他角色武将牌上的一个技能，直到回合结束",
+  ["#sgsh__huashen-choice"] = "化身：选择你要获得的技能",
+  ["@sgsh__huashen-turn"] = "化身",
+
+  ["$sgsh__huashen1"] = "幻化之术谨之，为政者自当为国为民。",
+  ["$sgsh__huashen2"] = "天之政者，不可逆之，逆之，虽胜必衰矣。",
+  ["$sgsh__xinsheng1"] = "傍日月，携宇宙，游乎尘垢之外。",
+  ["$sgsh__xinsheng2"] = "吾多与天地精神之往来，生即死，死又复生。",
+  ["~sgsh__zuoci"] = "万事，皆有因果。",
+}
+
 local sgsh__jianggan = General(extension, "sgsh__jianggan", "wei", 3)
 local sgsh__daoshu = fk.CreateActiveSkill{
   name = "sgsh__daoshu",
@@ -1672,100 +1879,6 @@ Fk:loadTranslationTable{
   ["$weicheng_sgsh__jianggan1"] = "公瑾，吾之诚心，天地可鉴。",
   ["$weicheng_sgsh__jianggan2"] = "遥闻芳烈，故来叙阔。",
   ["~sgsh__jianggan"] = "蔡张之罪，非我之过呀！",
-}
-
-local sgsh__jiangwei = General(extension, "sgsh__jiangwei", "shu", 4)
-local sgsh__zhijij = fk.CreateViewAsSkill{
-  name = "sgsh__zhijij",
-  anim_type = "control",
-  pattern = "nullification",
-  prompt = "#sgsh__zhijij",
-  card_filter = Util.FalseFunc,
-  view_as = function(self, cards)
-    local card = Fk:cloneCard("nullification")
-    card.skillName = self.name
-    return card
-  end,
-  before_use = function (self, player, use)
-    player.room:loseHp(player, 1, self.name)
-  end,
-}
-sgsh__jiangwei:addSkill("tiaoxin")
-sgsh__jiangwei:addSkill(sgsh__zhijij)
-Fk:loadTranslationTable{
-  ["sgsh__jiangwei"] = "姜维",
-  ["sgsh__zhijij"] = "智继",
-  [":sgsh__zhijij"] = "当你需要使用【无懈可击】时，你可以失去1点体力，视为使用【无懈可击】。",
-  ["#sgsh__zhijij"] = "智继：你可以失去1点体力，视为使用【无懈可击】",
-}
-
-local sgsh__luxun = General(extension, "sgsh__luxun", "wu", 3)
-local sgsh__lianying = fk.CreateTriggerSkill{
-  name = "sgsh__lianying",
-  anim_type = "drawcard",
-  events = {fk.AfterCardsMove},
-  can_trigger = function(self, event, target, player, data)
-    if player:hasSkill(self.name) and player:isKongcheng() and player:usedSkillTimes(self.name, Player.HistoryTurn) == 0 then
-      for _, move in ipairs(data) do
-        if move.from == player.id then
-          for _, info in ipairs(move.moveInfo) do
-            if info.fromArea == Card.PlayerHand then
-              return true
-            end
-          end
-        end
-      end
-    end
-  end,
-  on_use = function(self, event, target, player, data)
-    player:drawCards(player.maxHp, self.name)
-  end,
-}
-sgsh__luxun:addSkill("qianxun")
-sgsh__luxun:addSkill(sgsh__lianying)
-Fk:loadTranslationTable{
-  ["sgsh__luxun"] = "陆逊",
-  ["sgsh__lianying"] = "连营",
-  [":sgsh__lianying"] = "每回合限一次，当你失去最后一张手牌后，你可以将手牌摸至体力上限。",
-
-  ["$sgsh__lianying1"] = "失之东隅，收之桑榆。",
-  ["$sgsh__lianying2"] = "天下万物生于有，有生于无。",
-  ["~sgsh__luxun"] = "我何以……至此？",
-}
-
-local sgsh__lvbu = General(extension, "sgsh__lvbu", "qun", 4)
-local sgsh__qingjiao = fk.CreateTriggerSkill{
-  name = "sgsh__qingjiao",
-  anim_type = "drawcard",
-  frequency = Skill.Compulsory,
-  events = {fk.EventPhaseStart},
-  can_trigger = function(self, event, target, player, data)
-    return target == player and player:hasSkill(self) and player.phase == Player.Finish and
-      #player.room.logic:getEventsOfScope(GameEvent.ChangeHp, 1, function(e)
-        local damage = e.data[5]
-        if damage and player == damage.from and damage.to.kingdom == "qun" and damage.to ~= player then
-          return true
-        end
-      end, Player.HistoryTurn) > 0
-  end,
-  on_use = function(self, event, target, player, data)
-    player:drawCards(1, self.name)
-  end,
-}
-sgsh__lvbu:addSkill("wushuang")
-sgsh__lvbu:addSkill(sgsh__qingjiao)
-Fk:loadTranslationTable{
-  ["sgsh__lvbu"] = "吕布",
-  ["sgsh__qingjiao"] = "轻狡",
-  [":sgsh__qingjiao"] = "主公技，锁定技，结束阶段，若你本回合对其他群势力角色造成过伤害，你摸一张牌。",
-}
-
-Fk:loadTranslationTable{
-  ["sgsh__zuoci"] = "左慈",
-  ["sgsh__huanshen"] = "化身",
-  [":sgsh__huanshen"] = "出牌阶段限一次，你可以选择一名其他角色，声明其武将牌上的一个技能，你获得此技能直到回合结束。",
-  ["sgsh__xinsheng"] = "新生",
-  [":sgsh__xinsheng"] = "主将技，准备阶段，你可以移除一张副将，然后随机获得一张未加入游戏的武将牌作为副将。",
 }
 
 local sgsh__huaxiong = General(extension, "sgsh__huaxiong", "qun", 4)
@@ -1845,16 +1958,6 @@ Fk:loadTranslationTable{
   ["$sgsh__qiaoyan1"] = "金银渐欲迷人眼，利字当前诱汝行！",
   ["$sgsh__qiaoyan2"] = "以利驱虎，无往不利！",
   ["~sgsh__lisu"] = "见利忘义，必遭天谴。",
-}
-
-Fk:loadTranslationTable{
-  ["sgsh__nanhualaoxian"] = "南华老仙",
-  ["sgsh__jidao"] = "祭祷",
-  [":sgsh__jidao"] = "主将技，当一名角色的武将牌被移除时，你可以摸一张牌。",
-  ["sgsh__feisheng"] = "飞升",
-  [":sgsh__feisheng"] = "副将技，当此武将牌被移除时，你可以回复1点体力或摸两张牌。",
-  ["sgsh__jinghe"] = "经合",
-  [":sgsh__jinghe"] = "当一名其他角色获得随机副将武将牌前，你可以令其改为观看两张未加入游戏的武将牌并选择一张作为副将。",
 }
 
 local zhouji = General(extension, "ofl__zhouji", "wu", 3, 3, General.Female)
