@@ -654,7 +654,7 @@ local ofl__xianming = fk.CreateTriggerSkill{
           end
         end
       end
-      return #table.filter(player.room:getBanner("@$fhyx_extra_pile"), function(id)
+      return #table.filter(player.room:getBanner("@$fhyx_extra_pile") or {}, function(id)
         return Fk:getCardById(id).type == Card.TypeBasic
       end) == #ids
     end
