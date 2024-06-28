@@ -46,6 +46,10 @@ local xuepin = fk.CreateActiveSkill{
 caoang:addSkill(xuepin)
 Fk:loadTranslationTable{
   ["es__caoang"] = "曹昂",
+  ["#es__caoang"] = "悍不畏死",
+  --["designer:es__caoang"] = "",
+  ["illustrator:es__caoang"] = "木美人",
+
   ["xuepin"] = "血拼",
   [":xuepin"] = "出牌阶段限一次，你可以失去1点体力，弃置你攻击范围内一名角色至多两张牌。若弃置的两张牌类别相同，你回复1点体力。",
   ["#xuepin"] = "血拼：失去1点体力弃置攻击范围内一名角色两张牌，若类别相同你回复1点体力",
@@ -135,6 +139,10 @@ Fk:addSkill(lifengs_present_skill)
 caohong:addSkill(lifengs)
 Fk:loadTranslationTable{
   ["es__caohong"] = "曹洪",
+  ["#es__caohong"] = "忠烈为心",
+  --["designer:es__caohong"] = "",
+  ["illustrator:es__caohong"] = "李秀森",
+
   ["lifengs"] = "厉锋",
   [":lifengs"] = "出牌阶段限一次，你可以获得弃牌堆中的一张装备牌。你可以赠予手牌或装备区内的装备牌。",
   ["#lifengs"] = "厉锋：你可以获得弃牌堆中的一张装备牌",
@@ -183,6 +191,10 @@ local mangji = fk.CreateTriggerSkill{
 zhangfei:addSkill(mangji)
 Fk:loadTranslationTable{
   ["es__zhangfei"] = "张飞",
+  ["#es__zhangfei"] = "万人敌",
+  --["designer:es__zhangfei"] = "",
+  ["illustrator:es__zhangfei"] = "秋呆呆",
+
   ["mangji"] = "莽击",
   [":mangji"] = "锁定技，当你装备区的牌数变化或当你体力值变化后，若你体力值不小于1，你弃置一张手牌并视为使用一张【杀】。",
   ["#mangji-discard"] = "莽击：你需弃置一张手牌并视为使用一张【杀】",
@@ -224,6 +236,10 @@ local jianglie = fk.CreateTriggerSkill{
 chendao:addSkill(jianglie)
 Fk:loadTranslationTable{
   ["es__chendao"] = "陈到",
+  ["#es__chendao"] = "白毦护军",
+  --["designer:es__chendao"] = "",
+  ["illustrator:es__chendao"] = "石婵",
+
   ["jianglie"] = "将烈",
   [":jianglie"] = "出牌阶段限一次，当你使用【杀】指定一个目标后，你可以令其展示所有手牌，然后其需弃置其中一种颜色所有的牌。",
   ["#jianglie-invoke"] = "将烈：你可以令 %dest 展示手牌并弃置其中一种颜色的牌",
@@ -312,6 +328,10 @@ jielve:addRelatedSkill(jielve_trigger)
 ganning:addSkill(jielve)
 Fk:loadTranslationTable{
   ["es__ganning"] = "甘宁",
+  ["#es__ganning"] = "锦帆贼",
+  --["designer:es__ganning"] = "",
+  ["illustrator:es__ganning"] = "黑山老妖",
+
   ["jielve"] = "劫掠",
   [":jielve"] = "出牌阶段限一次，你可以将两张相同颜色的牌当【趁火打劫】使用。你使用【趁火打劫】效果改为：目标角色展示所有手牌，你选择一项："..
   "1.将其中一张牌交给另一名角色；2.你对其造成1点伤害。",
@@ -461,6 +481,10 @@ chouyou:addRelatedSkill(chouyou_trigger)
 sunluban:addSkill(chouyou)
 Fk:loadTranslationTable{
   ["es__sunluban"] = "孙鲁班",  --重量级
+  ["#es__sunluban"] = "为虎作伥",
+  --["designer:es__sunluban"] = "",
+  ["illustrator:es__sunluban"] = "FOOLTOWN",
+
   ["jiaozong"] = "骄纵",
   [":jiaozong"] = "锁定技，其他角色于其出牌阶段使用的第一张红色牌目标须为你，且无距离限制。",
   ["chouyou"] = "仇幽",
@@ -581,6 +605,10 @@ dongzhuo:addSkill(shicha)
 dongzhuo:addSkill(yongquan)
 Fk:loadTranslationTable{
   ["es__dongzhuo"] = "董卓",
+  ["#es__dongzhuo"] = "乱世的魔王",
+  --["designer:es__dongzhuo"] = "",
+  ["illustrator:es__dongzhuo"] = "天龙",
+
   ["tuicheng"] = "推诚",
   [":tuicheng"] = "你可以失去1点体力，视为使用一张【推心置腹】。",
   ["yaoling"] = "耀令",
@@ -621,33 +649,13 @@ local dumou = fk.CreateFilterSkill{
     return card
   end,
 }
-local dumou_trigger = fk.CreateTriggerSkill{
-  name = "#dumou_trigger",
-  frequency = Skill.Compulsory,
-
-  refresh_events = {fk.TurnStart},
-  can_refresh = function(self, event, target, player, data)
-    return target == player and player:hasSkill(self)
-  end,
-  on_refresh = function(self, event, target, player, data)
-    local room = player.room
-    for _, p in ipairs(room.alive_players) do
-      p:filterHandcards()
-    end
-    local turn = room.logic:getCurrentEvent():findParent(GameEvent.Turn)
-    if turn ~= nil then
-      turn:addCleaner(function()
-        for _, p in ipairs(room.alive_players) do
-          p:filterHandcards()
-        end
-      end)
-    end
-  end,
-}
-dumou:addRelatedSkill(dumou_trigger)
 --liru:addSkill(dumou)
 Fk:loadTranslationTable{
   ["es__liru"] = "李儒",  --重量级
+  ["#es__liru"] = "绝策的毒士",
+  --["designer:es__liru"] = "",
+  ["illustrator:es__liru"] = "孟迭",
+
   ["dumou"] = "毒谋",
   [":dumou"] = "锁定技，你的回合内，其他角色的黑色手牌均视为【毒】，你的【毒】均视为【过河拆桥】。",
   ["weiquan"] = "威权",
@@ -655,16 +663,6 @@ Fk:loadTranslationTable{
   "大于体力值，其执行一个额外的弃牌阶段。",
   ["es__renwang"] = "人望",
   [":es__renwang"] = "出牌阶段限一次，你可以选择弃牌堆中一张黑色基本牌，令一名角色获得之。",
-}
-
-Fk:loadTranslationTable{
-  ["es__xuyou"] = "许攸",
-  ["es__shicai"] = "恃才",
-  [":es__shicai"] = "①出牌阶段限一次，你可以弃置一张牌，亮出牌堆顶牌并获得之；当你本回合失去此牌时，此技能视为未发动过。②你的回合内牌堆顶牌对你可见。",
-  ["es__chenggong"] = "逞功",
-  [":es__chenggong"] = "当一名角色使用牌指定目标后，若目标数大于一，你可以令其摸一张牌。",
-  ["es__zezhu"] = "择主",
-  [":es__zezhu"] = "出牌阶段限一次，你可以获得主公区域内一张牌，然后交给其一张牌。",
 }
 
 local zhenji = General(extension, "es__zhenji", "wei", 3, 3, General.Female)

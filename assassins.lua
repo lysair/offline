@@ -304,7 +304,7 @@ fuhuanghou:addSkill(cangni)
 
 Fk:loadTranslationTable{
   ["tqt__fuhuanghou"] = "伏皇后",
-  ["#tqt__fuhuanghou"] = "誓死除奸恶",
+  ["#tqt__fuhuanghou"] = "与世不侵",
   ["designer:tqt__fuhuanghou"] = "凌天翼",
   ["illustrator:tqt__fuhuanghou"] = "G.G.G.",
 

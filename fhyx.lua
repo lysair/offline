@@ -392,7 +392,7 @@ local ofl__zuici = fk.CreateTriggerSkill{
     if #cards == 0 then return end
     local card = room:askForCard(player, 1, 1, false, self.name, false, ".|.|.|.|.|.|"..table.concat(cards, ","),
       "#ofl__zuici-give::"..to.id, cards)
-    room:moveCardTo(card, Card.PlayerHand, to, fk.ReasonJustMove, self.name, "", true, player.id)
+    room:moveCardTo(card, Card.PlayerHand, to, fk.ReasonJustMove, self.name, "", true, player.id, MarkEnum.DestructIntoDiscard)
   end,
 
   refresh_events = {fk.EventAcquireSkill, fk.AfterCardsMove},
@@ -644,7 +644,8 @@ local ofl__xianming = fk.CreateTriggerSkill{
   anim_type = "drawcard",
   events = {fk.BeforeCardsMove},
   can_trigger = function(self, event, target, player, data)
-    if player:hasSkill(self) and player:usedSkillTimes(self.name, Player.HistoryTurn) == 0 then
+    if player:hasSkill(self) and player:usedSkillTimes(self.name, Player.HistoryTurn) == 0 and
+      player.room.tag["fhyx_extra_pile"] then
       local ids = {}
       for _, move in ipairs(data) do
         for _, info in ipairs(move.moveInfo) do
@@ -654,7 +655,7 @@ local ofl__xianming = fk.CreateTriggerSkill{
           end
         end
       end
-      return #table.filter(player.room:getBanner("@$fhyx_extra_pile") or {}, function(id)
+      return #table.filter(player.room:getBanner("@$fhyx_extra_pile"), function(id)
         return Fk:getCardById(id).type == Card.TypeBasic
       end) == #ids
     end
@@ -880,7 +881,7 @@ local ofl__dinghan = fk.CreateTriggerSkill{
       end
       room:setTag("TrickNames", names)
     end
-    local Zhinang = room:getTag("Zhinang")  --请不要模仿这两个tag，之后会将记录本局游戏所用牌名和智囊写到源码游戏流程中
+    local Zhinang = room:getTag("Zhinang")
     if not Zhinang then
       room:setTag("Zhinang", {"ex_nihilo", "dismantlement", "nullification"})
       room:setPlayerMark(player, "@$ofl__dinghan", room:getTag("Zhinang"))
