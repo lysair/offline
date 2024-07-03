@@ -299,30 +299,6 @@ Fk:loadTranslationTable{
   ["#rom__zhenglian-discard"] = "征敛：你可以令一名选择否的角色弃置 %arg 张牌",
 }
 
-Fk:loadTranslationTable{
-  ["ofl__wangyun"] = "王允",
-  ["ofl__lianji"] = "连计",
-  [":ofl__lianji"] = "出牌阶段结束时，若你本阶段使用牌类别数不小于：1，你可以令一名角色摸一张牌；2.你可以回复1点体力；3.你可以令一名其他角色"..
-  "代替你执行本回合剩余阶段。",
-  ["ofl__moucheng"] = "谋逞",
-  [":ofl__moucheng"] = "每回合限一次，你可以将一张黑色牌当【借刀杀人】使用。",
-}
---国战转身份的官盗：钟会 孟达 孙綝 文钦
-
-Fk:loadTranslationTable{
-  ["ofl__caoanmin"] = "曹安民",
-  ["kuishe"] = "窥舍",
-  [":kuishe"] = "出牌阶段限一次，你可以选择一名其他角色一张牌，将此牌交给另一名角色，然后失去牌的角色可以对你使用一张【杀】。",
-}
-
-Fk:loadTranslationTable{
-  ["longyufei"] = "龙羽飞",
-  ["longyi"] = "龙裔",
-  [":longyi"] = "你可以将所有手牌当任意一张基本牌使用或打出，若其中有：锦囊牌，你摸一张牌；装备牌，此牌不可被响应。",
-  ["zhenjue"] = "阵绝",
-  [":zhenjue"] = "一名角色结束阶段，若你没有手牌，你可以令其选择一项：1.弃置一张牌；2.你摸一张牌。",
-}
-
 local godjiaxu = General(extension, "godjiaxu", "god", 4)
 
 ---@param player ServerPlayer
@@ -1400,7 +1376,7 @@ Fk:loadTranslationTable{
   ["junshen_choice2"] = "受伤+1",
 }
 
-local lvchang = General(extension, "ofl__lvchang", "wei", 4)
+local lvchang = General(extension, "lvchang", "wei", 4)
 local ofl__juwu = fk.CreateTriggerSkill{
   name = "ofl__juwu",
   anim_type = "defensive",
@@ -1461,9 +1437,10 @@ ofl__shouxiang:addRelatedSkill(ofl__shouxiang_delay)
 lvchang:addSkill(ofl__juwu)
 lvchang:addSkill(ofl__shouxiang)
 Fk:loadTranslationTable{
-  ["ofl__lvchang"] = "吕常",
-  ["#ofl__lvchang"] = "险守襄阳",
-  ["illustrator:ofl__lvchang"] = "戚屹",
+  ["lvchang"] = "吕常",
+  ["#lvchang"] = "险守襄阳",
+  ["illustrator:lvchang"] = "戚屹",
+
   ["ofl__juwu"] = "拒武",
   [":ofl__juwu"] = "锁定技，若一名角色攻击范围内包含至少三名角色，该角色对你使用的无属性【杀】无效。",
   ["ofl__shouxiang"] = "守襄",
@@ -1960,7 +1937,523 @@ Fk:loadTranslationTable{
   ["~sgsh__lisu"] = "见利忘义，必遭天谴。",
 }
 
-local zhouji = General(extension, "ofl__zhouji", "wu", 3, 3, General.Female)
+Fk:loadTranslationTable{
+  ["ofl__wangyun"] = "王允",
+  ["ofl__lianji"] = "连计",
+  [":ofl__lianji"] = "出牌阶段结束时，若你本阶段使用牌类别数不小于：1，你可以令一名角色摸一张牌；2.你可以回复1点体力；3.你可以令一名其他角色"..
+  "代替你执行本回合剩余阶段。",
+  ["ofl__moucheng"] = "谋逞",
+  [":ofl__moucheng"] = "每回合限一次，你可以将一张黑色牌当【借刀杀人】使用。",
+}
+
+local mengda = General(extension, "ofl__mengda", "shu", 4)
+mengda.subkingdom = "wei"
+local qiuan = fk.CreateTriggerSkill{
+  name = "ofl__qiuan",
+  mute = true,
+  events = {fk.DamageInflicted},
+  derived_piles = "ofl__mengda_letter",
+  can_trigger = function(self, event, target, player, data)
+    return target == player and player:hasSkill(self) and data.card
+      and #player:getPile("ofl__mengda_letter") == 0 and U.hasFullRealCard(player.room, data.card)
+  end,
+  on_use = function(self, event, target, player, data)
+    player:broadcastSkillInvoke("ld__qiuan")
+    player.room:notifySkillInvoked(player, self.name, "defensive")
+    player:addToPile("ofl__mengda_letter", data.card, true, self.name)
+    if #player:getPile("ofl__mengda_letter") > 0 then
+      return true
+    end
+  end,
+}
+local liangfan = fk.CreateTriggerSkill{
+  name = "ofl__liangfan",
+  mute = true,
+  events = {fk.TurnStart, fk.Damage},
+  can_trigger = function(self, event, target, player, data)
+    if event == fk.TurnStart then
+      return target == player and player:hasSkill(self) and #player:getPile("ofl__mengda_letter") > 0
+    end
+    if event == fk.Damage then
+      return target == player and player:usedSkillTimes(self.name, Player.HistoryTurn) > 0 and
+        data.card and data.card:getMark("@@ofl__mengda_letter-turn") > 0 and
+        not data.to:isNude() and not player.dead and not data.to.dead
+    end
+  end,
+  on_cost = function(self, event, target, player, data)
+    if event == fk.TurnStart then
+      return true
+    else
+      return player.room:askForSkillInvoke(player, self.name, nil, "#ofl__liangfan-invoke::"..data.to.id)
+    end
+  end,
+  on_use = function (self, event, target, player, data)
+    local room = player.room
+    player:broadcastSkillInvoke("ld__liangfan")
+    if event == fk.TurnStart then
+      room:notifySkillInvoked(player, self.name, "drawcard")
+      for _, id in ipairs(player:getPile("ofl__mengda_letter")) do
+        room:setCardMark(Fk:getCardById(id), "@@ofl__mengda_letter-turn", 1)
+      end
+      room:obtainCard(player, player:getPile("ofl__mengda_letter"), true)
+      if not player.dead then
+        room:loseHp(player, 1, self.name)
+      end
+    else
+      room:notifySkillInvoked(player, self.name, "control")
+      room:doIndicate(player.id, {data.to.id})
+      local card = room:askForCardChosen(player, data.to, "he", self.name)
+      room:obtainCard(player, card, false, fk.ReasonPrey)
+    end
+  end,
+}
+mengda:addSkill(qiuan)
+mengda:addSkill(liangfan)
+Fk:loadTranslationTable{
+  ["ofl__mengda"] = "孟达",
+  ["#ofl__mengda"] = "怠军反复",
+  ["designer:ofl__mengda"] = "韩旭",
+  ["illustrator:ofl__mengda"] = "张帅",
+
+  ["ofl__qiuan"] = "求安",
+  [":ofl__qiuan"] = "当你受到伤害时，若没有“函”，你可以防止此伤害，并将造成此伤害的牌置于武将牌上，称为“函”。",
+  ["ofl__liangfan"] = "量反",
+  [":ofl__liangfan"] = "回合开始时，若你有“函”，你获得之，然后失去1点体力；当你本回合内使用此牌造成伤害后，你可以获得受伤角色的一张牌。",
+  ["ofl__mengda_letter"] = "函",
+  ["@@ofl__mengda_letter-turn"] = "函",
+  ["#ofl__liangfan-invoke"] = "量反：是否获得 %dest 一张牌？",
+
+  ["$ofl__qiuan1"] = "明公神文圣武，吾自当举城来降。",
+  ["$ofl__qiuan2"] = "臣心不自安，乃君之过也。",
+  ["$ofl__liangfan1"] = "今举兵投魏，必可封王拜相，一展宏图。",
+  ["$ofl__liangfan2"] = "今举义军事若成，吾为复汉元勋也。",
+  ["~ofl__mengda"] = "吾一生寡信，今报应果然来矣...",
+}
+
+local wenqin = General(extension, "ofl__wenqin", "wei", 4)
+wenqin.subkingdom = "wu"
+local jinfa = fk.CreateActiveSkill{
+  name = "ofl__jinfa",
+  mute = true,
+  card_num = 1,
+  target_num = 1,
+  prompt = "#ofl__jinfa",
+  can_use = function (self, player)
+    return player:usedSkillTimes(self.name, Player.HistoryPhase) == 0 and not player:isNude()
+  end,
+  card_filter = function(self, to_select, selected)
+    return #selected == 0 and not Self:prohibitDiscard(to_select)
+  end,
+  target_filter = function(self, to_select, selected, selected_cards)
+    return #selected == 0 and not Fk:currentRoom():getPlayerById(to_select):isNude() and to_select ~= Self.id
+  end,
+  on_use = function(self, room, effect)
+    local player = room:getPlayerById(effect.from)
+    local target = room:getPlayerById(effect.tos[1])
+    player:broadcastSkillInvoke("ld__jinfa")
+    room:notifySkillInvoked(player, self.name, "control")
+    room:throwCard(effect.cards, self.name, player, player)
+    if target.dead then return end
+    local card1 = room:askForCard(target, 1, 1, true, self.name, true, ".|.|.|.|.|equip", "ofl__jinfa_give:"..player.id)
+    if #card1 == 1 then
+      room:moveCardTo(card1, Card.PlayerHand, player, fk.ReasonGive, self.name, nil, true, target.id)
+      if Fk:getCardById(card1[1]).suit == Card.Spade and not player.dead and not target.dead then
+        room:useVirtualCard("slash", nil, target, player, self.name, true)
+      end
+    else
+      local card2 = room:askForCardChosen(player, target, "he", self.name)
+      room:moveCardTo(card2, Card.PlayerHand, player, fk.ReasonPrey, self.name, nil, true, player.id)
+    end
+  end,
+}
+wenqin:addSkill(jinfa)
+Fk:loadTranslationTable{
+  ["ofl__wenqin"] = "文钦",
+  ["#ofl__wenqin"] = "勇而无算",
+  ["designer:ofl__wenqin"] = "逍遥鱼叔",
+  ["illustrator:ofl__wenqin"] = "匠人绘-零二",
+
+  ["ofl__jinfa"] = "矜伐",
+  [":ofl__jinfa"] = "出牌阶段限一次，你可弃置一张牌并选择一名其他角色，令其选择一项：1.你获得其一张牌；2.交给你一张装备牌，若为♠，"..
+  "其视为对你使用一张【杀】。",
+  ["#ofl__jinfa"] = "矜伐：弃置一张牌，令一名角色选择你获得其一张牌或其交给你一张装备牌",
+  ["ofl__jinfa_give"] = "矜伐：交给 %src 一张装备牌，否则其获得你一张牌",
+
+  ["$ofl__jinfa1"] = "居功者，当自矜，为将者，当善伐。",
+  ["$ofl__jinfa2"] = "此战伐敌所获，皆我之功。",
+  ["~ofl__wenqin"] = "公休，汝这是何意，呃……",
+}
+
+local zhonghui = General(extension, "ofl__zhonghui", "wei", 4)
+local quanji = fk.CreateTriggerSkill{
+  name = "ofl__quanji",
+  mute = true,
+  derived_piles = "ofl__zhonghui_power",
+  events = {fk.Damaged, fk.Damage},
+  can_trigger = function(self, event, target, player, data)
+    if target == player and player:hasSkill(self) then
+      if event == fk.Damaged then
+        return true
+      else
+        if data.card then
+          local e = player.room.logic:getCurrentEvent():findParent(GameEvent.UseCard)
+          if e then
+            local use = e.data[1]
+            return #TargetGroup:getRealTargets(use.tos) == 1
+          end
+        end
+      end
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    player:broadcastSkillInvoke("ld__quanji")
+    if event == fk.Damaged then
+      room:notifySkillInvoked(player, self.name, "masochism")
+    else
+      room:notifySkillInvoked(player, self.name, "drawcard")
+    end
+    player:drawCards(1, self.name)
+    if not player:isNude() then
+      local card = room:askForCard(player, 1, 1, true, self.name, false, nil, "#ofl__quanji-push")
+      player:addToPile("ofl__zhonghui_power", card, true, self.name)
+    end
+  end,
+}
+local quanji_maxcards = fk.CreateMaxCardsSkill{
+  name = "#ofl__quanji_maxcards",
+  correct_func = function(self, player)
+    return player:hasSkill(self) and #player:getPile("ofl__zhonghui_power") or 0
+  end,
+}
+local paiyi = fk.CreateActiveSkill{
+  name = "ofl__paiyi",
+  mute = true,
+  prompt = function(self)
+    return "#ofl__paiyi-active:::" .. math.min(#Self:getPile("ofl__zhonghui_power") - 1, 7)
+  end,
+  card_num = 1,
+  target_num = 1,
+  expand_pile = "ofl__zhonghui_power",
+  can_use = function(self, player)
+    return #player:getPile("ofl__zhonghui_power") > 0 and player:usedSkillTimes(self.name, Player.HistoryPhase) == 0
+  end,
+  target_filter = function(self, to_select, selected)
+    return #selected == 0
+  end,
+  card_filter = function(self, to_select, selected)
+    return #selected == 0 and Self:getPileNameOfId(to_select) == "ofl__zhonghui_power"
+  end,
+  on_use = function(self, room, effect)
+    local player = room:getPlayerById(effect.from)
+    local target = room:getPlayerById(effect.tos[1])
+    player:broadcastSkillInvoke("ld__paiyi")
+    room:notifySkillInvoked(player, self.name, "drawcard")
+    room:moveCardTo(effect.cards, Card.DiscardPile, nil, fk.ReasonPutIntoDiscardPile, self.name, "ofl__zhonghui_power", true, player.id)
+    if not target.dead then
+      room:drawCards(target, math.min(#player:getPile("ofl__zhonghui_power"), 7), self.name)
+    end
+    if not player.dead and not target.dead and target:getHandcardNum() > player:getHandcardNum() then
+      room:damage{
+        from = player,
+        to = target,
+        damage = 1,
+        skillName = self.name,
+      }
+    end
+  end,
+}
+quanji:addRelatedSkill(quanji_maxcards)
+zhonghui:addSkill(quanji)
+zhonghui:addSkill(paiyi)
+Fk:loadTranslationTable{
+  ["ofl__zhonghui"] = "钟会",
+  ["#ofl__zhonghui"] = "桀骜的野心家",
+  ["designer:ofl__zhonghui"] = "韩旭",
+  ["illustrator:ofl__zhonghui"] = "磐蒲",
+
+  ["ofl__quanji"] = "权计",
+  [":ofl__quanji"] = "当你受到伤害后，或当你使用牌对唯一目标造成伤害后，你可以摸一张牌，然后将一张牌置于武将牌上，称为“权”；"..
+  "你的手牌上限+X（X为“权”数）。",
+  ["ofl__paiyi"] = "排异",
+  [":ofl__paiyi"] = "出牌阶段限一次，你可以将一张“权”置入弃牌堆并选择一名角色，其摸X张牌，然后若其手牌数大于你，你对其造成1点伤害"..
+  "（X为“权”的数量且至多为7）。",
+
+  ["#ofl__quanji-push"] = "权计：将一张牌置于武将牌上（称为“权”）",
+  ["ofl__zhonghui_power"] = "权",
+  ["#ofl__paiyi-active"] = "排异：将一张“权”置入弃牌堆并选择一名角色，令其摸%arg张牌",
+
+  ["$ofl__quanji1"] = "不露圭角，择时而发！",
+  ["$ofl__quanji2"] = "晦养厚积，乘势而起！",
+  ["$ofl__paiyi1"] = "排斥异己，为王者必由之路！",
+  ["$ofl__paiyi2"] = "非吾友，则必敌也！",
+  ["~ofl__zhonghui"] = "吾机关算尽，却还是棋错一着……",
+}
+
+local sunchen = General(extension, "ofl__sunchen", "wu", 4)
+local ofl__shilus = fk.CreateTriggerSkill{
+  name = "ofl__shilus",
+  mute = true,
+  events = {fk.GameStart, fk.Deathed, fk.EventPhaseStart},
+  can_trigger = function(self, event, target, player, data)
+    if player:hasSkill(self) then
+      if event == fk.EventPhaseStart then
+        return player == target and player.phase == Player.Start and not player:isNude() and #U.getMark(player, "@&massacre") > 0
+      else
+        return true
+      end
+    end
+  end,
+  on_cost = function(self, event, target, player, data)
+    local room = player.room
+    if event == fk.EventPhaseStart then
+      local x = #player:getMark("@&massacre")
+      local cards = room:askForDiscard(player, 1, x, true, self.name, true, ".", "#ofl__shilus-cost:::"..tostring(x), true)
+      if #cards > 0 then
+        self.cost_data = cards
+        return true
+      end
+    elseif event == fk.GameStart then
+      return true
+    else
+      return player.room:askForSkillInvoke(player, self.name, nil, "#ofl__shilus-invoke::"..target.id)
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    player:broadcastSkillInvoke("shilus")
+    if event == fk.EventPhaseStart then
+      room:notifySkillInvoked(player, self.name, "drawcard")
+      room:throwCard(self.cost_data, self.name, player, player)
+      if not player.dead then
+        room:drawCards(player, #self.cost_data, self.name)
+      end
+    else
+      room:notifySkillInvoked(player, self.name, "special")
+      local cards = {}
+      if event == fk.GameStart then
+        table.insertTableIfNeed(cards, room:getNGenerals(2))
+      elseif event == fk.Deathed then
+        room:doIndicate(player.id, {target.id})
+        if target.general and target.general ~= "" and target.general ~= "hiddenone" then
+          room:findGeneral(target.general)
+          table.insert(cards, target.general)
+        end
+        if target.deputyGeneral and target.deputyGeneral ~= "" and target.deputyGeneral ~= "hiddenone" then
+          room:findGeneral(target.deputyGeneral)
+          table.insert(cards, target.deputyGeneral)
+        end
+        if data.damage and data.damage.from == player then
+          table.insertTableIfNeed(cards, room:getNGenerals(2))
+        end
+      end
+      if #cards > 0 then
+        local generals = U.getMark(player, "@&massacre")
+        table.insertTableIfNeed(generals, cards)
+        room:setPlayerMark(player, "@&massacre", generals)
+      end
+    end
+  end,
+
+  refresh_events = {fk.EventLoseSkill, fk.BuryVictim},
+  can_refresh = function(self, event, target, player, data)
+    if target == player and player:getMark("@&massacre") ~= 0 then
+      if event == fk.EventLoseSkill then
+        return data == self
+      elseif event == fk.BuryVictim then
+        return true
+      end
+    end
+  end,
+  on_refresh = function(self, event, target, player, data)
+    local room = player.room
+    room:returnToGeneralPile(U.getMark(player, "@&massacre"))
+    room:setPlayerMark(player, "@&massacre", 0)
+  end,
+}
+local ofl__xiongnve = fk.CreateTriggerSkill{
+  name = "ofl__xiongnve",
+  mute = true,
+  events = {fk.EventPhaseStart, fk.EventPhaseEnd},
+  can_trigger = function(self, event, target, player, data)
+    if target == player and player:hasSkill(self) and player.phase == Player.Play then
+      local n = #U.getMark(player, "@&massacre")
+      if event == fk.EventPhaseStart then
+        return n > 0
+      else
+        return n > 1
+      end
+    end
+  end,
+  on_cost = function(self, event, target, player, data)
+    if event == fk.EventPhaseStart then
+      local result = player.room:askForCustomDialog(player, self.name,
+        "packages/utility/qml/ChooseGeneralsAndChoiceBox.qml", {
+          player:getMark("@&massacre"),
+          {"ofl__xiongnve_choice1", "ofl__xiongnve_choice2", "ofl__xiongnve_choice3"},
+          "#ofl__xiongnve-chooose",
+          {"Cancel"}
+        })
+      if result ~= "" then
+        local reply = json.decode(result)
+        if reply.choice ~= "Cancel" then
+          self.cost_data = {reply.cards, reply.choice}
+          return true
+        end
+      end
+    else
+      local result = player.room:askForCustomDialog(player, self.name,
+      "packages/utility/qml/ChooseGeneralsAndChoiceBox.qml", {
+        player:getMark("@&massacre"),
+        {"OK"},
+        "#ofl__xiongnve-defence",
+        {"Cancel"},
+        2,
+        2
+      })
+      if result ~= "" then
+        local reply = json.decode(result)
+        if reply.choice == "OK" then
+          self.cost_data = {reply.cards}
+          return true
+        end
+      end
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    player:broadcastSkillInvoke("xiongnve")
+    if event == fk.EventPhaseStart then
+      room:notifySkillInvoked(player, self.name, "offensive")
+    else
+      room:notifySkillInvoked(player, self.name, "defensive")
+    end
+    local generals = U.getMark(player, "@&massacre")
+    for _, name in ipairs(self.cost_data[1]) do
+      table.removeOne(generals, name)
+    end
+    if #generals == 0 then
+      room:setPlayerMark(player, "@&massacre", 0)
+    else
+      room:setPlayerMark(player, "@&massacre", generals)
+    end
+    room:returnToGeneralPile(self.cost_data[1])
+    if event == fk.EventPhaseStart then
+      room:setPlayerMark(player, "@ofl__xiongnve_choice-turn", "ofl__xiongnve_effect" .. string.sub(self.cost_data[2], 21, 21))
+    elseif event == fk.EventPhaseEnd then
+      room:setPlayerMark(player, "@@ofl__xiongnve", 1)
+    end
+  end,
+
+  refresh_events = {fk.TurnStart},
+  can_refresh = function(self, event, target, player, data)
+    return target == player and player:getMark("@@ofl__xiongnve") ~= 0
+  end,
+  on_refresh = function(self, event, target, player, data)
+    player.room:setPlayerMark(player, "@@ofl__xiongnve", 0)
+  end,
+}
+local ofl__xiongnve_delay = fk.CreateTriggerSkill{
+  name = "#ofl__xiongnve_delay",
+  mute = true,
+  events = {fk.DamageCaused, fk.DamageInflicted},
+  can_trigger = function(self, event, target, player, data)
+    if target == player and not player.dead then
+      if event == fk.DamageCaused then
+        if not data.to.dead then
+          local effect_name = player:getMark("@ofl__xiongnve_choice-turn")
+          if effect_name == "ofl__xiongnve_effect1" then
+            return true
+          elseif effect_name == "ofl__xiongnve_effect2" then
+            return #data.to:getCardIds("e") > 0 or (not data.to:isKongcheng() and data.to ~= player)
+          end
+        end
+      else
+        return player:getMark("@@ofl__xiongnve") > 0 and data.from and data.from ~= player
+      end
+    end
+  end,
+  on_cost = Util.TrueFunc,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    player:broadcastSkillInvoke("xiongnve")
+    if event == fk.DamageCaused then
+      room:doIndicate(player.id, {data.to.id})
+      local effect_name = player:getMark("@ofl__xiongnve_choice-turn")
+      if effect_name == "ofl__xiongnve_effect1" then
+        room:notifySkillInvoked(player, "ofl__xiongnve", "offensive")
+        data.damage = data.damage + 1
+      elseif effect_name == "ofl__xiongnve_effect2" then
+        room:notifySkillInvoked(player, "ofl__xiongnve", "control")
+        local flag =  data.to == player and "e" or "he"
+        local card = room:askForCardChosen(player, data.to, flag, self.name)
+        room:obtainCard(player.id, card, false, fk.ReasonPrey)
+      end
+    else
+      room:notifySkillInvoked(player, "ofl__xiongnve", "defensive")
+      data.damage = data.damage - 1
+    end
+  end,
+}
+local ofl__xiongnve_targetmod = fk.CreateTargetModSkill{
+  name = "#ofl__xiongnve_targetmod",
+  bypass_times = function(self, player, skill, scope, card, to)
+    return player:getMark("@ofl__xiongnve_choice-turn") == "ofl__xiongnve_effect3"
+  end,
+}
+ofl__xiongnve:addRelatedSkill(ofl__xiongnve_delay)
+ofl__xiongnve:addRelatedSkill(ofl__xiongnve_targetmod)
+sunchen:addSkill(ofl__shilus)
+sunchen:addSkill(ofl__xiongnve)
+Fk:loadTranslationTable{
+  ["ofl__sunchen"] = "孙綝",
+  ["#ofl__sunchen"] = "食髓的朝堂客",
+  ["designer:ofl__sunchen"] = "逍遥鱼叔",
+  ["illustrator:ofl__sunchen"] = "depp",
+
+  ["ofl__shilus"] = "嗜戮",
+  [":ofl__shilus"] = "游戏开始时，你从剩余武将牌堆获得两张“戮”；其他角色死亡时，你可将其武将牌置为“戮”；当你杀死其他角色时，你从剩余武将牌堆"..
+  "额外获得两张“戮”。回合开始时，你可以弃置至多X张牌（X为“戮”数），摸等量的牌。",
+  ["ofl__xiongnve"] = "凶虐",
+  [":ofl__xiongnve"] = "出牌阶段开始时，你可以移去一张“戮”并选择一项：1.本回合造成伤害+1；2.本回合对其他角色造成伤害时，你获得其一张牌；"..
+  "3.本回合使用牌无次数限制。<br>出牌阶段结束时，你可以移去两张“戮”，你受到其他角色的伤害-1直到你下回合开始。",
+
+  ["@&massacre"] = "戮",
+  ["#ofl__shilus-cost"] = "嗜戮：你可以弃置至多%arg张牌，摸等量的牌",
+  ["#ofl__shilus-invoke"] = "嗜戮：是否将 %dest 的武将牌置为“戮”？",
+  ["#ofl__xiongnve-chooose"] = "凶虐：你可以弃置一张“戮”，获得一项效果",
+  ["ofl__xiongnve_choice1"] = "增加伤害",
+  ["ofl__xiongnve_choice2"] = "造成伤害时拿牌",
+  ["ofl__xiongnve_choice3"] = "用牌无次数限制",
+  ["#ofl__xiongnve-defence"] = "凶虐：你可以弃置两张“戮”，受到伤害-1直到你下回合开始",
+  ["@ofl__xiongnve_choice-turn"] = "凶虐",
+  ["ofl__xiongnve_effect1"] = "增加伤害",
+  ["ofl__xiongnve_effect2"] = "造伤拿牌",
+  ["ofl__xiongnve_effect3"] = "无限用牌",
+  ["@@ofl__xiongnve"] = "凶虐",
+
+  ["$ofl__shilus1"] = "以杀立威，谁敢反我？",
+  ["$ofl__shilus2"] = "将这些乱臣贼子，尽皆诛之！",
+  ["$ofl__xiongnve1"] = "当今天子乃我所立，他敢怎样？",
+  ["$ofl__xiongnve2"] = "我兄弟三人同掌禁军，有何所惧？",
+  ["~ofl__sunchen"] = "愿陛下念臣昔日之功，陛下？陛下！！",
+}
+
+Fk:loadTranslationTable{
+  ["ofl__caoanmin"] = "曹安民",
+  ["kuishe"] = "窥舍",
+  [":kuishe"] = "出牌阶段限一次，你可以选择一名其他角色一张牌，将此牌交给另一名角色，然后失去牌的角色可以对你使用一张【杀】。",
+}
+
+Fk:loadTranslationTable{
+  ["longyufei"] = "龙羽飞",
+  ["longyi"] = "龙裔",
+  [":longyi"] = "你可以将所有手牌当任意一张基本牌使用或打出，若其中有：锦囊牌，你摸一张牌；装备牌，此牌不可被响应。",
+  ["zhenjue"] = "阵绝",
+  [":zhenjue"] = "一名角色结束阶段，若你没有手牌，你可以令其选择一项：1.弃置一张牌；2.你摸一张牌。",
+}
+
+local zhouji = General(extension, "zhouji", "wu", 3, 3, General.Female)
 local ofl__yanmouz = fk.CreateTriggerSkill{
   name = "ofl__yanmouz",
   anim_type = "drawcard",
@@ -2124,9 +2617,10 @@ zhouji:addSkill(ofl__yanmouz)
 zhouji:addSkill(ofl__zhanyan)
 zhouji:addSkill(ofl__yuhuo)
 Fk:loadTranslationTable{
-  ["ofl__zhouji"] = "周姬",
-  ["#ofl__zhouji"] = "江东的红莲",
-  ["illustrator:ofl__zhouji"] = "xerez",
+  ["zhouji"] = "周姬",
+  ["#zhouji"] = "江东的红莲",
+  ["illustrator:zhouji"] = "xerez",
+
   ["ofl__yanmouz"] = "炎谋",
   [":ofl__yanmouz"] = "当其他角色的【火攻】、火【杀】因弃置或判定而置入弃牌堆后，你可以获得之；当你获得牌后，你可以使用其中一张【火攻】或火【杀】。",
   ["ofl__zhanyan"] = "绽焰",
@@ -2142,7 +2636,7 @@ Fk:loadTranslationTable{
   ["#ofl__zhanyan-put"] = "绽焰：将一张【火攻】或火【杀】置于牌堆顶，点“取消”则受到1点火焰伤害",
 }
 
-local ehuan = General(extension, "ofl__ehuan", "qun", 5)
+local ehuan = General(extension, "ehuan", "qun", 5)
 ehuan.subkingdom = "shu"
 local ofl__diwan = fk.CreateTriggerSkill{
   name = "ofl__diwan",
@@ -2264,9 +2758,10 @@ ehuan:addSkill(ofl__diwan)
 ehuan:addSkill(ofl__suiluan)
 ehuan:addSkill(ofl__conghan)
 Fk:loadTranslationTable{
-  ["ofl__ehuan"] = "鄂焕",
-  ["#ofl__ehuan"] = "牙门汉将",
-  ["illustrator:ofl__ehuan"] = "小强",
+  ["ehuan"] = "鄂焕",
+  ["#ehuan"] = "牙门汉将",
+  ["illustrator:ehuan"] = "小强",
+
   ["ofl__diwan"] = "敌万",
   [":ofl__diwan"] = "每回合限一次，当你使用【杀】指定目标后，你可以摸X张牌（X为此牌的目标数）。",
   ["ofl__suiluan"] = "随乱",
