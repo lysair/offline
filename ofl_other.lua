@@ -1584,7 +1584,7 @@ Fk:loadTranslationTable{
 }
 
 local sgsh__huanhua_blacklist = {
-  "zuoci", "ol_ex__zuoci", "js__xushao", "shichangshi",
+  "zuoci", "ol_ex__zuoci", "js__xushao", "shichangshi", "starsp__xiahoudun"
 }
 
 local nanhualaoxian = General(extension, "sgsh__nanhualaoxian", "qun", 3)
@@ -1593,8 +1593,7 @@ local sgsh__jidao = fk.CreateTriggerSkill{
   anim_type = "drawcard",
   events = {fk.PropertyChange},
   can_trigger = function(self, event, target, player, data)
-    return player:hasSkill(self) and player.general == "sgsh__nanhualaoxian" and target.deputyGeneral ~= "" and
-      data.deputyGeneral and data.deputyGeneral == ""
+    return player:hasSkill(self) and player.general == "sgsh__nanhualaoxian" and data.deputyGeneral and target.deputyGeneral ~= ""
   end,
   on_use = function(self, event, target, player, data)
     player:drawCards(1, self.name)
@@ -1606,7 +1605,7 @@ local sgsh__feisheng = fk.CreateTriggerSkill{
   events = {fk.PropertyChange},
   can_trigger = function(self, event, target, player, data)
     return target == player and player:hasSkill(self) and player.deputyGeneral == "sgsh__nanhualaoxian" and
-      data.deputyGeneral and data.deputyGeneral == ""
+      data.deputyGeneral
   end,
   on_use = function(self, event, target, player, data)
     local room = player.room
@@ -1662,17 +1661,15 @@ local sgsh__huanhua = fk.CreateTriggerSkill{
     local room = player.room
     for i = 1, data.damage do
       if player.dead then break end
-      if player.deputyGeneral == "" then
-        local generals = table.filter(room.general_pile, function(name)
-          return not table.contains(sgsh__huanhua_blacklist, name)
-        end)
-        local general = table.random(generals)
-        table.removeOne(room.general_pile, general)
-        room:changeHero(player, general, false, true, true, false, false)
-      else
+      local generals = table.filter(room.general_pile, function(name)
+        return not table.contains(sgsh__huanhua_blacklist, name)
+      end)
+      local general = table.random(generals)
+      table.removeOne(room.general_pile, general)
+      if player.deputyGeneral ~= "" then
         room:returnToGeneralPile({player.deputyGeneral})
-        room:changeHero(player, "", false, true, true, false, false)
       end
+      room:changeHero(player, general, false, true, true, false, false)
     end
   end,
 }
@@ -1692,8 +1689,8 @@ Fk:loadTranslationTable{
   ["sgsh__jinghe"] = "经合",
   [":sgsh__jinghe"] = "当一名其他角色获得副将武将牌前，你可以令其改为观看两张未加入游戏的武将牌并选择一张作为副将。",
   ["sgsh__huanhua"] = "幻化",
-  [":sgsh__huanhua"] = "锁定技，当一名角色受到1点伤害后，若其没有副将，其从未加入游戏的武将牌中随机获得一张作为副将；若其已有副将，则移除其副将。"..
-  "此技能不会失效。",  --原本是一个逆天的四将模式，魔改一下
+  [":sgsh__huanhua"] = "锁定技，当一名角色受到1点伤害后，移除其副将，其从未加入游戏的武将牌中随机获得一张作为副将。此技能不会失效。",
+  --原本是一个逆天的四将模式，魔改一下
   ["#sgsh__jinghe-invoke"] = "经合：%dest 即将获得随机副将，是否改为其观看两张并选择一张作为副将？",
 
   ["$sgsh__jidao"] = "含气求道，祸福难料，且与阁下共参之。",
@@ -2879,7 +2876,7 @@ local jizun = fk.CreateTriggerSkill{
   frequency = Skill.Wake,
   events = {fk.AfterDying},
   can_trigger = function(self, event, target, player, data)
-    return target == player and player:hasSkill(self)
+    return target == player and player:hasSkill(self) and player:usedSkillTimes(self.name, Player.HistoryGame) == 0
   end,
   on_cost = Util.TrueFunc,
   on_use = function(self, event, target, player, data)
