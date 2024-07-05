@@ -2084,7 +2084,7 @@ Fk:loadTranslationTable{
   ["~ofl__wenqin"] = "公休，汝这是何意，呃……",
 }
 
-local zhonghui = General(extension, "ofl__zhonghui", "wei", 4)
+--[[local zhonghui = General(extension, "ofl__zhonghui", "wei", 4)
 local quanji = fk.CreateTriggerSkill{
   name = "ofl__quanji",
   mute = true,
@@ -2188,7 +2188,7 @@ Fk:loadTranslationTable{
   ["$ofl__paiyi1"] = "排斥异己，为王者必由之路！",
   ["$ofl__paiyi2"] = "非吾友，则必敌也！",
   ["~ofl__zhonghui"] = "吾机关算尽，却还是棋错一着……",
-}
+}]]--
 
 local sunchen = General(extension, "ofl__sunchen", "wu", 4)
 local ofl__shilus = fk.CreateTriggerSkill{
@@ -2773,6 +2773,264 @@ Fk:loadTranslationTable{
   ["#ofl__suiluan-choose"] = "随乱：你可以为此%arg额外指定至多两个目标",
   ["#ofl__suiluan-use"] = "随乱：你可以对 %src 使用一张【杀】",
   ["#ofl__conghan-use"] = "从汉：你可以对 %dest 使用一张【杀】",
+}
+
+local ofl__zhonghui = General(extension, "ofl__zhonghui", "wei", 4)
+local mouchuan = fk.CreateTriggerSkill{
+  name = "mouchuan",
+  anim_type = "drawcard",
+  events = {fk.RoundStart},
+  can_trigger = function(self, event, target, player, data)
+    return player:hasSkill(self)
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    player:drawCards(2, self.name)
+    if player.dead or player:isKongcheng() or #room.alive_players == 1 then return end
+    local to, card = room:askForChooseCardAndPlayers(player, table.map(room:getOtherPlayers(player), Util.IdMapper), 1, 1,
+      ".|.|.|hand", "#mouchuan-choose", self.name, false)
+    to = room:getPlayerById(to[1])
+    room:moveCardTo(card, Card.PlayerHand, to, fk.ReasonGive, self.name, nil, false, player.id)
+    local color1
+    if not player.dead and not player:isKongcheng() then
+      local card1 = room:askForCard(player, 1, 1, false, self.name, false, ".|.|.|hand", "#mouchuan1-show")
+      color1 = Fk:getCardById(card1[1]):getColorString()
+      player:showCards(card1)
+    end
+    if not to.dead and not to:isKongcheng() then
+      local card2 = room:askForCard(to, 1, 1, false, self.name, false, ".|.|.|hand", "#mouchuan2-show:"..player.id.."::"..color1)
+      local color2 = Fk:getCardById(card2[1]):getColorString()
+      to:showCards(card2)
+      if color1 == "nocolor" or color2 == "nocolor" or player.dead then return end
+      local skill = "daohe"
+      if color1 ~= color2 then
+        skill = "zhiyiz"
+      end
+      room:setPlayerMark(player, self.name, skill)
+      room:handleAddLoseSkills(player, skill, nil, true, false)
+    end
+  end,
+
+  refresh_events = {fk.RoundEnd},
+  can_refresh = function(self, event, target, player, data)
+    return player:getMark(self.name) ~= 0
+  end,
+  on_refresh = function(self, event, target, player, data)
+    local room = player.room
+    local skill = player:getMark(self.name)
+    room:setPlayerMark(player, self.name, 0)
+    room:handleAddLoseSkills(player, "-"..skill, nil, true, false)
+  end,
+}
+local zizhong = fk.CreateTriggerSkill{
+  name = "zizhong",
+  anim_type = "drawcard",
+  frequency = Skill.Compulsory,
+  events = {fk.CardUsing, fk.CardResponding},
+  can_trigger = function(self, event, target, player, data)
+    if target == player and player:hasSkill(self) and data.card.type ~= Card.TypeEquip and
+      #table.filter(player.player_skills, function(skill) return skill:isPlayerSkill(player) end) > 2 then
+      local room = player.room
+      local logic = room.logic
+      local current_event = logic:getCurrentEvent()
+      local mark_name = "zizhong_" .. data.card.trueName .. "-round"
+      local mark = player:getMark(mark_name)
+      if mark == 0 then
+        logic:getEventsOfScope(GameEvent.UseCard, 1, function (e)
+          local use = e.data[1]
+          if use.from == player.id and use.card.trueName == data.card.trueName then
+            mark = e.id
+            room:setPlayerMark(player, mark_name, mark)
+            return true
+          end
+          return false
+        end, Player.HistoryRound)
+        logic:getEventsOfScope(GameEvent.RespondCard, 1, function (e)
+          local use = e.data[1]
+          if use.from == player.id and use.card.trueName == data.card.trueName then
+            mark = math.max(e.id, mark)
+            room:setPlayerMark(player, mark_name, mark)
+            return true
+          end
+          return false
+        end, Player.HistoryRound)
+      end
+      return mark == current_event.id
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    player:drawCards(#table.filter(player.player_skills, function(skill) return skill:isPlayerSkill(player) end) - 2, self.name)
+  end,
+}
+local zizhong_maxcards = fk.CreateMaxCardsSkill{
+  name = "#zizhong_maxcards",
+  main_skill = zizhong,
+  correct_func = function(self, player)
+    if player:hasSkill("zizhong") then
+      return #table.filter(player.player_skills, function(skill) return skill:isPlayerSkill(player) end)
+    else
+      return 0
+    end
+  end,
+}
+local jizun = fk.CreateTriggerSkill{
+  name = "jizun",
+  anim_type = "support",
+  frequency = Skill.Wake,
+  events = {fk.AfterDying},
+  can_trigger = function(self, event, target, player, data)
+    return target == player and player:hasSkill(self)
+  end,
+  on_cost = Util.TrueFunc,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    if not player:hasSkill("qingsuan", true) then
+      room:handleAddLoseSkills(player, "qingsuan", nil, true, false)
+    elseif player:isWounded() then
+      room:recover({
+        who = player,
+        num = player:getLostHp(),
+        recoverBy = player,
+        skillName = self.name,
+      })
+    end
+  end,
+}
+local qingsuan = fk.CreateTargetModSkill{
+  name = "qingsuan$",
+  frequency = Skill.Compulsory,
+  bypass_times = function(self, player, skill, scope, card, to)
+    return player:hasSkill(self) and scope == Player.HistoryPhase and to and
+      player.kingdom ~= to.kingdom and table.contains(U.getMark(player, "qingsuan_enemy"), to.id)
+  end,
+  bypass_distances = function(self, player, skill, card, to)
+    return player:hasSkill(self) and to and
+      player.kingdom ~= to.kingdom and table.contains(U.getMark(player, "qingsuan_enemy"), to.id)
+  end,
+}
+local qingsuan_record = fk.CreateTriggerSkill{
+  name = "#qingsuan_record",
+
+  refresh_events = {fk.BeforeHpChanged, fk.EventAcquireSkill},
+  can_refresh = function (self, event, target, player, data)
+    if event == fk.BeforeHpChanged then
+      return target == player and player:hasSkill(self, true) and
+        data.reason == "damage" and data.damageEvent and data.damageEvent.from
+    else
+      return target == player and data == self
+    end
+  end,
+  on_refresh = function (self, event, target, player, data)
+    local room = player.room
+    local enemies = U.getMark(player, "qingsuan_enemy")
+    if event == fk.BeforeHpChanged then
+      table.insertIfNeed(enemies, data.damageEvent.from.id)
+    else
+      U.getActualDamageEvents(room, 1, function(e)
+        local damage = e.data[1]
+        if damage.from and damage.to == player then
+          table.insertIfNeed(enemies, damage.from.id)
+        end
+        return false
+      end,
+      Player.HistoryGame)
+    end
+    room:setPlayerMark(player, "qingsuan_enemy", enemies)
+  end,
+}
+local daohe = fk.CreateActiveSkill{
+  name = "daohe",
+  anim_type = "control",
+  card_num = 0,
+  target_num = 1,
+  prompt = "#daohe",
+  can_use = function (self, player)
+    return player:usedSkillTimes(self.name, Player.HistoryPhase) == 0
+  end,
+  card_filter = Util.FalseFunc,
+  target_filter = function(self, to_select, selected, selected_cards)
+    return #selected == 0 and not Fk:currentRoom():getPlayerById(to_select):isKongcheng() and to_select ~= Self.id
+  end,
+  on_use = function(self, room, effect)
+    local player = room:getPlayerById(effect.from)
+    local target = room:getPlayerById(effect.tos[1])
+    local cards = room:askForCard(target, 1, 999, false, self.name, false, ".|.|.|hand", "#daohe_give:"..player.id)
+    if #cards > 0 then
+      room:moveCardTo(cards, Card.PlayerHand, player, fk.ReasonGive, self.name, nil, false, target.id)
+      if not target.dead and target:isWounded() then
+        room:recover{
+          who = target,
+          num = 1,
+          recoverBy = player,
+          skillName = self.name
+        }
+      end
+    end
+  end,
+}
+local zhiyiz = fk.CreateActiveSkill{
+  name = "zhiyiz",
+  anim_type = "offensive",
+  card_num = 0,
+  target_num = 1,
+  prompt = "#zhiyiz",
+  can_use = function(self, player)
+    return player:usedSkillTimes(self.name, Player.HistoryPhase) == 0
+  end,
+  card_filter = Util.FalseFunc,
+  target_filter = function(self, to_select, selected)
+    return #selected == 0
+  end,
+  on_use = function(self, room, effect)
+    local player = room:getPlayerById(effect.from)
+    local target = room:getPlayerById(effect.tos[1])
+    target:drawCards(1, self.name)
+    if not target.dead then
+      room:damage{
+        from = player,
+        to = target,
+        damage = 1,
+        skillName = self.name,
+      }
+    end
+  end,
+}
+zizhong:addRelatedSkill(zizhong_maxcards)
+qingsuan:addRelatedSkill(qingsuan_record)
+ofl__zhonghui:addSkill(mouchuan)
+ofl__zhonghui:addSkill(zizhong)
+ofl__zhonghui:addSkill(jizun)
+ofl__zhonghui:addSkill(qingsuan)
+ofl__zhonghui:addRelatedSkill(daohe)
+ofl__zhonghui:addRelatedSkill(zhiyiz)
+Fk:loadTranslationTable{
+  ["ofl__zhonghui"] = "钟会",
+  ["#ofl__zhonghui"] = "统定河山",
+  --["designer:ofl__zhonghui"] = "",
+  ["illustrator:ofl__zhonghui"] = "磐蒲",
+
+  ["mouchuan"] = "谋川",
+  [":mouchuan"] = "每轮开始时，你可以摸两张牌并交给一名其他角色一张牌，然后你与其依次展示一张手牌，若颜色：相同，你本轮获得技能〖道合〗；"..
+  "不同，你本轮获得技能〖志异〗。",
+  ["zizhong"] = "自重",
+  [":zizhong"] = "锁定技，当你使用或打出一张你本轮未使用过的非装备牌时，你摸X-2张牌；你的手牌上限+X。（X为你的技能数）",
+  ["jizun"] = "极尊",
+  [":jizun"] = "觉醒技，当你脱离濒死状态时，你获得技能〖清算〗；若你已拥有〖清算〗，则改为回复体力至体力上限。",
+  ["qingsuan"] = "清算",
+  [":qingsuan"] = "主公技，锁定技，你对与你势力不同且本局游戏对你造成过伤害的角色使用牌无距离和次数限制。",
+  ["daohe"] = "道合",
+  [":daohe"] = "出牌阶段限一次，你可以令一名其他角色交给你至少一张手牌，然后其回复1点体力。",
+  ["zhiyiz"] = "志异",
+  [":zhiyiz"] = "出牌阶段限一次，你可以令一名角色摸一张牌，然后你对其造成1点伤害。",
+  ["#mouchuan-choose"] = "谋川：将一张手牌交给一名其他角色",
+  ["#mouchuan1-show"] = "谋川：展示一张手牌",
+  ["#mouchuan2-show"] = "展示一张手牌，根据是否为%arg，%src获得技能<br>"..
+  "相同：%src获得〖道合〗出牌阶段限一次，你可以令一名其他角色交给你至少一张手牌，然后其回复1点体力。<br>"..
+  "不同：%src获得〖志异〗出牌阶段限一次，你可以令一名角色摸一张牌，然后你对其造成1点伤害。",
+
+  ["#daohe"] = "道合：令一名其他角色交给你至少一张手牌，然后其回复1点体力",
+  ["#daohe_give"] = "道合：交给 %src 任意张手牌，然后你回复1点体力",
+  ["#zhiyiz"] = "志异：令一名角色摸一张牌，然后你对其造成1点伤害。",
 }
 
 return extension
