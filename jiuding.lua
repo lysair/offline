@@ -5,13 +5,14 @@ local U = require "packages/utility/utility"
 
 Fk:loadTranslationTable{
   ["jiuding"] = "线下-九鼎",
+  ["ofl_mou"] = "线下谋攻篇",
 }
 
 local simayan = General(extension, "simayan", "jin", 3)
 Fk:loadTranslationTable{
   ["simayan"] = "司马炎",
   ["#simayan"] = "晋武帝",
-  -- ["illustrator:simayan"] = "",
+  ["illustrator:simayan"] = "鬼画府",
   -- ["~simayan"] = "",
 }
 
@@ -290,9 +291,250 @@ local taishi = fk.CreateTriggerSkill{
 }
 Fk:loadTranslationTable{
   ["taishi"] = "泰始",
-  [":taishi"] = "主公技，一名角色的回合开始前，你可以令所有隐匿角色依次登场。",
+  [":taishi"] = "主公技，限定技，一名角色的回合开始前，你可以令所有隐匿角色依次登场。",
 }
 
 simayan:addSkill(taishi)
+
+local mouguanyu = General(extension, "ofl_mou__guanyu", "shu", 4)
+Fk:loadTranslationTable{
+  ["ofl_mou__guanyu"] = "谋关羽",
+  ["#ofl_mou__guanyu"] = "关圣帝君",
+  ["illustrator:ofl_mou__guanyu"] = "鬼画府",
+  ["~ofl_mou__guanyu"] = "大哥知遇之恩，云长来世再报了……",
+}
+
+local mouWuSheng = fk.CreateViewAsSkill{
+  name = "ofl_mou__wusheng",
+  pattern = "slash",
+  card_num = 1,
+  card_filter = function(self, to_select, selected)
+    if #selected == 1 or Fk:currentRoom():getCardArea(to_select) ~= Player.Hand then return false end
+    local c = Fk:cloneCard("slash")
+    return (Fk.currentResponsePattern == nil and Self:canUse(c)) or
+      (Fk.currentResponsePattern and Exppattern:Parse(Fk.currentResponsePattern):match(c))
+  end,
+  interaction = function(self)
+    local allCardNames = {}
+    for _, id in ipairs(Fk:getAllCardIds()) do
+      local card = Fk:getCardById(id)
+      if
+        not table.contains(allCardNames, card.name) and
+        card.trueName == "slash" and
+        (
+          (Fk.currentResponsePattern == nil and Self:canUse(card)) or
+          (Fk.currentResponsePattern and Exppattern:Parse(Fk.currentResponsePattern):match(card))
+        ) and
+        not Self:prohibitUse(card) then
+        table.insert(allCardNames, card.name)
+      end
+    end
+    return UI.ComboBox { choices = allCardNames }
+  end,
+  view_as = function(self, cards)
+    local choice = self.interaction.data
+    if not choice or #cards ~= 1 then return end
+    local c = Fk:cloneCard(choice)
+    c:addSubcards(cards)
+    c.skillName = self.name
+    return c
+  end,
+  enabled_at_play = function(self, player)
+    return player:canUse(Fk:cloneCard("slash"))
+  end,
+  enabled_at_response = function(self, player)
+    return Fk.currentResponsePattern and Exppattern:Parse(Fk.currentResponsePattern):match(Fk:cloneCard("slash"))
+  end,
+}
+local mouWuShengTrigger = fk.CreateTriggerSkill{
+  name = "#ofl_mou__wusheng_trigger",
+  anim_type = "offensive",
+  main_skill = mouWuSheng,
+  events = {fk.EventPhaseStart},
+  can_trigger = function(self, event, target, player, data)
+    local room = player.room
+
+    return
+      target == player and
+      player:hasSkill("ofl_mou__wusheng") and
+      player.phase == Player.Play and
+      table.find(room.alive_players, function(p) return not p:isKongcheng() end)
+  end,
+  on_cost = function(self, event, target, player, data)
+    local room = player.room
+    local targets = table.filter(room:getOtherPlayers(player), function(p)
+      return not p:isKongcheng()
+    end)
+
+    if #targets then
+      local tos = room:askForChoosePlayers(player, table.map(targets, Util.IdMapper), 1, 1, "#ofl_mou__wusheng-choose", self.name)
+      if #tos > 0 then
+        self.cost_data = tos[1]
+        player:broadcastSkillInvoke("ofl_mou__wusheng")
+        return true
+      end
+    end
+
+    return false
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    local to = room:getPlayerById(self.cost_data)
+
+    to:showCards(to:getCardIds("h"))
+
+    local reds = table.filter(to:getCardIds("h"), function(id) return Fk:getCardById(id).color == Card.Red end)
+    if #reds == 0 then
+      return false
+    end
+
+    room:setPlayerMark(to, "@ofl_mou__wusheng-phase", #reds)
+    room:setPlayerMark(player, "ofl_mou__wusheng_from-phase", 1)
+  end,
+}
+local mouWuShengTargetMod = fk.CreateTargetModSkill{
+  name = "#ofl_mou__wusheng_targetmod",
+  bypass_times = function(self, player, skill, scope, card, to)
+    return
+      card and
+      card.trueName == "slash" and
+      player:getMark("ofl_mou__wusheng_from-phase") > 0 and
+      to and
+      to:getMark("@ofl_mou__wusheng-phase") ~= 0
+  end,
+  bypass_distances = function(self, player, skill, card, to)
+    return
+      card and
+      card.trueName == "slash" and
+      player:getMark("ofl_mou__wusheng_from-phase") > 0 and
+      to and
+      to:getMark("@ofl_mou__wusheng-phase") ~= 0
+  end,
+}
+local mouWuShengBuff = fk.CreateTriggerSkill{
+  name = "#ofl_mou__wusheng_buff",
+  mute = true,
+  events = {fk.CardUsing, fk.CardUseFinished},
+  can_trigger = function(self, event, target, player, data)
+    if event == fk.CardUsing then
+      return
+        target == player and
+        data.card.trueName == "slash" and
+        table.find(
+          TargetGroup:getRealTargets(data.tos),
+          function(pId)
+            local to = player.room:getPlayerById(pId)
+            return to:isAlive() and to:getMark("@ofl_mou__wusheng-phase") > 0
+          end
+        )
+    end
+
+    return data.card.trueName == "slash" and (data.extra_data or {}).oflMouWuShengUser == player.id
+  end,
+  on_cost = Util.TrueFunc,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    if event == fk.CardUsing then
+      local targets = table.filter(
+        TargetGroup:getRealTargets(data.tos),
+        function(pId)
+          local to = player.room:getPlayerById(pId)
+          return to:isAlive() and to:getMark("@ofl_mou__wusheng-phase") > 0
+        end
+      )
+
+      for _, pId in ipairs(targets) do
+        room:removePlayerMark(room:getPlayerById(pId), "@ofl_mou__wusheng-phase")
+      end
+
+      player:addCardUseHistory(data.card.trueName, -1)
+      data.extra_data = data.extra_data or {}
+      data.extra_data.oflMouWuShengUser = player.id
+    else
+      player:drawCards(1, self.name)
+    end
+  end,
+}
+Fk:loadTranslationTable{
+  ["ofl_mou__wusheng"] = "武圣",
+  [":ofl_mou__wusheng"] = "你可以将一张手牌当任意【杀】使用或打出；出牌阶段开始时，你可以令一名其他角色展示所有手牌，" ..
+  "然后你此阶段对其使用前X张【杀】无距离次数限制且结算结束后摸一张牌（X为其以此法展示牌中的红色牌数）。",
+  ["#ofl_mou__wusheng_trigger"] = "武圣",
+  ["#ofl_mou__wusheng-choose"] = "武圣：你可令一名其他角色展示手牌，根据其中红色牌数此阶段为你前等量张【杀】提供增益",
+  ["@ofl_mou__wusheng-phase"] = "武圣",
+
+  ["$ofl_mou__wusheng1"] = "敌酋虽勇，亦非关某一合之将！",
+  ["$ofl_mou__wusheng2"] = "酒且斟下，关某片刻便归。",
+  ["$ofl_mou__wusheng3"] = "煮酒待温方适饮！",
+}
+
+mouWuSheng:addRelatedSkill(mouWuShengTrigger)
+mouWuSheng:addRelatedSkill(mouWuShengTargetMod)
+mouWuSheng:addRelatedSkill(mouWuShengBuff)
+mouguanyu:addSkill(mouWuSheng)
+
+local mouYiJue = fk.CreateTriggerSkill{
+  name = "ofl_mou__yijue",
+  anim_type = "control",
+  frequency = Skill.Compulsory,
+  events = {fk.EventPhaseStart},
+  can_trigger = function(self, event, target, player, data)
+    return
+      target == player and
+      player.phase == Player.Start and
+      player:hasSkill(self) and
+      table.find(player.room.alive_players, function(p) return player ~= p and not p:isNude() end)
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    local targets = table.filter(room.alive_players, function(p) return player ~= p and not p:isNude() end)
+    room:doIndicate(player.id, table.map(targets, Util.IdMapper))
+
+    for _, p in ipairs(targets) do
+      if not p:isKongcheng() then
+        local ids = room:askForCard(p, 1, 1, false, self.name, true, ".", "#ofl_mou__yijue-give::" .. player.id)
+        if #ids > 0 then
+          room:setPlayerMark(p, "@@ofl_mou__yijue-turn", player.id)
+          room:obtainCard(player, ids, false, fk.ReasonGive, p.id, self.name)
+        end
+      end
+    end
+  end,
+}
+local mouYiJueDebuff = fk.CreateTriggerSkill{
+  name = "#ofl_mou__yijue_debuff",
+  anim_type = "negative",
+  events = {fk.DamageInflicted},
+  can_trigger = function(self, event, target, player, data)
+    local yijueUser = target:getMark("@@ofl_mou__yijue-turn")
+    return
+      yijueUser ~= 0 and
+      data.from == player and
+      player.id == yijueUser and
+      data.card and
+      data.card.trueName == "slash"
+  end,
+  on_cost = Util.TrueFunc,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    player:broadcastSkillInvoke("ofl_mou__yijue")
+    room:setPlayerMark(target, "@@ofl_mou__yijue-turn", 0)
+    return true
+  end,
+}
+Fk:loadTranslationTable{
+  ["ofl_mou__yijue"] = "义绝",
+  [":ofl_mou__yijue"] = "锁定技，准备阶段开始时，你令所有其他角色依次选择是否交给你一张牌，" ..
+  "以此法交给你牌的角色本回合首次受到你【杀】造成的伤害时，你防止此伤害。",
+  ["#ofl_mou__yijue_debuff"] = "义绝",
+  ["#ofl_mou__yijue-give"] = "义绝；你可交给%dest一张牌，防止其本回合使用【杀】对你造成的首次伤害",
+  ["@@ofl_mou__yijue-turn"] = "义绝",
+
+  ["$ofl_mou__yijue1"] = "大丈夫处事，只以忠义为先。",
+  ["$ofl_mou__yijue2"] = "马行忠魂路，刀斩不义敌！",
+}
+
+mouYiJue:addRelatedSkill(mouYiJueDebuff)
+mouguanyu:addSkill(mouYiJue)
 
 return extension
