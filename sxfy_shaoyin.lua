@@ -51,7 +51,7 @@ local sxfy__hehe = fk.CreateTriggerSkill{
     local targets = table.filter(room:getOtherPlayers(player), function (p)
       return p:getHandcardNum() == player:getHandcardNum()
     end)
-    local tos = room:askForChoosePlayers(player, table.map(targets, Util.IdMapper), 1, 2, "#sxfy__hehe-invoke", self.name, true, false)
+    local tos = room:askForChoosePlayers(player, table.map(targets, Util.IdMapper), 1, 2, "#sxfy__hehe-invoke", self.name, true)
     if #tos > 0  then
       self.cost_data = tos
       return true
@@ -210,7 +210,7 @@ local sxfy__xiongsuan = fk.CreateTriggerSkill{
       return p.hp == player.hp
     end)
     local tos = room:askForChoosePlayers(player, table.map(targets, Util.IdMapper), 1, 999,
-      "#sxfy__xiongsuan-invoke", self.name, false, false)
+      "#sxfy__xiongsuan-invoke", self.name, false)
     room:sortPlayersByAction(tos)
     for _, id in ipairs(tos) do
       local p = room:getPlayerById(id)
@@ -557,7 +557,7 @@ local sxfy__daoshu = fk.CreateTriggerSkill{
     local targets = table.map(table.filter(room:getOtherPlayers(target), function(p)
       return not p:isKongcheng()
     end), Util.IdMapper)
-    local to = room:askForChoosePlayers(player, targets, 1, 1, "#sxfy__daoshu-choose::"..target.id, self.name, true, true)
+    local to = room:askForChoosePlayers(player, targets, 1, 1, "#sxfy__daoshu-choose::"..target.id, self.name, true)
     if #to > 0 then
       self.cost_data = to[1]
       return true
@@ -701,7 +701,7 @@ local sxfy__xiongyi = fk.CreateActiveSkill{
   end,
 }
 local sxfy__youqi = fk.CreateTriggerSkill{
-  name = "sxfy__youqi",
+  name = "sxfy__youqi$",
   anim_type = "control",
   events = {fk.EventPhaseStart},
   can_trigger = function(self, event, target, player, data)
