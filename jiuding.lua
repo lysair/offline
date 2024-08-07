@@ -61,7 +61,7 @@ local juqiOffensive = fk.CreateTriggerSkill{
   name = "#juqi_offensive",
   events = {fk.DamageCaused},
   can_trigger = function(self, event, target, player, data)
-    return target == player and player:getMark("@@juqi-turn") > 0
+    return target == player and player:getMark("@@juqi-turn") > 0 and data.card
   end,
   on_cost = Util.TrueFunc,
   on_use = function(self, event, target, player, data)
@@ -147,6 +147,8 @@ local fengtu = fk.CreateTriggerSkill{
       if table.find(room.alive_players, function(p) return table.contains(U.getMark(p, "@fengtu"), next.seat) end) then
         return true
       end
+
+      current = next
     until current == data.to
 
     return false
