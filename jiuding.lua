@@ -537,4 +537,251 @@ Fk:loadTranslationTable{
 mouYiJue:addRelatedSkill(mouYiJueDebuff)
 mouguanyu:addSkill(mouYiJue)
 
+local moujiangwei = General(extension, "ofl_mou__jiangwei", "shu", 4)
+Fk:loadTranslationTable{
+  ["ofl_mou__jiangwei"] = "谋姜维",
+  ["#ofl_mou__jiangwei"] = "见危授命",
+  ["illustrator:ofl_mou__jiangwei"] = "鬼画府",
+  ["~ofl_mou__jiangwei"] = "这八阵天机，我也难以看破……",
+}
+
+local mouTiaoXin = fk.CreateActiveSkill{
+  name = "ofl_mou__tiaoxin",
+  anim_type = "control",
+  prompt = "#ofl_mou__tiaoxin-active",
+  min_target_num = 1,
+  card_num = 0,
+  can_use = function(self, player)
+    return player:usedSkillTimes(self.name, Player.HistoryPhase) == 0 and player.hp > 0
+  end,
+  card_filter = Util.FalseFunc,
+  target_filter = function(self, to_select, selected)
+    return #selected < Self.hp and to_select ~= Self.id
+  end,
+  on_use = function(self, room, effect)
+    local player = room:getPlayerById(effect.from)
+    local targets = table.simpleClone(effect.tos)
+    room:sortPlayersByAction(targets)
+    for _, pId in ipairs(targets) do
+      local to = room:getPlayerById(pId)
+      if player:isAlive() and to:isAlive() then
+        local slashHit
+        local use = room:askForUseCard(
+          to,
+          "slash",
+          "slash",
+          "#ofl_mou__tiaoxin-slash::" .. player.id,
+          true,
+          { exclusive_targets = { player.id }, bypass_distances = true }
+        )
+        if use then
+          room:useCard(use)
+          slashHit = use.damageDealt
+        end
+
+        if player:isAlive() and to:isAlive() and not to:isNude() and not slashHit then
+          local id = room:askForCardChosen(player, to, "he", self.name)
+          room:obtainCard(player, id, false, fk.ReasonPrey, player.id, self.name)
+        end
+      end
+    end
+  end,
+}
+Fk:loadTranslationTable{
+  ["ofl_mou__tiaoxin"] = "挑衅",
+  [":ofl_mou__tiaoxin"] = "出牌阶段限一次，你可以令至多X名其他角色依次选择一项（X为你的体力值）：" ..
+  "1.对你使用一张【杀】（无距离限制），然后若此【杀】未对你造成伤害，则你获得其一张牌；2.令你获得其一张牌。",
+  ["#ofl_mou__tiaoxin-active"] = "挑衅：你可令多名其他角色选择是否对你出杀，若杀未造成伤害或未出杀，你获得其一张牌",
+  ["#ofl_mou__tiaoxin-slash"] = "挑衅；你可对%dest出杀，若杀未造成伤害或你未出杀，则其获得你一张牌",
+
+  ["$ofl_mou__tiaoxin1"] = "你就这点本领吗？哈哈哈哈哈~",
+  ["$ofl_mou__tiaoxin2"] = "就你？不过如此！",
+}
+
+moujiangwei:addSkill(mouTiaoXin)
+
+local mouZhiJi = fk.CreateTriggerSkill{
+  name = "ofl_mou__zhiji",
+  anim_type = "support",
+  events = {fk.EnterDying},
+  frequency = Skill.Wake,
+  can_trigger = function(self, event, target, player, data)
+    return target == player and player:hasSkill(self) and player:usedSkillTimes(self.name, Player.HistoryGame) == 0
+  end,
+  can_wake = function(self, event, target, player, data)
+    return player.dying
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    local diff = 2 - player.hp
+    if diff > 0 then
+      room:recover{
+        who = player,
+        num = diff,
+        recoverBy = player,
+        skillName = self.name,
+      }
+    end
+
+    room:changeMaxHp(player, -1)
+    if not player:isAlive() then
+      return
+    end
+
+    room:handleAddLoseSkills(player, "ofl_mou__beifa")
+    if not table.find(room.alive_players, function(p) return p:getHandcardNum() < player:getHandcardNum() end) then
+      player:drawCards(2, self.name)
+    end
+  end,
+}
+Fk:loadTranslationTable{
+  ["ofl_mou__zhiji"] = "志继",
+  [":ofl_mou__zhiji"] = "觉醒技，当你进入濒死状态时，你将体力回复至2点，减1点体力上限并获得“北伐”，" ..
+  "然后若你手牌数最少，则你摸两张牌。",
+  ["#ofl_mou__tiaoxin-active"] = "挑衅：你可令多名其他角色选择是否对你出杀，若杀未造成伤害或未出杀，你获得其一张牌",
+  ["#ofl_mou__tiaoxin-slash"] = "挑衅；你可对%dest出杀，若杀未造成伤害或你未出杀，则其获得你一张牌",
+
+  ["$ofl_mou__zhiji1"] = "蜀汉大业，虽身小亦鼎力而为！",
+  ["$ofl_mou__zhiji2"] = "丞相北伐大业未完，吾必尽力图之。",
+}
+
+moujiangwei:addSkill(mouZhiJi)
+
+local mouBeiFa = fk.CreateActiveSkill{
+  name = "ofl_mou__beifa",
+  anim_type = "offensive",
+  prompt = "#ofl_mou__beifa-active",
+  target_num = 1,
+  min_card_num = 1,
+  can_use = function(self, player)
+    return not player:isKongcheng() and player:usedSkillTimes(self.name, Player.HistoryPhase) < 20
+  end,
+  card_filter = function (self, to_select, selected)
+    return not Self:prohibitDiscard(to_select) and Fk:currentRoom():getCardArea(to_select) == Card.PlayerHand
+  end,
+  target_filter = function(self, to_select, selected)
+    return #selected == 0 and not Fk:currentRoom():getPlayerById(to_select):isKongcheng()
+  end,
+  on_use = function(self, room, effect)
+    local player = room:getPlayerById(effect.from)
+    local to = room:getPlayerById(effect.tos[1])
+    local toThrow = effect.cards
+    room:throwCard(toThrow, self.name, player, player)
+
+    local names = {}
+    for _, id in ipairs(toThrow) do
+      table.insertIfNeed(names, Fk:getCardById(id).trueName)
+    end
+
+    if not to:isKongcheng() then
+      local ids
+      if to:getHandcardNum() > #toThrow then
+        ids = room:askForCard(to, #toThrow, #toThrow, false, self.name, false, ".", "#ofl_mou__beifa-display:" .. player.id)
+      else
+        ids = to:getCardIds("h")
+      end
+
+      to:showCards(ids)
+
+      local sameNames = table.filter(
+        ids,
+        function(id)
+          return
+            table.contains(names, Fk:getCardById(id).trueName) and
+            room:getCardArea(id) == Card.PlayerHand and
+            room:getCardOwner(id) == to
+        end
+      )
+      repeat
+        if not (player:isAlive() and to:isAlive()) then
+          break
+        end
+
+        if to ~= player then
+          room:setPlayerMark(player, "ofl_mou__beifa_view", sameNames)
+        end
+    
+        local extra_data = {bypass_times = true}
+        local availableCards = {}
+        for _, id in ipairs(sameNames) do
+          local card = Fk:cloneCard("slash")
+          card:addSubcard(id)
+          if not player:prohibitUse(card) and player:canUse(card, extra_data) then
+            table.insertIfNeed(availableCards, id)
+          end
+        end
+
+        room:setPlayerMark(player, "ofl_mou__beifa_cards", availableCards)
+        local success, dat = room:askForUseActiveSkill(
+          player,
+          "ofl_mou__beifa_viewas",
+          "#ofl_mou__beifa-use",
+          true,
+          extra_data
+        )
+        room:setPlayerMark(player, "ofl_mou__beifa_view", 0)
+        room:setPlayerMark(player, "ofl_mou__beifa_cards", 0)
+
+        if not (success and dat) then
+          break
+        end
+
+        local card = Fk.skills["ofl_mou__beifa_viewas"]:viewAs(dat.cards)
+        room:useCard{
+          from = player.id,
+          tos = table.map(dat.targets, function(id) return { id } end),
+          card = card,
+          extraUse = true,
+        }
+
+        table.removeOne(sameNames, dat.cards[1])
+        sameNames = table.filter(
+          sameNames,
+          function(id)
+            return
+              room:getCardArea(id) == Card.PlayerHand and
+              room:getCardOwner(id) == to
+          end
+        )
+      until #sameNames == 0
+    end
+  end,
+}
+local mouBeiFaViewas = fk.CreateViewAsSkill{
+  name = "ofl_mou__beifa_viewas",
+  expand_pile = function (self)
+    return U.getMark(Self, "ofl_mou__beifa_view")
+  end,
+  card_filter = function(self, to_select, selected)
+    if #selected == 0 then
+      local ids = Self:getMark("ofl_mou__beifa_cards")
+      return type(ids) == "table" and table.contains(ids, to_select)
+    end
+  end,
+  view_as = function(self, cards)
+    if #cards == 1 then
+      local card = Fk:cloneCard("slash")
+      card:addSubcards(cards)
+      card.skillName = "ofl_mou__beifa"
+      return card
+    end
+  end,
+}
+Fk:loadTranslationTable{
+  ["ofl_mou__beifa"] = "北伐",
+  [":ofl_mou__beifa"] = "出牌阶段，你可以弃置至少一张手牌，并令一名角色展示等量手牌，" ..
+  "你可将展示牌中一张你以此法弃置过的牌名的牌（须本流程中未以此法转化过且仍处于其手牌中）当无次数限制的【杀】使用，然后你可重复此转化流程。",
+  ["#ofl_mou__beifa-active"] = "北伐：你可弃置任意手牌并令一名角色展示等量手牌，你可将其中弃置与展示同名的牌当【杀】使用",
+  ["#ofl_mou__beifa-display"] = "北伐：你须展示等量牌，%src可将其中与其弃置的同名牌依次当【杀】使用",
+  ["#ofl_mou__beifa-use"] = "北伐；你可将其中一张牌当无次数限制的【杀】使用",
+  ["ofl_mou__beifa_viewas"] = "北伐",
+  ["ofl_mou__beifa_view"] = "北伐",
+
+  ["$ofl_mou__beifa1"] = "",
+  ["$ofl_mou__beifa2"] = "",
+}
+
+Fk:addSkill(mouBeiFaViewas)
+moujiangwei:addRelatedSkill(mouBeiFa)
+
 return extension
