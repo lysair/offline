@@ -3030,4 +3030,241 @@ Fk:loadTranslationTable{
   ["#zhiyiz"] = "志异：令一名角色摸一张牌，然后你对其造成1点伤害。",
 }
 
+local tianchuan = General(extension, "tianchuan", "qun", 3, 3, General.Female)
+local huying = fk.CreateTriggerSkill{
+  name = "huying",
+  frequency = Skill.Compulsory,
+  events = {fk.GameStart, fk.Deathed},
+  can_trigger = function(self, event, target, player, data)
+    return player:hasSkill(self)
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    local cards = {}
+    if event == fk.GameStart then
+      for i = 1, 2, 1 do
+        local card = room:printCard("caning_whip", Card.Spade, 9)
+        table.insert(cards, card)
+      end
+    else
+      cards = room:printCard("caning_whip", Card.Spade, 9)
+    end
+    room:moveCardTo(cards, Card.PlayerHand, player, fk.ReasonJustMove, self.name, nil, true, player.id)
+  end,
+}
+local huying_maxcards = fk.CreateMaxCardsSkill{
+  name = "#huying_maxcards",
+  frequency = Skill.Compulsory,
+  main_skill = huying,
+  exclude_from = function(self, player, card)
+    return player:hasSkill(huying) and card.name == "caning_whip"
+  end,
+}
+local huying_distance = fk.CreateDistanceSkill{
+  name = "#huying_distance",
+  frequency = Skill.Compulsory,
+  main_skill = huying,
+  correct_func = function(self, from, to)
+    if to:hasSkill(huying) then
+      return #table.filter(to:getCardIds("e"), function (id)
+        return Fk:getCardById(id).name == "caning_whip"
+      end)
+    end
+    return 0
+  end,
+}
+local qianjing = fk.CreateViewAsSkill{
+  name = "qianjing",
+  pattern = "slash",
+  anim_type = "offensive",
+  prompt = "#qianjing",
+  card_filter = function(self, to_select, selected)
+    if #selected == 0 then
+      return Fk:getCardById(to_select).name == "caning_whip"
+    end
+  end,
+  view_as = function(self, cards)
+    local card = Fk:cloneCard("slash")
+    if #cards == 1 then
+      card:addSubcards(cards)
+    end
+    card.skillName = self.name
+    return card
+  end,
+  before_use = function(self, player, use)
+    if #use.card.subcards == 0 then
+      local room = player.room
+      local targets = table.map(table.filter(room.alive_players, function(p)
+        return table.find(p:getCardIds("e"), function (id)
+          return Fk:getCardById(id).name == "caning_whip"
+        end) end), Util.IdMapper)
+      if #targets == 0 then return "" end
+      local to = room:askForChoosePlayers(player, targets, 1, 1, "#qianjing_use-choose", self.name, false)
+      if #to == 0 then return "" end
+      to = room:getPlayerById(to[1])
+      local cards = table.filter(to:getCardIds("e"), function (id)
+        return Fk:getCardById(id).name == "caning_whip"
+      end)
+      if #cards == 1 then
+        use.card:addSubcard(cards[1])
+      else
+        local card = U.askforChooseCardsAndChoice(player, cards, {"OK"}, self.name, "#qianjing_use-card::"..to.id)
+        use.card:addSubcard(card[1])
+      end
+    end
+    use.extraUse = true
+  end,
+  enabled_at_response = function (self, player, response)
+    return not response
+  end,
+}
+local qianjing_trigger = fk.CreateTriggerSkill{
+  name = "#qianjing_trigger",
+  mute = true,
+  events = {fk.Damage, fk.Damaged},
+  main_skill = qianjing,
+  can_trigger = function(self, event, target, player, data)
+    return target and target == player and player:hasSkill(qianjing) and not player:isKongcheng()
+  end,
+  on_cost = function(self, event, target, player, data)
+    local success, dat = player.room:askForUseActiveSkill(player, "qianjing_active", "#qianjing-put", true, nil, false)
+    if success and dat then
+      self.cost_data = dat
+      return true
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    local card = Fk:getCardById(self.cost_data.cards[1])
+    local mapper = {
+      ["WeaponSlot"] = "weapon",
+      ["ArmorSlot"] = "armor",
+      ["OffensiveRideSlot"] = "offensive_horse",
+      ["DefensiveRideSlot"] = "defensive_horse",
+      ["TreasureSlot"] = "treasure",
+    }
+    room:setCardMark(card, "@caning_whip", Fk:translate(mapper[self.cost_data.interaction]))
+    Fk.printed_cards[self.cost_data.cards[1]].sub_type = Util.convertSubtypeAndEquipSlot(self.cost_data.interaction)
+    local to = room:getPlayerById(self.cost_data.targets[1])
+    U.moveCardIntoEquip(room, to, self.cost_data.cards, "qianjing", false, player)
+    if to == player and not player.dead then
+      player:drawCards(1, "qianjing")
+    end
+  end,
+}
+local qianjing_active = fk.CreateActiveSkill{
+  name = "qianjing_active",
+  card_num = 1,
+  target_num = 1,
+  interaction = function ()
+    return UI.ComboBox {choices = {"WeaponSlot", "ArmorSlot", "OffensiveRideSlot", "DefensiveRideSlot", "TreasureSlot"}}
+  end,
+  card_filter = function(self, to_select, selected, targets)
+    return #selected == 0 and Fk:getCardById(to_select).name == "caning_whip" and
+      Fk:currentRoom():getCardArea(to_select) == Card.PlayerHand
+  end,
+  target_filter = function(self, to_select, selected, selected_cards)
+    return #selected == 0 and #selected_cards == 1 and self.interaction.data and
+      Fk:currentRoom():getPlayerById(to_select):hasEmptyEquipSlot(Util.convertSubtypeAndEquipSlot(self.interaction.data))
+  end,
+}
+local bianchi = fk.CreateTriggerSkill{
+  name = "bianchi",
+  anim_type = "offensive",
+  frequency = Skill.Limited,
+  events = {fk.EventPhaseStart},
+  can_trigger = function(self, event, target, player, data)
+    return target == player and player:hasSkill(self) and player.phase == Player.Finish and
+      table.find(player.room.alive_players, function(p)
+        return table.find(p:getCardIds("e"), function (id)
+          return Fk:getCardById(id).name == "caning_whip"
+        end)
+      end) and
+      player:usedSkillTimes(self.name, Player.HistoryGame) == 0
+  end,
+  on_use = function (self, event, target, player, data)
+    local room = player.room
+    local targets = table.filter(room:getAlivePlayers(), function(p)
+      return table.find(p:getCardIds("e"), function (id)
+        return Fk:getCardById(id).name == "caning_whip"
+      end)
+    end)
+    room:doIndicate(player.id, table.map(targets, Util.IdMapper))
+    for _, p in ipairs(targets) do
+      if not p.dead then
+        local cards = table.filter(p:getCardIds("e"), function (id)
+          return Fk:getCardById(id).name == "caning_whip"
+        end)
+        if #cards > 0 then
+          room:throwCard(cards, self.name, p, player)
+        end
+      end
+    end
+    for _, p in ipairs(targets) do
+      if p ~= player and not p.dead then
+        if player.dead then
+          room:loseHp(p, 2, self.name)
+        else
+          local choice = room:askForChoice(p, {"bianchi1:"..player.id, "bianchi2"}, self.name)
+          if choice == "bianchi2" then
+            room:loseHp(p, 2, self.name)
+          else
+            player:control(p)
+            room:setPlayerMark(p, "bianchi-tmp", 1)
+            p:gainAnExtraPhase(Player.Play, false)
+            room:setPlayerMark(p, "bianchi-tmp", 0)
+            p:control(p)
+          end
+        end
+      end
+    end
+  end,
+
+  refresh_events = {fk.PreCardUse},
+  can_refresh = function(self, event, target, player, data)
+    return target == player and player.phase == Player.Play and player:getMark("bianchi-tmp") > 0
+  end,
+  on_refresh = function(self, event, target, player, data)
+    player.room:addPlayerMark(player, "bianchi-phase", 1)
+  end,
+}
+local bianchi_prohibit = fk.CreateProhibitSkill{
+  name = '#bianchi_prohibit',
+  prohibit_use = function(self, player)
+    return player:getMark("bianchi-tmp") > 0 and player.phase == Player.Play and player:getMark("bianchi-phase") > 1
+  end,
+}
+huying:addRelatedSkill(huying_maxcards)
+huying:addRelatedSkill(huying_distance)
+qianjing:addRelatedSkill(qianjing_trigger)
+Fk:addSkill(qianjing_active)
+bianchi:addRelatedSkill(bianchi_prohibit)
+tianchuan:addSkill(huying)
+tianchuan:addSkill(qianjing)
+tianchuan:addSkill(bianchi)
+Fk:loadTranslationTable{
+  ["tianchuan"] = "田钏",
+  ["#tianchuan"] = "潜行之狐",
+  --["designer:tianchuan"] = "",
+  ["illustrator:tianchuan"] = "苍月白龙",
+
+  ["huying"] = "狐影",
+  [":huying"] = "锁定技，游戏开始时/其他角色死亡后，你从游戏外获得两张/一张【刑鞭】，【刑鞭】不计入你的手牌上限，你场上每有一张【刑鞭】，"..
+  "其他角色计算与你的距离便+1。",
+  ["qianjing"] = "潜荆",
+  [":qianjing"] = "当你造成或受到伤害后，你可以将手牌中一张【刑鞭】置于一名角色的任意一个装备栏，若为你则摸一张牌。你可以将场上或手牌中的"..
+  "一张【刑鞭】当不计入次数的【杀】使用。",
+  ["bianchi"] = "鞭笞",
+  [":bianchi"] = "限定技，结束阶段，你可以弃置场上所有【刑鞭】，然后令所有因此弃置【刑鞭】的其他角色依次选择一项：1.你操纵其执行一个额外的"..
+  "出牌阶段，此阶段内其至多使用两张牌；2.失去2点体力。",
+  ["#qianjing_trigger"] = "潜荆",
+  ["qianjing_active"] = "潜荆",
+  ["#qianjing-put"] = "潜荆：你可以将手牌中一张【刑鞭】置入一名角色任意装备栏，若为你则摸一张牌",
+  ["#qianjing"] = "潜荆：选择你的一张【刑鞭】当【杀】使用（或先指定【杀】的目标，再选择一名角色场上的一张【刑鞭】）",
+  ["#qianjing_use-choose"] = "潜荆：选择一名角色，将其场上的【刑鞭】当【杀】使用",
+  ["#qianjing_use-card"] = "潜荆：选择 %dest 场上一张【刑鞭】当【杀】使用",
+  ["bianchi1"] = "%src 操纵你执行一个额外出牌阶段！",
+  ["bianchi2"] = "失去2点体力",
+}
+
 return extension

@@ -7,6 +7,8 @@ local sxfy_taiyin = require "packages/offline/sxfy_taiyin"
 local tqt = require "packages/offline/assassins"
 local zyz = require "packages/offline/bgmdiy"
 
+local ofl_token = require "packages/offline/ofl_token"
+
 Fk:loadTranslationTable{ ["offline"] = "线下" }
 
 return {
@@ -18,4 +20,6 @@ return {
   sxfy_taiyin,
   tqt,
   zyz,
+
+  ofl_token,
 }
