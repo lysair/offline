@@ -487,7 +487,7 @@ local mouYiJue = fk.CreateTriggerSkill{
   end,
   on_use = function(self, event, target, player, data)
     local room = player.room
-    local targets = table.filter(room.alive_players, function(p) return player ~= p and not p:isNude() end)
+    local targets = table.filter(room:getOtherPlayers(player), function(p) return not p:isNude() end)
     room:doIndicate(player.id, table.map(targets, Util.IdMapper))
 
     for _, p in ipairs(targets) do
@@ -541,7 +541,7 @@ local moujiangwei = General(extension, "ofl_mou__jiangwei", "shu", 4)
 Fk:loadTranslationTable{
   ["ofl_mou__jiangwei"] = "谋姜维",
   ["#ofl_mou__jiangwei"] = "见危授命",
-  ["illustrator:ofl_mou__jiangwei"] = "鬼画府",
+  ["illustrator:ofl_mou__jiangwei"] = "凝聚永恒",
   ["~ofl_mou__jiangwei"] = "这八阵天机，我也难以看破……",
 }
 
@@ -770,7 +770,7 @@ local mouBeiFaViewas = fk.CreateViewAsSkill{
 Fk:loadTranslationTable{
   ["ofl_mou__beifa"] = "北伐",
   [":ofl_mou__beifa"] = "出牌阶段，你可以弃置至少一张手牌，并令一名角色展示等量手牌，" ..
-  "你可将展示牌中一张你以此法弃置过的牌名的牌（须本流程中未以此法转化过且仍处于其手牌中）当无次数限制的【杀】使用，然后你可重复此转化流程。",
+  "你可将展示牌中一张你本次弃置过的牌名的牌（须本流程中未以此法转化过且仍处于其手牌中）当无次数限制的【杀】使用，然后你可重复此转化流程。",
   ["#ofl_mou__beifa-active"] = "北伐：你可弃置任意手牌并令一名角色展示等量手牌，你可将其中弃置与展示同名的牌当【杀】使用",
   ["#ofl_mou__beifa-display"] = "北伐：你须展示等量牌，%src可将其中与其弃置的同名牌依次当【杀】使用",
   ["#ofl_mou__beifa-use"] = "北伐；你可将其中一张牌当无次数限制的【杀】使用",
