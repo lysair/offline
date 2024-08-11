@@ -19,7 +19,7 @@ Fk:loadTranslationTable{
 local juqi = fk.CreateTriggerSkill{
   name = "juqi",
   events = {fk.EventPhaseStart},
-  anim_type = "support",
+  anim_type = "switch",
   switch_skill_name = "juqi",
   can_trigger = function(self, event, target, player, data)
     return
@@ -692,7 +692,7 @@ local mouBeiFa = fk.CreateActiveSkill{
             room:getCardOwner(id) == to
         end
       )
-      repeat
+      while #sameNames > 0 do
         if not (player:isAlive() and to:isAlive()) then
           break
         end
@@ -743,7 +743,7 @@ local mouBeiFa = fk.CreateActiveSkill{
               room:getCardOwner(id) == to
           end
         )
-      until #sameNames == 0
+      end
     end
   end,
 }
@@ -783,5 +783,122 @@ Fk:loadTranslationTable{
 
 Fk:addSkill(mouBeiFaViewas)
 moujiangwei:addRelatedSkill(mouBeiFa)
+
+local mousunquan = General(extension, "ofl_mou__sunquan", "wu", 4)
+Fk:loadTranslationTable{
+  ["ofl_mou__sunquan"] = "谋孙权",
+  ["#ofl_mou__sunquan"] = "江东大帝",
+  ["illustrator:ofl_mou__sunquan"] = "鬼画府",
+  ["~ofl_mou__sunquan"] = "天下一统，吾终不可得乎……",
+}
+
+local mouZhiHeng = fk.CreateActiveSkill{
+  name = "ofl_mou__zhiheng",
+  anim_type = "drawcard",
+  prompt = "#ofl_mou__zhiheng-active",
+  target_num = 0,
+  min_card_num = 1,
+  can_use = function(self, player)
+    return player:usedSkillTimes(self.name, Player.HistoryPhase) == 0
+  end,
+  card_filter = function (self, to_select, selected)
+    return not Self:prohibitDiscard(to_select)
+  end,
+  target_filter = Util.FalseFunc,
+  on_use = function(self, room, effect)
+    local player = room:getPlayerById(effect.from)
+    local drawNum = #effect.cards
+    if table.find(player:getCardIds("e"), function(id) return table.contains(effect.cards, id) end) then
+      drawNum = drawNum + 1
+    end
+
+    room:throwCard(effect.cards, self.name, player, player)
+    player:drawCards(drawNum, self.name)
+  end,
+}
+Fk:loadTranslationTable{
+  ["ofl_mou__zhiheng"] = "制衡",
+  [":ofl_mou__zhiheng"] = "出牌阶段限一次，你可以弃置至少一张牌，然后摸等量的牌，若你以此法弃置了装备区里的牌，则你多摸一张牌。",
+  ["#ofl_mou__zhiheng-active"] = "制衡：你可弃置任意牌并摸等量牌，若你弃置装备区里的牌，则多摸一张",
+
+  ["$ofl_mou__zhiheng1"] = "权者万变，非制衡不可取之。",
+  ["$ofl_mou__zhiheng2"] = "内制朝臣乱政，外衡天下时局。",
+}
+
+mousunquan:addSkill(mouZhiHeng)
+
+local mouTongYe = fk.CreateTriggerSkill{
+  name = "ofl_mou__tongye",
+  frequency = Skill.Compulsory,
+  refresh_events = {fk.AfterDrawPileShuffle, fk.EventAcquireSkill, fk.EventLoseSkill},
+  can_refresh = function(self, event, target, player, data)
+    if event == fk.AfterDrawPileShuffle then
+      return player:hasSkill(self, true)
+    end
+
+    return
+      target == player and
+      data == self and
+      not (fk.EventAcquireSkill and player:getMark("ofl_mou__tongye_shuffled") > 0)
+  end,
+  on_refresh = function(self, event, target, player, data)
+    local room = player.room
+    if event == fk.AfterDrawPileShuffle then
+      room:setPlayerMark(player, "ofl_mou__tongye_shuffled", 1)
+      room:handleAddLoseSkills(player, "-mou__yingzi|-guzheng")
+    elseif event == fk.EventAcquireSkill then
+      room:handleAddLoseSkills(player, "mou__yingzi|guzheng")
+    else
+      room:handleAddLoseSkills(player, "-mou__yingzi|-guzheng")
+    end
+  end,
+}
+Fk:loadTranslationTable{
+  ["ofl_mou__tongye"] = "统业",
+  [":ofl_mou__tongye"] = "锁定技，若本局游戏牌堆未洗过牌，则你视为拥有“英姿”和“固政”。",
+}
+
+mousunquan:addSkill(mouTongYe)
+mousunquan:addRelatedSkill("mou__yingzi")
+mousunquan:addRelatedSkill("guzheng")
+
+local mouJiuYuan = fk.CreateActiveSkill{
+  name = "ofl_mou__jiuyuan",
+  anim_type = "control",
+  prompt = "#ofl_mou__jiuyuan-active",
+  target_num = 1,
+  card_num = 0,
+  can_use = function(self, player)
+    return player:usedSkillTimes(self.name, Player.HistoryPhase) == 0
+  end,
+  card_filter = Util.FalseFunc,
+  target_filter = function (self, to_select, selected)
+    if #selected > 0 or Self.id == to_select then
+      return false
+    end
+    local to = Fk:currentRoom():getPlayerById(to_select)
+    return to.kingdom == "wu" and #to:getCardIds("e") > 0
+  end,
+  on_use = function(self, room, effect)
+    local player = room:getPlayerById(effect.from)
+    room:obtainCard(player, room:getPlayerById(effect.tos[1]):getCardIds("e"), true, fk.ReasonPrey, player.id, self.name)
+    room:recover{
+      who = player,
+      num = 1,
+      recoverBy = player,
+      skillName = self.name,
+    }
+  end,
+}
+Fk:loadTranslationTable{
+  ["ofl_mou__jiuyuan"] = "救援",
+  [":ofl_mou__jiuyuan"] = "主公技，出牌阶段限一次，你可以获得一名其他吴势力角色装备区里的所有牌，然后你回复1点体力。",
+  ["#ofl_mou__jiuyuan-active"] = "救援：你可以获得一名其他吴势力角色装备区里的所有牌，然后你回复1点体力",
+
+  ["$ofl_mou__jiuyuan1"] = "援军何在？诸将速速回转！",
+  ["$ofl_mou__jiuyuan2"] = "若无将军舍命，吾安可无伤而返。",
+}
+
+mousunquan:addSkill(mouJiuYuan)
 
 return extension
