@@ -784,11 +784,173 @@ Fk:loadTranslationTable{
 Fk:addSkill(mouBeiFaViewas)
 moujiangwei:addRelatedSkill(mouBeiFa)
 
+local moumenghuo = General(extension, "ofl_mou__menghuo", "shu", 4)
+Fk:loadTranslationTable{
+  ["ofl_mou__menghuo"] = "谋孟获",
+  ["#ofl_mou__menghuo"] = "南蛮王",
+  ["illustrator:ofl_mou__menghuo"] = "石琨",
+  ["~ofl_mou__menghuo"] = "南中子弟，有死无降！",
+}
+
+local mouHuoShou = fk.CreateTriggerSkill{
+  name = "ofl_mou__huoshou",
+  anim_type = "defensive",
+  frequency = Skill.Compulsory,
+  events = {fk.PreCardEffect, fk.TargetSpecified, fk.EventPhaseEnd},
+  can_trigger = function(self, event, target, player, data)
+    if event == fk.PreCardEffect then
+      return player.id == data.to and player:hasSkill(self) and data.card.trueName == "savage_assault"
+    elseif event == fk.TargetSpecified then
+      return target ~= player and data.firstTarget and player:hasSkill(self) and data.card.trueName == "savage_assault"
+    end
+
+    return player == target and player:hasSkill(self) and player.phase == Player.Play
+  end,
+  on_use = function(self, event, target, player, data)
+    if event == fk.PreCardEffect then
+      return true
+    elseif event == fk.TargetSpecified then
+      data.extra_data = data.extra_data or {}
+      data.extra_data.oflMouHuoShou = player.id
+    else
+      local room = player.room
+      room:throwCard(player:getCardIds("h"), self.name, player, player)
+      room:useCard{
+        from = player.id,
+        card = Fk:cloneCard("savage_assault"),
+      }
+    end
+  end,
+
+  refresh_events = {fk.PreDamage},
+  can_refresh = function(self, event, target, player, data)
+    if data.card and data.card.trueName == "savage_assault" then
+      local e = player.room.logic:getCurrentEvent():findParent(GameEvent.UseCard)
+      if e then
+        local use = e.data[1]
+        return use.extra_data and use.extra_data.oflMouHuoShou
+      end
+    end
+  end,
+  on_refresh = function(self, event, target, player, data)
+    local room = player.room
+    local e = room.logic:getCurrentEvent():findParent(GameEvent.UseCard)
+    if e then
+      local use = e.data[1]
+      data.from = room:getPlayerById(use.extra_data.oflMouHuoShou)
+    end
+  end,
+}
+Fk:loadTranslationTable{
+  ["ofl_mou__huoshou"] = "祸首",
+  [":ofl_mou__huoshou"] = "锁定技，【南蛮入侵】对你无效；当其他角色使用【南蛮入侵】指定第一个目标后，你代替其成为伤害来源；" ..
+  "出牌阶段结束时，你弃置所有手牌，视为使用一张【南蛮入侵】。",
+
+  ["$ofl_mou__huoshou1"] = "蛮人世居两川之地，岂会屈居汉人之下！",
+  ["$ofl_mou__huoshou2"] = "吾等，定要守护这南中乐土！",
+}
+
+moumenghuo:addSkill(mouHuoShou)
+
+local mouZaiQi = fk.CreateTriggerSkill{
+  name = "ofl_mou__zaiqi",
+  events = {fk.EventPhaseEnd},
+  can_trigger = function(self, event, target, player, data)
+    if target == player and player:hasSkill(self) and player.phase == Player.Discard then
+      local room = player.room
+      local turn_event = room.logic:getCurrentEvent():findParent(GameEvent.Turn)
+      if turn_event == nil then return false end
+
+      return #U.getEventsByRule(room, GameEvent.MoveCards, 1, function (e)
+        for _, move in ipairs(e.data) do
+          if move.toArea == Card.DiscardPile and move.moveReason == fk.ReasonDiscard and move.proposer == player.id then
+            return true
+          end
+        end
+        return false
+      end, turn_event.id) > 0
+    end
+  end,
+  on_cost = function(self, event, target, player, data)
+    local room = player.room
+
+    local ids = {}
+    room.logic:getEventsOfScope(GameEvent.MoveCards, 1, function (e)
+      for _, move in ipairs(e.data) do
+        if move.toArea == Card.DiscardPile and move.moveReason == fk.ReasonDiscard and move.proposer == player.id then
+          for _, info in ipairs(move.moveInfo) do
+            table.insertIfNeed(ids, info.cardId)
+          end
+        end
+      end
+      return false
+    end, Player.HistoryTurn)
+
+    local x = #ids
+    local result = room:askForChoosePlayers(
+      player,
+      table.map(room.alive_players, Util.IdMapper),
+      1,
+      x,
+      "#ofl_mou__zaiqi-choose:::" .. x,
+      self.name,
+      true
+    )
+    if #result > 0 then
+      self.cost_data = result
+      return true
+    end
+
+    return false
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    room:sortPlayersByAction(self.cost_data)
+    local targets = table.map(self.cost_data, function(id) return room:getPlayerById(id) end)
+    for _, p in ipairs(targets) do
+      if not player:isAlive() then
+        break
+      end
+
+      if p:isAlive() then
+        local recover = false
+        if player:isWounded() and not p:isNude() then
+          local ids = room:askForDiscard(p, 1, 1, true, self.name, true, ".", "#ofl_mou__zaiqi-discard:" .. player.id)
+          if #ids > 0 then
+            room:recover({
+              who = player,
+              num = 1,
+              recoverBy = p,
+              skillName = self.name
+            })
+          end
+        end
+
+        if not recover then
+          player:drawCards(1, self.name)
+        end
+      end
+    end
+  end,
+}
+Fk:loadTranslationTable{
+  ["ofl_mou__zaiqi"] = "再起",
+  [":ofl_mou__zaiqi"] = "弃牌阶段结束时，你可以令至多X名角色依次选择一项（X为你本回合弃置过的牌数）：" ..
+  "1.令你摸一张牌；2.弃置一张牌并令你回复1点体力。",
+  ["#ofl_mou__zaiqi-choose"] = "再起：你可选择至多%arg名角色，令他们选择令你摸牌或弃牌令你回血",
+  ["#ofl_mou__zaiqi-discard"] = "再起：你可弃置一张牌令%src回复1点体力，否则其摸一张牌",
+
+  ["$ofl_mou__zaiqi1"] = "山辟路窄，误遭汝手，如何肯服？",
+  ["$ofl_mou__zaiqi2"] = "待我重整兵马，来日一决雌雄！",
+}
+
+moumenghuo:addSkill(mouZaiQi)
+
 local mousunquan = General(extension, "ofl_mou__sunquan", "wu", 4)
 Fk:loadTranslationTable{
   ["ofl_mou__sunquan"] = "谋孙权",
   ["#ofl_mou__sunquan"] = "江东大帝",
-  ["illustrator:ofl_mou__sunquan"] = "鬼画府",
+  ["illustrator:ofl_mou__sunquan"] = "陈层",
   ["~ofl_mou__sunquan"] = "天下一统，吾终不可得乎……",
 }
 
@@ -863,7 +1025,7 @@ mousunquan:addRelatedSkill("mou__yingzi")
 mousunquan:addRelatedSkill("guzheng")
 
 local mouJiuYuan = fk.CreateActiveSkill{
-  name = "ofl_mou__jiuyuan",
+  name = "ofl_mou__jiuyuan$",
   anim_type = "control",
   prompt = "#ofl_mou__jiuyuan-active",
   target_num = 1,
