@@ -1,4 +1,6 @@
 local extension = Package:new("ofl_token", Package.CardPack)
+extension.extensionName = "offline"
+
 Fk:loadTranslationTable{
   ["ofl_token"] = "线下衍生牌",
 }
@@ -123,6 +125,68 @@ Fk:loadTranslationTable{
   ["@@caning_whip-turn"] = "刑鞭",
   ["#changeWhipSubtype"] = "指定【刑鞭】的副类别",
   ["@caning_whip"] = "",
+}
+
+
+local shzj__burning_camps_skill = fk.CreateActiveSkill{
+  name = "shzj__burning_camps_skill",
+  prompt = "#shzj__burning_camps_skill",
+  target_num = 1,
+  mod_target_filter = function(_, to_select, _, _, _, _)
+    return not Fk:currentRoom():getPlayerById(to_select):isNude()
+  end,
+  target_filter = function(self, to_select, selected, _, card)
+    if #selected < self:getMaxTargetNum(Self, card) then
+      return self:modTargetFilter(to_select, selected, Self.id, card)
+    end
+  end,
+  on_effect = function(self, room, effect)
+    local from = room:getPlayerById(effect.from)
+    local to = room:getPlayerById(effect.to)
+    if to:isNude() then return end
+
+    local id = room:askForCardChosen(from, to, "he", self.name, "#shzj__burning_camps-show::"..to.id)
+    to:showCards(id)
+
+    local card = Fk:getCardById(id)
+    local cards = room:askForDiscard(from, 1, 1, false, self.name, true,
+      ".|.|" .. card:getSuitString(), "#shzj__burning_camps-discard:"..to.id.."::"..card:getSuitString())
+    if #cards > 0 then
+      if table.contains(to:getCardIds("h"), id) then
+        room:throwCard(id, self.name, to, from)
+      end
+      if not to.dead then
+        room:damage({
+          from = from,
+          to = to,
+          card = effect.card,
+          damage = 1,
+          damageType = fk.FireDamage,
+          skillName = self.name,
+        })
+      end
+      if to.chained and not to.dead and not from.dead and room:getCardArea(id) == Card.DiscardPile then
+        room:moveCardTo(id, Card.PlayerHand, from, fk.ReasonJustMove, self.name, nil, true, from.id)
+      end
+    end
+  end,
+}
+local shzj__burning_camps = fk.CreateTrickCard{
+  name = "&shzj__burning_camps",
+  skill = shzj__burning_camps_skill,
+  is_damage_card = true,
+}
+extension:addCards{
+  shzj__burning_camps:clone(Card.Heart, 3),
+}
+Fk:loadTranslationTable{
+  ["shzj__burning_camps"] = "火烧连营",
+  ["shzj__burning_camps_skill"] = "火烧连营",
+  [":shzj__burning_camps"] = "锦囊牌<br/><b>时机</b>：出牌阶段<br/><b>目标</b>：一名有牌的角色<br/><b>效果</b>：你展示目标角色的一张牌，"..
+  "然后你可以弃置一张与展示牌花色相同的手牌，若如此做，你弃置展示的牌并对其造成1点火焰伤害，然后若其处于横置状态，你获得弃牌堆中其展示的牌。",
+  ["#shzj__burning_camps-discard"] = "你可弃置一张 %arg 手牌，对 %src 造成1点火属性伤害",
+  ["#shzj__burning_camps_skill"] = "选择一名有牌的角色，展示其一张牌，<br/>然后你可以弃置一张花色相同的手牌对其造成1点火焰伤害并弃置其展示牌",
+  ["#shzj__burning_camps-show"] = "火烧连营：展示 %dest 一张牌",
 }
 
 return extension
