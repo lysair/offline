@@ -876,7 +876,7 @@ Fk:loadTranslationTable{
   [":xibei"] = "当其他角色从牌堆以外的区域获得牌后，你可以摸一张牌，若此时为你的出牌阶段，你可以展示一张锦囊牌，此牌视为【火烧连营】直到"..
   "本回合结束或离开你的手牌。<br>"..
   "<font color='grey'><small>【火烧连营】出牌阶段，对一名有牌的角色使用，你展示目标角色的一张牌，然后你可以弃置一张与展示牌花色相同的手牌，"..
-  "若如此做，你弃置展示的牌并对其造成1点火焰伤害，然后若其处于横置状态，你获得弃牌堆中其展示的牌。</small></font>",
+  "若如此做，你弃置展示的牌并对其造成1点火焰伤害。若其受到伤害前处于横置状态，此牌结算后，你获得此【火烧连营】。</small></font>",
   ["#qianshou-yang"] = "谦守：是否交给 %dest 一张红色牌，令你本回合不能使用手牌、你与其不能成为牌的目标？",
   ["#qianshou-yin"] = "谦守：是否令 %dest 交给你一张牌？若不为黑色，你失去1点体力",
   ["#qianshou-give"] = "谦守：请交给 %src 一张牌，若不为黑色，其失去1点体力",
@@ -1189,40 +1189,236 @@ Fk:loadTranslationTable{
   [":fuwei"] = "每回合限一次，当一号位角色或刘备受到伤害后，你可以交给其至多X张牌，然后你可以对伤害来源依次使用至多X张【杀】（X为此伤害值）。",
 }
 
+local ansha_active = fk.CreateViewAsSkill{
+  name = "ansha_active",
+  card_filter = function(self, to_select, selected)
+    return #selected == 0
+  end,
+  view_as = function(self, cards)
+    if #cards ~= 1 then return end
+    local card = Fk:cloneCard("stab__slash")
+    card:addSubcards(cards)
+    return card
+  end,
+}
+Fk:addSkill(ansha_active)
+
+local yanque = General(extension, "yanque", "qun", 4)
+local siji = fk.CreateTriggerSkill{
+  name = "siji",
+  anim_type = "offensive",
+  events = {fk.TurnEnd},
+  can_trigger = function(self, event, target, player, data)
+    return player:hasSkill(self) and target ~= player and not target.dead and not player:isNude() and
+    #player.room.logic:getEventsOfScope(GameEvent.MoveCards, 1, function(e)
+      for _, move in ipairs(e.data) do
+        if move.from == target.id and move.moveReason ~= fk.ReasonUse and move.moveReason ~= fk.ReasonResonpse then
+          for _, info in ipairs(move.moveInfo) do
+            if info.fromArea == Card.PlayerHand or info.fromArea == Card.PlayerEquip then
+              return true
+            end
+          end
+        end
+      end
+    end, Player.HistoryTurn) > 0
+  end,
+  on_cost = function(self, event, target, player, data)
+    local success, dat = player.room:askForUseActiveSkill(player, "ansha_active",
+      "#siji-invoke::"..target.id, true, {bypass_times = true, bypass_distances = true, must_targets = {target.id}})
+    if success and dat then
+      self.cost_data = dat
+      return true
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    local card = Fk:cloneCard("stab__slash")
+    card:addSubcards(self.cost_data.cards)
+    card.skillName = self.name
+    local use = {
+      from = player.id,
+      tos = table.map(self.cost_data.targets, function(id) return {id} end),
+      card = card,
+      extraUse = true,
+    }
+    room:useCard(use)
+  end,
+}
+local cangshen = fk.CreateDistanceSkill{
+  name = "cangshen",
+  correct_func = function(self, from, to)
+    if to:hasSkill(self) and to:getMark("@@cangshen-round") == 0 then
+      return 1
+    end
+    return 0
+  end,
+}
+local cangshen_trigger = fk.CreateTriggerSkill{
+  name = "#cangshen_trigger",
+
+  refresh_events = {fk.CardUseFinished},
+  can_refresh = function (self, event, target, player, data)
+    return target == player and player:hasSkill(cangshen) and data.card.trueName == "slash" and
+      player:getMark("@@cangshen-round") == 0
+  end,
+  on_refresh = function (self, event, target, player, data)
+    player.room:setPlayerMark(player, "@@cangshen-round", 1)
+  end,
+}
+cangshen:addRelatedSkill(cangshen_trigger)
+yanque:addSkill(siji)
+yanque:addSkill(cangshen)
 Fk:loadTranslationTable{
-  ["yanque"] = "阎鹊",--4
+  ["yanque"] = "阎鹊",
   ["#yanque"] = "神出鬼没",
-  --["designer:yanque"] = "",
-  ["illustrator:yanque"] = "",
+  ["illustrator:yanque"] = "紫芒小侠",
 
   ["siji"] = "伺机",
   [":siji"] = "其他角色回合结束时，若其本回合不因使用和打出失去过牌，你可以将一张牌当无距离限制的刺【杀】对其使用。",
   ["cangshen"] = "藏身",
   [":cangshen"] = "锁定技，其他角色计算与你距离+1；当你使用【杀】后，〖藏身〗本轮失效。",
+  ["ansha_active"] = "",
+  ["#siji-invoke"] = "伺机：你可以将一张牌当无距离限制的刺【杀】对 %dest 使用",
+  ["@@cangshen-round"] = "藏身失效",
 }
 
+local wuque = General(extension, "wuque", "qun", 4)
+local ansha = fk.CreateTriggerSkill{
+  name = "ansha",
+  anim_type = "offensive",
+  events = {fk.TurnStart},
+  can_trigger = function(self, event, target, player, data)
+    return player:hasSkill(self) and target ~= player and not target.dead and not player:isNude()
+  end,
+  on_cost = function(self, event, target, player, data)
+    local success, dat = player.room:askForUseActiveSkill(player, "ansha_active",
+      "#ansha-invoke::"..target.id, true, {bypass_times = true, must_targets = {target.id}})
+    if success and dat then
+      self.cost_data = dat
+      return true
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    local card = Fk:cloneCard("stab__slash")
+    card:addSubcards(self.cost_data.cards)
+    card.skillName = self.name
+    local use = {
+      from = player.id,
+      tos = table.map(self.cost_data.targets, function(id) return {id} end),
+      card = card,
+      extraUse = true,
+    }
+    room:useCard(use)
+    if target.dead then return end
+    local mark = U.getMark(player, "ansha-round")
+    table.insert(mark, target.id)
+    room:setPlayerMark(player, "ansha-round", mark)
+  end,
+}
+local ansha_distance = fk.CreateDistanceSkill{
+  name = "#ansha_distance",
+  correct_func = function(self, from, to) return 0 end,
+  fixed_func = function(self, from, to)
+    local mark = U.getMark(to, "ansha-round")
+    if table.contains(mark, from.id) then
+      return 1
+    end
+  end,
+}
+local xiongren = fk.CreateTriggerSkill{
+  name = "xiongren",
+  anim_type = "offensive",
+  frequency = Skill.Compulsory,
+  events = {fk.DamageCaused},
+  can_trigger = function(self, event, target, player, data)
+    return target and target == player and player:hasSkill(self) and data.to:distanceTo(player) > 1
+  end,
+  on_use = function(self, event, target, player, data)
+    data.damage = data.damage + 1
+  end,
+}
+local xiongren_targetmod = fk.CreateTargetModSkill{
+  name = "#xiongren_targetmod",
+  frequency = Skill.Compulsory,
+  main_skill = xiongren,
+  bypass_times = function(self, player, skill, scope, card, to)
+    return player:hasSkill(xiongren) and skill.trueName == "slash_skill" and scope == Player.HistoryPhase and
+      to:distanceTo(player) <= 1
+  end,
+  bypass_distances = function(self, player, skill, card, to)
+    return player:hasSkill(xiongren) and skill.trueName == "slash_skill" and
+      to:distanceTo(player) <= 1
+  end,
+}
+ansha:addRelatedSkill(ansha_distance)
+xiongren:addRelatedSkill(xiongren_targetmod)
+wuque:addSkill(ansha)
+wuque:addSkill("cangshen")
+wuque:addSkill(xiongren)
 Fk:loadTranslationTable{
-  ["wuque"] = "乌鹊",--4
+  ["wuque"] = "乌鹊",
   ["#wuque"] = "密执生死",
-  --["designer:wuque"] = "",
-  ["illustrator:wuque"] = "",
+  ["illustrator:wuque"] = "Mr_Sleeping",
 
   ["ansha"] = "暗杀",
-  [":ansha"] = "其他角色回合开始时，你可以将一张牌当刺【杀】对其使用，然后其计算与你距离视为1直到本轮结束。",
-  --"藏身",
+  [":ansha"] = "其他角色回合开始时，你可以将一张牌当刺【杀】对其使用，此牌结算后，其计算与你距离视为1直到本轮结束。",
   ["xiongren"] = "凶刃",
   [":xiongren"] = "锁定技，你对与你距离大于1的角色使用【杀】造成伤害+1；你对与你距离不大于1的角色使用【杀】无距离次数限制。",
+  ["#ansha-invoke"] = "暗杀：你可以将一张牌当刺【杀】对 %dest 使用，本轮其计算与你距离距离视为1",
 }
 
+local wangque = General(extension, "wangque", "qun", 3)
+local daifa = fk.CreateTriggerSkill{
+  name = "daifa",
+  anim_type = "offensive",
+  events = {fk.TurnEnd},
+  can_trigger = function(self, event, target, player, data)
+    return player:hasSkill(self) and target ~= player and not target.dead and not player:isNude() and
+    #player.room.logic:getEventsOfScope(GameEvent.MoveCards, 1, function(e)
+      for _, move in ipairs(e.data) do
+        if move.to == target.id and move.from and move.from ~= move.to then
+          for _, info in ipairs(move.moveInfo) do
+            if info.fromArea == Card.PlayerHand or info.fromArea == Card.PlayerEquip then
+              return true
+            end
+          end
+        end
+      end
+    end, Player.HistoryTurn) > 0
+  end,
+  on_cost = function(self, event, target, player, data)
+    local success, dat = player.room:askForUseActiveSkill(player, "ansha_active",
+      "#daifa-invoke::"..target.id, true, {bypass_times = true, bypass_distances = true, must_targets = {target.id}})
+    if success and dat then
+      self.cost_data = dat
+      return true
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    local card = Fk:cloneCard("stab__slash")
+    card:addSubcards(self.cost_data.cards)
+    card.skillName = self.name
+    local use = {
+      from = player.id,
+      tos = table.map(self.cost_data.targets, function(id) return {id} end),
+      card = card,
+      extraUse = true,
+    }
+    room:useCard(use)
+  end,
+}
+wangque:addSkill(daifa)
+wangque:addSkill("cangshen")
 Fk:loadTranslationTable{
-  ["wangque"] = "亡鹊",--3
-  ["#wangque"] = "密执生死",
-  --["designer:wangque"] = "",
-  ["illustrator:wangque"] = "",
+  ["wangque"] = "亡鹊",
+  ["#wangque"] = "神鬼莫测",
+  ["illustrator:wangque"] = "黑羽",
 
   ["daifa"] = "待发",
   [":daifa"] = "其他角色回合结束时，若其本回合获得过除其以外角色的牌，你可以将一张牌当无距离限制的刺【杀】对其使用。",
-  --"藏身",
+  ["#daifa-invoke"] = "待发：你可以将一张牌当无距离限制的刺【杀】对 %dest 使用",
 }
 
 Fk:loadTranslationTable{
@@ -1422,13 +1618,13 @@ local wansu = fk.CreateTriggerSkill{
   can_trigger = function(self, event, target, player, data)
     if player:hasSkill(self) then
       if event == fk.CardUsing then
-        return data.card:isVirtual() and table.find(player.room.alive_players, function (p)
+        return data.card:isVirtual() and #data.card.subcards == 0 and table.find(player.room.alive_players, function (p)
           return #p.sealedSlots > 0 and table.find(p.sealedSlots, function (slot)
             return slot ~= Player.JudgeSlot
           end)
         end)
       elseif event == fk.PreDamage then
-        return data.card and data.card:isVirtual()
+        return data.card and data.card:isVirtual() and #data.card.subcards == 0
       end
     end
   end,

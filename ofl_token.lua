@@ -140,6 +140,14 @@ local shzj__burning_camps_skill = fk.CreateActiveSkill{
       return self:modTargetFilter(to_select, selected, Self.id, card)
     end
   end,
+  on_action = function(self, room, use, finished)
+    if finished and use.extra_data and use.extra_data.shzj__burning_camps then
+      local from = room:getPlayerById(use.from)
+      if not from.dead and room:getCardArea(use.card) == Card.Processing then
+        room:moveCardTo(use.card, Card.PlayerHand, from, fk.ReasonJustMove, self.name, nil, true, from.id)
+      end
+    end
+  end,
   on_effect = function(self, room, effect)
     local from = room:getPlayerById(effect.from)
     local to = room:getPlayerById(effect.to)
@@ -156,6 +164,16 @@ local shzj__burning_camps_skill = fk.CreateActiveSkill{
         room:throwCard(id, self.name, to, from)
       end
       if not to.dead then
+        if to.chained then
+          local use_event = room.logic:getCurrentEvent():findParent(GameEvent.UseCard)
+          if use_event ~= nil then
+            local use = use_event.data[1]
+            if use.card == effect.card then
+              use.extra_data = use.extra_data or {}
+              use.extra_data.shzj__burning_camps = true
+            end
+          end
+        end
         room:damage({
           from = from,
           to = to,
@@ -164,9 +182,6 @@ local shzj__burning_camps_skill = fk.CreateActiveSkill{
           damageType = fk.FireDamage,
           skillName = self.name,
         })
-      end
-      if to.chained and not to.dead and not from.dead and room:getCardArea(id) == Card.DiscardPile then
-        room:moveCardTo(id, Card.PlayerHand, from, fk.ReasonJustMove, self.name, nil, true, from.id)
       end
     end
   end,
@@ -183,7 +198,8 @@ Fk:loadTranslationTable{
   ["shzj__burning_camps"] = "火烧连营",
   ["shzj__burning_camps_skill"] = "火烧连营",
   [":shzj__burning_camps"] = "锦囊牌<br/><b>时机</b>：出牌阶段<br/><b>目标</b>：一名有牌的角色<br/><b>效果</b>：你展示目标角色的一张牌，"..
-  "然后你可以弃置一张与展示牌花色相同的手牌，若如此做，你弃置展示的牌并对其造成1点火焰伤害，然后若其处于横置状态，你获得弃牌堆中其展示的牌。",
+  "然后你可以弃置一张与展示牌花色相同的手牌，若如此做，你弃置展示的牌并对其造成1点火焰伤害。若其受到伤害前处于横置状态，此牌结算后，你获得"..
+  "此【火烧连营】。",
   ["#shzj__burning_camps-discard"] = "你可弃置一张 %arg 手牌，对 %src 造成1点火属性伤害",
   ["#shzj__burning_camps_skill"] = "选择一名有牌的角色，展示其一张牌，<br/>然后你可以弃置一张花色相同的手牌对其造成1点火焰伤害并弃置其展示牌",
   ["#shzj__burning_camps-show"] = "火烧连营：展示 %dest 一张牌",
