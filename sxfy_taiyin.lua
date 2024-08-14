@@ -557,7 +557,7 @@ cenhun:addSkill(sxfy__wudu)
 Fk:loadTranslationTable{
   ["sxfy__cenhun"] = "岑昏",
   ["#sxfy__cenhun"] = "伐梁倾瓴",
-  ["illustrator:sxfy__cenhun"] = "",
+  ["illustrator:sxfy__cenhun"] = "depp",
 
   ["sxfy__jishe"] = "极奢",
   [":sxfy__jishe"] = "出牌阶段，你可以令本回合手牌上限-1（至少为0），然后摸一张牌。",
@@ -644,7 +644,7 @@ huaxin:addSkill(sxfy__shuchen)
 Fk:loadTranslationTable{
   ["sxfy__huaxin"] = "华歆",
   ["#sxfy__huaxin"] = "清素拂浊",
-  ["illustrator:sxfy__huaxin"] = "",
+  ["illustrator:sxfy__huaxin"] = "凡果",
 
   ["sxfy__yuanqing"] = "渊清",
   [":sxfy__yuanqing"] = "回合结束时，你可以令所有角色依次选择并获得弃牌堆中因其此回合失去而置入的一张牌。",
