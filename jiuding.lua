@@ -492,7 +492,7 @@ local mouYiJue = fk.CreateTriggerSkill{
 
     for _, p in ipairs(targets) do
       if not p:isKongcheng() then
-        local ids = room:askForCard(p, 1, 1, false, self.name, true, ".", "#ofl_mou__yijue-give::" .. player.id)
+        local ids = room:askForCard(p, 1, 1, true, self.name, true, ".", "#ofl_mou__yijue-give::" .. player.id)
         if #ids > 0 then
           room:setPlayerMark(p, "@@ofl_mou__yijue-turn", player.id)
           room:obtainCard(player, ids, false, fk.ReasonGive, p.id, self.name)
