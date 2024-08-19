@@ -2127,6 +2127,7 @@ local xiongren = fk.CreateTriggerSkill{
   events = {fk.DamageCaused},
   can_trigger = function(self, event, target, player, data)
     return target and target == player and player:hasSkill(self) and data.to:distanceTo(player) > 1
+    and data.card and data.card.trueName == "slash"
   end,
   on_use = function(self, event, target, player, data)
     data.damage = data.damage + 1
