@@ -446,8 +446,10 @@ local mouWuShengBuff = fk.CreateTriggerSkill{
       for _, pId in ipairs(targets) do
         room:removePlayerMark(room:getPlayerById(pId), "@ofl_mou__wusheng-phase")
       end
-
-      player:addCardUseHistory(data.card.trueName, -1)
+      if not data.extraUse then
+        player:addCardUseHistory(data.card.trueName, -1)
+        data.extraUse = true
+      end
       data.extra_data = data.extra_data or {}
       data.extra_data.oflMouWuShengUser = player.id
     else
@@ -487,11 +489,12 @@ local mouYiJue = fk.CreateTriggerSkill{
   end,
   on_use = function(self, event, target, player, data)
     local room = player.room
-    local targets = table.filter(room:getOtherPlayers(player), function(p) return not p:isNude() end)
+    local targets = room:getOtherPlayers(player)
     room:doIndicate(player.id, table.map(targets, Util.IdMapper))
 
     for _, p in ipairs(targets) do
-      if not p:isKongcheng() then
+      if player.dead then break end
+      if not p:isNude() then
         local ids = room:askForCard(p, 1, 1, true, self.name, true, ".", "#ofl_mou__yijue-give::" .. player.id)
         if #ids > 0 then
           room:setPlayerMark(p, "@@ofl_mou__yijue-turn", player.id)
