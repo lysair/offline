@@ -2535,9 +2535,7 @@ local qianjing = fk.CreateViewAsSkill{
   anim_type = "offensive",
   prompt = "#qianjing",
   card_filter = function(self, to_select, selected)
-    if #selected == 0 then
-      return Fk:getCardById(to_select).name == "caning_whip"
-    end
+    return #selected == 0 and Fk:getCardById(to_select).name == "caning_whip"
   end,
   view_as = function(self, cards)
     local card = Fk:cloneCard("slash")
@@ -2748,7 +2746,7 @@ local jiangziya_s = fk.CreateTriggerSkill{
       room:useVirtualCard("slash", nil, player, data.from, self.name, true)
     end
     if data.from.dead then
-      player:setSkillUseHistory(self.name, 0, Player.HistoryTurn)
+      player:setSkillUseHistory("fengshen", 0, Player.HistoryGame)
     end
   end,
 }
@@ -2806,8 +2804,8 @@ Fk:loadTranslationTable{
   --["illustrator:wm__jiangziya"] = "",
 
   ["jiangziya_s"] = "技能1",
-  [":jiangziya_s"] = "每回合限一次，当手牌数最少的角色受到伤害后，你可以弃置两张手牌，视为对伤害来源使用一张【杀】，然后若其死亡，此技能视为"..
-  "未发动过。",
+  [":jiangziya_s"] = "每回合限一次，当手牌数最少的角色受到伤害后，你可以弃置两张手牌，视为对伤害来源使用一张【杀】，然后若其死亡，〖封神〗"..
+  "视为未发动过。",
   ["fengshen"] = "封神",
   [":fengshen"] = "限定技，出牌阶段，你可以令一名角色将体力值和手牌数调整至游戏开始时。",
   ["#jiangziya_s-invoke"] = "技能1：是否弃置两张手牌，视为对 %dest 使用【杀】？",
