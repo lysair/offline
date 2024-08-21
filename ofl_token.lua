@@ -127,6 +127,198 @@ Fk:loadTranslationTable{
   ["@caning_whip"] = "",
 }
 
+local shzj__dragon_phoenix_skill = fk.CreateTriggerSkill{
+  name = "#shzj__dragon_phoenix_skill",
+  attached_equip = "shzj__dragon_phoenix",
+  events = {fk.TargetSpecified},
+  can_trigger = function(self, event, target, player, data)
+    return target == player and player:hasSkill(self) and data.card.trueName == "slash" and
+      player:usedSkillTimes(self.name, Player.HistoryTurn) == 0
+  end,
+  on_cost = function(self, event, target, player, data)
+    local all_choices = {"draw1", "shzj__dragon_phoenix_skill_discard::"..data.to, "Cancel"}
+    local choices = table.simpleClone(all_choices)
+    local to = player.room:getPlayerById(data.to)
+    if to.dead or to:isNude() then
+      table.remove(choices, 2)
+    end
+    local choice = player.room:askForChoice(player, choices, self.name, nil, false, all_choices)
+    if choice ~= "Cancel" then
+      self.cost_data = choice
+      return true
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    -- room:setEmotion(player, "./packages/hegemony/image/anim/dragon_phoenix")
+    if self.cost_data == "draw1" then
+      player:drawCards(1, self.name)
+    else
+      local to = player.room:getPlayerById(data.to)
+      room:askForDiscard(to, 1, 1, true, self.name, false, ".", "#dragon_phoenix-invoke")
+    end
+  end,
+}
+Fk:addSkill(shzj__dragon_phoenix_skill)
+local shzj__dragon_phoenix = fk.CreateWeapon{
+  name = "&shzj__dragon_phoenix",
+  suit = Card.Spade,
+  number = 2,
+  attack_range = 2,
+  equip_skill = shzj__dragon_phoenix_skill,
+}
+extension:addCard(shzj__dragon_phoenix)
+Fk:loadTranslationTable{
+  ["shzj__dragon_phoenix"] = "飞龙夺凤",
+  ["#shzj__dragon_phoenix_skill"] = "飞龙夺凤",
+  [":shzj__dragon_phoenix"] = "装备牌·武器<br/><b>攻击范围</b>：2<br/><b>武器技能</b>：每回合限一次，当你使用【杀】指定一个目标后，你可以"..
+  "摸一张牌或令其弃置一张牌。",
+  ["shzj__dragon_phoenix_skill_discard"] = "令%dest弃置一张牌",
+}
+
+local imperial_sword_skill = fk.CreateTriggerSkill{
+  name = "#imperial_sword_skill",
+  attached_equip = "imperial_sword",
+  events = {fk.BeforeCardsMove, fk.TargetSpecified},
+  can_trigger = function(self, event, target, player, data)
+    if player:hasSkill(self) then
+      if event == fk.BeforeCardsMove then
+        for _, move in ipairs(data) do
+          if move.from == player.id and move.moveReason == fk.ReasonDiscard then
+            for _, info in ipairs(move.moveInfo) do
+              if info.fromArea == Card.PlayerEquip and Fk:getCardById(info.cardId).name == "imperial_sword" then
+                return true
+              end
+            end
+          end
+        end
+      elseif event == fk.TargetSpecified then
+        return target ~= player and target.kingdom == player.kingdom and data.card.trueName == "slash" and data.firstTarget and
+          not (player:isKongcheng() and target:isKongcheng())
+      end
+    end
+  end,
+  on_cost = function (self, event, target, player, data)
+    if event == fk.BeforeCardsMove then
+      return true
+    elseif event == fk.TargetSpecified then
+      local room = player.room
+      if player:isKongcheng() then
+        if room:askForSkillInvoke(player, self.name, nil, "#imperial_sword_skill-prey::"..target.id) then
+          self.cost_data = {}
+          return true
+        end
+      elseif target:isKongcheng() then
+        local card = room:askForCard(player, 1, 1, false, self.name, true, nil, "#imperial_sword_skill-give::"..target.id)
+        if #card > 0 then
+          self.cost_data = card
+          return true
+        end
+      else
+        local extra_data = {
+          num = 1,
+          min_num = 0,
+          include_equip = false,
+          skillName = self.name,
+          pattern = ".",
+        }
+        local success, dat = player.room:askForUseActiveSkill(player, "choose_cards_skill",
+          "#imperial_sword_skill-invoke::"..target.id, true, extra_data)
+        if success then
+          self.cost_data = dat.cards or {}
+          return true
+        end
+      end
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    if event == fk.BeforeCardsMove then
+      for _, move in ipairs(data) do
+        if move.from == player.id and move.moveReason == fk.ReasonDiscard then
+          local move_info = {}
+          for _, info in ipairs(move.moveInfo) do
+            if info.fromArea ~= Card.PlayerEquip or Fk:getCardById(info.cardId).name ~= "imperial_sword" then
+              table.insert(move_info, info)
+            end
+          end
+          move.moveInfo = move_info
+        end
+      end
+    elseif event == fk.TargetSpecified then
+      local room = player.room
+      if #self.cost_data == 0 then
+        room:doIndicate(player.id, {target.id})
+        local card = room:askForCardChosen(player, target, "h", self.name, "#imperial_sword-prey::"..target.id)
+        room:moveCardTo(card, Card.PlayerHand, player, fk.ReasonPrey, self.name, nil, false, player.id)
+      else
+        room:moveCardTo(self.cost_data, Card.PlayerHand, target, fk.ReasonGive, self.name, nil, false, player.id)
+      end
+    end
+  end,
+}
+Fk:addSkill(imperial_sword_skill)
+local imperial_sword = fk.CreateWeapon{
+  name = "&imperial_sword",
+  suit = Card.Spade,
+  number = 5,
+  attack_range = 2,
+  equip_skill = imperial_sword_skill,
+}
+extension:addCard(imperial_sword)
+Fk:loadTranslationTable{
+  ["imperial_sword"] = "尚方宝剑",
+  ["#imperial_sword_skill"] = "尚方宝剑",
+  [":imperial_sword"] = "装备牌·武器<br/><b>攻击范围</b>：2<br/><b>武器技能</b>：当装备区内的此牌被弃置时，防止之。与你势力相同的角色使用"..
+  "【杀】指定目标后，你可以交给其一张手牌或获得其一张手牌。",
+  ["#imperial_sword_skill-prey"] = "尚方宝剑：是否获得 %dest 一张手牌？",
+  ["#imperial_sword_skill-give"] = "尚方宝剑：是否交给 %dest 一张手牌？",
+  ["#imperial_sword_skill-invoke"] = "尚方宝剑：交给 %dest 一张手牌，或点“确定”获得 %dest 一张手牌",
+  ["#imperial_sword-prey"] = "尚方宝剑：获得 %dest 一张手牌",
+}
+
+local ironBudSkill = fk.CreateTriggerSkill{
+  name = "#iron_bud_skill",
+  attached_equip = "iron_bud",
+  events = {fk.EventPhaseStart},
+  can_trigger = function(self, event, target, player, data)
+    return target == player and player:hasSkill(self) and player.phase == Player.Start and player.hp ~= 2
+  end,
+  on_cost = function(self, event, target, player, data)
+    return player.room:askForSkillInvoke(player, self.name, nil, "#iron_bud_skill-invoke:::"..player.hp)
+  end,
+  on_use = function(self, event, target, player, data)
+    player.room:setPlayerMark(player, "iron_bud-turn", player.hp)
+  end,
+}
+local iron_bud_attackrange = fk.CreateAttackRangeSkill{
+  name = "#iron_bud_attackrange",
+  correct_func = function (self, from, to)
+    if from:hasSkill(ironBudSkill) and from:usedSkillTimes("#iron_bud_skill", Player.HistoryTurn) > 0 then
+      return from:getMark("iron_bud-turn") - 2
+    end
+  end,
+}
+ironBudSkill:addRelatedSkill(iron_bud_attackrange)
+Fk:addSkill(ironBudSkill)
+local ironBud = fk.CreateWeapon{
+  name = "&iron_bud",
+  suit = Card.Spade,
+  number = 5,
+  attack_range = 2,
+  equip_skill = ironBudSkill,
+  on_uninstall = function(self, room, player)
+    Weapon.onUninstall(self, room, player)
+    room:setPlayerMark(player, "iron_bud-turn", 0)
+  end,
+}
+extension:addCard(ironBud)
+Fk:loadTranslationTable{
+  ["iron_bud"] = "铁蒺藜骨朵",
+  ["#iron_bud_skill"] = "铁蒺藜骨朵",
+  [":iron_bud"] = "装备牌·武器<br/><b>攻击范围</b>：2<br/><b>武器技能</b>：准备阶段，你可以将此牌的攻击范围改为X直到回合结束或此牌离开装备区"..
+  "（X为你的体力值）。",
+  ["#iron_bud_skill-invoke"] = "是否将【铁蒺藜骨朵】本回合的攻击范围改为%arg？",
+}
 
 local shzj__burning_camps_skill = fk.CreateActiveSkill{
   name = "shzj__burning_camps_skill",

@@ -453,7 +453,7 @@ local shzj_yiling__liubei = General(extension, "shzj_yiling__liubei", "shu", 4)
 local qingshil = fk.CreateTriggerSkill{
   name = "qingshil",
   anim_type = "control",
-  events = {fk.EventPhaseStart},
+  events = {fk.GameStart, fk.EventPhaseStart},
   can_trigger = function(self, event, target, player, data)
     return target == player and player:hasSkill(self) and player.phase == Player.Start and
       table.find(player.room.alive_players, function(p) return not p:isKongcheng() end)
@@ -498,6 +498,27 @@ local qingshil = fk.CreateTriggerSkill{
       if #targets == 0 then return end
       U.askForDistribution(player, player:getCardIds("he"), targets, self.name, 0, 999, "#qingshil-give", nil, false, 1)
     end
+  end,
+
+  refresh_events = {fk.GameStart},
+  can_refresh = function(self, event, target, player, data)
+    if player:hasSkill(self) then
+      local cards = table.filter(U.prepareDeriveCards(player.room, {
+        {"shzj__dragon_phoenix", Card.Spade, 2}
+      }, self.name), function (id)
+        return player.room:getCardArea(id) == Card.Void
+      end)
+      return #cards > 0 and player:hasEmptyEquipSlot(Card.SubtypeWeapon)
+    end
+  end,
+  on_refresh = function(self, event, target, player, data)
+    local room = player.room
+    local cards = table.filter(U.prepareDeriveCards(player.room, {
+      {"shzj__dragon_phoenix", Card.Spade, 2}
+    }, self.name), function (id)
+      return player.room:getCardArea(id) == Card.Void
+    end)
+    U.moveCardIntoEquip(room, player, cards[1], self.name, false, player)
   end,
 }
 local qingshil_distance = fk.CreateDistanceSkill{
@@ -677,7 +698,10 @@ Fk:loadTranslationTable{
 
   ["qingshil"] = "倾师",
   [":qingshil"] = "准备阶段，你可以令至多你体力值数量的角色进行议事，若结果为：红色，直到本轮结束，意见为红色的角色与除其以外的角色互相"..
-  "计算距离+1；黑色，你摸意见为黑色的角色数量的牌，然后你可以交给任意名意见为黑色的其他角色各一张牌。",
+  "计算距离+1；黑色，你摸意见为黑色的角色数量的牌，然后你可以交给任意名意见为黑色的其他角色各一张牌。<br>"..
+  "游戏开始时，将【飞龙夺凤】置入你的装备区。<br>"..
+  "<font color='grey'><small>【飞龙夺凤】<br>♠2 装备牌·武器 攻击范围2<br/><b>武器技能</b>：每回合限一次，当你使用【杀】指定一个目标后，"..
+  "你可以摸一张牌或令其弃置一张牌。</small></font>",
   ["yilin"] = "夷临",
   [":yilin"] = "每回合每名角色限一次，当你获得其他角色的牌后，或当其他角色获得你的牌后，你可以令获得牌的角色选择是否使用其中一张牌。",
   ["chengming"] = "承命",
@@ -737,6 +761,27 @@ local qianshou = fk.CreateTriggerSkill{
         room:loseHp(player, 1, self.name)
       end
     end
+  end,
+
+  refresh_events = {fk.GameStart},
+  can_refresh = function(self, event, target, player, data)
+    if player:hasSkill(self) then
+      local cards = table.filter(U.prepareDeriveCards(player.room, {
+        {"imperial_sword", Card.Spade, 5}
+      }, self.name), function (id)
+        return player.room:getCardArea(id) == Card.Void
+      end)
+      return #cards > 0 and player:hasEmptyEquipSlot(Card.SubtypeWeapon)
+    end
+  end,
+  on_refresh = function(self, event, target, player, data)
+    local room = player.room
+    local cards = table.filter(U.prepareDeriveCards(player.room, {
+      {"imperial_sword", Card.Spade, 5}
+    }, self.name), function (id)
+      return player.room:getCardArea(id) == Card.Void
+    end)
+    U.moveCardIntoEquip(room, player, cards[1], self.name, false, player)
   end,
 }
 local qianshou_prohibit = fk.CreateProhibitSkill{
@@ -870,14 +915,17 @@ Fk:loadTranslationTable{
 
   ["qianshou"] = "谦守",
   [":qianshou"] = "转换技，其他角色回合开始时，若其体力值大于你，或其未处于横置状态，阳：你可以展示并交给其一张红色牌，本回合你不能使用手牌"..
-  "且你与其不能成为牌的目标；阴：你可以令其展示并交给你一张牌，若不为黑色，你失去1点体力。",
+  "且你与其不能成为牌的目标；阴：你可以令其展示并交给你一张牌，若不为黑色，你失去1点体力。<br>"..
+  "游戏开始时，将【尚方宝剑】置入你的装备区。<br>"..
+  "<font color='grey'><small>【尚方宝剑】<br>♠5 装备牌·武器 攻击范围2<br/><b>武器技能</b>：当装备区内的此牌被弃置时，防止之。"..
+  "与你势力相同的角色使用【杀】指定目标后，你可以交给其一张手牌或获得其一张手牌。</small></font>",
   ["tanlong"] = "探龙",
   [":tanlong"] = "出牌阶段限X次，你可以与一名角色拼点，赢的角色可以获得没赢角色的拼点牌，然后其视为对自己使用【铁索连环】（X为横置角色数+1）。",
   ["xibei"] = "袭惫",
   [":xibei"] = "当其他角色从牌堆以外的区域获得牌后，你可以摸一张牌，若此时为你的出牌阶段，你可以展示一张锦囊牌，此牌视为【火烧连营】直到"..
   "本回合结束或离开你的手牌。<br>"..
-  "<font color='grey'><small>【火烧连营】出牌阶段，对一名有牌的角色使用，你展示目标角色的一张牌，然后你可以弃置一张与展示牌花色相同的手牌，"..
-  "若如此做，你弃置展示的牌并对其造成1点火焰伤害。若其受到伤害前处于横置状态，此牌结算后，你获得此【火烧连营】。</small></font>",
+  "<font color='grey'><small>【火烧连营】<br>出牌阶段，对一名有牌的角色使用，你展示目标角色的一张牌，然后你可以弃置一张与展示牌花色相同的"..
+  "手牌，若如此做，你弃置展示的牌并对其造成1点火焰伤害。若其受到伤害前处于横置状态，此牌结算后，你获得此【火烧连营】。</small></font>",
   ["#qianshou-yang"] = "谦守：是否交给 %dest 一张红色牌，令你本回合不能使用手牌、你与其不能成为牌的目标？",
   ["#qianshou-yin"] = "谦守：是否令 %dest 交给你一张牌？若不为黑色，你失去1点体力",
   ["#qianshou-give"] = "谦守：请交给 %src 一张牌，若不为黑色，其失去1点体力",
@@ -1593,9 +1641,10 @@ Fk:loadTranslationTable{
   ["illustrator:shzj_yiling__shamoke"] = "铁杵文化",
 
   ["manyong"] = "蛮勇",
-  [":manyong"] = "回合开始时，若你的装备区内没有【铁蒺藜骨朵】，你可以从游戏外使用之。回合结束时，你可以弃置装备区内的【铁蒺藜骨朵】。<br>"..
-  "<font color='grey'>【铁蒺藜骨朵】<br>♠5 装备牌·武器 攻击范围2<br/><b>武器技能</b>：准备阶段，你可以将此牌的攻击范围改为X"..
-  "直到回合结束或此牌离开装备区（X为你的体力值）。离开装备区后销毁。",
+  [":manyong"] = "回合开始时，若你的装备区内没有【铁蒺藜骨朵】，你可以从游戏外使用之。回合结束时，你可以弃置装备区内的【铁蒺藜骨朵】。"..
+  "【铁蒺藜骨朵】离开装备区后销毁。<br>"..
+  "<font color='grey'><small>【铁蒺藜骨朵】<br>♠5 装备牌·武器 攻击范围2<br/><b>武器技能</b>：准备阶段，你可以将此牌的攻击范围改为X"..
+  "直到回合结束或此牌离开装备区（X为你的体力值）。</small></font>",
   ["#manyong-use"] = "蛮勇：是否从游戏外装备【铁蒺藜骨朵】？",
   ["#manyong-discard"] = "蛮勇：是否弃置装备区内的【铁蒺藜骨朵】？",
 }

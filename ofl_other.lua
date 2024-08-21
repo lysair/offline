@@ -2282,7 +2282,9 @@ local zizhong = fk.CreateTriggerSkill{
   events = {fk.CardUsing, fk.CardResponding},
   can_trigger = function(self, event, target, player, data)
     if target == player and player:hasSkill(self) and data.card.type ~= Card.TypeEquip and
-      #table.filter(player.player_skills, function(skill) return skill:isPlayerSkill(player) end) > 2 then
+      #table.filter(player.player_skills, function(skill)
+        return skill:isPlayerSkill(player) and skill.visible
+      end) > 2 then
       local room = player.room
       local logic = room.logic
       local current_event = logic:getCurrentEvent()
@@ -2320,7 +2322,9 @@ local zizhong_maxcards = fk.CreateMaxCardsSkill{
   main_skill = zizhong,
   correct_func = function(self, player)
     if player:hasSkill("zizhong") then
-      return #table.filter(player.player_skills, function(skill) return skill:isPlayerSkill(player) end)
+      return #table.filter(player.player_skills, function(skill)
+        return skill:isPlayerSkill(player) and skill.visible
+      end)
     else
       return 0
     end
@@ -2766,7 +2770,7 @@ local fengshen = fk.CreateActiveSkill{
   end,
   on_use = function(self, room, effect)
     local target = room:getPlayerById(effect.tos[1])
-    local n1, n2 = Fk.generals[target.general].maxHp, 4
+    local n1, n2 = Fk.generals[target.general].hp, 4
     if target:getMark(self.name) ~= 0 then
       local mark = target:getMark(self.name)
       n1, n2 = mark[1], mark[2]
