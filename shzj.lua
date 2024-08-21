@@ -747,7 +747,7 @@ local qianshou = fk.CreateTriggerSkill{
     if player:getSwitchSkillState(self.name, true) == fk.SwitchYang then
       local card = self.cost_data
       player:showCards(card)
-      if player.dead or target.dead or not table.contains(player:getCardIds("h"), card) then return end
+      if player.dead or target.dead or not table.contains(player:getCardIds("he"), card) then return end
       room:setPlayerMark(player, "@@qianshou-turn", 1)
       room:setPlayerMark(target, "@@qianshou-turn", 1)
       room:moveCardTo(card, Card.PlayerHand, target, fk.ReasonGive, self.name, nil, true, player.id)
@@ -2584,7 +2584,7 @@ local xianwu_trigger = fk.CreateTriggerSkill{
   end,
   on_cost = function(self, event, target, player, data)
     local card = player.room:askForDiscard(player, 1, 1, true, "xianwu", true, nil, "#xianwu-discard::"..data.from.id, true)
-    if #card then
+    if #card > 0 then
       self.cost_data = card
       return true
     end
