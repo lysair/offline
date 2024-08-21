@@ -453,7 +453,7 @@ local shzj_yiling__liubei = General(extension, "shzj_yiling__liubei", "shu", 4)
 local qingshil = fk.CreateTriggerSkill{
   name = "qingshil",
   anim_type = "control",
-  events = {fk.GameStart, fk.EventPhaseStart},
+  events = {fk.EventPhaseStart},
   can_trigger = function(self, event, target, player, data)
     return target == player and player:hasSkill(self) and player.phase == Player.Start and
       table.find(player.room.alive_players, function(p) return not p:isKongcheng() end)
