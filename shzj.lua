@@ -3,8 +3,8 @@ extension.extensionName = "offline"
 
 Fk:loadTranslationTable{
   ["shzj"] = "线下-山河煮酒",
-  ["shzj_xiangfan"] = "襄樊",
-  ["shzj_yiling"] = "夷陵",
+  ["shzj_xiangfan"] = "龙起襄樊",
+  ["shzj_yiling"] = "桃园挽歌",
 }
 
 local U = require "packages/utility/utility"
@@ -1083,7 +1083,7 @@ shzj_yiling__zhangnan:addSkill(fenwu)
 Fk:loadTranslationTable{
   ["shzj_yiling__zhangnan"] = "张南",
   ["#shzj_yiling__zhangnan"] = "澄辉的义烈",
-  ["illustrator:shzj_yiling__zhangnan"] = "",
+  ["illustrator:shzj_yiling__zhangnan"] = "Aaron",
 
   ["fenwu"] = "奋武",
   [":fenwu"] = "准备阶段，你可以摸一张牌并展示之，然后你可以将此牌当【决斗】或牌名字数相同与此牌相同的基本牌使用。",
@@ -1150,7 +1150,7 @@ shzj_yiling__fengxi:addSkill(qingkou)
 Fk:loadTranslationTable{
   ["shzj_yiling__fengxi"] = "冯习",
   ["#shzj_yiling__fengxi"] = "赤胆的忠魂",
-  ["illustrator:shzj_yiling__fengxi"] = "",
+  ["illustrator:shzj_yiling__fengxi"] = "陈鑫",
 
   ["qingkou"] = "轻寇",
   [":qingkou"] = "结束阶段，你可以摸一张牌并展示之，然后你可以将此牌当【杀】或牌名字数与你体力值相同的普通锦囊牌使用。",
@@ -1536,6 +1536,237 @@ Fk:loadTranslationTable{
 
   ["xiyu"] = "西御",
   [":xiyu"] = "一名角色使用转化牌或虚拟牌指定目标后，你可以摸一张牌。",
+}
+
+local shzj_yiling__shamoke = General(extension, "shzj_yiling__shamoke", "shu", 4)
+local manyong = fk.CreateTriggerSkill{
+  name = "manyong",
+  events = {fk.TurnStart, fk.TurnEnd},
+  can_trigger = function(self, event, target, player, data)
+    if target == player and player:hasSkill(self) then
+      local yes = table.find(player:getEquipments(Card.SubtypeWeapon), function(id)
+        return Fk:getCardById(id).name == "iron_bud"
+      end)
+      if event == fk.TurnStart and not yes then
+        local cards = table.filter(U.prepareDeriveCards(player.room, {{"iron_bud", Card.Spade, 5}}, self.name), function (id)
+          return player.room:getCardArea(id) == Card.Void
+        end)
+        return #cards > 0 and not player:isProhibited(player, Fk:getCardById(cards[1]))
+      elseif event == fk.TurnEnd then
+        return yes
+      end
+    end
+  end,
+  on_cost = function(self, event, target, player, data)
+    if event == fk.TurnStart then
+      return player.room:askForSkillInvoke(player, self.name, nil, "#manyong-use")
+    elseif event == fk.TurnEnd then
+      return player.room:askForSkillInvoke(player, self.name, nil, "#manyong-discard")
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    if event == fk.TurnStart then
+      local id = table.filter(U.prepareDeriveCards(room, {{"iron_bud", Card.Spade, 5}}, self.name), function (id)
+        return room:getCardArea(id) == Card.Void
+      end)[1]
+      local card = Fk:getCardById(id)
+      room:setCardMark(card, MarkEnum.DestructOutMyEquip, 1)
+      room:useCard({
+        from = player.id,
+        tos = {{player.id}},
+        card = card,
+      })
+    elseif event == fk.TurnEnd then
+      local cards = table.filter(player:getEquipments(Card.SubtypeWeapon), function(id)
+        return Fk:getCardById(id).name == "iron_bud"
+      end)
+      room:throwCard(cards, self.name, player, player)
+    end
+  end,
+}
+shzj_yiling__shamoke:addSkill("jilis")
+shzj_yiling__shamoke:addSkill(manyong)
+Fk:loadTranslationTable{
+  ["shzj_yiling__shamoke"] = "沙摩柯",
+  ["#shzj_yiling__shamoke"] = "狂喜胜战",
+  ["illustrator:shzj_yiling__shamoke"] = "铁杵文化",
+
+  ["manyong"] = "蛮勇",
+  [":manyong"] = "回合开始时，若你的装备区内没有【铁蒺藜骨朵】，你可以从游戏外使用之。回合结束时，你可以弃置装备区内的【铁蒺藜骨朵】。<br>"..
+  "<font color='grey'>【铁蒺藜骨朵】<br>♠5 装备牌·武器 攻击范围2<br/><b>武器技能</b>：准备阶段，你可以将此牌的攻击范围改为X"..
+  "直到回合结束或此牌离开装备区（X为你的体力值）。离开装备区后销毁。",
+  ["#manyong-use"] = "蛮勇：是否从游戏外装备【铁蒺藜骨朵】？",
+  ["#manyong-discard"] = "蛮勇：是否弃置装备区内的【铁蒺藜骨朵】？",
+}
+
+local shzj_yiling__godliubei = General(extension, "shzj_yiling__godliubei", "god", 6)
+local shzj_yiling__longnu = fk.CreateViewAsSkill{
+  name = "shzj_yiling__longnu",
+  switch_skill_name = "shzj_yiling__longnu",  --用以显示图标
+  anim_type = "offensive",
+  pattern = "slash|.|.|.|fire__slash,thunder__slash",
+  prompt = function ()
+    if Self:getMark("shzj_yiling__longnu-phase") == "yang" then
+      return "#shzj_yiling__longnu_yang"
+    elseif Self:getMark("shzj_yiling__longnu-phase") == "yin" then
+      return "#shzj_yiling__longnu_yin"
+    end
+  end,
+  card_filter = function(self, to_select, selected)
+    if #selected == 0 then
+      if Self:getMark("shzj_yiling__longnu-phase") == "yang" then
+        return Fk:getCardById(to_select).color == Card.Red
+      elseif Self:getMark("shzj_yiling__longnu-phase") == "yin" then
+        return Fk:getCardById(to_select).type == Card.TypeTrick
+      end
+    end
+  end,
+  view_as = function(self, cards)
+    if #cards ~= 1 then return end
+    local card = Fk:cloneCard("slash")
+    if Self:getMark("shzj_yiling__longnu-phase") == "yang" then
+      card = Fk:cloneCard("fire__slash")
+    elseif Self:getMark("shzj_yiling__longnu-phase") == "yin" then
+      card = Fk:cloneCard("thunder__slash")
+    end
+    card:addSubcard(cards[1])
+    card.skillName = self.name
+    return card
+  end,
+  before_use = function (self, player, use)
+    player.room:setPlayerMark(player, MarkEnum.SwithSkillPreName..self.name, player:getSwitchSkillState(self.name, true))
+  end,
+  enabled_at_play = function (self, player)
+    return player:getMark("shzj_yiling__longnu-phase") ~= 0
+  end,
+  enabled_at_response = function (self, player)
+    return player:getMark("shzj_yiling__longnu-phase") ~= 0
+  end,
+}
+local shzj_yiling__longnu_trigger = fk.CreateTriggerSkill{
+  name = "#shzj_yiling__longnu_trigger",
+  events = {fk.EventPhaseStart},
+  anim_type = "switch",
+  switch_skill_name = "shzj_yiling__longnu",
+  can_trigger = function(self, event, target, player, data)
+    return target == player and player:hasSkill(self) and player.phase == Player.Play
+  end,
+  on_cost = function(self, event, target, player, data)
+    return player.room:askForSkillInvoke(player, "shzj_yiling__longnu", nil,
+      "#shzj_yiling__longnu_"..player:getSwitchSkillState("shzj_yiling__longnu", false, true).."-invoke")
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    player:drawCards(1, "shzj_yiling__longnu")
+    if player.dead then return end
+    if player:getSwitchSkillState("shzj_yiling__longnu", true) == fk.SwitchYang then
+      room:loseHp(player, 1, "shzj_yiling__longnu")
+      if player.dead then return end
+      room:setPlayerMark(player, "shzj_yiling__longnu-phase", "yang")
+    else
+      room:changeMaxHp(player, -1)
+      if player.dead then return end
+      room:setPlayerMark(player, "shzj_yiling__longnu-phase", "yin")
+    end
+  end,
+
+  refresh_events = {fk.GameStart},
+  can_refresh = function(self, event, target, player, data)
+    return player:hasSkill(self)
+  end,
+  on_refresh = function(self, event, target, player, data)
+    local switch_state = player.room:askForChoice(player,
+      { "tymou_switch:::shzj_yiling__longnu:yang", "tymou_switch:::shzj_yiling__longnu:yin" },
+      "shzj_yiling__longnu", "#tymou_switch-transer:::shzj_yiling__longnu") == "tymou_switch:::shzj_yiling__longnu:yin"
+    if switch_state then
+      player.room:setPlayerMark(player, MarkEnum.SwithSkillPreName.."shzj_yiling__longnu", fk.SwitchYin)
+      player:setSkillUseHistory("shzj_yiling__longnu", 1, Player.HistoryGame)
+    end
+  end,
+}
+local shzj_yiling__longnu_targetmod = fk.CreateTargetModSkill{
+  name = "#shzj_yiling__longnu_targetmod",
+  bypass_distances =  function(self, player, skill, card, to)
+    return player:getMark("shzj_yiling__longnu-phase") == "yang" and
+      table.contains(card.skillNames, "shzj_yiling__longnu")
+  end,
+  bypass_times = function(self, player, skill, scope, card, to)
+    return player:getMark("shzj_yiling__longnu-phase") == "yin" and scope == Player.HistoryPhase and
+      table.contains(card.skillNames, "shzj_yiling__longnu")
+  end,
+}
+local taoyuan = fk.CreateActiveSkill{
+  name = "taoyuan",
+  anim_type = "support",
+  card_num = 2,
+  target_num = 1,
+  prompt = "#taoyuan",
+  can_use = function(self, player)
+    return player:getMark("taoyuan-phase") > 0 and player:usedSkillTimes(self.name, Player.HistoryPhase) == 0
+  end,
+  card_filter = function(self, to_select, selected)
+    return #selected < 2 and not Self:prohibitDiscard(Fk:getCardById(to_select))
+  end,
+  target_filter = function(self, to_select, selected, selected_cards)
+    return #selected == 0
+  end,
+  on_use = function(self, room, effect)
+    local player = room:getPlayerById(effect.from)
+    local target = room:getPlayerById(effect.tos[1])
+    room:throwCard(effect.cards, self.name, player, player)
+    if target.dead then return end
+    local cards = table.filter(U.prepareDeriveCards(player.room, {
+      {"god_salvation", Card.Heart, 1},
+      {"god_salvation", Card.Heart, 1},
+      {"god_salvation", Card.Heart, 1},
+    }, self.name), function (id)
+      return room:getCardArea(id) == Card.Void
+    end)
+    if #cards == 0 then return end
+    local card = Fk:getCardById(cards[1])
+    room:setCardMark(card, MarkEnum.DestructIntoDiscard, 1)
+    room:moveCardTo(card, Card.PlayerHand, target, fk.ReasonJustMove, self.name, nil, true, target.id)
+  end,
+
+  refresh_events = {fk.StartPlayCard},
+  can_refresh = function(self, event, target, player, data)
+    return target == player and player:hasSkill(self) and player:usedSkillTimes(self.name, Player.HistoryPhase) == 0
+  end,
+  on_refresh = function(self, event, target, player, data)
+    local room = player.room
+    if #table.filter(U.prepareDeriveCards(player.room, {
+      {"god_salvation", Card.Heart, 1},
+      {"god_salvation", Card.Heart, 1},
+      {"god_salvation", Card.Heart, 1},
+    }, self.name), function (id)
+      return room:getCardArea(id) == Card.Void
+    end) > 0 then
+      room:setPlayerMark(player, "taoyuan-phase", 1)
+    end
+  end,
+}
+shzj_yiling__longnu:addRelatedSkill(shzj_yiling__longnu_trigger)
+shzj_yiling__longnu:addRelatedSkill(shzj_yiling__longnu_targetmod)
+shzj_yiling__godliubei:addSkill(shzj_yiling__longnu)
+shzj_yiling__godliubei:addSkill("jieying")
+shzj_yiling__godliubei:addSkill(taoyuan)
+Fk:loadTranslationTable{
+  ["shzj_yiling__godliubei"] = "神刘备",
+  ["#shzj_yiling__godliubei"] = "桃园挽歌",
+  ["illustrator:shzj_yiling__godliubei"] = "点睛",
+
+  ["shzj_yiling__longnu"] = "龙怒",
+  [":shzj_yiling__longnu"] = "转换技，游戏开始时可自选阴阳状态；出牌阶段开始时，你可以摸一张牌，阳：失去1点体力，你此阶段可以将红色牌当"..
+  "无距离限制的火【杀】使用或打出；阴：减1点体力上限，你此阶段可以将锦囊牌当无次数限制的雷【杀】使用或打出。",
+  ["taoyuan"] = "桃园",
+  [":taoyuan"] = "出牌阶段限一次，你可以弃置两张牌，令一名角色从游戏外获得一张【桃园结义】。（游戏外共有3张【桃园结义】，进入弃牌堆时销毁）",
+  ["#shzj_yiling__longnu_trigger"] = "龙怒",
+  ["#shzj_yiling__longnu_yang"] = "龙怒：你可以将红色牌当无距离限制的火【杀】使用或打出",
+  ["#shzj_yiling__longnu_yin"] = "龙怒：你可以将锦囊牌当无次数限制的雷【杀】使用或打出",
+  ["#shzj_yiling__longnu_yang-invoke"] = "龙怒：是否摸一张牌并失去1点体力，此阶段可以将红色牌当无距离限制的火【杀】使用或打出？",
+  ["#shzj_yiling__longnu_yin-invoke"] = "龙怒：是否摸一张牌并减1点体力上限，此阶段可以将锦囊牌当无次数限制的雷【杀】使用或打出？",
+  ["#taoyuan"] = "桃园：弃置两张牌，令一名角色从游戏外获得一张【桃园结义】",
 }
 
 local fanjiang = General(extension, "fanjiang", "wu", 4)
