@@ -2879,4 +2879,269 @@ Fk:loadTranslationTable{
   ["#chende-use"] = "臣德：你可以视为使用其中一张牌",
 }
 
+local anying = General(extension, "anying", "qun", 3)
+local liupo = fk.CreateTriggerSkill{
+  name = "liupo",
+  switch_skill_name = "liupo",
+  anim_type = "switch",
+  events = {fk.TurnStart},
+  can_trigger = function(self, event, target, player, data)
+    return player:hasSkill(self) and target == player
+  end,
+  on_cost = Util.TrueFunc,
+  on_use = function(self, event, target, player, data)
+    local isYang = player:getSwitchSkillState(self.name) == fk.SwitchYang
+    local room = player.room
+    if not isYang then
+      room:setPlayerMark(player, "@liupo_buff-round", "liupo_prihibit_use")
+    else
+      room:setPlayerMark(player, "@liupo_buff-round", "liupo_lose_hp")
+    end
+  end,
+}
+local liupo_prhibit = fk.CreateProhibitSkill{
+  name = "#liupo_prohibit",
+  prohibit_use = function(self, player, card)
+    return table.find(Fk:currentRoom().alive_players, function(p)
+      return p:getMark("@liupo_buff-round") == "liupo_prihibit_use"
+    end) and (card or {}).name == "peach"
+  end,
+}
+local liupo_trigger = fk.CreateTriggerSkill{
+  name = "#liupo_trigger",
+  mute = true,
+  events = {fk.PreDamage},
+  can_trigger = function(self, event, target, player, data)
+    return player:getMark("@liupo_buff-round") == "liupo_lose_hp"
+  end,
+  on_cost = Util.TrueFunc,
+  on_use = function(self, event, target, player, data)
+    player.room:loseHp(data.to, data.damage, self.name)
+    return true
+  end,
+}
+local zhuiling = fk.CreateTriggerSkill{
+  name = "zhuiling",
+  anim_type = "special",
+  frequency = Skill.Compulsory,
+  events = {fk.HpLost},
+  can_trigger = function(self, event, target, player, data)
+    return player:hasSkill(self) and (data.num or 0) > 0 and player:getMark("@anying_soul") < 3
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    local num = math.min(3 - player:getMark("@anying_soul"), data.num)
+    room:addPlayerMark(player, "@anying_soul", num)
+  end,
+}
+local zhuiling_targetmod = fk.CreateTargetModSkill{
+  name = "#zhuiling_targetmod",
+  bypass_times = function(self, player, skill, scope, card, to)
+    return player:hasSkill(self) and to:isKongcheng()
+  end,
+  bypass_distances =  function(self, player, skill, card, to)
+    return player:hasSkill(self) and to:isKongcheng()
+  end,
+}
+local xihun = fk.CreateTriggerSkill{
+  name = "xihun",
+  anim_type = "offensive",
+  frequency = Skill.Compulsory,
+  events = {fk.RoundEnd},
+  can_trigger = function(self, event, target, player, data)
+    return player:hasSkill(self)
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    local targets = table.map(room:getOtherPlayers(player), Util.IdMapper)
+    room:sortPlayersByAction(targets)
+    room:doIndicate(player.id, targets)
+    for _, id in ipairs(targets) do
+      local p = room:getPlayerById(id)
+      if not p.dead then
+        if #p:getCardIds("h") > 1 then
+          local cids = room:askForDiscard(p, 2, 2, false, self.name, true, ".", "#xihun-discard")
+          if #cids == 0 then
+            room:loseHp(p, 1)
+          end
+        else
+          room:loseHp(p, 1)
+        end
+      end
+    end
+    if not player.dead and player:getMark("@anying_soul") > 0 then
+      local choices = {}
+      for i = 1, player:getMark("@anying_soul") do
+        table.insert(choices, tostring(i))
+      end
+      local choice = room:askForChoice(player, choices, self.name, "#xihun-choose")
+      if choice and player:isWounded() then
+        local n = tonumber(choice)
+        local num = math.min(n, player.maxHp - player.hp)
+        room:removePlayerMark(player, "@anying_soul", math.min(n, 1))
+        room:recover{
+          who = player,
+          num = num,
+          recoverBy = player,
+          skillName = self.name
+        }
+      end
+    end
+  end,
+}
+local xianqi = fk.CreateTriggerSkill{
+  name = "xianqi",
+  mute = true,
+
+  refresh_events = {fk.EventAcquireSkill, fk.EventLoseSkill, fk.BuryVictim, fk.AfterPropertyChange},
+  can_refresh = function(self, event, target, player, data)
+    if event == fk.EventAcquireSkill or event == fk.EventLoseSkill then
+      return data == self
+    elseif event == fk.BuryVictim then
+      return target:hasSkill(self, true, true)
+    elseif event == fk.AfterPropertyChange then
+      return target == player
+    end
+  end,
+  on_refresh = function(self, event, target, player, data)
+    local room = player.room
+    local attached_huangtian = table.find(room.alive_players, function (p)
+      return p ~= player and p:hasSkill(self, true)
+    end)
+    if attached_huangtian and not player:hasSkill("xianqi_other&", true, true) then
+      room:handleAddLoseSkills(player, "xianqi_other&", nil, false, true)
+    elseif not attached_huangtian and player:hasSkill("xianqi_other&", true, true) then
+      room:handleAddLoseSkills(player, "-xianqi_other&", nil, false, true)
+    end
+  end,
+}
+local xianqi_other = fk.CreateActiveSkill{
+  name = "xianqi_other&",
+  anim_type = "support",
+  prompt = "#xianqi_other-active",
+  mute = true,
+  max_card_num = 2,
+  target_num = 0,
+  card_filter = function(self, to_select, selected) 
+    return #selected < 2 and table.contains(Self:getCardIds("h"), to_select)
+  end,
+  can_use = function(self, player)
+    return player:usedSkillTimes(self.name, Player.HistoryPhase) == 0
+  end,
+  on_use = function(self, room, effect)
+    local player = room:getPlayerById(effect.from)
+    local cards = effect.cards
+    local target = table.filter(room:getOtherPlayers(player), function(p)
+      return p:hasSkill("xianqi")
+    end)
+    if #target > 0 then
+      target = target[1]
+      if #cards == 2 then
+        room:throwCard(cards, self.name, player, player)
+      else
+        room:damage{
+          from = player,
+          to = player,
+          damage = 1,
+          skillName = self.name,
+        }
+      end
+      if not target.dead then
+        room:damage{
+          from = nil,
+          to = target,
+          damage = 1,
+          skillName = self.name,
+        }
+      end
+    end
+  end,
+}
+local fansheng = fk.CreateTriggerSkill{
+  name = "fansheng",
+  anim_type = "special",
+  frequency = Skill.Compulsory,
+  events = {fk.EnterDying},
+  can_trigger = function(self, event, target, player, data)
+    if player:hasSkill(self, true) and target == player and player:getMark("fansheng_used") == 0 then
+      player.room:setPlayerMark(player, "fansheng_used", 1)
+      return player:hasSkill(self)
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    local num = 1 - player.hp
+    room:recover{
+      who = player,
+      num = num,
+      recoverBy = player,
+      skillName = self.name
+    }
+    local targets = table.map(room:getOtherPlayers(player), Util.IdMapper)
+    room:sortPlayersByAction(targets)
+    room:doIndicate(player.id, targets)
+    for _, id in ipairs(targets) do
+      local p = room:getPlayerById(id)
+      if not p.dead and #p:getCardIds("he") > 0 then
+        local choices = {}
+        if #p:getCardIds("h") > 0 then
+          table.insert(choices, "#xihun-handcards")
+        end
+        if #p:getCardIds("e") > 0 then
+          table.insert(choices, "#xihun-equipcards")
+        end
+        if #choices < 2 then
+          room:throwCard(p:getCardIds("he"), self.name, p, p)
+        else
+          local choice = room:askForChoice(p, choices, self.name, "#fansheng-choose", nil, {"#xihun-handcards", "#xihun-equipcards"})
+          if choice == "#xihun-handcards" then
+            room:throwCard(p:getCardIds("h"), self.name, p, p)
+          else
+            room:throwCard(p:getCardIds("e"), self.name, p, p)
+          end
+        end
+      end
+    end
+  end,
+}
+Fk:addSkill(xianqi_other)
+liupo:addRelatedSkill(liupo_prhibit)
+liupo:addRelatedSkill(liupo_trigger)
+zhuiling:addRelatedSkill(zhuiling_targetmod)
+anying:addSkill(liupo)
+anying:addSkill(zhuiling)
+anying:addSkill(xihun)
+anying:addSkill(xianqi)
+anying:addSkill(fansheng)
+Fk:loadTranslationTable{
+  ["anying"] = "暗影",
+  ["#anying"] = "黑影笼罩",
+  ["illustrator:anying"] = "黑白画谱",
+
+  ["liupo"] = "流魄",
+  [":liupo"] = "转换技，回合开始时，你令本轮：阳：所有角色不能使用【桃】；阴：所有即将造成的伤害均视为体力流失。",
+  ["#liupo_prohibit"] = "流魄",
+  ["#liupo_trigger"] = "流魄",
+  ["@liupo_buff-round"] = "流魄",
+  ["liupo_prihibit_use"] = "禁止用桃",
+  ["liupo_lose_hp"] = "失去体力",
+  ["zhuiling"] = "追灵",
+  [":zhuiling"] = "锁定技，一名角色失去体力后，你获得等量的“魂”（“魂”至多为3）。你对没有手牌的角色使用牌无距离和次数限制。",
+  ["@anying_soul"] = "魂",
+  ["xihun"] = "吸魂",
+  [":xihun"] = "锁定技，每轮结束时，所有其他角色依次选择弃置两张手牌或失去1点体力，然后你弃置任意个“魂”并回复等量体力。",
+  ["#xihun-discard"] = "吸魂：你须弃置两张手牌，或点击取消，然后你失去1点体力",
+  ["#xihun-choose"] = "吸魂：弃置任意个“魂”，然后回复等量体力",
+  ["xianqi"] = "献气",
+  [":xianqi"] = "其他角色出牌阶段限一次，其可以对其造成1点伤害或弃置两张手牌，然后你受到1点无来源伤害。",
+  ["xianqi_other&"] = "献气",
+  [":xianqi_other&"] = "出牌阶段限一次，你可以对你自身造成1点伤害或弃置两张手牌，然后令暗影受到1点无来源伤害。",
+  ["#xianqi_other-active"] = "献气：选择两张手牌弃置，若选择数不为2，则改为对自己造成1点伤害，然后拥有“献气”的角色受到1点伤害",
+  ["fansheng"] = "反生",
+  [":fansheng"] = "锁定技，当你第一次进入濒死时，你将体力回复至1点，然后令所有其他角色依次选择弃置其所有手牌或弃置其装备区里的所有牌。",
+  ["#fansheng-choose"] = "反生：你须选择一项",
+  ["#xihun-handcards"] = "弃置所有手牌",
+  ["#xihun-equipcards"] = "弃置装备区的所有牌",
+}
+
 return extension
