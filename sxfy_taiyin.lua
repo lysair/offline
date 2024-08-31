@@ -33,13 +33,13 @@ local sxfy__jujian = fk.CreateTriggerSkill{
     local to = player.room:askForChoosePlayers(player, table.map(player.room:getOtherPlayers(player), Util.IdMapper), 1, 1,
       "#sxfy__jujian-give:::"..data.card:toLogString(), self.name, true)
     if #to > 0 then
-      self.cost_data = to[1]
+      self.cost_data = {tos = to}
       return true
     end
   end,
   on_use = function(self, event, target, player, data)
     local room = player.room
-    local to = room:getPlayerById(self.cost_data)
+    local to = room:getPlayerById(self.cost_data.tos[1])
     room:moveCardTo(data.card, Card.PlayerHand, to, fk.ReasonGive, self.name, nil, true, player.id)
   end,
 }
@@ -337,13 +337,13 @@ local sxfy__zuici = fk.CreateTriggerSkill{
     end), Util.IdMapper)
     local to = room:askForChoosePlayers(player, targets, 1, 1, "#sxfy__zuici-choose::"..data.from.id, self.name, true, true)
     if #to > 0 then
-      self.cost_data = to[1]
+      self.cost_data = {tos = to}
       return true
     end
   end,
   on_use = function(self, event, target, player, data)
     local room = player.room
-    local to = room:getPlayerById(self.cost_data)
+    local to = room:getPlayerById(self.cost_data.tos[1])
     room:askForMoveCardInBoard(player, to, data.from, self.name, nil, to)
   end
 }
@@ -375,7 +375,7 @@ local sxfy__xingfa = fk.CreateTriggerSkill{
     local to = room:askForChoosePlayers(player, table.map(room:getOtherPlayers(player), Util.IdMapper), 1, 1,
       "#sxfy__xingfa-choose", self.name, true)
     if #to > 0 then
-      self.cost_data = to[1]
+      self.cost_data = {tos = to}
       return true
     end
   end,
@@ -383,7 +383,7 @@ local sxfy__xingfa = fk.CreateTriggerSkill{
     local room = player.room
     room:damage({
       from = player,
-      to = room:getPlayerById(self.cost_data),
+      to = room:getPlayerById(self.cost_data.tos[1]),
       damage = 1,
       skillName = self.name,
     })
@@ -464,14 +464,15 @@ local xuezong = General(extension, "sxfy__xuezong", "wu", 3)
 local sxfy__funan = fk.CreateTriggerSkill{
   name = "sxfy__funan",
   anim_type = "drawcard",
-  events = {fk.CardEffectCancelledOut},
+  events = {fk.CardUseFinished},
   can_trigger = function(self, event, target, player, data)
-    return player:hasSkill(self) and target ~= player and
+    return target == player and player:hasSkill(self) and
       player:usedSkillTimes(self.name, Player.HistoryTurn) == 0 and
-      player.room:getCardArea(data.card) == Card.Processing
+      data.responseToEvent and data.responseToEvent.from ~= player.id and
+      player.room:getCardArea(data.responseToEvent.card) == Card.Processing
   end,
   on_use = function(self, event, target, player, data)
-    player.room:moveCardTo(data.card, Card.PlayerHand, player, fk.ReasonJustMove, self.name, nil, true, player.id)
+    player.room:moveCardTo(data.responseToEvent.card, Card.PlayerHand, player, fk.ReasonJustMove, self.name, nil, true, player.id)
   end,
 }
 local sxfy__jiexun = fk.CreateTriggerSkill{
@@ -491,13 +492,13 @@ local sxfy__jiexun = fk.CreateTriggerSkill{
     end), Util.IdMapper)
     local to = room:askForChoosePlayers(player, targets, 1, 1, "#sxfy__jiexun-choose", self.name, true)
     if #to > 0 then
-      self.cost_data = to[1]
+      self.cost_data = {tos = to}
       return true
     end
   end,
   on_use = function(self, event, target, player, data)
     local room = player.room
-    local to = room:getPlayerById(self.cost_data)
+    local to = room:getPlayerById(self.cost_data.tos[1])
     local card = room:askForDiscard(to, 1, 1, false, self.name, false, nil, "#sxfy__jiexun-discard")
     if Fk:getCardById(card[1]).suit == Card.Diamond and not to.dead then
       to:drawCards(2, self.name)
@@ -905,13 +906,14 @@ local sxfy__fengbai = fk.CreateTriggerSkill{
   end,
   on_cost = function(self, event, target, player, data)
     if player.room:askForSkillInvoke(player, self.name, nil, "#sxfy__fengbai-invoke::"..self.cost_data) then
+      self.cost_data = {tos = {self.cost_data}}
       return true
     end
     self.cancel_cost = true
   end,
   on_use = function(self, event, target, player, data)
     local room = player.room
-    local to = room:getPlayerById(self.cost_data)
+    local to = room:getPlayerById(self.cost_data.tos[1])
     room:doIndicate(player.id, {to.id})
     to:drawCards(1, self.name)
   end,
@@ -959,13 +961,13 @@ local sxfy__jujing = fk.CreateTriggerSkill{
   on_cost = function(self, event, target, player, data)
     local cards = player.room:askForDiscard(player, 2, 2, true, self.name, true, nil, "#sxfy__jujing-invoke", true)
     if #cards == 2 then
-      self.cost_data = cards
+      self.cost_data = {cards = cards}
       return true
     end
   end,
   on_use = function(self, event, target, player, data)
     local room = player.room
-    room:throwCard(self.cost_data, self.name, player, player)
+    room:throwCard(self.cost_data.cards, self.name, player, player)
     if not player.dead and player:isWounded() then
       room:recover({
         who = player,
@@ -1003,13 +1005,13 @@ local sxfy__jinglve = fk.CreateTriggerSkill{
   on_cost = function(self, event, target, player, data)
     local cards = player.room:askForCard(player, 2, 2, true, self.name, true, nil, "#sxfy__jinglve-invoke::"..target.id)
     if #cards > 0 then
-      self.cost_data = cards
+      self.cost_data = {tos = {target.id}, cards = cards}
       return true
     end
   end,
   on_use = function(self, event, target, player, data)
     local room = player.room
-    local cards = table.simpleClone(self.cost_data)
+    local cards = table.simpleClone(self.cost_data.cards)
     player:showCards(cards)
     cards = table.filter(cards, function (id)
       return table.contains(player:getCardIds("h"), id)
@@ -1087,14 +1089,13 @@ local sxfy__zhuikong = fk.CreateTriggerSkill{
   on_cost = function(self, event, target, player, data)
     local card = player.room:askForCard(player, 1, 1, false, self.name, true, "slash", "#sxfy__zhuikong-invoke::"..target.id)
     if #card > 0 then
-      self.cost_data = card[1]
+      self.cost_data = {tos = {target.id}, cards = card}
       return true
     end
   end,
   on_use = function(self, event, target, player, data)
     local room = player.room
-    room:doIndicate(player.id, {target.id})
-    local pindian = player:pindian({target}, self.name, Fk:getCardById(self.cost_data))
+    local pindian = player:pindian({target}, self.name, Fk:getCardById(self.cost_data.cards[1]))
     local winner = pindian.results[target.id].winner
     if winner and not winner.dead then
       local card = -1
@@ -1125,13 +1126,13 @@ local sxfy__qiuyuan = fk.CreateTriggerSkill{
       return p.id ~= data.from end), Util.IdMapper)
     local to = room:askForChoosePlayers(player, targets, 1, 1, "#sxfy__qiuyuan-choose", self.name, true)
     if #to > 0 then
-      self.cost_data = to[1]
+      self.cost_data = {tos = to}
       return true
     end
   end,
   on_use = function(self, event, target, player, data)
     local room = player.room
-    local to = room:getPlayerById(self.cost_data)
+    local to = room:getPlayerById(self.cost_data.tos[1])
     local card = room:askForCard(to, 1, 1, false, self.name, true, nil, "#sxfy__qiuyuan-give::"..player.id)
     if #card > 0 then
       room:moveCardTo(card, Card.PlayerHand, player, fk.ReasonGive, self.name, nil, false, to.id)
