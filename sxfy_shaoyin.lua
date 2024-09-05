@@ -111,8 +111,8 @@ Fk:loadTranslationTable{
   ["illustrator:sxfy__wenyang"] = "biou09",
 
   ["sxfy__quedi"] = "却敌",
-  [":sxfy__quedi"] = "你可以将【杀】当决斗使用。",
-  ["#sxfy__quedi"] = "却敌：你可以将【杀】当决斗使用",
+  [":sxfy__quedi"] = "你可以将【杀】当【决斗】使用。",
+  ["#sxfy__quedi"] = "却敌：你可以将【杀】当【决斗】使用",
 }
 
 local chengpu = General(extension, "sxfy__chengpu", "wu", 4)

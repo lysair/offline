@@ -400,7 +400,7 @@ Fk:loadTranslationTable{
   ["#sxfy__xingfa-choose"] = "兴伐：你可以对一名其他角色造成1点伤害",
 }
 
-local guanxing = General(extension, "sxfy__guanxing", "shu", 4)
+local guanxings = General(extension, "sxfy__guanxings", "shu", 4)
 local sxfy__wuyou = fk.CreateActiveSkill{
   name = "sxfy__wuyou",
   anim_type = "offensive",
@@ -447,12 +447,12 @@ local sxfy__wuyou_delay = fk.CreateTriggerSkill {
   end,
 }
 sxfy__wuyou:addRelatedSkill(sxfy__wuyou_delay)
-guanxing:addSkill(sxfy__wuyou)
-guanxing:addRelatedSkill("wusheng")
+guanxings:addSkill(sxfy__wuyou)
+guanxings:addRelatedSkill("wusheng")
 Fk:loadTranslationTable{
-  ["sxfy__guanxing"] = "关兴",
-  ["#sxfy__guanxing"] = "龙骧将军",
-  ["illustrator:sxfy__guanxing"] = "峰雨同程",
+  ["sxfy__guanxings"] = "关兴",
+  ["#sxfy__guanxings"] = "龙骧将军",
+  ["illustrator:sxfy__guanxings"] = "峰雨同程",
 
   ["sxfy__wuyou"] = "武佑",
   [":sxfy__wuyou"] = "出牌阶段限一次，你可以与一名角色拼点，若你没赢，你本回合视为拥有〖武圣〗。然后拼点赢的角色视为对没赢的角色使用一张"..

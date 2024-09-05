@@ -2496,7 +2496,7 @@ Fk:loadTranslationTable{
   ["#daifa-invoke"] = "待发：你可以将一张牌当无距离限制的刺【杀】对 %dest 使用",
 }
 
-local shzj_yiling__guanxing = General(extension, "shzj_yiling__guanxing", "shu", 4)
+local shzj_yiling__guanxings = General(extension, "shzj_yiling__guanxings", "shu", 4)
 local conglong = fk.CreateTriggerSkill{
   name = "conglong",
   anim_type = "support",
@@ -2619,12 +2619,12 @@ local xianwu_targetmod = fk.CreateTargetModSkill{
 xianwu:addRelatedSkill(xianwu_trigger)
 xianwu:addRelatedSkill(xianwu_prohibit)
 xianwu:addRelatedSkill(xianwu_targetmod)
-shzj_yiling__guanxing:addSkill(conglong)
-shzj_yiling__guanxing:addSkill(xianwu)
+shzj_yiling__guanxings:addSkill(conglong)
+shzj_yiling__guanxings:addSkill(xianwu)
 Fk:loadTranslationTable{
-  ["shzj_yiling__guanxing"] = "关兴",
-  ["#shzj_yiling__guanxing"] = "少有令问",
-  ["illustrator:shzj_yiling__guanxing"] = "君桓文化",
+  ["shzj_yiling__guanxings"] = "关兴",
+  ["#shzj_yiling__guanxings"] = "少有令问",
+  ["illustrator:shzj_yiling__guanxings"] = "君桓文化",
 
   ["conglong"] = "从龙",
   [":conglong"] = "当一名角色使用红色【杀】时，你可以弃置一张锦囊牌，令此【杀】不能被响应。当红色【杀】对一名角色造成伤害时，你可以弃置一张"..

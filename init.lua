@@ -1,6 +1,6 @@
 local ofl_other = require "packages/offline/ofl_other"
 local espionage_beta = require "packages/offline/espionage_beta"
-local fhyx = require "packages/offline/fhyx"
+local feihongyinxue = require "packages/offline/feihongyinxue"
 local jiuding = require "packages/offline/jiuding"
 local shzj = require "packages/offline/shzj"
 local sxfy_shaoyin = require "packages/offline/sxfy_shaoyin"
@@ -15,7 +15,7 @@ Fk:loadTranslationTable{ ["offline"] = "线下" }
 return {
   ofl_other,
   espionage_beta,
-  fhyx,
+  feihongyinxue,
   jiuding,
   shzj,
   sxfy_shaoyin,
