@@ -88,27 +88,375 @@ Fk:loadTranslationTable{
   ["@$fhyx_extra_pile"] = "额外牌堆",
 }
 
+local yanliangwenchou = General(extension, "fhyx_ex__yanliangwenchou", "qun", 4)
+local fhyx_ex__shuangxiong = fk.CreateViewAsSkill{
+  name = "fhyx_ex__shuangxiong",
+  anim_type = "offensive",
+  pattern = "duel",
+  prompt = function ()
+    local color = "red"
+    if Self:getMark("@fhyx_ex__shuangxiong-phase") == "red" then
+      color = "black"
+    end
+    return "#fhyx_ex__shuangxiong:::"..color
+  end,
+  card_filter = function(self, to_select, selected)
+    if #selected == 1 then return false end
+    local color = Fk:getCardById(to_select):getColorString()
+    if color == "red" then
+      color = "black"
+    elseif color == "black" then
+      color = "red"
+    else
+      return false
+    end
+    return table.contains(Self:getHandlyIds(true), to_select) and Self:getMark("@fhyx_ex__shuangxiong-phase") == color
+  end,
+  view_as = function(self, cards)
+    if #cards ~= 1 then return end
+    local c = Fk:cloneCard("duel")
+    c:addSubcard(cards[1])
+    c.skillName = self.name
+    return c
+  end,
+  enabled_at_play = function(self, player)
+    return player:getMark("@fhyx_ex__shuangxiong-phase") ~= 0
+  end,
+  enabled_at_response = function(self, player)
+    return player:getMark("@fhyx_ex__shuangxiong-phase") ~= 0
+  end,
+}
+local fhyx_ex__shuangxiong_trigger = fk.CreateTriggerSkill{
+  name = "#fhyx_ex__shuangxiong_trigger",
+  mute = true,
+  events = {fk.EventPhaseStart},
+  can_trigger = function(self, event, target, player, data)
+    return target == player and player:hasSkill(self) and player.phase == Player.Play and
+      table.find(player.room.alive_players, function(p)
+        return not p:isNude()
+      end)
+  end,
+  on_cost = function(self, event, target, player, data)
+    local room = player.room
+    local targets = table.filter(player.room.alive_players, function(p)
+      return not p:isNude()
+    end)
+    local to = room:askForChoosePlayers(player, table.map(targets, Util.IdMapper), 1, 1,
+      "#fhyx_ex__shuangxiong-choose", self.name, true)
+    if #to > 0 then
+      self.cost_data = {tos = to}
+      return true
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    player:broadcastSkillInvoke("fhyx_ex__shuangxiong")
+    room:notifySkillInvoked(player, "fhyx_ex__shuangxiong", "control")
+    player:revealBySkillName("fhyx_ex__shuangxiong")
+    local to = room:getPlayerById(self.cost_data.tos[1])
+    local card = room:askForDiscard(to, 1, 1, true, self.name, false, nil, "#fhyx_ex__shuangxiong-discard::"..player.id)
+    if #card > 0 and not player.dead then
+      local color = Fk:getCardById(card[1]):getColorString()
+      if color ~= "nocolor" then
+        room:setPlayerMark(player, "@fhyx_ex__shuangxiong-phase", color)
+      end
+    end
+  end,
+}
+local fhyx_ex__xiayong = fk.CreateTriggerSkill{
+  name = "fhyx_ex__xiayong",
+  anim_type = "drawcard",
+  events = {fk.EventPhaseStart},
+  can_trigger = function(self, event, target, player, data)
+    if target == player and player:hasSkill(self) and player.phase == Player.Finish then
+      local yes, n = true, 0
+      player.room.logic:getEventsOfScope(GameEvent.UseCard, 1, function (e)
+        local use = e.data[1]
+        if use.from == player.id and (use.card.trueName == "slash" or use.card.trueName == "duel") then
+          if use.damageDealt then
+            local tmp = n
+            for _, id in ipairs(TargetGroup:getRealTargets(use.tos)) do
+              if use.damageDealt[id] then
+                n = n + use.damageDealt[id]
+              end
+            end
+            if n == tmp then
+              yes = false
+              return true
+            end
+          else
+            yes = false
+            return true
+          end
+        end
+      end, Player.HistoryTurn)
+      if yes and n > 0 then
+        self.cost_data = n
+        return true
+      end
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    player:drawCards(self.cost_data, self.name)
+  end,
+}
+fhyx_ex__shuangxiong:addRelatedSkill(fhyx_ex__shuangxiong_trigger)
+yanliangwenchou:addSkill(fhyx_ex__shuangxiong)
+yanliangwenchou:addSkill(fhyx_ex__xiayong)
 Fk:loadTranslationTable{
-  ["fhyx_ex__yanliangwenchou"] = "颜良文丑",
-  ["#fhyx_ex__yanliangwenchou"] = "",
-  ["illustrator:fhyx_ex__yanliangwenchou"] = "",
+  ["fhyx_ex__yanliangwenchou"] = "界颜良文丑",
+  ["#fhyx_ex__yanliangwenchou"] = "虎狼兄弟",
+  ["illustrator:fhyx_ex__yanliangwenchou"] = "鬼画府",
 
   ["fhyx_ex__shuangxiong"] = "双雄",
   [":fhyx_ex__shuangxiong"] = "出牌阶段开始时，你可以令一名角色弃置一张牌，若如此做，此阶段你可以将与此牌颜色不同的手牌当【决斗】使用。",
   ["fhyx_ex__xiayong"] = "狭勇",
-  [":fhyx_ex__xiayong"] = "结束阶段，若你本回合使用的【杀】和【决斗】均对目标角色造成过伤害，你可以摸等同于这些伤害值的牌。",
+  [":fhyx_ex__xiayong"] = "结束阶段，若你本回合使用的【杀】和【决斗】均对目标角色造成了伤害，你可以摸等同于这些伤害值的牌。",
+  ["#fhyx_ex__shuangxiong_trigger"] = "双雄",
+  ["#fhyx_ex__shuangxiong-choose"] = "双雄：令一名角色弃置一张牌，此阶段你可以将与之颜色不同的手牌当【决斗】使用",
+  ["#fhyx_ex__shuangxiong-discard"] = "双雄：请弃置一张牌，此阶段 %src 可以将与之颜色不同的手牌当【决斗】使用",
+  ["@fhyx_ex__shuangxiong-phase"] = "双雄",
+  ["#fhyx_ex__shuangxiong"] = "双雄：你可以将一张%arg手牌当【决斗】使用",
 }
 
+local guanqiujian = General(extension, "fhyx__guanqiujian", "wei", 4)
+local fhyx__zhengrong = fk.CreateTriggerSkill{
+  name = "fhyx__zhengrong",
+  anim_type = "switch",
+  switch_skill_name = "fhyx__zhengrong",
+  derived_piles = "fhyx__glory",
+  frequency = Skill.Compulsory,
+  events = {fk.GameStart, fk.CardUseFinished},
+  can_trigger = function(self, event, target, player, data)
+    if player:hasSkill(self) then
+      if event == fk.GameStart then
+        return true
+      elseif event ==  fk.CardUseFinished then
+        if target == player and player.phase == Player.Play and data.tos and
+          table.find(TargetGroup:getRealTargets(data.tos), function (id)
+            return id ~= player.id
+          end) then
+          if player:getSwitchSkillState(self.name, false) == fk.SwitchYang then
+            return not player:isKongcheng()
+          else
+            return table.find(player.room:getOtherPlayers(player), function (p)
+              return not p:isNude()
+            end)
+          end
+        end
+      end
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    if event == fk.GameStart then
+      player:addToPile("fhyx__glory", room.draw_pile[1], false, self.name, player.id)
+    elseif event ==  fk.CardUseFinished then
+      if player:getSwitchSkillState(self.name, true) == fk.SwitchYang then
+        local cards = room:askForArrangeCards(player, self.name,
+          {player:getPile("fhyx__glory"), player:getCardIds("h"), "fhyx__glory", "$Hand"}, "#fhyx__zhengrong-exchange", true)
+        U.swapCardsWithPile(player, cards[1], cards[2], self.name, "fhyx__glory")
+      else
+        local targets = table.filter(room:getOtherPlayers(player), function (p)
+          return not p:isNude()
+        end)
+        local to = room:askForChoosePlayers(player, table.map(targets, Util.IdMapper), 1, 1,
+          "#fhyx__zhengrong-choose", self.name, false)
+        to = room:getPlayerById(to[1])
+        local card = room:askForCardChosen(player, to, "he", self.name)
+        player:addToPile("fhyx__glory", card, false, self.name, player.id)
+      end
+    end
+  end,
+}
+local fhyx__hongju = fk.CreateTriggerSkill{
+  name = "fhyx__hongju",
+  frequency = Skill.Wake,
+  events = {fk.EventPhaseStart},
+  can_trigger = function(self, event, target, player, data)
+    return target == player and player:hasSkill(self) and
+      player.phase == Player.Start and
+      player:usedSkillTimes(self.name, Player.HistoryGame) == 0
+  end,
+  can_wake = function(self, event, target, player, data)
+    return #player:getPile("fhyx__glory") > 2
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    player:drawCards(#player:getPile("fhyx__glory"), self.name)
+    if player.dead then return end
+    room:changeMaxHp(player, -1)
+    if player.dead then return end
+    room:handleAddLoseSkills(player, "fhyx__qingce", nil, true, false)
+  end,
+}
+local fhyx__qingce = fk.CreateActiveSkill{
+  name = "fhyx__qingce",
+  anim_type = "control",
+  target_num = 1,
+  card_num = 1,
+  prompt = "#fhyx__qingce",
+  expand_pile = "fhyx__glory",
+  card_filter = function(self, to_select, selected)
+    return #selected == 0 and Self:getPileNameOfId(to_select) == "fhyx__glory"
+  end,
+  target_filter = function(self, to_select, selected)
+    return #Fk:currentRoom():getPlayerById(to_select):getCardIds("ej") > 0
+  end,
+  on_use = function(self, room, effect)
+    local player = room:getPlayerById(effect.from)
+    local target = room:getPlayerById(effect.tos[1])
+    room:moveCardTo(effect.cards, Card.DiscardPile, player, fk.ReasonPutIntoDiscardPile, self.name, "fhyx__glory")
+    if player.dead or target.dead or #target:getCardIds("ej") == 0 then return end
+    local card = room:askForCardChosen(player, target, "ej", self.name)
+    room:throwCard(card, self.name, target, player)
+  end,
+}
+guanqiujian:addSkill(fhyx__zhengrong)
+guanqiujian:addSkill(fhyx__hongju)
+guanqiujian:addRelatedSkill(fhyx__qingce)
 Fk:loadTranslationTable{
   ["fhyx__guanqiujian"] = "毌丘俭",
-  ["#fhyx__guanqiujian"] = "",
-  ["illustrator:fhyx__guanqiujian"] = "",
+  ["#fhyx__guanqiujian"] = "镌功铭征荣",
+  ["illustrator:fhyx__guanqiujian"] = "鬼画府",
 
   ["fhyx__zhengrong"] = "征荣",
   [":fhyx__zhengrong"] = "转换技，锁定技，游戏开始时，你将牌堆顶一张牌置于武将牌上，称为“荣”。当你于出牌阶段对其他角色使用牌结算后，"..
   "阳：你选择任意张手牌替换等量的“荣”；阴：你将一名其他角色的一张牌置为“荣”。",
+  ["fhyx__hongju"] = "鸿举",
+  [":fhyx__hongju"] = "觉醒技，准备阶段，若“荣”数不小于3，你摸等同于“荣”数的牌，然后减1点体力上限，获得〖清侧〗。",
+  ["fhyx__qingce"] = "清侧",
+  [":fhyx__qingce"] = "出牌阶段，你可以移去一张“荣”，然后弃置场上的一张牌。",
+  ["fhyx__glory"] = "荣",
+  ["#fhyx__zhengrong-exchange"] = "征荣：选择任意张手牌替换等量的“荣”",
+  ["#fhyx__zhengrong-choose"] = "征荣：将一名其他角色的一张牌置为“荣”",
+  ["#fhyx__qingce"] = "清侧：你可以移去一张“荣”，弃置场上的一张牌",
 }
 
+local liyan = General(extension, "fhyx__liyan", "shu", 3)
+local fhyx__duliang = fk.CreateActiveSkill{
+  name = "fhyx__duliang",
+  anim_type = "support",
+  card_num = 0,
+  target_num = 1,
+  prompt = "#fhyx__duliang",
+  can_use = function(self, player)
+    return player:usedSkillTimes(self.name, Player.HistoryPhase) == 0
+  end,
+  card_filter = Util.FalseFunc,
+  target_filter = function(self, to_select, selected, selected_cards)
+    return #selected == 0 and to_select ~= Self.id and not Fk:currentRoom():getPlayerById(to_select):isKongcheng()
+  end,
+  on_use = function(self, room, effect)
+    local player = room:getPlayerById(effect.from)
+    local target = room:getPlayerById(effect.tos[1])
+    local n = math.max(target:getLostHp(), 1)
+    local cards = room:askForCardsChosen(player, target, 1, n, "h", self.name, "#fhyx__duliang-prey::"..target.id..":"..n)
+    n = #cards
+    room:moveCardTo(cards, Card.PlayerHand, player, fk.ReasonPrey, self.name, nil, false, player.id)
+    if player.dead or target.dead then return end
+    local choice = room:askForChoice(player, {"fhyx__duliang_view:::"..(2*n), "fhyx__duliang_draw:::"..n}, self.name,
+      "#fhyx__duliang-choice::"..target.id)
+    if choice[15] == "v" then
+      local all_cards = room:getNCards(2*n)
+      cards = table.filter(cards, function (id)
+        return Fk:getCardById(id).type == Card.TypeBasic
+      end)
+      cards = U.askforChooseCardsAndChoice(target, cards, {"OK"}, self.name, "#fhyx__duliang-get", nil, 0, #cards, all_cards)
+      if #cards > 0 then
+        room:moveCardTo(cards, Card.PlayerHand, target, fk.ReasonJustMove, self.name, nil, false, target.id)
+      end
+    else
+      room:addPlayerMark(target, "@duliang", n)
+    end
+  end,
+}
+local fhyx__duliang_trigger = fk.CreateTriggerSkill{
+  name = "#fhyx__duliang_trigger",
+
+  refresh_events = {fk.DrawNCards},
+  can_refresh = function(self, event, target, player, data)
+    return target == player and player:getMark("@duliang") > 0
+  end,
+  on_refresh = function(self, event, target, player, data)
+    data.n = data.n + player:getMark("@duliang")
+    player.room:setPlayerMark(player, "@duliang", 0)
+  end,
+}
+local fhyx__fulin = fk.CreateTriggerSkill{
+  name = "fhyx__fulin",
+  anim_type = "control",
+  events = {fk.AfterCardsMove},
+  can_trigger = function(self, event, target, player, data)
+    if player:hasSkill(self) and player.phase ~= Player.NotActive and not player:isKongcheng() then
+      local cards = {}
+      for _, move in ipairs(data) do
+        if move.to == player.id and move.toArea == Card.PlayerHand then
+          for _, info in ipairs(move.moveInfo) do
+            if table.contains(player:getCardIds("h"), info.cardId) then
+              table.insertIfNeed(cards, info.cardId)
+            end
+          end
+        end
+      end
+      U.moveCardsHoldingAreaCheck(player.room, cards)
+      if #cards > 0 then
+        self.cost_data = cards
+        return true
+      end
+    end
+  end,
+  on_cost = function(self, event, target, player, data)
+    local cards = player.room:askForCard(player, 1, 999, false, self.name, true, ".|.|.|.|.|.|"..table.concat(self.cost_data, ","),
+      "#fhyx__fulin-invoke")
+    if #cards > 0 then
+      self.cost_data = {cards = cards}
+      return true
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    room:addPlayerMark(player, "@fhyx__fulin-turn", #self.cost_data.cards)
+    if #self.cost_data.cards == 1 then
+      room:moveCards({
+        ids = self.cost_data.cards,
+        from = player.id,
+        toArea = Card.DrawPile,
+        moveReason = fk.ReasonPut,
+        skillName = self.name,
+        proposer = player.id,
+      })
+    else
+      local result = room:askForGuanxing(player, self.cost_data.cards, nil, {0, 0}, self.name, true)
+      room:moveCards({
+        ids = table.reverse(result.top),
+        from = player.id,
+        toArea = Card.DrawPile,
+        moveReason = fk.ReasonPut,
+        skillName = self.name,
+        proposer = player.id,
+      })
+    end
+  end,
+}
+local fhyx__fulin_delay = fk.CreateTriggerSkill{
+  name = "#fhyx__fulin_delay",
+  mute = true,
+  events = {fk.TurnEnd},
+  can_trigger = function(self, event, target, player, data)
+    return target == player and player:getMark("@fhyx__fulin-turn") > 0
+  end,
+  on_cost = Util.TrueFunc,
+  on_use = function(self, event, target, player, data)
+    player:broadcastSkillInvoke("fhyx__fulin")
+    player.room:notifySkillInvoked(player, "fhyx__fulin", "drawcard")
+    player:drawCards(player:getMark("@fhyx__fulin-turn"), "fhyx__fulin")
+  end,
+}
+fhyx__duliang:addRelatedSkill(fhyx__duliang_trigger)
+fhyx__fulin:addRelatedSkill(fhyx__fulin_delay)
+liyan:addSkill(fhyx__duliang)
+liyan:addSkill(fhyx__fulin)
 Fk:loadTranslationTable{
   ["fhyx__liyan"] = "李严",
   ["#fhyx__liyan"] = "矜风流务",
@@ -119,6 +467,15 @@ Fk:loadTranslationTable{
   "1.其观看牌堆顶的两倍的牌，获得其中任意张基本牌；2.其下个摸牌阶段多摸等量的牌。",
   ["fhyx__fulin"] = "腹鳞",
   [":fhyx__fulin"] = "当你于回合内获得牌后，你可以将其中任意张牌以任意顺序置于牌堆顶；回合结束时，你摸X张牌（X为本回合你以此法失去的牌数）。",
+  ["#fhyx__duliang"] = "督粮：获得一名角色其已损失体力值张手牌（至少一张），然后令其获得基本牌或其下个摸牌阶段多摸牌",
+  ["#fhyx__duliang-prey"] = "督粮：获得 %dest 至多%arg张手牌",
+  ["#fhyx__duliang-choice"] = "督粮：选择令 %dest 执行的一项",
+  ["fhyx__duliang_view"] = "其观看牌堆顶%arg张牌，获得其中的基本牌",
+  ["fhyx__duliang_draw"] = "其下个摸牌阶段额外摸%arg张牌",
+  ["#fhyx__duliang-get"] = "督粮：你可以获得其中任意张基本牌",
+  ["#fhyx__fulin-invoke"] = "腹鳞：你可以将其中任意张牌以任意顺序置于牌堆顶，回合结束时摸等量的牌",
+  ["@fhyx__fulin-turn"] = "腹鳞",
+  ["#fhyx__fulin_delay"] = "腹鳞",
 
   ["$fhyx__duliang1"] = "积粮囤草，以备战时之用。",
   ["$fhyx__duliang2"] = "粮食充裕，怎可撤军。",
@@ -127,26 +484,141 @@ Fk:loadTranslationTable{
   ["~fhyx__liyan"] = "老臣，有愧圣恩……",
 }
 
+local caojie = General(extension, "fhyx__caojie", "qun", 3, 3, General.Female)
+local fhyx__shouxi = fk.CreateTriggerSkill{
+  name = "fhyx__shouxi",
+  anim_type = "defensive",
+  events = {fk.TargetConfirmed},
+  can_trigger = function(self, event, target, player, data)
+    return target == player and player:hasSkill(self) and (data.card.trueName == "slash" or data.card:isCommonTrick()) and
+      data.from ~= player.id
+  end,
+  on_cost = function (self, event, target, player, data)
+    local choice = player.room:askForChoice(player, {"basic", "trick", "equip", "Cancel"}, self.name,
+      "#fhyx__shouxi-invoke::"..data.from..":"..data.card:toLogString())
+    if choice ~= "Cancel" then
+      self.cost_data = {choice = choice}
+      return true
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    local from = room:getPlayerById(data.from)
+    if #room:askForDiscard(from, 1, 1, false, self.name, true, ".|.|.|.|.|"..self.cost_data.choice,
+      "#fhyx__shouxi-discard:"..player.id.."::"..data.card:toLogString()) == 0 then
+      table.insertIfNeed(data.nullifiedTargets, player.id)
+    elseif not player:isKongcheng() and not player.dead and not from.dead then
+      local card = room:askForCardChosen(from, player, "h", self.name)
+      room:moveCardTo(card, Card.PlayerHand, from, fk.ReasonPrey, self.name, nil, false, from.id)
+    end
+  end,
+}
+local fhyx__huimin = fk.CreateTriggerSkill{
+  name = "fhyx__huimin",
+  anim_type = "support",
+  events = {fk.EventPhaseStart},
+  can_trigger = function(self, event, target, player, data)
+    return target == player and player:hasSkill(self) and player.phase == Player.Finish and
+      table.find(player.room.alive_players, function (p)
+        return p:getHandcardNum() < p.hp
+      end)
+  end,
+  on_cost = function(self, event, target, player, data)
+    local room = player.room
+    local targets = table.map(table.filter(room.alive_players, function (p)
+      return p:getHandcardNum() < p.hp
+    end), Util.IdMapper)
+    local tos = room:askForChoosePlayers(player, targets, 1, 10, "#fhyx__huimin-choose", self.name, true)
+    if #tos > 0 then
+      self.cost_data = {tos = tos}
+      return true
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    player:drawCards(#self.cost_data.tos, self.name)
+    if player.dead or player:isKongcheng() then return end
+    local targets = table.filter(self.cost_data.tos, function (id)
+      return not room:getPlayerById(id).dead
+    end)
+    if #targets == 0 then return end
+    local n = math.min(player:getHandcardNum(), #targets)
+    U.askForDistribution(player, player:getCardIds("h"), table.map(targets, Util.Id2PlayerMapper), self.name, n, n,
+      "#fhyx__huimin-give", nil, false, 1)
+  end,
+}
+caojie:addSkill(fhyx__shouxi)
+caojie:addSkill(fhyx__huimin)
 Fk:loadTranslationTable{
   ["fhyx__caojie"] = "曹节",
-  ["#fhyx__caojie"] = "",
-  ["illustrator:fhyx__caojie"] = "",
+  ["#fhyx__caojie"] = "悬壶济世",
+  ["illustrator:fhyx__caojie"] = "匠人绘·空山",
 
   ["fhyx__shouxi"] = "守玺",
   [":fhyx__shouxi"] = "当你成为其他角色使用【杀】或普通锦囊牌的目标后，你可声明一种牌的类别，令使用者选择一项：1.弃置一张此类别的牌，"..
   "然后其可以获得你的一张手牌；2.此牌对你无效。",
   ["fhyx__huimin"] = "惠民",
   [":fhyx__huimin"] = "结束阶段，你可以选择任意名手牌数小于体力值的角色，你摸等量的牌，然后交给这些角色各一张手牌。",
+  ["#fhyx__shouxi-invoke"] = "守玺：你可以声明类别，%dest 需弃置一张此类别牌并获得你一张手牌，否则%arg对你无效",
+  ["#fhyx__shouxi-discard"] = "守玺：弃置一张%arg并获得 %src 一张手牌，否则%arg对其无效",
+  ["#fhyx__huimin-choose"] = "惠民：选择任意名手牌数小于体力值的角色，你摸等量牌，然后交给这些角色各一张手牌",
+  ["#fhyx__huimin-give"] = "惠民：请交给这些角色各一张手牌",
 }
 
+local caiyong = General(extension, "fhyx_ex__caiyong", "qun", 3)
+local fhyx__tongbo = fk.CreateTriggerSkill{
+  name = "fhyx__tongbo",
+  anim_type = "special",
+  events = {fk.EventPhaseEnd},
+  can_trigger = function(self, event, target, player, data)
+    return target == player and player:hasSkill(self) and player.phase == Player.Draw and
+      #player:getPile("caiyong_book") > 0 and (not player:isNude() or #player:getPile("caiyong_book") > 3)
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    local piles = room:askForArrangeCards(player, self.name,
+      {"caiyong_book", player:getPile("caiyong_book"), player.general, player:getCardIds("he")})
+    U.swapCardsWithPile(player, piles[1], piles[2], self.name, "caiyong_book")
+    if player.dead or #player:getPile("caiyong_book") < 4 or #room.alive_players < 2 then return end
+    if room:askForSkillInvoke(player, self.name, nil, "#fhyx__tongbo-give") then
+      local result = U.askForDistribution(player, player:getPile("caiyong_book"), room:getOtherPlayers(player), self.name, 4, 4,
+        "#fhyx__tongbo-distribute", "caiyong_book", false, 4)
+      if player.dead then return end
+      local suits = {}
+      for _, cards in pairs(result) do
+        table.insertTableIfNeed(suits, table.map(cards, function (id)
+          return Fk:getCardById(id).suit
+        end))
+      end
+      table.removeOne(suits, Card.NoSuit)
+      if #suits == 4 then
+        if player:getMark("pizhuan_extra") < #room.players then
+          room:addPlayerMark(player, "pizhuan_extra", 1)
+        end
+        if player:isWounded() then
+          room:recover{
+            who = player,
+            num = 1,
+            recoverBy = player,
+            skillName = self.name,
+          }
+        end
+      end
+    end
+  end,
+}
+caiyong:addSkill("pizhuan")
+caiyong:addSkill(fhyx__tongbo)
 Fk:loadTranslationTable{
-  ["fhyx__caiyong"] = "蔡邕",
-  ["#fhyx__caiyong"] = "",
-  ["illustrator:fhyx__caiyong"] = "凝聚永恒",
+  ["fhyx_ex__caiyong"] = "界蔡邕",
+  ["#fhyx_ex__caiyong"] = "大鸿儒",
+  ["illustrator:fhyx_ex__caiyong"] = "凝聚永恒",
 
   ["fhyx__tongbo"] = "通博",
   [":fhyx__tongbo"] = "摸牌阶段结束时，你可以用任意张牌替换等量的“书”，然后你可以将四张“书”任意分配给其他角色，若花色各不相同，"..
   "你回复1点体力，“书”的数量上限+1（至多增加等同于角色数的上限）。",
+  ["#fhyx__tongbo-give"] = "通博：是否将四张“书”任意分配给其他角色？若花色各不相同，你回复1点体力，“书”的数量上限+1",
+  ["#fhyx__tongbo-distribute"] = "通博：请将四张“书”任意分配给其他角色",
 }
 
 local bianfuren = General(extension, "ofl_shiji__bianfuren", "wei", 3, 3, General.Female)
