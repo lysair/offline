@@ -481,19 +481,19 @@ local qingshil = fk.CreateTriggerSkill{
     }
     if discussion.color == "red" then
       for _, p in ipairs(targets) do
-        if not p.dead and discussion.results[p.id].opinion == Card.Red then
+        if not p.dead and discussion.results[p.id].opinion == "red" then
           room:setPlayerMark(p, "@@qingshil-round", 1)
         end
       end
     elseif discussion.color == "black" then
       if player.dead then return end
       local n = #table.filter(targets, function (p)
-        return discussion.results[p.id].opinion == Card.Black
+        return discussion.results[p.id].opinion == "black"
       end)
       player:drawCards(n, self.name)
       if player.dead or player:isNude() then return end
       targets = table.filter(targets, function (p)
-        return discussion.results[p.id].opinion == Card.Black and not p.dead and p ~= player
+        return discussion.results[p.id].opinion == "black" and not p.dead and p ~= player
       end)
       if #targets == 0 then return end
       U.askForDistribution(player, player:getCardIds("he"), targets, self.name, 0, 999, "#qingshil-give", nil, false, 1)
