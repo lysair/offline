@@ -154,7 +154,7 @@ local fhyx_ex__shuangxiong_trigger = fk.CreateTriggerSkill{
     room:notifySkillInvoked(player, "fhyx_ex__shuangxiong", "control")
     player:revealBySkillName("fhyx_ex__shuangxiong")
     local to = room:getPlayerById(self.cost_data.tos[1])
-    local card = room:askForDiscard(to, 1, 1, true, self.name, false, nil, "#fhyx_ex__shuangxiong-discard::"..player.id)
+    local card = room:askForDiscard(to, 1, 1, true, self.name, false, nil, "#fhyx_ex__shuangxiong-discard:"..player.id)
     if #card > 0 and not player.dead then
       local color = Fk:getCardById(card[1]):getColorString()
       if color ~= "nocolor" then
