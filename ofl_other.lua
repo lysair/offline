@@ -225,6 +225,9 @@ sunhanhua:addSkill(miaojian)
 sunhanhua:addSkill(lianhuas)
 Fk:loadTranslationTable{
   ["ofl__sunhanhua"] = "孙寒华",
+  ["#ofl__sunhanhua"] = "挣绽的青莲",
+  ["illustrator:ofl__sunhanhua"] = "匠人绘",
+
   ["ofl__chongxu"] = "冲虚",
   [":ofl__chongxu"] = "出牌阶段限一次，你可以猜测牌堆顶两张牌颜色是否相同，然后亮出之，若你猜对，你可以选择一项：1.获得之；2.修改〖妙剑〗；"..
   "3.修改〖莲华〗；若你猜错，你可以获得其中一张牌。",
@@ -771,6 +774,9 @@ caojinyu:addSkill(shanshen)
 caojinyu:addSkill(xianjing)
 Fk:loadTranslationTable{
   ["ofl__caojinyu"] = "曹金玉",
+  ["#ofl__caojinyu"] = "瑞雪纷华",
+  ["illustrator:ofl__caojinyu"] = "米糊PU",
+
   ["ofl__yuqi"] = "隅泣",
   [":ofl__yuqi"] = "每回合限两次，当一名角色受到伤害后，若你与其距离0或者更少，你可以观看牌堆顶的3张牌，将其中至多1张交给受伤角色，"..
   "至多1张自己获得，剩余的牌放回牌堆顶。",
@@ -983,6 +989,9 @@ local ofl__hengwu = fk.CreateTriggerSkill{
 ofl__godmachao:addSkill(ofl__hengwu)
 Fk:loadTranslationTable{
   ["ofl__godmachao"] = "神马超",
+  ["#ofl__godmachao"] = "雷挝缚苍",
+  ["illustrator:ofl__godmachao"] = "鬼画府",
+
   ["ofl__shouli"] = "狩骊",
   ["#ofl__shouli_trigger"] = "狩骊",
   ["#ofl__shouli_delay"] = "狩骊",
@@ -1288,7 +1297,7 @@ local longyi = fk.CreateViewAsSkill{
     local all_names = U.getAllCardNames("b")
     local names = U.getViewAsCardNames(Self, "longyi", all_names, Self:getCardIds("h"))
     if #names > 0 then
-      return UI.CardNameBox { choices = names, all_choices = all_names }
+      return U.CardNameBox { choices = names, all_choices = all_names }
     end
   end,
   card_filter = Util.FalseFunc,
