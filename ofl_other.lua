@@ -1145,6 +1145,216 @@ Fk:loadTranslationTable{
   [":chaos__lulue"] = "出牌阶段限一次，你可选择一名装备区里有牌的其他角色并弃置X张牌（X为其装备区里的牌数），对其造成1点伤害。",
 }
 
+local wangyun = General(extension, "ofl__wangyun", "qun", 3)
+local ofl__lianji = fk.CreateTriggerSkill{
+  name = "ofl__lianji",
+  events = {fk.EventPhaseEnd},
+  can_trigger = function(self, event, target, player, data)
+    if target == player and player:hasSkill(self) and player.phase == Player.Play then
+      local types = {}
+      player.room.logic:getEventsOfScope(GameEvent.UseCard, 1, function(e)
+        local use = e.data[1]
+        if use.from == player.id then
+          table.insertIfNeed(types, use.card.type)
+        end
+      end, Player.HistoryPhase)
+      if #types > 0 then
+        self.cost_data = #types
+        return true
+      end
+    end
+  end,
+  on_cost = Util.TrueFunc,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    local to = room:askForChoosePlayers(player, table.map(room.alive_players, Util.IdMapper), 1, 1,
+      "#ofl__lianji1-invoke", self.name, true)
+    if #to > 0 then
+      room:getPlayerById(to[1]):drawCards(1, self.name)
+    end
+    if player.dead or self.cost_data < 2 then return end
+    if player:isWounded() and room:askForSkillInvoke(player, self.name, nil, "#ofl__lianji2-invoke") then
+      room:recover({
+        who = player,
+        num = 1,
+        recoverBy = player,
+        skillName = self.name,
+      })
+    end
+    if player.dead or self.cost_data < 3 or #room.alive_players < 2 then return end
+    to = room:askForChoosePlayers(player, table.map(room:getOtherPlayers(player), Util.IdMapper), 1, 1,
+      "#ofl__lianji3-invoke", self.name, true)
+    if #to > 0 then
+      room:setPlayerMark(player, "ofl__lianji-turn", to[1])
+    end
+  end,
+}
+local ofl__lianji_delay = fk.CreateTriggerSkill{
+  name = "#ofl__lianji_delay",
+  mute = true,
+  events = {fk.EventPhaseChanging},
+  can_trigger = function (self, event, target, player, data)
+    if target == player and player:getMark("ofl__lianji_skipping") > 0 then
+      data.to = player:getMark("ofl__lianji_skipping")
+      player.phase = player:getMark("ofl__lianji_skipping")
+      player.room:broadcastProperty(player, "phase")
+      player.room:setPlayerMark(player, "ofl__lianji_skipping", 0)
+      return true
+    end
+  end,
+  on_cost = Util.TrueFunc,
+  on_use = Util.TrueFunc,
+
+  refresh_events = {fk.EventPhaseChanging},
+  can_refresh = function (self, event, target, player, data)
+    return target == player and player:getMark("ofl__lianji-turn") ~= 0 and data.to < 8 and data.to > 1 and
+      not player.room:getPlayerById(player:getMark("ofl__lianji-turn")).dead
+  end,
+  on_refresh = function (self, event, target, player, data)
+    local room = player.room
+    local to = room:getPlayerById(player:getMark("ofl__lianji-turn"))
+    player.phase = Player.PhaseNone
+    room:broadcastProperty(player, "phase")
+    room:setPlayerMark(player, "ofl__lianji_skipping", data.to)
+
+    local skip = room.logic:trigger(fk.EventPhaseChanging, to, {
+        from = to.phase,
+        to = data.to,
+      })
+    to.phase = data.to
+    room:broadcastProperty(to, "phase")
+
+    local cancel_skip = true
+    if data.to ~= Player.NotActive and (skip) then
+      cancel_skip = room.logic:trigger(fk.EventPhaseSkipping, to)
+    end
+
+    if (not skip) or (cancel_skip) then
+      GameEvent.Phase:create(to, to.phase):exec()
+    else
+      room:sendLog{
+        type = "#PhaseSkipped",
+        from = to.id,
+        arg = data.to,
+      }
+    end
+  end,
+}
+local ofl__moucheng = fk.CreateViewAsSkill{
+  name = "ofl__moucheng",
+  anim_type = "control",
+  pattern = "collateral",
+  prompt = "#ofl__moucheng",
+  card_filter = function (self, to_select, selected)
+    return #selected == 0 and Fk:getCardById(to_select).color == Card.Black
+  end,
+  view_as = function(self, cards)
+    if #cards ~= 1 then return end
+    local card = Fk:cloneCard("collateral")
+    card.skillName = self.name
+    card:addSubcard(cards[1])
+    return card
+  end,
+  enabled_at_play = function(self, player)
+    return player:usedSkillTimes(self.name, Player.HistoryTurn) == 0
+  end,
+}
+ofl__lianji:addRelatedSkill(ofl__lianji_delay)
+wangyun:addSkill(ofl__lianji)
+wangyun:addSkill(ofl__moucheng)
+Fk:loadTranslationTable{
+  ["ofl__wangyun"] = "王允",
+  ["#ofl__wangyun"] = "计随鞘出",
+  ["illustrator:ofl__wangyun"] = "鬼画府",
+
+  ["ofl__lianji"] = "连计",
+  [":ofl__lianji"] = "出牌阶段结束时，若你本阶段使用牌类别数不小于：1，你可以令一名角色摸一张牌；2.你可以回复1点体力；3.你可以令一名其他角色"..
+  "代替你执行本回合剩余阶段。",
+  ["ofl__moucheng"] = "谋逞",
+  [":ofl__moucheng"] = "每回合限一次，你可以将一张黑色牌当【借刀杀人】使用。",
+  ["#ofl__lianji1-invoke"] = "连计：你可以令一名角色摸一张牌",
+  ["#ofl__lianji2-invoke"] = "连计：你可以回复1点体力",
+  ["#ofl__lianji3-invoke"] = "连计：你可以令一名其他角色代替你执行本回合剩余阶段",
+  ["#ofl__moucheng"] = "谋逞：你可以将一张黑色牌当【借刀杀人】使用",
+}
+
+local longyufei = General(extension, "longyufei", "shu", 3, 4, General.Female)
+local longyi = fk.CreateViewAsSkill{
+  name = "longyi",
+  anim_type = "special",
+  pattern = ".|.|.|.|.|basic",
+  prompt = "#longyi",
+  interaction = function()
+    local all_names = U.getAllCardNames("b")
+    local names = U.getViewAsCardNames(Self, "longyi", all_names, Self:getCardIds("h"))
+    if #names > 0 then
+      return UI.CardNameBox { choices = names, all_choices = all_names }
+    end
+  end,
+  card_filter = Util.FalseFunc,
+  view_as = function(self, cards)
+    if not self.interaction.data then return end
+    local card = Fk:cloneCard(self.interaction.data)
+    card.skillName = self.name
+    card:addSubcards(Self:getCardIds("h"))
+    return card
+  end,
+  before_use = function(self, player, use)
+    if table.find(use.card.subcards, function (id)
+      return Fk:getCardById(id).type == Card.TypeTrick
+    end) then
+      player:drawCards(1, self.name)
+    end
+    if table.find(use.card.subcards, function (id)
+      return Fk:getCardById(id).type == Card.TypeEquip
+    end) then
+      use.disresponsiveList = table.map(player.room.alive_players, Util.IdMapper)
+    end
+  end,
+  enabled_at_play = function(self, player)
+    return not player:isKongcheng()
+  end,
+  enabled_at_response = function(self, player, response)
+    return not player:isKongcheng()
+  end,
+}
+local zhenjue = fk.CreateTriggerSkill{
+  name = "zhenjue",
+  anim_type = "control",
+  events = {fk.EventPhaseStart},
+  can_trigger = function(self, event, target, player, data)
+    return player:hasSkill(self) and target.phase == Player.Finish and player:isKongcheng() and not target.dead
+  end,
+  on_cost = function(self, event, target, player, data)
+    if player.room:askForSkillInvoke(player, self.name, nil, "#zhenjue-invoke::"..target.id) then
+      self.cost_data = {tos = {target.id}}
+      return true
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    if target:isNude() or
+      #room:askForDiscard(target, 1, 1, true, self.name, true, nil, "#zhenjue-discard:"..player.id) == 0 then
+      player:drawCards(1, self.name)
+    end
+  end,
+}
+longyufei:addSkill(longyi)
+longyufei:addSkill(zhenjue)
+Fk:loadTranslationTable{
+  ["longyufei"] = "龙羽飞",
+  ["#longyufei"] = "将星之魂",
+  ["illustrator:longyufei"] = "DH",
+
+  ["longyi"] = "龙裔",
+  [":longyi"] = "你可以将所有手牌当任意一张基本牌使用或打出，若其中有：锦囊牌，你摸一张牌；装备牌，此牌不可被响应。",
+  ["zhenjue"] = "阵绝",
+  [":zhenjue"] = "一名角色结束阶段，若你没有手牌，你可以令其选择一项：1.弃置一张牌；2.你摸一张牌。",
+  ["#longyi"] = "龙裔：你可以将所有手牌当任意一张基本牌使用或打出",
+  ["#zhenjue-invoke"] = "阵绝：是否令 %dest 选择弃一张牌或令你摸一张牌？",
+  ["#zhenjue-discard"] = "阵绝：请弃置一张牌，否则 %src 摸一张牌",
+}
+
 local sgsh__huanhua_blacklist = {
   "zuoci", "ol_ex__zuoci", "js__xushao", "shichangshi", "starsp__xiahoudun"
 }
@@ -1494,15 +1704,6 @@ Fk:loadTranslationTable{
   ["$sgsh__qiaoyan1"] = "金银渐欲迷人眼，利字当前诱汝行！",
   ["$sgsh__qiaoyan2"] = "以利驱虎，无往不利！",
   ["~sgsh__lisu"] = "见利忘义，必遭天谴。",
-}
-
-Fk:loadTranslationTable{
-  ["ofl__wangyun"] = "王允",
-  ["ofl__lianji"] = "连计",
-  [":ofl__lianji"] = "出牌阶段结束时，若你本阶段使用牌类别数不小于：1，你可以令一名角色摸一张牌；2.你可以回复1点体力；3.你可以令一名其他角色"..
-  "代替你执行本回合剩余阶段。",
-  ["ofl__moucheng"] = "谋逞",
-  [":ofl__moucheng"] = "每回合限一次，你可以将一张黑色牌当【借刀杀人】使用。",
 }
 
 local mengda = General(extension, "ofl__mengda", "shu", 4)
@@ -1890,20 +2091,6 @@ Fk:loadTranslationTable{
   ["$ofl__xiongnve1"] = "当今天子乃我所立，他敢怎样？",
   ["$ofl__xiongnve2"] = "我兄弟三人同掌禁军，有何所惧？",
   ["~ofl__sunchen"] = "愿陛下念臣昔日之功，陛下？陛下！！",
-}
-
-Fk:loadTranslationTable{
-  ["ofl__caoanmin"] = "曹安民",
-  ["kuishe"] = "窥舍",
-  [":kuishe"] = "出牌阶段限一次，你可以选择一名其他角色一张牌，将此牌交给另一名角色，然后失去牌的角色可以对你使用一张【杀】。",
-}
-
-Fk:loadTranslationTable{
-  ["longyufei"] = "龙羽飞",
-  ["longyi"] = "龙裔",
-  [":longyi"] = "你可以将所有手牌当任意一张基本牌使用或打出，若其中有：锦囊牌，你摸一张牌；装备牌，此牌不可被响应。",
-  ["zhenjue"] = "阵绝",
-  [":zhenjue"] = "一名角色结束阶段，若你没有手牌，你可以令其选择一项：1.弃置一张牌；2.你摸一张牌。",
 }
 
 local zhouji = General(extension, "zhouji", "wu", 3, 3, General.Female)

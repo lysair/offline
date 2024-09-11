@@ -706,6 +706,9 @@ zhenji:addSkill(es__luoshen)
 zhenji:addSkill("qingguo")
 Fk:loadTranslationTable{
   ["es__zhenji"] = "甄姬",
+  ["#es__zhenji"] = "薄幸的美人",
+  ["illustrator:es__zhenji"] = "石婵",
+
   ["es__luoshen"] = "洛神",
   [":es__luoshen"] = "准备阶段，你可以判定，并获得生效后的判定牌，然后若你本次以此法获得的牌颜色均相同，你可以重复此流程。",
 }
@@ -887,6 +890,9 @@ caocao:addSkill(sancai)
 caocao:addSkill(yibing)
 Fk:loadTranslationTable{
   ["es__caocao"] = "曹操",
+  ["#es__caocao"] = "谯水击蛟",
+  ["illustrator:es__caocao"] = "墨心绘意",
+
   ["xiandao"] = "献刀",
   [":xiandao"] = "每回合限一次，你赠予其他角色牌后，你可以令其本回合不能使用此花色的牌，然后若此牌为：锦囊牌，你摸两张牌；装备牌，你获得其另一张牌；"..
   "武器牌，你对其造成1点伤害。",
