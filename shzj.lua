@@ -1777,10 +1777,13 @@ local taoyuan = fk.CreateActiveSkill{
     room:setCardMark(card, MarkEnum.DestructIntoDiscard, 1)
     room:moveCardTo(card, Card.PlayerHand, target, fk.ReasonJustMove, self.name, nil, true, target.id)
   end,
-
+}
+local taoyuan_trigger = fk.CreateTriggerSkill{
+  name = "#taoyuan_trigger",
+  
   refresh_events = {fk.StartPlayCard},
   can_refresh = function(self, event, target, player, data)
-    return target == player and player:hasSkill(self) and player:usedSkillTimes(self.name, Player.HistoryPhase) == 0
+    return target == player and player:hasSkill(taoyuan) and player:usedSkillTimes(taoyuan.name, Player.HistoryPhase) == 0
   end,
   on_refresh = function(self, event, target, player, data)
     local room = player.room
@@ -1788,13 +1791,14 @@ local taoyuan = fk.CreateActiveSkill{
       {"god_salvation", Card.Heart, 1},
       {"god_salvation", Card.Heart, 1},
       {"god_salvation", Card.Heart, 1},
-    }, self.name), function (id)
+    }, "taoyuan"), function (id)
       return room:getCardArea(id) == Card.Void
     end) > 0 then
       room:setPlayerMark(player, "taoyuan-phase", 1)
     end
   end,
 }
+taoyuan:addRelatedSkill(taoyuan_trigger)
 shzj_yiling__longnu:addRelatedSkill(shzj_yiling__longnu_trigger)
 shzj_yiling__longnu:addRelatedSkill(shzj_yiling__longnu_targetmod)
 shzj_yiling__godliubei:addSkill(shzj_yiling__longnu)
