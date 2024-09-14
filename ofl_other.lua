@@ -83,6 +83,7 @@ local ofl__chongxu = fk.CreateActiveSkill{
       toArea = Card.Processing,
       moveReason = fk.ReasonJustMove,
       skillName = self.name,
+      proposer = player.id,
     })
     room:sendCardVirtName(cards, self.name)
     room:delay(2000)
@@ -98,7 +99,7 @@ local ofl__chongxu = fk.CreateActiveSkill{
       end
       local choice = room:askForChoice(player, choices, self.name, "", false, all_choices)
       if choice == "ofl__chongxu_get" then
-        room:obtainCard(player, cards, true, fk.ReasonJustMove)
+        room:obtainCard(player, cards, true, fk.ReasonJustMove, player.id, self.name)
       else
         if choice == "miaojian_update" then
           if player:getMark("@miaojian") == 0 then
@@ -113,32 +114,19 @@ local ofl__chongxu = fk.CreateActiveSkill{
             room:setPlayerMark(player, "@lianhuas", "status3")
           end
         end
-        room:moveCards({
-          ids = cards,
-          toArea = Card.DiscardPile,
-          moveReason = fk.ReasonJustMove,
-          skillName = self.name,
-        })
       end
     else
-      room:fillAG(player, cards)
-      local id = room:askForAG(player, cards, false, self.name)
-      room:closeAG(player)
-      if not id then return false end
-      table.removeOne(cards, id)
-      room:obtainCard(player, id, true, fk.ReasonJustMove)
-      room:moveCards({
-        ids = cards,
-        toArea = Card.DiscardPile,
-        moveReason = fk.ReasonJustMove,
-        skillName = self.name,
-      })
+      local chosen = room:askForCardsChosen(player, player, 0, 1, { card_data = { { self.name, cards }  } }, self.name, "$ChooseCard")
+      if #chosen == 1 then
+        room:obtainCard(player, chosen, true, fk.ReasonJustMove, player.id, self.name)
+      end
     end
+    room:cleanProcessingArea(cards, self.name)
   end,
 }
 local miaojian = fk.CreateViewAsSkill{
   name = "miaojian",
-  prompt = function (self, selected, selected_cards)
+  prompt = function ()
     if Self:getMark("@miaojian") == 0 then
       return "#miaojian1"
     elseif Self:getMark("@miaojian") == "status2" then
@@ -146,6 +134,7 @@ local miaojian = fk.CreateViewAsSkill{
     elseif Self:getMark("@miaojian") == "status3" then
       return "#miaojian3"
     end
+    return ""
   end,
   interaction = function()
     return UI.ComboBox {choices = {"stab__slash", "ex_nihilo"}}
