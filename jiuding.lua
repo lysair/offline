@@ -864,7 +864,7 @@ local mouZaiQi = fk.CreateTriggerSkill{
       local turn_event = room.logic:getCurrentEvent():findParent(GameEvent.Turn)
       if turn_event == nil then return false end
 
-      return #U.getEventsByRule(room, GameEvent.MoveCards, 1, function (e)
+      return #room.logic:getEventsByRule(GameEvent.MoveCards, 1, function (e)
         for _, move in ipairs(e.data) do
           if move.toArea == Card.DiscardPile and move.moveReason == fk.ReasonDiscard and move.proposer == player.id then
             return true
@@ -1065,5 +1065,347 @@ Fk:loadTranslationTable{
 }
 
 mousunquan:addSkill(mouJiuYuan)
+
+local fhyx_pile = {
+  {"slash", Card.Club, 4},
+  {"thunder__slash", Card.Spade, 4},
+  {"fire__slash", Card.Heart, 4},
+  {"jink", Card.Diamond, 2},
+  {"peach", Card.Heart, 6},
+  {"analeptic", Card.Spade, 9},
+  {"ex_nihilo", Card.Heart, 8},
+  {"amazing_grace", Card.Heart, 4},
+  {"dismantlement", Card.Spade, 3},
+  {"snatch", Card.Diamond, 3},
+  {"fire_attack", Card.Diamond, 2},
+  {"duel", Card.Diamond, 1},
+  {"savage_assault", Card.Spade, 13},
+  {"archery_attack", Card.Heart, 1},
+  {"nullification", Card.Heart, 13},
+  {"indulgence", Card.Heart, 6},
+  {"supply_shortage", Card.Spade, 10},
+  {"iron_chain", Card.Club, 12},
+  {"lightning", Card.Heart, 12},
+  {"collateral", Card.Club, 13},
+  {"god_salvation", Card.Heart, 1},
+  {"eight_diagram", Card.Spade, 2},
+  {"nioh_shield", Card.Club, 2},
+  {"vine", Card.Spade, 2},
+  {"silver_lion", Card.Club, 1},
+  {"dilu", Card.Club, 5},
+  {"chitu", Card.Heart, 5},
+  {"dayuan", Card.Spade, 13},
+  {"zixing", Card.Diamond, 13},
+  {"hualiu", Card.Diamond, 13},
+  {"zhuahuangfeidian", Card.Heart, 13},
+  {"jueying", Card.Spade, 5},
+  {"crossbow", Card.Diamond, 1},
+  {"qinggang_sword", Card.Spade, 6},
+  {"guding_blade", Card.Spade, 1},
+  {"ice_sword", Card.Spade, 2},
+  {"double_swords", Card.Spade, 2},
+  {"blade", Card.Spade, 5},
+  {"spear", Card.Spade, 12},
+  {"axe", Card.Diamond, 5},
+  {"fan", Card.Diamond, 1},
+  {"halberd", Card.Diamond, 12},
+  {"kylin_bow", Card.Heart, 5},
+  {"role__wooden_ox", Card.Diamond, 5},
+}
+local function PrepareExtraPile(room)
+  if room.tag["fhyx_extra_pile"] then return end
+  local all_names = {}
+  for _, card in ipairs(Fk.cards) do
+    if not table.contains(room.disabled_packs, card.package.name) and not card.is_derived then
+      table.insertIfNeed(all_names, card.name)
+    end
+  end
+  local cards = {}
+  for _, name in ipairs(all_names) do
+    local c = table.filter(fhyx_pile, function(card)
+      return card[1] == name
+    end)
+    if #c > 0 then
+      table.insert(cards, c[1])
+    else
+      table.insert(cards, {name, math.random(1, 4), math.random(1, 13)})
+    end
+  end
+  U.prepareDeriveCards(room, cards, "fhyx_extra_pile")
+  room:setBanner("@$fhyx_extra_pile", table.simpleClone(room.tag["fhyx_extra_pile"]))
+end
+local function SetFhyxExtraPileBanner(room)
+  local ids = table.filter(room.tag["fhyx_extra_pile"], function(id)
+    return room:getCardArea(id) == Card.Void
+  end)
+  room:setBanner("@$fhyx_extra_pile", ids)
+end
+local huangyueying = General(extension, "ofl_mou__huangyueying", "shu", 3, 3, General.Female)
+local jizhi = fk.CreateTriggerSkill{
+  name = "ofl_mou__jizhi",
+  anim_type = "drawcard",
+  events = {fk.CardUsing},
+  frequency = Skill.Compulsory,
+  can_trigger = function(self, event, target, player, data)
+    return target == player and player:hasSkill(self) and data.card:isCommonTrick() and not data.card:isVirtual()
+  end,
+  on_use = function(self, event, target, player, data)
+    player.room:addPlayerMark(player, MarkEnum.AddMaxCardsInTurn, 1)
+    player:drawCards(1, self.name)
+  end,
+}
+local qicai = fk.CreateActiveSkill{
+  name = "ofl_mou__qicai",
+  prompt = "#ofl_mou__qicai",
+  anim_type = "control",
+  card_num = 1,
+  target_num = 1,
+  can_use = function(self, player)
+    return player:usedSkillTimes(self.name, Player.HistoryPhase) == 0
+  end,
+  card_filter = function (self, to_select, selected)
+    return #selected == 0 and Fk:getCardById(to_select).type == Card.TypeEquip
+  end,
+  target_filter = function(self, to_select, selected, selected_cards)
+    return #selected == 0 and to_select ~= Self.id
+  end,
+  on_use = function(self, room, effect)
+    local player = room:getPlayerById(effect.from)
+    local target = room:getPlayerById(effect.tos[1])
+    if table.contains(player:getCardIds("h"), effect.cards[1]) then
+      player:showCards(effect.cards)
+      if player.dead or target.dead or not table.contains(player:getCardIds("h"), effect.cards[1]) then return end
+    end
+    room:moveCardTo(effect.cards, Card.PlayerHand, target, fk.ReasonGive, self.name, nil, true, player.id)
+    if player.dead or target.dead then return end
+    local cards = table.filter(target:getCardIds("h"), function (id)
+      return Fk:getCardById(id).type ~= Card.TypeEquip
+    end)
+    local cards2 = table.filter(room:getBanner("@$fhyx_extra_pile"), function(id)
+      return Fk:getCardById(id):isCommonTrick()
+    end)
+    if #cards > 0 then
+      local cancelable = true
+      if #cards2 == 0 then
+        cancelable = false
+      end
+      cards = room:askForCard(target, 2, 2, false, self.name, cancelable, ".|.|.|.|.|^equip", "#ofl_mou__qicai-give:"..player.id)
+      if #cards > 0 then
+        target:showCards(cards)
+        if player.dead or target.dead then return end
+        cards = table.filter(cards, function (id)
+          return table.contains(target:getCardIds("h"), id)
+        end)
+        if #cards == 0 then return end
+        room:moveCardTo(cards, Card.PlayerHand, player, fk.ReasonGive, self.name, nil, true, target.id)
+      else
+        room:moveCardTo(table.random(cards2, 2), Card.PlayerHand, player, fk.ReasonJustMove, self.name, nil, true,
+          player.id, MarkEnum.DestructIntoDiscard)
+      end
+    elseif #cards2 > 0 then
+      room:moveCardTo(table.random(cards2, 2), Card.PlayerHand, player, fk.ReasonJustMove, self.name, nil, true,
+        player.id, MarkEnum.DestructIntoDiscard)
+    end
+  end,
+}
+local qicai_trigger = fk.CreateTriggerSkill{
+  name = "#ofl_mou__qicai_trigger",
+
+  refresh_events = {fk.EventAcquireSkill, fk.AfterCardsMove},
+  can_refresh = function(self, event, target, player, data)
+    if event == fk.EventAcquireSkill then
+      return target == player and data == self
+    elseif player.seat == 1 and player.room.tag["fhyx_extra_pile"] then
+      for _, move in ipairs(data) do
+        for _, info in ipairs(move.moveInfo) do
+          if table.contains(player.room.tag["fhyx_extra_pile"], info.cardId) then
+            return true
+          end
+        end
+      end
+    end
+  end,
+  on_refresh = function(self, event, target, player, data)
+    if event == fk.EventAcquireSkill then
+      PrepareExtraPile(player.room)
+    else
+      SetFhyxExtraPileBanner(player.room)
+    end
+  end,
+}
+local qicai_targetmod = fk.CreateTargetModSkill{
+  name = "#ofl_mou__qicai_targetmod",
+  main_skill = qicai,
+  bypass_distances = function(self, player, skill, card)
+    return player:hasSkill(qicai) and card and card.type == Card.TypeTrick
+  end,
+}
+qicai:addRelatedSkill(qicai_trigger)
+qicai:addRelatedSkill(qicai_targetmod)
+huangyueying:addSkill(jizhi)
+huangyueying:addSkill(qicai)
+Fk:loadTranslationTable{
+  ["ofl_mou__huangyueying"] = "谋黄月英",
+  ["#ofl_mou__huangyueying"] = "足智多谋",
+  ["illustrator:ofl_mou__huangyueying"] = "光域",
+
+  ["ofl_mou__jizhi"] = "集智",
+  [":ofl_mou__jizhi"] = "锁定技，当你使用非转化的普通锦囊牌时，你摸一张牌，本回合手牌上限+1。",
+  ["ofl_mou__qicai"] = "奇才",
+  [":ofl_mou__qicai"] = "你使用锦囊牌无距离限制。出牌阶段限一次，你可以将一张装备牌展示并交给一名其他角色，然后其选择一项：1.展示并交给你"..
+  "两张非装备牌；2.你从额外牌堆随机获得两张普通锦囊牌。",
+  ["#ofl_mou__qicai"] = "奇才：将一张装备牌交给一名角色，其选择交给你两张非装备牌或令你从额外牌堆获得两张普通锦囊牌",
+  ["#ofl_mou__qicai-give"] = "奇才：交给 %src 两张非装备牌，或点“取消”令其从额外牌堆获得两张普通锦囊牌",
+
+  ["$ofl_mou__jizhi1"] = "奇思机上巧，妙想晦下明。",
+  ["$ofl_mou__jizhi2"] = "愚，固曾有，智，从未绝。",
+  ["$ofl_mou__qicai1"] = "奇巧之器，当出于奇巧之人。",
+  ["$ofl_mou__qicai2"] = "尽奇思，毕全才。",
+  ["~ofl_mou__huangyueying"] = "夫君尽忠节，妾身亦如是……",
+}
+
+local sunshangxiang = General(extension, "ofl_mou__sunshangxiang", "shu", 4, 4, General.Female)
+local jieyin = fk.CreateTriggerSkill{
+  name = "ofl_mou__jieyin",
+  anim_type = "control",
+  frequency = Skill.Compulsory,
+  events = {fk.EventPhaseStart},
+  can_trigger = function(self, event, target, player, data)
+    return target == player and player:hasSkill(self) and player.phase == Player.Play
+  end,
+  on_use = function (self, event, target, player, data)
+    local room = player.room
+    local targets = table.filter(room.alive_players, function (p)
+      return p:getHandcardNum() <= player:getHandcardNum()
+    end)
+    local to = room:askForChoosePlayers(player, table.map(targets, Util.IdMapper), 1, 1,
+      "#ofl_mou__jieyin-choose", self.name, false)
+    to = room:getPlayerById(to[1])
+    if #player:getPile("mou__liangzhu_dowry") == 0 then
+      if to:isKongcheng() then
+        if player:isWounded() then
+          room:recover({
+            who = player,
+            num = 1,
+            recoverBy = player,
+            skillName = self.name,
+          })
+        end
+      else
+        if to == player then
+          room:changeShield(to, 1)
+          return
+        else
+          local cards = room:askForCard(to, 2, 2, false, self.name, false, nil, "#ofl_mou__jieyin-give:"..player.id)
+          room:moveCardTo(cards, Card.PlayerHand, player, fk.ReasonGive, self.name, nil, false, to.id)
+          if not to.dead then
+            room:changeShield(to, 1)
+          end
+        end
+      end
+    else
+      local cards = {}
+      if not to:isKongcheng() then
+        cards = room:askForCard(to, math.max(2, to:getHandcardNum()), 2, false, self.name, true, nil,
+          "#ofl_mou__jieyin-choice:"..player.id)
+      end
+      if #cards > 0 then
+        if to == player then
+          room:changeShield(to, 1)
+          return
+        else
+          room:moveCardTo(cards, Card.PlayerHand, player, fk.ReasonGive, self.name, nil, false, to.id)
+          if not to.dead then
+            room:changeShield(to, 1)
+          end
+        end
+      else
+        if player:isWounded() then
+          room:recover({
+            who = player,
+            num = 1,
+            recoverBy = player,
+            skillName = self.name,
+          })
+        end
+        if player.dead then return end
+        if #player:getPile("mou__liangzhu_dowry") > 0 then
+          room:moveCardTo(player:getPile("mou__liangzhu_dowry"), Card.PlayerHand, player, fk.ReasonJustMove, self.name, nil, true,
+            player.id)
+        end
+        if player.dead then return end
+        room:changeMaxHp(player, -1)
+        if player.dead then return end
+        if player.kingdom ~= "wu" then
+          room:changeKingdom(player, "wu", true)
+          room:handleAddLoseSkills(player, "mou__xiaoji", nil, true, false)  --FIXME: 权宜之计
+        end
+      end
+    end
+  end,
+}
+local liangzhu = fk.CreateActiveSkill{
+  name = "ofl_mou__liangzhu",
+  anim_type = "control",
+  prompt = "#ofl_mou__liangzhu",
+  card_num = 0,
+  target_num = 1,
+  derived_piles = "mou__liangzhu_dowry",
+  can_use = function(self, player)
+    return player:usedSkillTimes(self.name, Player.HistoryPhase) == 0
+  end,
+  card_filter = Util.FalseFunc,
+  target_filter = function(self, to_select, selected, selected_cards)
+    return #selected == 0 and to_select ~= Self.id and #Fk:currentRoom():getPlayerById(to_select):getCardIds("e") > 0
+  end,
+  on_use = function(self, room, effect)
+    local player = room:getPlayerById(effect.from)
+    local target = room:getPlayerById(effect.tos[1])
+    local card = room:askForCardChosen(player, target, "e", self.name)
+    player:addToPile("mou__liangzhu_dowry", card, true, self.name)
+    if player.dead then return end
+    local targets = table.filter(room:getOtherPlayers(player), function (p)
+      return p:isWounded()
+    end)
+    if #targets == 0 then return end
+    local to = room:askForChoosePlayers(player, table.map(targets, Util.IdMapper), 1, 1,
+      "#ofl_mou__liangzhu-recover", self.name, false)
+    room:recover({
+      who = room:getPlayerById(to[1]),
+      num = 1,
+      recoverBy = player,
+      skillName = self.name,
+    })
+  end,
+}
+liangzhu:addAttachedKingdom("shu")
+sunshangxiang:addSkill(jieyin)
+sunshangxiang:addSkill(liangzhu)
+sunshangxiang:addSkill("mou__xiaoji")
+Fk:loadTranslationTable{
+  ["ofl_mou__sunshangxiang"] = "谋孙尚香",
+  ["#ofl_mou__sunshangxiang"] = "骄豪明俏",
+  ["illustrator:ofl_mou__sunshangxiang"] = "光域",
+
+  ["ofl_mou__jieyin"] = "结姻",
+  [":ofl_mou__jieyin"] = "锁定技，出牌阶段开始时，你令一名手牌数不大于你的角色选择一项：1.若其有手牌，其交给你两张手牌（不足则全给），"..
+  "然后其获得1点护甲；2.你回复1点体力并获得所有“妆”，然后减1点体力上限，变更势力为吴。",
+  ["ofl_mou__liangzhu"] = "良助",
+  [":ofl_mou__liangzhu"] = "蜀势力技，出牌阶段限一次，你可以将一名其他角色装备区内一张牌置于你的武将牌上，称为“妆”，然后你令一名其他角色"..
+  "回复1点体力。",
+  ["#ofl_mou__jieyin-give"] = "结姻：请交给 %src 两张手牌，你获得1点护甲",
+  ["#ofl_mou__jieyin-choice"] = "结姻：交给 %src 两张手牌（不足则全给），你获得1点护甲；或其变更为吴势力",
+  ["#ofl_mou__jieyin-choose"] = "结姻：令一名角色选择一项",
+  ["#ofl_mou__liangzhu"] = "良助：将一名角色装备区内一张牌置为“妆”，然后令一名其他角色回复1点体力",
+  ["#ofl_mou__liangzhu-recover"] = "良助：令一名其他角色回复1点体力",
+
+  ["$ofl_mou__jieyin1"] = "窈窕之姿，可配夫君之勇？",
+  ["$ofl_mou__jieyin2"] = "君既反目生嫌，妾又何需隐忍！",
+  ["$ofl_mou__liangzhu1"] = "既为使君妇，当助使君归。",
+  ["$ofl_mou__liangzhu2"] = "愿随夫君，成一方枭雄之业！",
+  ["$mou__xiaoji_ofl_mou__sunshangxiang1"] = "吾之所通，何止十八般兵刃！",
+  ["$mou__xiaoji_ofl_mou__sunshangxiang2"] = "既如此，就让尔等见识一番！",
+  ["~ofl_mou__sunshangxiang"] = "今夫君已亡，复能……独生乎！",
+}
 
 return extension
