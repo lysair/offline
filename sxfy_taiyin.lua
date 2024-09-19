@@ -765,7 +765,7 @@ local sxfy__yinge = fk.CreateActiveSkill{
   on_use = function(self, room, effect)
     local player = room:getPlayerById(effect.from)
     local target = room:getPlayerById(effect.tos[1])
-    local card = room:askForCard(target, 1, 1, false, self.name, false, nil, "#sxfy__yinge-give:"..player.id)
+    local card = room:askForCard(target, 1, 1, true, self.name, false, nil, "#sxfy__yinge-give:"..player.id)
     room:moveCardTo(card, Card.PlayerHand, player, fk.ReasonGive, self.name, nil, false, target.id)
     if player.dead or target.dead then return end
     local targets = table.filter(room:getOtherPlayers(target), function (p)
