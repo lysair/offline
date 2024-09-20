@@ -1296,7 +1296,7 @@ local jieyin = fk.CreateTriggerSkill{
           room:changeShield(to, 1)
           return
         else
-          local cards = room:askForCard(to, 2, 2, false, self.name, false, nil, "#ofl_mou__jieyin-give:"..player.id)
+          local cards = room:askForCard(to, math.min(2, to:getHandcardNum()), 2, false, self.name, false, nil, "#ofl_mou__jieyin-give:"..player.id)
           room:moveCardTo(cards, Card.PlayerHand, player, fk.ReasonGive, self.name, nil, false, to.id)
           if not to.dead then
             room:changeShield(to, 1)
@@ -1306,7 +1306,7 @@ local jieyin = fk.CreateTriggerSkill{
     else
       local cards = {}
       if not to:isKongcheng() then
-        cards = room:askForCard(to, math.max(2, to:getHandcardNum()), 2, false, self.name, true, nil,
+        cards = room:askForCard(to, math.min(2, to:getHandcardNum()), 2, false, self.name, true, nil,
           "#ofl_mou__jieyin-choice:"..player.id)
       end
       if #cards > 0 then
