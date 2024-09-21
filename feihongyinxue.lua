@@ -333,7 +333,7 @@ Fk:loadTranslationTable{
   ["#fhyx__qingce"] = "清侧：你可以移去一张“荣”，弃置场上的一张牌",
 }
 
-local liyan = General(extension, "fhyx__liyan", "shu", 3)
+local liyan = General(extension, "fhyx__liyans", "shu", 3)
 local fhyx__duliang = fk.CreateActiveSkill{
   name = "fhyx__duliang",
   anim_type = "support",
@@ -458,9 +458,9 @@ fhyx__fulin:addRelatedSkill(fhyx__fulin_delay)
 liyan:addSkill(fhyx__duliang)
 liyan:addSkill(fhyx__fulin)
 Fk:loadTranslationTable{
-  ["fhyx__liyan"] = "李严",
-  ["#fhyx__liyan"] = "矜风流务",
-  ["illustrator:fhyx__liyan"] = "梦回唐朝",
+  ["fhyx__liyans"] = "李严",
+  ["#fhyx__liyans"] = "矜风流务",
+  ["illustrator:fhyx__liyans"] = "梦回唐朝",
 
   ["fhyx__duliang"] = "督粮",
   [":fhyx__duliang"] = "出牌阶段限一次，你可以获得一名其他角色至多X张手牌（X为其已损失体力值且至少为1），然后选择一项："..
@@ -481,7 +481,7 @@ Fk:loadTranslationTable{
   ["$fhyx__duliang2"] = "粮食充裕，怎可撤军。",
   ["$fhyx__fulin1"] = "我的才学，蜀中何人能比？",
   ["$fhyx__fulin2"] = "生此乱世，腹中鳞甲可保我周全。",
-  ["~fhyx__liyan"] = "老臣，有愧圣恩……",
+  ["~fhyx__liyans"] = "老臣，有愧圣恩……",
 }
 
 local caojie = General(extension, "fhyx__caojie", "qun", 3, 3, General.Female)
