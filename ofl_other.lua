@@ -250,6 +250,77 @@ Fk:loadTranslationTable{
   ["~ofl__sunhanhua"] = "天有寒暑，人有死生……",
 }
 
+local miheng = General(extension, "ofl__miheng", "qun", 3)
+
+local kuangcai = fk.CreateTriggerSkill{
+  name = "ofl__kuangcai",
+  mute = true,
+  events = {fk.EventPhaseStart, fk.CardUsing},
+  can_trigger = function(self, event, target, player, data)
+    if target == player and player:hasSkill(self) then
+      if event == fk.EventPhaseStart then
+        return player.phase == Player.Play
+      else
+        return player:getMark("ofl__kuangcai-phase") > 0
+      end
+    end
+  end,
+  on_cost = function(self, event, target, player, data)
+    return event == fk.CardUsing or player.room:askForSkillInvoke(player, self.name, nil, "#ofl__kuangcai-invoke")
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    room:notifySkillInvoked(player, self.name, "drawcard")
+    if event == fk.EventPhaseStart then
+      player:broadcastSkillInvoke(self.name, 2)
+      room:setPlayerMark(player, "ofl__kuangcai-phase", 1)
+      room:setPlayerMark(player, "@ofl__kuangcai-phase", 5)
+    else
+      player:broadcastSkillInvoke(self.name, 1)
+      player:drawCards(1, self.name)
+    end
+  end,
+
+  refresh_events = {fk.CardUsing},
+  can_refresh = function (self, event, target, player, data)
+    return player:getMark("@ofl__kuangcai-phase") > 0
+  end,
+  on_refresh = function (self, event, target, player, data)
+    player.room:removePlayerMark(player, "@ofl__kuangcai-phase")
+  end,
+}
+local kuangcai_targetmod = fk.CreateTargetModSkill{
+  name = "#ofl__kuangcai_targetmod",
+  bypass_times = function(self, player, skill, scope, card)
+    return player:getMark("ofl__kuangcai-phase") > 0
+  end,
+  bypass_distances = function(self, player, skill, card)
+    return player:getMark("ofl__kuangcai-phase") > 0
+  end,
+}
+kuangcai:addRelatedSkill(kuangcai_targetmod)
+local kuangcai_prohibit = fk.CreateProhibitSkill{
+  name = "#ofl__kuangcai_prohibit",
+  prohibit_use = function(self, player, card)
+    return table.find(Fk:currentRoom().alive_players, function (p)
+      return p:getMark("ofl__kuangcai-phase") > 0 and p:getMark("@ofl__kuangcai-phase") == 0
+    end)
+  end,
+}
+kuangcai:addRelatedSkill(kuangcai_prohibit)
+miheng:addSkill(kuangcai)
+miheng:addSkill("mobile__shejian")
+Fk:loadTranslationTable{
+  ["ofl__miheng"] = "祢衡",
+  ["#ofl__miheng"] = "鸷鹗啄孤凤",
+  ["ofl__kuangcai"] = "狂才",
+  [":ofl__kuangcai"] = "出牌阶段开始时，你可以令你此阶段使用牌无次数距离限制且当你使用牌时你摸一张牌。若如此做，本阶段所有角色合计使用牌数不能超过五张。",
+  ["#ofl__kuangcai-invoke"] = "祢衡：可令本阶段使用牌时无次数距离限制且摸一张牌，所有角色至多使用5张牌！",
+  ["@ofl__kuangcai-phase"] = "狂才",
+  ["$ofl__kuangcai1"] = "（激烈的鼓声）",
+  ["$ofl__kuangcai2"] = "来吧，速战速决！",
+}
+
 local liuhong = General(extension, "rom__liuhong", "qun", 4)
 local rom__zhenglian = fk.CreateTriggerSkill{
   name = "rom__zhenglian",
