@@ -130,7 +130,7 @@ local sxfy__chunlao = fk.CreateTriggerSkill{
       local phase_event = room.logic:getCurrentEvent():findParent(GameEvent.Phase, true)
       if phase_event ~= nil then
         local end_id = phase_event.id
-        U.getEventsByRule(room, GameEvent.MoveCards, 1, function (e)
+        room.logic:getEventsByRule(GameEvent.MoveCards, 1, function (e)
           for _, move in ipairs(e.data) do
             if move.from == target.id and move.toArea == Card.DiscardPile and move.moveReason == fk.ReasonDiscard then
               for _, info in ipairs(move.moveInfo) do

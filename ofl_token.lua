@@ -24,7 +24,7 @@ local caningWhipSkill = fk.CreateTriggerSkill{
         for _, id in ipairs(player:getMark("caning_whip-turn")) do
           local yes = false
           local p = room:getPlayerById(id)
-          if #U.getActualDamageEvents(room, 1, function(e)
+          if #room.logic:getActualDamageEvents(1, function(e)
             local damage = e.data[1]
             return damage.from == player and damage.to == p
           end, Player.HistoryTurn) == 0 then

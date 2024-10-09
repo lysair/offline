@@ -1408,4 +1408,75 @@ Fk:loadTranslationTable{
   ["~ofl_mou__sunshangxiang"] = "今夫君已亡，复能……独生乎！",
 }
 
+Fk:loadTranslationTable{
+  ["ofl_mou__ganning"] = "谋甘宁",
+  ["#ofl_mou__ganning"] = "兴王定霸",
+  ["illustrator:ofl_mou__ganning"] = "",
+
+  ["ofl_mou__qixi"] = "奇袭",
+  [":ofl_mou__qixi"] = "出牌阶段限一次，你可以选择一张手牌并选择一名其他角色，令其猜测此牌的花色。若猜错，该角色从未猜测过的花色中再次猜测；"..
+  "若猜对，你弃置此牌，然后你弃置其区域内X张牌（X为该角色猜测的次数，不足则全弃）。",
+  ["ofl_mou__fenwei"] = "奋威",
+  [":ofl_mou__fenwei"] = "限定技，当一张锦囊牌指定多个目标后，你可以令此牌对其中任意个目标无效，若包含你，本回合结束时你可以发动一次〖奇袭〗。",
+}
+
+Fk:loadTranslationTable{
+  ["ofl_mou__daqiao"] = "谋大乔",
+  ["#ofl_mou__daqiao"] = "国色芳华",
+  ["illustrator:ofl_mou__daqiao"] = "",
+
+  ["ofl_mou__guose"] = "国色",
+  [":ofl_mou__guose"] = "出牌阶段限一次，你可以将一张<font color='red'>♦</font>牌当【乐不思蜀】使用，或移动场上一张【乐不思蜀】。",
+  ["ofl_mou__liuli"] = "流离",
+  [":ofl_mou__liuli"] = "当你成为【杀】的目标时，你可以弃置一张牌，将目标转移给你攻击范围内除使用者以外的一名角色，令其获得“流离”标记"..
+  "（若场上已有则转移给其）。有“流离”标记的角色回合开始时，移去“流离”标记并执行一个额外的出牌阶段。",
+}
+
+Fk:loadTranslationTable{
+  ["ofl_mou__xiaoqiao"] = "谋小乔",
+  ["#ofl_mou__xiaoqiao"] = "国色芳华",
+  ["illustrator:ofl_mou__xiaoqiao"] = "",
+
+  ["ofl_mou__tianxiang"] = "天香",
+  [":ofl_mou__tianxiang"] = "当你受到伤害时，你可以展示两张手牌，令一名其他角色选择获得其中一张牌，若此牌：为<font color='red'>♥</font>，"..
+  "你将此伤害转移给其；不为<font color='red'>♥</font>，其本回合不能使用与此牌类别相同的手牌。",
+  ["ofl_mou__hongyan"] = "红颜",
+  [":ofl_mou__hongyan"] = "锁定技，你的♠牌或你的♠判定牌视为<font color='red'>♥</font>。当你每回合首次失去<font color='red'>♥</font>牌"..
+  "时，你摸一张牌。",
+}
+
+Fk:loadTranslationTable{
+  ["ofl_mou__yuanshao"] = "谋袁绍",
+  ["#ofl_mou__yuanshao"] = "高贵的名门",
+
+  ["ofl_mou__luanji"] = "乱击",
+  [":ofl_mou__luanji"] = "出牌阶段限一次，你可以将两张手牌当【万箭齐发】使用。当其他角色打出【闪】响应你使用的【万箭齐发】时，"..
+  "若你的手牌数小于体力值且小于其手牌数，你摸一张牌。",
+  ["ofl_mou__xueyi"] = "血裔",
+  [":ofl_mou__xueyi"] = "主公技，锁定技，你的手牌上限+2X（X为其他群势力角色数）。当你使用牌结算后，你令响应过此牌的其他群势力角色"..
+  "本阶段不能使用或打出手牌。",
+}
+
+Fk:loadTranslationTable{
+  ["ofl_wende__huaxin"] = "华歆",
+  ["#ofl_wende__huaxin"] = "渊清玉洁",
+  ["illustrator:ofl_wende__huaxin"] = "",
+
+  ["ofl_wende__caozhao"] = "草诏",
+  [":ofl_wende__caozhao"] = "每轮限一次，体力值不大于你的其他角色出牌阶段开始时，你可以展示其一张手牌并声明一种未以此法声明过的基本牌或"..
+  "普通锦囊牌，令其选择选择一项：1.将此牌当你声明的牌使用；2.失去1点体力。",
+}
+
+Fk:loadTranslationTable{
+  ["fhyx__hanlong"] = "韩龙",
+  ["#fhyx__hanlong"] = "碧落玄鹄",
+  ["designer:fhyx__hanlong"] = "雾燎鸟",
+  ["illustrator:fhyx__hanlong"] = "",
+
+  ["ofl__cibei"] = "刺北",
+  [":ofl__cibei"] = "当【杀】使用结算结束后，若此【杀】造成过伤害，你可以将此【杀】与一张不为【杀】的“刺”交换，然后弃置一名角色区域内的一张牌。"..
+  "一名角色的回合结束时，若所有“刺”均为【杀】，你获得所有“刺”，然后本局游戏你获得以下效果：你使用【杀】无距离次数限制；每回合结束时，你获得"..
+  "弃牌堆中你本回合被弃置的所有【杀】。",
+}
+
 return extension

@@ -807,7 +807,7 @@ local sxfy__juyi = fk.CreateTriggerSkill{
   can_trigger = function(self, event, target, player, data)
     return target == player and player:hasSkill(self) and data.from and data.from.kingdom == "qun" and data.from ~= player and
       not data.from.dead and player:usedSkillTimes(self.name, Player.HistoryTurn) == 0 and
-      #U.getActualDamageEvents(player.room, 2, function(e)
+      #player.room.logic:getActualDamageEvents(2, function(e)
         return e.data[1].from == data.from and e.data[1].to == player
       end) == 0
   end,
@@ -1034,7 +1034,7 @@ local sxfy__jinglve_delay = fk.CreateTriggerSkill{
     local phase_event = room.logic:getCurrentEvent():findParent(GameEvent.Phase, true)
     if phase_event ~= nil then
       local end_id = phase_event.id
-      U.getEventsByRule(room, GameEvent.MoveCards, 1, function (e)
+      room.logic:getEventsByRule(GameEvent.MoveCards, 1, function (e)
         for _, move in ipairs(e.data) do
           if move.toArea == Card.DiscardPile and move.moveReason == fk.ReasonDiscard then
             for _, info in ipairs(move.moveInfo) do
