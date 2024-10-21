@@ -2221,7 +2221,7 @@ local ofl_shiji__yinge = fk.CreateActiveSkill{
       "#ofl_shiji__yinge-use:"..player.id, {bypass_times = true, expand_pile = cards, extraUse = true}, true, true)
     if use then
       if use.card.is_damage_card and not use.card.multiple_targets and
-        table.contains(U.getUseExtraTargets(room, use, true), player.id) then
+        table.contains(room:getUseExtraTargets(use, true), player.id) then
         table.insert(use.tos, {player.id})
       end
       room:useCard(use)

@@ -990,11 +990,11 @@ local sxfy__huiji = fk.CreateTriggerSkill{
   events = {fk.AfterCardTargetDeclared},
   can_trigger = function(self, event, target, player, data)
     return target == player and player:hasSkill(self) and data.card.trueName == "slash" and
-      #U.getUseExtraTargets(player.room, data) > 0
+      #player.room:getUseExtraTargets(data) > 0
   end,
   on_cost = function(self, event, target, player, data)
     local room = player.room
-    local targets = U.getUseExtraTargets(room, data, false)
+    local targets = room:getUseExtraTargets(data)
     local tos = room:askForChoosePlayers(player, targets, 1, 2, "#sxfy__huiji-choose:::"..data.card:toLogString(), self.name, true)
     if #tos > 0 then
       self.cost_data = tos
