@@ -3723,4 +3723,924 @@ Fk:loadTranslationTable{
   ["#ofl__lizhen"] = "历阵：你可以将装备区内的牌当【杀】使用或打出",
 }
 
+--官盗E24侠客行：彭虎 彭绮 罗厉 祖郎 崔廉 单福
+local function JoinInsurrectionary(player)
+  local room = player.room
+  room:setPlayerMark(player, "@!insurrectionary", 1)
+  local tag = room:getBanner("insurrectionary") or {}
+  table.insert(tag, player.id)
+  room:setBanner("insurrectionary", tag)
+  room:setBanner("@[:]insurrectionary", "insurrectionary_banner")
+  room:sendLog{
+    type = "#JoinInsurrectionary",
+    from = player.id,
+    toast = true,
+  }
+  room.logic:trigger("fk.JoinInsurrectionary", player, nil, false)
+end
+local function IsInsurrectionary(player)
+  return table.contains(Fk:currentRoom():getBanner("insurrectionary") or {}, player.id)
+end
+local insurrectionary = fk.CreateTriggerSkill{
+  name = "insurrectionary&",
+  anim_type = "negative",
+  frequency = Skill.Compulsory,
+  events = {fk.TurnEnd},
+  can_trigger = function(self, event, target, player, data)
+    return target == player and IsInsurrectionary(player) and not player.dead and  --仅考虑回合结束时的起义军状态
+      #player.room.logic:getEventsOfScope(GameEvent.UseCard, 1, function(e)
+        local use = e.data[1]
+        return use.from == player.id and use.card.trueName == "slash" and
+          table.find(TargetGroup:getRealTargets(use.tos), function (id)
+            return IsInsurrectionary(player.room:getPlayerById(id))
+          end)
+      end, Player.HistoryTurn) == 0 and
+      #player.room.logic:getActualDamageEvents(1, function(e)
+        local damage = e.data[1]
+        return damage.from == player and not IsInsurrectionary(damage.to)
+      end) == 0
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    local choice = room:askForChoice(player, {"QuitInsurrectionary", "loseHp"}, self.name)
+    if choice == "QuitInsurrectionary" then
+      room:setPlayerMark(player, "@!insurrectionary", 0)
+      local tag = room:getBanner("insurrectionary") or {}
+      table.removeOne(tag, player.id)
+      if #tag == 0 then
+        room:setBanner("insurrectionary", nil)
+        room:setBanner("@[:]insurrectionary", nil)
+      else
+        room:setBanner("insurrectionary", tag)
+      end
+      room:sendLog{
+        type = "#QuitInsurrectionary",
+        from = player.id,
+        toast = true,
+      }
+      room.logic:trigger("fk.QuitInsurrectionary", player, nil, false)
+      if not player:isKongcheng() then
+        player:throwAllCards("h")
+      end
+    else
+      room:loseHp(player, 1, self.name)
+    end
+  end,
+}
+local insurrectionary_targetmod = fk.CreateTargetModSkill{
+  name = "#insurrectionary_targetmod",
+  frequency = Skill.Compulsory,
+  residue_func = function(self, player, skill, scope, card, to)
+    if Fk:currentRoom():getBanner("insurrectionary") and skill.trueName == "slash_skill" and scope == Player.HistoryPhase then
+      if IsInsurrectionary(player) then
+        return 1
+      elseif IsInsurrectionary(to) then
+        return 1
+      end
+    end
+  end,
+}
+insurrectionary:addRelatedSkill(insurrectionary_targetmod)
+Fk:loadTranslationTable{
+  ["insurrectionary&"] = "起义军",
+  [":insurrectionary&"] = "锁定技，<br>起义军出牌阶段使用【杀】次数上限+1。<br>起义军的回合结束时，若本回合未对起义军角色使用过【杀】且"..
+  "未对非起义军角色造成过伤害，需选择一项：1.失去起义军标记并弃置所有手牌；2.失去1点体力。<br>非起义军角色对起义军角色使用【杀】次数上限+1。",
+  ["@[:]insurrectionary"] = "",
+  ["insurrectionary_banner"] = "起义军",
+  [":insurrectionary_banner"] = "锁定技，<br>起义军出牌阶段使用【杀】次数上限+1。<br>起义军的回合结束时，若本回合未对起义军角色使用过【杀】且"..
+  "未对非起义军角色造成过伤害，需选择一项：1.失去起义军标记并弃置所有手牌；2.失去1点体力。<br>非起义军角色对起义军角色使用【杀】次数上限+1。",
+  ["#JoinInsurrectionary"] = "%from 加入了起义军",
+  ["#QuitInsurrectionary"] = "%from 退出了起义军",
+  ["QuitInsurrectionary"] = "退出起义军并弃置所有手牌",
+}
+
+local penghu = General(extension, "penghu", "qun", 5)
+local juqian = fk.CreateTriggerSkill{
+  name = "juqian",
+  anim_type = "offensive",
+  frequency = Skill.Compulsory,
+  events = {fk.GameStart},
+  can_trigger = function(self, event, target, player, data)
+    return player:hasSkill(self)
+  end,
+    on_use = function(self, event, target, player, data)
+    local room = player.room
+    if not IsInsurrectionary(player) then
+      JoinInsurrectionary(player)
+      room:handleAddLoseSkills(player, "insurrectionary&|-insurrectionary&", nil, false, true)  --迅速加载一下技能
+    end
+    local targets = table.filter(room.alive_players, function (p)
+      return p.seat ~= 1 and not IsInsurrectionary(p)
+    end)
+    if #targets == 0 then return end
+    local tos = room:askForChoosePlayers(player, table.map(targets, Util.IdMapper), 1, 2, "#juqian-choose", self.name, true)
+    if #tos > 0 then
+      room:sortPlayersByAction(tos)
+      for _, id in ipairs(tos) do
+        local p = room:getPlayerById(id)
+        if not p.dead then
+          if not room:askForSkillInvoke(p, self.name, nil, "#juqian-ask:"..player.id) then
+            room:damage{
+              from = player,
+              to = p,
+              damage = 1,
+              skillName = self.name,
+            }
+          else
+            JoinInsurrectionary(p)
+          end
+        end
+      end
+    end
+  end,
+}
+local zhepo = fk.CreateTriggerSkill{
+  name = "zhepo",
+  anim_type = "drawcard",
+  frequency = Skill.Compulsory,
+  events = {fk.Damage},
+  can_trigger = function(self, event, target, player, data)
+    return target == player and player:hasSkill(self) and (data.extra_data or {}).zhepo and
+      player:usedSkillTimes(self.name, Player.HistoryTurn) == 0 and
+      table.find(player.room.alive_players, function (p)
+        return IsInsurrectionary(p)
+      end)
+  end,
+  on_use = function(self, event, target, player, data)
+    player:drawCards(#table.filter(player.room.alive_players, function (p)
+      return IsInsurrectionary(p)
+    end), self.name)
+  end,
+
+  refresh_events = {fk.BeforeHpChanged},
+  can_refresh = function(self, event, target, player, data)
+    return data.damageEvent and player == data.damageEvent.from and player.hp >= target.hp
+  end,
+  on_refresh = function(self, event, target, player, data)
+    data.damageEvent.extra_data = data.damageEvent.extra_data or {}
+    data.damageEvent.extra_data.zhepo = true
+  end,
+}
+local yizhongp = fk.CreateTriggerSkill{
+  name = "yizhongp",
+  anim_type = "support",
+  frequency = Skill.Compulsory,
+  events = {"fk.JoinInsurrectionary"},
+  can_trigger = function(self, event, target, player, data)
+    return player:hasSkill(self)
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    room:doIndicate(player.id, {target.id})
+    room:changeShield(target, 1)
+  end,
+}
+penghu:addSkill(juqian)
+penghu:addSkill(zhepo)
+penghu:addSkill(yizhongp)
+penghu:addRelatedSkill(insurrectionary)
+Fk:loadTranslationTable{
+  ["penghu"] = "彭虎",
+  ["#penghu"] = "鄱阳风浪",
+  ["illustrator:penghu"] = "花弟",
+
+  ["juqian"] = "聚黔",
+  [":juqian"] = "锁定技，游戏开始时，你获得起义军标记，然后令至多两名不为一号位且非起义军角色依次选择一项：1.获得起义军标记；"..
+  "2.你对其造成1点伤害。",
+  ["zhepo"] = "辄破",
+  [":zhepo"] = "锁定技，每回合限一次，当你对体力值不大于你的角色造成伤害后，你摸X张牌（X为场上起义军数量）。",
+  ["yizhongp"] = "倚众",
+  [":yizhongp"] = "锁定技，当一名角色成为起义军后，其获得1点护甲。",
+  ["#juqian-choose"]= "聚黔：你可以令至多两名角色选择成为起义军或你对其造成1点伤害",
+  ["#juqian-ask"] = "聚黔：点“确定”加入起义军（起义军技能点击左上角查看），或点“取消” %src 对你造成1点伤害！",
+}
+
+local pengqi = General(extension, "pengqi", "qun", 3, 3, General.Female)  --惨遭失去牛子的山越领袖
+local jushoup = fk.CreateTriggerSkill{
+  name = "jushoup",
+  anim_type = "control",
+  frequency = Skill.Compulsory,
+  events = {fk.GameStart},
+  can_trigger = function(self, event, target, player, data)
+    return player:hasSkill(self)
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    if not IsInsurrectionary(player) then
+      JoinInsurrectionary(player)
+      room:handleAddLoseSkills(player, "insurrectionary&|-insurrectionary&", nil, false, true)
+    end
+    local targets = table.filter(room.alive_players, function (p)
+      return p.seat ~= 1 and not IsInsurrectionary(p)
+    end)
+    if #targets == 0 then return end
+    local tos = room:askForChoosePlayers(player, table.map(targets, Util.IdMapper), 1, 2, "#jushoup-choose", self.name, true)
+    if #tos > 0 then
+      room:sortPlayersByAction(tos)
+      for _, id in ipairs(tos) do
+        local p = room:getPlayerById(id)
+        if not p.dead then
+          if p:isKongcheng() or player.dead or room:askForSkillInvoke(p, self.name, nil, "#jushoup-ask:"..player.id) then
+            JoinInsurrectionary(p)
+          else
+            local card = room:askForCardChosen(player, p, "h", self.name, "#jushoup-prey::"..p.id)
+            room:moveCardTo(card, Card.PlayerHand, player, fk.ReasonPrey, self.name, nil, false, player.id)
+          end
+        end
+      end
+    end
+  end,
+}
+local liaoluan = fk.CreateActiveSkill{
+  name = "liaoluan",
+  anim_type = "offensive",
+  card_num = 0,
+  target_num = 1,
+  prompt = "#liaoluan",
+  can_use = function (self, player, card, extra_data)
+    return IsInsurrectionary(player) and
+      player:usedSkillTimes(self.name, Player.HistoryGame) + player:usedSkillTimes("liaoluan&", Player.HistoryGame) == 0
+  end,
+  card_filter = Util.FalseFunc,
+  target_filter = function(self, to_select, selected, selected_cards)
+    local target = Fk:currentRoom():getPlayerById(to_select)
+    return not IsInsurrectionary(target) and Self:inMyAttackRange(target)
+  end,
+  on_use = function(self, room, effect)
+    local player = room:getPlayerById(effect.from)
+    local target = room:getPlayerById(effect.tos[1])
+    player:turnOver()
+    if not target.dead then
+      room:damage{
+        from = player,
+        to = target,
+        damage = 1,
+        skillName = self.name,
+      }
+    end
+  end,
+}
+local liaoluan_trigger = fk.CreateTriggerSkill{
+  name = "#liaoluan_trigger",
+
+  refresh_events = {"fk.JoinInsurrectionary", "fk.QuitInsurrectionary",
+    fk.EventAcquireSkill, fk.EventLoseSkill, fk.Deathed},
+  can_refresh = function(self, event, target, player, data)
+    if event == "fk.JoinInsurrectionary" then
+      return player:hasSkill(self, true) and not (target:hasSkill(self, true) or target:hasSkill("liaoluan&", true))
+    elseif event == "fk.QuitInsurrectionary" then
+      return target:hasSkill("liaoluan&", true)
+    elseif event == fk.EventAcquireSkill or event == fk.EventLoseSkill then
+      return target == player and data == self and
+        not table.find(player.room:getOtherPlayers(player), function(p)
+          return p:hasSkill(self, true)
+        end)
+    elseif event == fk.Deathed then
+      return target == player and player:hasSkill(self, true, true) and
+        not table.find(player.room:getOtherPlayers(player), function(p)
+          return p:hasSkill(self, true)
+        end)
+    end
+  end,
+  on_refresh = function(self, event, target, player, data)
+    local room = player.room
+    if event == "fk.JoinInsurrectionary" then
+      room:handleAddLoseSkills(target, "liaoluan&", nil, false, true)
+    elseif event == "fk.QuitInsurrectionary" then
+      room:handleAddLoseSkills(target, "-liaoluan&", nil, false, true)
+    elseif event == fk.EventAcquireSkill then
+      for _, p in ipairs(room:getOtherPlayers(player)) do
+        if IsInsurrectionary(p) then
+          room:handleAddLoseSkills(p, "liaoluan&", nil, false, true)
+        end
+      end
+    else
+      for _, p in ipairs(room:getOtherPlayers(player, true, true)) do
+        room:handleAddLoseSkills(p, "-liaoluan&", nil, false, true)
+      end
+    end
+  end,
+}
+local liaoluan_active = fk.CreateActiveSkill{
+  name = "liaoluan&",
+  anim_type = "offensive",
+  card_num = 0,
+  target_num = 1,
+  prompt = "#liaoluan",
+  can_use = function (self, player, card, extra_data)
+    return IsInsurrectionary(player) and
+      player:usedSkillTimes(self.name, Player.HistoryGame) + player:usedSkillTimes("liaoluan", Player.HistoryGame) == 0
+  end,
+  card_filter = Util.FalseFunc,
+  target_filter = function(self, to_select, selected, selected_cards)
+    local target = Fk:currentRoom():getPlayerById(to_select)
+    return not IsInsurrectionary(target) and Self:inMyAttackRange(target)
+  end,
+  on_use = function(self, room, effect)
+    local player = room:getPlayerById(effect.from)
+    local target = room:getPlayerById(effect.tos[1])
+    player:turnOver()
+    if not target.dead then
+      room:damage{
+        from = player,
+        to = target,
+        damage = 1,
+        skillName = "liaoluan",
+      }
+    end
+  end,
+}
+local huaying = fk.CreateTriggerSkill{
+  name = "huaying",
+  anim_type = "support",
+  events = {fk.Deathed},
+  can_trigger = function(self, event, target, player, data)
+    return player:hasSkill(self) and (IsInsurrectionary(target) or
+      (data.damage and data.damage.from and IsInsurrectionary(data.damage.from) and target ~= data.damage.from)) and
+      table.find(player.room.alive_players, function (p)
+        return IsInsurrectionary(p)
+      end)
+  end,
+  on_cost = function (self, event, target, player, data)
+    local room = player.room
+    local targets = table.filter(room.alive_players, function (p)
+      return IsInsurrectionary(p)
+    end)
+    local to = room:askForChoosePlayers(player, table.map(targets, Util.IdMapper), 1, 1,
+      "#huaying-choose", self.name, true)
+    if #to > 0 then
+      self.cost_data = {tos = to}
+      return true
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    local to = player.room:getPlayerById(self.cost_data.tos[1])
+    to:setSkillUseHistory("liaoluan", 0, Player.HistoryGame)
+    to:setSkillUseHistory("liaoluan&", 0, Player.HistoryGame)
+    to:reset()
+  end,
+}
+local jizhongp = fk.CreateTriggerSkill{
+  name = "jizhongp",
+  anim_type = "drawcard",
+  frequency = Skill.Compulsory,
+  events = {fk.DrawNCards},
+  can_trigger = function(self, event, target, player, data)
+    return player:hasSkill(self) and IsInsurrectionary(target)
+  end,
+  on_use = function(self, event, target, player, data)
+    data.n = data.n + 1
+  end,
+}
+local jizhongp_distance = fk.CreateDistanceSkill{
+  name = "#jizhongp_distance",
+  main_skill = jizhongp,
+  frequency = Skill.Compulsory,
+  correct_func = function(self, from, to)
+    if IsInsurrectionary(from) then
+      return -#table.filter(Fk:currentRoom().alive_players, function (p)
+        return p:hasSkill(jizhongp)
+      end)
+    end
+  end,
+}
+jizhongp:addRelatedSkill(jizhongp_distance)
+liaoluan:addRelatedSkill(liaoluan_trigger)
+Fk:addSkill(liaoluan_active)
+pengqi:addSkill(jushoup)
+pengqi:addSkill(liaoluan)
+pengqi:addSkill(huaying)
+pengqi:addSkill(jizhongp)
+pengqi:addRelatedSkill("insurrectionary&")
+Fk:loadTranslationTable{
+  ["pengqi"] = "彭绮",
+  ["#pengqi"] = "百花缭乱",
+  ["illustrator:pengqi"] = "xerez",
+
+  ["jushoup"] = "聚首",
+  [":jushoup"] = "锁定技，游戏开始时，你获得起义军标记，然后令至多两名不为一号位且非起义军角色依次选择一项：1.获得起义军标记；"..
+  "2.你获得其一张手牌。",
+  ["liaoluan"] = "缭乱",
+  [":liaoluan"] = "每名起义军限一次，出牌阶段，其可以翻面，对攻击范围内一名非起义军角色造成1点伤害。",
+  ["liaoluan&"] = "缭乱",
+  [":liaoluan&"] = "每局游戏限一次，出牌阶段，你可以翻面，对攻击范围内一名非起义军角色造成1点伤害。",
+  ["huaying"] = "花影",
+  [":huaying"] = "当一名起义军杀死除其以外的角色后或死亡后，你可以令一名起义军复原武将牌且视为其未发动过〖缭乱〗。",
+  ["jizhongp"] = "集众",
+  [":jizhongp"] = "锁定技，起义军摸牌阶段额外摸一张牌，计算与除其以外的角色距离-1。",
+  ["#jushoup-choose"]= "聚首：你可以令至多两名角色选择成为起义军或你获得其一张手牌",
+  ["#jushoup-ask"] = "聚首：点“确定”加入起义军（起义军技能点击左上角查看），或点“取消” %src 获得你一张手牌！",
+  ["#jushoup-prey"] = "聚首：获得 %dest 一张手牌",
+  ["#liaoluan"] = "缭乱：你可以翻面，对攻击范围内一名非起义军角色造成1点伤害（每局游戏限一次！）",
+  ["#huaying-choose"] = "花影：你可以令一名起义军复原武将牌且视为其未发动过“缭乱”",
+}
+
+local luoli = General(extension, "luoli", "qun", 4)
+local juluan = fk.CreateTriggerSkill{
+  name = "juluan",
+  anim_type = "offensive",
+  frequency = Skill.Compulsory,
+  events = {fk.GameStart, fk.DamageCaused, fk.DamageInflicted},
+  can_trigger = function(self, event, target, player, data)
+    if player:hasSkill(self) then
+      if event == fk.GameStart then
+        return true
+      elseif event == fk.DamageCaused then
+        return target == player and #player.room.logic:getActualDamageEvents(2, function (e)
+          return e.data[1].from == player
+        end, Player.HistoryTurn) == 1
+      elseif event == fk.DamageInflicted then
+        return target == player and #player.room.logic:getActualDamageEvents(2, function (e)
+          return e.data[1].to == player
+        end, Player.HistoryTurn) == 1
+      end
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    if event == fk.GameStart then
+      local room = player.room
+      if not IsInsurrectionary(player) then
+        JoinInsurrectionary(player)
+        room:handleAddLoseSkills(player, "insurrectionary&|-insurrectionary&", nil, false, true)
+      end
+      local targets = table.filter(room.alive_players, function (p)
+        return p.seat ~= 1 and not IsInsurrectionary(p)
+      end)
+      if #targets == 0 then return end
+      local tos = room:askForChoosePlayers(player, table.map(targets, Util.IdMapper), 1, 2, "#juluan-choose", self.name, true)
+      if #tos > 0 then
+        room:sortPlayersByAction(tos)
+        for _, id in ipairs(tos) do
+          local p = room:getPlayerById(id)
+          if not p.dead then
+            if p:isKongcheng() or player.dead or room:askForSkillInvoke(p, self.name, nil, "#juluan-ask:"..player.id) then
+              JoinInsurrectionary(p)
+            else
+              local card = room:askForCardChosen(player, p, "h", self.name, "#juluan-discard::"..p.id)
+              room:throwCard(card, self.name, p, player)
+            end
+          end
+        end
+      end
+    else
+      data.damage = data.damage + 1
+    end
+  end,
+}
+local xianxing = fk.CreateTriggerSkill{
+  name = "xianxing",
+  anim_type = "drawcard",
+  events = {fk.TargetSpecifying},
+  can_trigger = function(self, event, target, player, data)
+    return target == player and player:hasSkill(self) and data.card.is_damage_card and player.phase == Player.Play and
+      #AimGroup:getAllTargets(data.tos) == 1 and data.to ~= player.id and player:getMark("@@xianxing-turn") == 0
+  end,
+  on_cost = function(self, event, target, player, data)
+    return player.room:askForSkillInvoke(player, self.name, nil,
+      "#xianxing-invoke:::"..(player:usedSkillTimes(self.name, Player.HistoryTurn) + 1))
+  end,
+  on_use = function(self, event, target, player, data)
+    data.extra_data = data.extra_data or {}
+    data.extra_data.xianxing = player.id
+    player:drawCards(player:usedSkillTimes(self.name, Player.HistoryTurn), self.name)
+  end,
+}
+local xianxing_delay = fk.CreateTriggerSkill{
+  name = "#xianxing_delay",
+  anim_type = "negative",
+  events = {fk.CardUseFinished},
+  can_trigger = function(self, event, target, player, data)
+    return target == player and player:usedSkillTimes("xianxing", Player.HistoryTurn) > 1 and
+      data.extra_data and data.extra_data.xianxing == player.id and not data.damageDealt
+  end,
+  on_cost = Util.TrueFunc,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    local n = player:usedSkillTimes("xianxing", Player.HistoryTurn) - 1
+    local choice = room:askForChoice(player, {"xianxing_loseHp:::"..n, "xianxing_invalid"}, "xianxing")
+    if choice == "xianxing_invalid" then
+      room:setPlayerMark(player, "@@xianxing-turn", 1)
+    else
+      room:loseHp(player, n, "xianxing")
+    end
+  end,
+}
+xianxing:addRelatedSkill(xianxing_delay)
+luoli:addSkill(juluan)
+luoli:addSkill(xianxing)
+luoli:addRelatedSkill("insurrectionary&")
+Fk:loadTranslationTable{
+  ["luoli"] = "罗厉",
+  ["#luoli"] = "庐江义寇",
+  ["illustrator:luoli"] = "红字虾",
+
+  ["juluan"] = "聚乱",
+  [":juluan"] = "锁定技，游戏开始时，你获得起义军标记，然后令至多两名不为一号位且非起义军角色依次选择一项：1.获得起义军标记；"..
+  "2.你弃置其一张手牌。当你每回合第二次造成伤害或受到伤害时，此伤害+1。",
+  ["xianxing"] = "险行",
+  [":xianxing"] = "出牌阶段，当你使用伤害类牌指定其他角色为唯一目标时，你可以摸X张牌，若如此做，此牌结算后，若此牌未造成伤害且X大于1，"..
+  "你选择一项：1.失去X-1点体力；2.此技能本回合失效（X为你本回合发动此技能次数）。",
+  ["#juluan-choose"]= "聚乱：你可以令至多两名角色选择成为起义军或你弃置其一张手牌",
+  ["#juluan-ask"] = "聚乱：点“确定”加入起义军（起义军技能点击左上角查看），或点“取消” %src 弃置你一张手牌！",
+  ["#juluan-discard"] = "聚乱：弃置 %dest 一张手牌",
+  ["#xianxing-invoke"] = "险行：是否摸 %arg 张牌？",
+  ["@@xianxing-turn"] = "险行失效",
+  ["#xianxing_delay"] = "险行",
+  ["xianxing_loseHp"] = "失去%arg点体力",
+  ["xianxing_invalid"] = "“险行”本回合失效",
+}
+
+local zulang = General(extension, "zulang", "qun", 5)
+zulang.subkingdom = "wu"
+local haokou = fk.CreateTriggerSkill{
+  name = "haokou",
+  anim_type = "special",
+  frequency = Skill.Compulsory,
+  events = {fk.GameStart, "fk.QuitInsurrectionary"},
+  can_trigger = function(self, event, target, player, data)
+    if player:hasSkill(self) then
+      if event == fk.GameStart then
+        return not IsInsurrectionary(player)
+      elseif event == "fk.QuitInsurrectionary" then
+        return player.kingdom ~= "wu"
+      end
+    end
+  end,
+    on_use = function(self, event, target, player, data)
+    local room = player.room
+    if event == fk.GameStart then
+      JoinInsurrectionary(player)
+      room:handleAddLoseSkills(player, "insurrectionary&|-insurrectionary&", nil, false, true)
+    elseif event == "fk.QuitInsurrectionary" then
+      room:changeKingdom(player, "wu", true)
+    end
+  end,
+}
+local ronggui = fk.CreateTriggerSkill{
+  name = "ronggui",
+  anim_type = "offensive",
+  events = {fk.TargetSpecifying},
+  can_trigger = function(self, event, target, player, data)
+    return player:hasSkill(self) and target.kingdom == "wu" and
+      (data.card.trueName == "duel" or (data.card.trueName == "slash" and data.card.color == Card.Red)) and
+      #player.room:getUseExtraTargets(data, false, true) > 0 and not player:isKongcheng()
+  end,
+  on_cost = function(self, event, target, player, data)
+    local room = player.room
+    local cards = table.filter(player:getCardIds("he"), function(id)
+      local card = Fk:getCardById(id)
+      return card.type == Card.TypeBasic and not player:prohibitDiscard(card)
+    end)
+    local to, card = room:askForChooseCardAndPlayers(player, room:getUseExtraTargets(data, false, true), 1, 1,
+      tostring(Exppattern{ id = cards }), "#ronggui-invoke:"..target.id.."::"..data.card:toLogString(), self.name, true, false)
+    if #to == 1 and card then
+      self.cost_data = {tos = to, cards = {card}}
+      return true
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    AimGroup:addTargets(room, data, self.cost_data.tos)
+    room:throwCard(self.cost_data.cards, self.name, player, player)
+  end,
+}
+local xijun = fk.CreateViewAsSkill{
+  name = "xijun",
+  anim_type = "offensive",
+  pattern = "slash,duel",
+  prompt = "#xijun",
+  interaction = function(self)
+    local all_names = {"slash", "duel"}
+    local names = U.getViewAsCardNames(Self, self.name, all_names)
+    if #names > 0 then
+      return U.CardNameBox { choices = names, all_choices = all_names }
+    end
+  end,
+  card_filter = function(self, to_select, selected)
+    return #selected == 0 and Fk:getCardById(to_select).color == Card.Black
+  end,
+  view_as = function(self, cards)
+    if #cards ~= 1 or not self.interaction.data then return end
+    local card = Fk:cloneCard(self.interaction.data)
+    card.skillName = self.name
+    card:addSubcard(cards[1])
+    return card
+  end,
+  before_use = function (self, player, use)
+    player.room:addPlayerMark(player, "xijun-turn", 1)
+  end,
+  enabled_at_play = function (self, player)
+    return player:getMark("xijun-turn") < 2
+  end,
+  enabled_at_response = function (self, player)
+    return player:getMark("xijun-turn") < 2 and player.phase == Player.Play
+  end,
+}
+local xijun_trigger = fk.CreateTriggerSkill{
+  name = "#xijun_trigger",
+  anim_type = "masochism",
+  events = {fk.Damaged},
+  main_skill = xijun,
+  can_trigger = function(self, event, target, player, data)
+    return target == player and player:hasSkill(xijun) and player:getMark("xijun-turn") < 2
+  end,
+  on_cost = function(self, event, target, player, data)
+    local success, dat = player.room:askForUseActiveSkill(player, "xijun", "#xijun", true,
+      {
+        bypass_times = true,
+        extraUse = true,
+      })
+    if success and dat then
+      self.cost_data = dat
+      return true
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    room:addPlayerMark(player, "xijun-turn", 1)
+    local card = xijun:viewAs(self.cost_data.cards)
+    room:useCard{
+      from = player.id,
+      tos = table.map(self.cost_data.targets, function(id) return {id} end),
+      card = card,
+    }
+  end,
+}
+local xijun_delay = fk.CreateTriggerSkill{
+  name = "#xijun_delay",
+  mute = true,
+  events = {fk.Damaged, fk.PreHpRecover},
+  can_trigger = function(self, event, target, player, data)
+    if target == player then
+      if event == fk.Damaged then
+        return data.card and table.contains(data.card.skillNames, "xijun") and not player.dead
+      elseif event == fk.PreHpRecover then
+        return player:getMark("@@xijun-turn") > 0
+      end
+    end
+  end,
+  on_cost = Util.TrueFunc,
+  on_use = function(self, event, target, player, data)
+    if event == fk.Damaged then
+      player.room:setPlayerMark(player, "@@xijun-turn", 1)
+    else
+      return true
+    end
+  end,
+}
+xijun:addRelatedSkill(xijun_trigger)
+xijun:addRelatedSkill(xijun_delay)
+haokou:addAttachedKingdom("qun")
+ronggui:addAttachedKingdom("wu")
+zulang:addSkill(xijun)
+zulang:addSkill(haokou)
+zulang:addSkill(ronggui)
+zulang:addRelatedSkill("insurrectionary&")
+Fk:loadTranslationTable{
+  ["zulang"] = "祖郎",
+  ["#zulang"] = "抵力坚存",
+  ["illustrator:zulang"] = "XXX",
+
+  ["xijun"] = "袭军",
+  [":xijun"] = "每回合限两次，出牌阶段或当你受到伤害后，你可以将一张黑色牌当【杀】或【决斗】使用或打出，当一名角色受到此牌造成的伤害后，"..
+  "防止其本回合回复体力。",
+  ["haokou"] = "豪寇",
+  [":haokou"] = "群势力技，锁定技，游戏开始时，你获得起义军标记；当你失去起义军标记后，你变更势力至吴。",
+  ["ronggui"] = "荣归",
+  [":ronggui"] = "吴势力技，当一名吴势力角色使用【决斗】或红色【杀】指定目标时，你可以弃置一张基本牌，为此牌增加一个目标。",
+  ["#xijun"] = "袭军：你可以将一张黑色牌当【杀】或【决斗】使用或打出，受到此牌伤害的角色本回合不能回复体力！",
+  ["#xijun_trigger"] = "袭军",
+  ["#xijun_delay"] = "袭军",
+  ["@@xijun-turn"] = "禁止回复体力",
+  ["#ronggui-invoke"] = "荣归：你可以弃置一张基本牌，为 %src 使用的%arg增加一个目标",
+}
+
+local cuilian = General(extension, "cuilian", "qun", 4)
+local tanlu = fk.CreateTriggerSkill{
+  name = "tanlu",
+  anim_type = "offensive",
+  events = {fk.TurnStart},
+  can_trigger = function(self, event, target, player, data)
+    return player:hasSkill(self) and target ~= player and not target.dead
+  end,
+  on_cost = function(self, event, target, player, data)
+    return player.room:askForSkillInvoke(player, self.name, nil, "#tanlu-invoke::"..target.id)
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    room:doIndicate(player.id, {target.id})
+    local n = math.abs(player.hp - target.hp)
+    if n == 0 or target:getHandcardNum() < n then
+    else
+      local cards = room:askForCard(target, n, n, false, self.name, true, nil, "#tanlu-give:"..player.id.."::"..n)
+      if #cards > 0 then
+        room:moveCardTo(cards, Card.PlayerHand, player, fk.ReasonGive, self.name, nil, false, target.id)
+        return
+      end
+    end
+    room:damage{
+      from = player,
+      to = target,
+      damage = 1,
+      skillName = self.name,
+    }
+    if not target.dead and not player.dead and not player:isKongcheng() then
+      local card = room:askForCardChosen(target, player, "h", self.name, "#tanlu-discard:"..player.id)
+      room:throwCard(card, self.name, player, target)
+    end
+  end,
+}
+local jubian = fk.CreateTriggerSkill{
+  name = "jubian",
+  anim_type = "defensive",
+  frequency = Skill.Compulsory,
+  events = {fk.DamageInflicted},
+  can_trigger = function(self, event, target, player, data)
+    return target == player and player:hasSkill(self) and data.from and data.from ~= player and
+      player:getHandcardNum() > player.hp
+  end,
+  on_use = function(self, event, target, player, data)
+    local n = player:getHandcardNum() - player.hp
+    player.room:askForDiscard(player, n, n, false, self.name, false)
+    return true
+  end,
+}
+cuilian:addSkill(tanlu)
+cuilian:addSkill(jubian)
+Fk:loadTranslationTable{
+  ["cuilian"] = "崔廉",
+  ["#cuilian"] = "缚树行鞭",
+  ["illustrator:cuilian"] = "花花",
+
+  ["tanlu"] = "贪赂",
+  [":tanlu"] = "其他角色回合开始时，你可以令其选择一项：1.交给你X张手牌；2.你对其造成1点伤害，然后其弃置你一张手牌（X为你与其体力值之差）。",
+  ["jubian"] = "惧鞭",
+  [":jubian"] = "锁定技，当你受到其他角色造成的伤害时，若你的手牌数大于体力值，你将手牌弃至体力值，防止此伤害。",
+  ["#tanlu-invoke"] = "贪赂：你可以令 %dest 选择交给你手牌或你对其造成1点伤害",
+  ["#tanlu-give"] = "贪赂：请交给 %src %arg张手牌，否则其对你造成1点伤害，你弃置其一张手牌",
+  ["#tanlu-discard"] = "贪赂：弃置 %src 一张手牌",
+}
+
+local shanfu = General(extension, "ofl__xushu", "qun", 3)
+shanfu.subkingdom = "shu"
+local bimeng = fk.CreateViewAsSkill{
+  name = "bimeng",
+  prompt = function (self, selected, selected_cards)
+    return "#bimeng:::"..Self.hp
+  end,
+  interaction = function(self)
+    local all_names = U.getAllCardNames("bt")
+    local names = U.getViewAsCardNames(Self, self.name, all_names)
+    if #names > 0 then
+      return U.CardNameBox { choices = names, all_choices = all_names }
+    end
+  end,
+  card_filter = function (self, to_select, selected)
+    return #selected < Self.hp and not table.contains(Self:getCardIds("e"), to_select)
+  end,
+  view_as = function(self, cards)
+    if #cards ~= Self.hp or not self.interaction.data then return end
+    local card = Fk:cloneCard(self.interaction.data)
+    card.skillName = self.name
+    card:addSubcards(cards)
+    return card
+  end,
+  enabled_at_play = function (self, player)
+    return player:usedSkillTimes(self.name, Player.HistoryPhase) == 0
+  end,
+}
+local zhue = fk.CreateTriggerSkill{
+  name = "zhue",
+  anim_type = "support",
+  events = {fk.CardUsing},
+  can_trigger = function(self, event, target, player, data)
+    return player:hasSkill(self) and target.kingdom == "qun" and data.card.type ~= Card.TypeEquip and
+      player:usedSkillTimes(self.name, Player.HistoryTurn) == 0
+  end,
+  on_cost = function(self, event, target, player, data)
+    return player.room:askForSkillInvoke(player, self.name, nil, "#zhue-invoke:"..target.id.."::"..data.card:toLogString())
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    room:doIndicate(player.id, {target.id})
+    data.extra_data = data.extra_data or {}
+    data.extra_data.zhue = player.id
+    data.disresponsiveList = table.map(room.alive_players, Util.IdMapper)
+    target:drawCards(1, self.name)
+  end,
+}
+local zhue_delay = fk.CreateTriggerSkill{
+  name = "#zhue_delay",
+  anim_type = "special",
+  events = {fk.CardUseFinished},
+  can_trigger = function(self, event, target, player, data)
+    return data.extra_data and data.extra_data.zhue == player.id and data.damageDealt and player.kingdom ~= "shu"
+  end,
+  on_cost = Util.TrueFunc,
+  on_use = function(self, event, target, player, data)
+    player.room:changeKingdom(player, "shu", true)
+  end,
+}
+local fuzhux = fk.CreateTriggerSkill{
+  name = "fuzhux",
+  anim_type = "support",
+  events = {fk.CardUseFinished},
+  can_trigger = function(self, event, target, player, data)
+    return player:hasSkill(self) and data.card:isVirtual() and #data.card.subcards > 0 and
+      player:usedSkillTimes(self.name, Player.HistoryTurn) == 0 and not player:isNude()
+  end,
+  on_cost = function (self, event, target, player, data)
+    local card = player.room:askForCard(player, 1, 1, true, self.name, true, nil, "#fuzhux-invoke::"..target.id)
+    if #card > 0 then
+      self.cost_data = {tos = {target.id}, cards = card}
+      return true
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    room:moveCards({
+      ids = self.cost_data.cards,
+      from = player.id,
+      toArea = Card.DrawPile,
+      moveReason = fk.ReasonPut,
+      skillName = self.name,
+      drawPilePosition = 1,
+      moveVisible = true,
+    })
+    local cards = room:getNCards(4)
+    room:moveCardTo(cards, Card.Processing, nil, fk.ReasonJustMove, self.name, nil, true, player.id)
+    room:delay(1000)
+    if not target.dead then
+      local ids = table.filter(cards, function (id)
+        return Fk:getCardById(id).type == Card.TypeTrick
+      end)
+      if #ids > 0 then
+        room:moveCardTo(ids, Card.PlayerHand, target, fk.ReasonJustMove, self.name, nil, true, target.id)
+      end
+    end
+    cards = table.filter(cards, function (id)
+      return room:getCardArea(id) == Card.Processing
+    end)
+    if #cards > 0 then
+      if player.dead then
+        room:moveCardTo(cards, Card.DiscardPile, nil, fk.ReasonJustMove)
+      else
+        local result = room:askForGuanxing(player, cards, nil, nil, self.name, true, {"Top", "Bottom"})
+        local moves = {}
+        if #result.top > 0 then
+          table.insert(moves, {
+            ids = result.top,
+            toArea = Card.DrawPile,
+            moveReason = fk.ReasonPut,
+            skillName = self.name,
+            drawPilePosition = 1,
+            moveVisible = false,
+          })
+        end
+        if #result.bottom > 0 then
+          table.insert(moves, {
+            ids = result.bottom,
+            toArea = Card.DrawPile,
+            moveReason = fk.ReasonPut,
+            skillName = self.name,
+            drawPilePosition = -1,
+            moveVisible = false,
+          })
+        end
+        room:moveCards(table.unpack(moves))
+        room:sendLog{
+          type = "#GuanxingResult",
+          from = player.id,
+          arg = #result.top,
+          arg2 = #result.bottom,
+        }
+      end
+    end
+  end,
+}
+zhue:addRelatedSkill(zhue_delay)
+zhue:addAttachedKingdom("qun")
+fuzhux:addAttachedKingdom("shu")
+shanfu:addSkill(bimeng)
+shanfu:addSkill(zhue)
+shanfu:addSkill(fuzhux)
+Fk:loadTranslationTable{
+  ["ofl__xushu"] = "单福",
+  ["#ofl__xushu"] = "忠孝万全",
+  ["illustrator:ofl__xushu"] = "木美人",
+
+  ["bimeng"] = "蔽蒙",
+  [":bimeng"] = "出牌阶段限一次，你可以将X张手牌当任意一张基本牌或普通锦囊牌使用（X为你的体力值）。",
+  ["zhue"] = "诛恶",
+  [":zhue"] = "群势力技，每回合限一次，当一名群势力角色使用非装备牌时，你可以令其摸一张牌，令此牌不能被响应；此牌结算后，若此牌造成过伤害，"..
+  "你变更势力至蜀。",
+  ["fuzhux"] = "辅主",
+  [":fuzhux"] = "蜀势力技，每回合限一次，当一名角色使用转化牌结算后，你可以将一张牌置于牌堆顶，然后亮出牌堆顶四张牌，其获得这些牌中"..
+  "所有锦囊牌，你将其余牌以任意顺序置于牌堆顶或牌堆底。",
+  ["#bimeng"] = "蔽蒙：你可以将%arg张手牌当任意基本牌或普通锦囊牌使用",
+  ["#zhue-invoke"] = "诛恶：是否令 %src 摸一张牌且其使用的%arg不能被响应？若此牌造成伤害，你变更势力为蜀",
+  ["#zhue_delay"] = "诛恶",
+  ["#fuzhux-invoke"] = "辅主：你可以将一张牌置于牌堆顶，令 %dest 亮出牌堆顶四张牌并获得其中的锦囊牌",
+}
+
 return extension
