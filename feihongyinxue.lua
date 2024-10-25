@@ -224,7 +224,7 @@ local fhyx__zhengrong = fk.CreateTriggerSkill{
   name = "fhyx__zhengrong",
   anim_type = "switch",
   switch_skill_name = "fhyx__zhengrong",
-  derived_piles = "fhyx__glory",
+  derived_piles = "$fhyx__glory",
   frequency = Skill.Compulsory,
   events = {fk.GameStart, fk.CardUseFinished},
   can_trigger = function(self, event, target, player, data)
@@ -250,12 +250,12 @@ local fhyx__zhengrong = fk.CreateTriggerSkill{
   on_use = function(self, event, target, player, data)
     local room = player.room
     if event == fk.GameStart then
-      player:addToPile("fhyx__glory", room.draw_pile[1], false, self.name, player.id)
+      player:addToPile("$fhyx__glory", room.draw_pile[1], false, self.name, player.id)
     elseif event ==  fk.CardUseFinished then
       if player:getSwitchSkillState(self.name, true) == fk.SwitchYang then
         local cards = room:askForArrangeCards(player, self.name,
-          {player:getPile("fhyx__glory"), player:getCardIds("h"), "fhyx__glory", "$Hand"}, "#fhyx__zhengrong-exchange", true)
-        U.swapCardsWithPile(player, cards[1], cards[2], self.name, "fhyx__glory")
+          {player:getPile("$fhyx__glory"), player:getCardIds("h"), "$fhyx__glory", "$Hand"}, "#fhyx__zhengrong-exchange", true)
+        U.swapCardsWithPile(player, cards[1], cards[2], self.name, "$fhyx__glory")
       else
         local targets = table.filter(room:getOtherPlayers(player), function (p)
           return not p:isNude()
@@ -264,7 +264,7 @@ local fhyx__zhengrong = fk.CreateTriggerSkill{
           "#fhyx__zhengrong-choose", self.name, false)
         to = room:getPlayerById(to[1])
         local card = room:askForCardChosen(player, to, "he", self.name)
-        player:addToPile("fhyx__glory", card, false, self.name, player.id)
+        player:addToPile("$fhyx__glory", card, false, self.name, player.id)
       end
     end
   end,
@@ -279,11 +279,11 @@ local fhyx__hongju = fk.CreateTriggerSkill{
       player:usedSkillTimes(self.name, Player.HistoryGame) == 0
   end,
   can_wake = function(self, event, target, player, data)
-    return #player:getPile("fhyx__glory") > 2
+    return #player:getPile("$fhyx__glory") > 2
   end,
   on_use = function(self, event, target, player, data)
     local room = player.room
-    player:drawCards(#player:getPile("fhyx__glory"), self.name)
+    player:drawCards(#player:getPile("$fhyx__glory"), self.name)
     if player.dead then return end
     room:changeMaxHp(player, -1)
     if player.dead then return end
@@ -296,9 +296,9 @@ local fhyx__qingce = fk.CreateActiveSkill{
   target_num = 1,
   card_num = 1,
   prompt = "#fhyx__qingce",
-  expand_pile = "fhyx__glory",
+  expand_pile = "$fhyx__glory",
   card_filter = function(self, to_select, selected)
-    return #selected == 0 and Self:getPileNameOfId(to_select) == "fhyx__glory"
+    return #selected == 0 and Self:getPileNameOfId(to_select) == "$fhyx__glory"
   end,
   target_filter = function(self, to_select, selected)
     return #Fk:currentRoom():getPlayerById(to_select):getCardIds("ej") > 0
@@ -306,7 +306,7 @@ local fhyx__qingce = fk.CreateActiveSkill{
   on_use = function(self, room, effect)
     local player = room:getPlayerById(effect.from)
     local target = room:getPlayerById(effect.tos[1])
-    room:moveCardTo(effect.cards, Card.DiscardPile, player, fk.ReasonPutIntoDiscardPile, self.name, "fhyx__glory")
+    room:moveCardTo(effect.cards, Card.DiscardPile, player, fk.ReasonPutIntoDiscardPile, self.name, "$fhyx__glory")
     if player.dead or target.dead or #target:getCardIds("ej") == 0 then return end
     local card = room:askForCardChosen(player, target, "ej", self.name)
     room:throwCard(card, self.name, target, player)
@@ -327,7 +327,7 @@ Fk:loadTranslationTable{
   [":fhyx__hongju"] = "觉醒技，准备阶段，若“荣”数不小于3，你摸等同于“荣”数的牌，然后减1点体力上限，获得〖清侧〗。",
   ["fhyx__qingce"] = "清侧",
   [":fhyx__qingce"] = "出牌阶段，你可以移去一张“荣”，然后弃置场上的一张牌。",
-  ["fhyx__glory"] = "荣",
+  ["$fhyx__glory"] = "荣",
   ["#fhyx__zhengrong-exchange"] = "征荣：选择任意张手牌替换等量的“荣”",
   ["#fhyx__zhengrong-choose"] = "征荣：将一名其他角色的一张牌置为“荣”",
   ["#fhyx__qingce"] = "清侧：你可以移去一张“荣”，弃置场上的一张牌",

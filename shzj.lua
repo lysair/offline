@@ -1826,7 +1826,7 @@ local fanjiang = General(extension, "fanjiang", "wu", 4)
 local bianzhua = fk.CreateTriggerSkill{
   name = "bianzhua",
   anim_type = "special",
-  expand_pile = "fanjiangzhangda_yuan",
+  expand_pile = "$fanjiangzhangda_yuan",
   events = {fk.TargetConfirmed, fk.EventPhaseStart},
   can_trigger = function(self, event, target, player, data)
     if target == player and player:hasSkill(self) then
@@ -1834,7 +1834,7 @@ local bianzhua = fk.CreateTriggerSkill{
         return data.card.is_damage_card and player:getMark("bianzhua-turn") == 0 and
           player.room:getCardArea(data.card) == Card.Processing
       else
-        return player.phase == Player.Finish and #player:getPile("fanjiangzhangda_yuan") > 0
+        return player.phase == Player.Finish and #player:getPile("$fanjiangzhangda_yuan") > 0
       end
     end
   end,
@@ -1842,8 +1842,8 @@ local bianzhua = fk.CreateTriggerSkill{
     if event == fk.TargetConfirmed then
       return player.room:askForSkillInvoke(player, self.name, nil, "#bianzhua-invoke:::"..data.card:toLogString())
     else
-      local use = U.askForUseRealCard(player.room, player, {player:getPile("fanjiangzhangda_yuan")[1]}, nil, self.name,
-        "#bianzhua-use", {bypass_times = true, expand_pile = "fanjiangzhangda_yuan"}, true, true)
+      local use = U.askForUseRealCard(player.room, player, {player:getPile("$fanjiangzhangda_yuan")[1]}, nil, self.name,
+        "#bianzhua-use", {bypass_times = true, expand_pile = "$fanjiangzhangda_yuan"}, true, true)
       if use then
         self.cost_data = use
         return true
@@ -1854,13 +1854,13 @@ local bianzhua = fk.CreateTriggerSkill{
     local room = player.room
     if event == fk.TargetConfirmed then
       room:setPlayerMark(player, "bianzhua-turn", 1)
-      player:addToPile("fanjiangzhangda_yuan", data.card, true, self.name, player.id)
+      player:addToPile("$fanjiangzhangda_yuan", data.card, true, self.name, player.id)
     else
       local use = self.cost_data
       room:useCard(use)
-      while not player.dead and #player:getPile("fanjiangzhangda_yuan") > 0 do
-        use = U.askForUseRealCard(player.room, player, {player:getPile("fanjiangzhangda_yuan")[1]}, nil, self.name,
-          "#bianzhua-use", {bypass_times = true, expand_pile = "fanjiangzhangda_yuan"}, true, true)
+      while not player.dead and #player:getPile("$fanjiangzhangda_yuan") > 0 do
+        use = U.askForUseRealCard(player.room, player, {player:getPile("$fanjiangzhangda_yuan")[1]}, nil, self.name,
+          "#bianzhua-use", {bypass_times = true, expand_pile = "$fanjiangzhangda_yuan"}, true, true)
         if use then
           room:useCard(use)
         else
@@ -1967,7 +1967,7 @@ Fk:loadTranslationTable{
   [":benxiang"] = "锁定技，当你杀死一名角色后，你令一名其他角色摸三张牌。",
   ["xiezhan"] = "协战",
   [":xiezhan"] = "锁定技，游戏开始时，你选择范疆或张达；出牌阶段开始时，你变更武将牌。",
-  ["fanjiangzhangda_yuan"] = "怨",
+  ["$fanjiangzhangda_yuan"] = "怨",
   ["#bianzhua-invoke"] = "鞭挝：是否将%arg置为“怨”？",
   ["#bianzhua-use"] = "鞭挝：你可以依次使用“怨”",
   ["#benxiang-invoke"] = "奔降：令一名其他角色摸三张牌",
@@ -1991,7 +1991,7 @@ local xingsha = fk.CreateActiveSkill{
   end,
   on_use = function(self, room, effect)
     local player = room:getPlayerById(effect.from)
-    player:addToPile("fanjiangzhangda_yuan", effect.cards, false, self.name, player.id)
+    player:addToPile("$fanjiangzhangda_yuan", effect.cards, false, self.name, player.id)
   end,
 }
 local xingsha_trigger = fk.CreateTriggerSkill{
@@ -2001,7 +2001,7 @@ local xingsha_trigger = fk.CreateTriggerSkill{
   events = {fk.EventPhaseStart},
   can_trigger = function(self, event, target, player, data)
     return target == player and player:hasSkill(xingsha) and player.phase == Player.Finish and
-      #player:getPile("fanjiangzhangda_yuan") > 1
+      #player:getPile("$fanjiangzhangda_yuan") > 1
   end,
   on_cost = function(self, event, target, player, data)
     local success, dat = player.room:askForUseActiveSkill(player, "xingsha_active",
@@ -2029,9 +2029,9 @@ local xingsha_trigger = fk.CreateTriggerSkill{
 }
 local xingsha_active = fk.CreateViewAsSkill{
   name = "xingsha_active",
-  expand_pile = "fanjiangzhangda_yuan",
+  expand_pile = "$fanjiangzhangda_yuan",
   card_filter = function(self, to_select, selected)
-    return #selected < 2 and table.contains(Self:getPile("fanjiangzhangda_yuan"), to_select)
+    return #selected < 2 and table.contains(Self:getPile("$fanjiangzhangda_yuan"), to_select)
   end,
   view_as = function(self, cards)
     if #cards ~= 2 then return end
@@ -2786,40 +2786,28 @@ local chende = fk.CreateActiveSkill{
     if #cards == 0 then return end
     room:moveCardTo(cards, Card.PlayerHand, target, fk.ReasonGive, self.name, nil, true, player.id)
     if player.dead then return end
-    cards = table.filter(U.getUniversalCards(room, "bt", true), function (id)
+    if player:getMark(self.name) == 0 then
+      room:setPlayerMark(player, self.name, U.getUniversalCards(room, "bt"))
+    end
+    cards = table.filter(player:getMark(self.name), function (id)
       return table.find(effect.cards, function (c)
         return Fk:getCardById(c).name == Fk:getCardById(id).name
       end)
     end)
-    room:setPlayerMark(player, "chende-tmp", cards)
-    local success, dat = room:askForUseActiveSkill(player, "chende_viewas", "#chende-use", true)
-    room:setPlayerMark(player, "chende-tmp", 0)
-    if success then
-      local card = Fk.skills["chende_viewas"]:viewAs(dat.cards)
-      local use = {
-        from = player.id,
-        tos = table.map(dat.targets, function(id) return {id} end),
-        card = card,
-        extraUse = true,
-      }
-      room:useCard(use)
+    if #cards > 0 then
+      local use = U.askForUseRealCard(room, player, cards, nil, self.name,
+        "#chende-use", {expand_pile = cards, bypass_times = true}, true, false)
+      if use then
+        local card = Fk:cloneCard(use.card.name)
+        card.skillName = self.name
+        room:useCard{
+          card = card,
+          from = player.id,
+          tos = use.tos,
+          extraUse = true,
+        }
+      end
     end
-  end,
-}
-local chende_viewas = fk.CreateViewAsSkill{
-  name = "chende_viewas",
-  expand_pile = function(self)
-    return U.getMark(Self, "chende-tmp")
-  end,
-  card_filter = function(self, to_select, selected)
-    return #selected == 0 and table.contains(U.getMark(Self, "chende-tmp"), to_select) and
-      Self:canUse(Fk:getCardById(to_select), {bypass_times = true})
-  end,
-  view_as = function(self, cards)
-    if #cards ~= 1 then return end
-    local card = Fk:cloneCard(Fk:getCardById(cards[1]).name)
-    card.skillName = "chende"
-    return card
   end,
 }
 local wansu = fk.CreateTriggerSkill{
@@ -2859,7 +2847,6 @@ local wansu = fk.CreateTriggerSkill{
     end
   end,
 }
-Fk:addSkill(chende_viewas)
 shzj_yiling__sunquan:addSkill(fuhans)
 shzj_yiling__sunquan:addSkill(chende)
 shzj_yiling__sunquan:addSkill(wansu)
@@ -2879,7 +2866,6 @@ Fk:loadTranslationTable{
   ["#fuhans1-invoke"] = "辅汉：是否废除 %src 一个装备栏？回合结束时当前回合角色将手牌摸至体力上限",
   ["#fuhans2-invoke"] = "辅汉：是否恢复 %src 一个装备栏？回合结束时当前回合角色将手牌摸至体力上限",
   ["#chende"] = "臣德：交给一名角色至少两张手牌，然后你可以视为使用其中一张牌",
-  ["chende_viewas"] = "臣德",
   ["#chende-use"] = "臣德：你可以视为使用其中一张牌",
 }
 

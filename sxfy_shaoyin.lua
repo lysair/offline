@@ -435,14 +435,14 @@ local chengyu = General(extension, "sxfy__chengyu", "wei", 3)
 local sxfy__shefu = fk.CreateTriggerSkill{
   name = "sxfy__shefu",
   anim_type = "control",
-  derived_piles = "sxfy__shefu",
+  derived_piles = "$sxfy__shefu",
   events ={fk.EventPhaseStart, fk.CardUsing},
   can_trigger = function(self, event, target, player, data)
     if player:hasSkill(self) then
       if event == fk.EventPhaseStart then
         return target == player and player.phase == Player.Finish and not player:isKongcheng()
       else
-        return table.find(player:getPile(self.name), function (id)
+        return table.find(player:getPile("$sxfy__shefu"), function (id)
           return Fk:getCardById(id).trueName == data.card.trueName
         end)
       end
@@ -454,8 +454,8 @@ local sxfy__shefu = fk.CreateTriggerSkill{
     if event == fk.EventPhaseStart then
       card = room:askForCard(player, 1, 1, false, self.name, true, ".", "#sxfy__shefu-put")
     else
-      card = room:askForCard(player, 1, 1, false, self.name, true, data.card.trueName.."|.|.|sxfy__shefu",
-        "#sxfy__shefu-invoke::"..target.id..":"..data.card:toLogString(), "sxfy__shefu")
+      card = room:askForCard(player, 1, 1, false, self.name, true, data.card.trueName.."|.|.|$sxfy__shefu",
+        "#sxfy__shefu-invoke::"..target.id..":"..data.card:toLogString(), "$sxfy__shefu")
     end
     if #card > 0 then
       self.cost_data = card
@@ -465,7 +465,7 @@ local sxfy__shefu = fk.CreateTriggerSkill{
   on_use = function(self, event, target, player, data)
     local room = player.room
     if event == fk.EventPhaseStart then
-      player:addToPile(self.name, self.cost_data, false, self.name, player.id)
+      player:addToPile("$sxfy__shefu", self.cost_data, false, self.name, player.id)
     else
       room:doIndicate(player.id, {target.id})
       room:moveCardTo(self.cost_data, Card.DiscardPile, nil, fk.ReasonPutIntoDiscardPile, self.name, nil, true, player.id)
