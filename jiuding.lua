@@ -122,7 +122,7 @@ local fengtu = fk.CreateTriggerSkill{
       room:setPlayerMark(to, "fengtu_lost", 1)
     end
 
-    local seats = U.getMark(to, "@fengtu")
+    local seats = to:getTableMark("@fengtu")
     table.insertIfNeed(seats, target.seat)
     room:setPlayerMark(to, "@fengtu", seats)
   end,
@@ -145,7 +145,7 @@ local fengtu = fk.CreateTriggerSkill{
         break
       end
 
-      if table.find(room.alive_players, function(p) return table.contains(U.getMark(p, "@fengtu"), next.seat) end) then
+      if table.find(room.alive_players, function(p) return table.contains(p:getTableMark("@fengtu"), next.seat) end) then
         return true
       end
 
@@ -168,7 +168,7 @@ local fengtu = fk.CreateTriggerSkill{
             break
           end
     
-          local newNextCurrent = table.find(room.alive_players, function(p) return table.contains(U.getMark(p, "@fengtu"), next.seat) end)
+          local newNextCurrent = table.find(room.alive_players, function(p) return table.contains(p:getTableMark("@fengtu"), next.seat) end)
           if newNextCurrent then
             data.to = newNextCurrent
             data.skipRoundPlus = realSeat < next.seat
@@ -191,7 +191,7 @@ local fengtu = fk.CreateTriggerSkill{
           break
         end
   
-        local newNextCurrent = table.find(room.alive_players, function(p) return table.contains(U.getMark(p, "@fengtu"), next.seat) end)
+        local newNextCurrent = table.find(room.alive_players, function(p) return table.contains(p:getTableMark("@fengtu"), next.seat) end)
         if newNextCurrent then
           data.to = newNextCurrent
           data.skipRoundPlus = data.from.seat < next.seat
@@ -753,7 +753,7 @@ local mouBeiFa = fk.CreateActiveSkill{
 local mouBeiFaViewas = fk.CreateViewAsSkill{
   name = "ofl_mou__beifa_viewas",
   expand_pile = function (self)
-    return U.getMark(Self, "ofl_mou__beifa_view")
+    return Self:getTableMark("ofl_mou__beifa_view")
   end,
   card_filter = function(self, to_select, selected)
     if #selected == 0 then

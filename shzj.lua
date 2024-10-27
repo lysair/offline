@@ -311,7 +311,7 @@ local juesui = fk.CreateTriggerSkill{
   anim_type = "support",
   events = {fk.EnterDying},
   can_trigger = function(self, event, target, player, data)
-    return player:hasSkill(self) and not target.dead and not table.contains(U.getMark(player, "juesui_used"), target.id) and
+    return player:hasSkill(self) and not target.dead and not table.contains(player:getTableMark("juesui_used"), target.id) and
     #target:getAvailableEquipSlots() > 0
   end,
   on_cost = function(self, event, target, player, data)
@@ -323,7 +323,7 @@ local juesui = fk.CreateTriggerSkill{
   end,
   on_use = function(self, event, target, player, data)
     local room = player.room
-    local mark = U.getMark(player, "juesui_used")
+    local mark = player:getTableMark("juesui_used")
     table.insert(mark, target.id)
     room:setPlayerMark(player, "juesui_used", mark)
     if player ~= target and not room:askForSkillInvoke(target, self.name, nil, "#juesui-accept") then return false end
@@ -543,7 +543,7 @@ local yilin = fk.CreateTriggerSkill{
       for _, move in ipairs(data) do
         if move.toArea == Card.PlayerHand then
           if move.from == player.id and move.to ~= player.id and
-            not player.room:getPlayerById(move.to).dead and not table.contains(U.getMark(player, "yilin-turn"), move.to) then
+            not player.room:getPlayerById(move.to).dead and not table.contains(player:getTableMark("yilin-turn"), move.to) then
             for _, info in ipairs(move.moveInfo) do
               if (info.fromArea == Card.PlayerHand or info.fromArea == Card.PlayerEquip) and
                 table.contains(player.room:getPlayerById(move.to):getCardIds("h"), info.cardId) then
@@ -552,7 +552,7 @@ local yilin = fk.CreateTriggerSkill{
             end
           end
           if move.to == player.id and move.from and move.from ~= player.id and
-            not table.contains(U.getMark(player, "yilin-turn"), player.id) then
+            not table.contains(player:getTableMark("yilin-turn"), player.id) then
             for _, info in ipairs(move.moveInfo) do
               if (info.fromArea == Card.PlayerHand or info.fromArea == Card.PlayerEquip) and
                 table.contains(player:getCardIds("h"), info.cardId) then
@@ -570,7 +570,7 @@ local yilin = fk.CreateTriggerSkill{
     for _, move in ipairs(data) do
       if move.toArea == Card.PlayerHand then
         if move.from == player.id and move.to ~= player.id and
-          not table.contains(U.getMark(player, "yilin-turn"), move.to) then
+          not table.contains(player:getTableMark("yilin-turn"), move.to) then
           for _, info in ipairs(move.moveInfo) do
             if (info.fromArea == Card.PlayerHand or info.fromArea == Card.PlayerEquip) and
               table.contains(room:getPlayerById(move.to):getCardIds("h"), info.cardId) then
@@ -580,7 +580,7 @@ local yilin = fk.CreateTriggerSkill{
           end
         end
         if move.to == player.id and move.from and move.from ~= player.id and
-          not table.contains(U.getMark(player, "yilin-turn"), player.id) then
+          not table.contains(player:getTableMark("yilin-turn"), player.id) then
           for _, info in ipairs(move.moveInfo) do
             if (info.fromArea == Card.PlayerHand or info.fromArea == Card.PlayerEquip) and
               table.contains(player:getCardIds("h"), info.cardId) then
@@ -595,7 +595,7 @@ local yilin = fk.CreateTriggerSkill{
     for _, id in ipairs(targets) do
       if not player:hasSkill(self) then break end
       local to = room:getPlayerById(id)
-      if to and not to.dead and not table.contains(U.getMark(player, "yilin-turn"), to.id) then
+      if to and not to.dead and not table.contains(player:getTableMark("yilin-turn"), to.id) then
         self:doCost(event, to, player, data)
       end
     end
@@ -606,7 +606,7 @@ local yilin = fk.CreateTriggerSkill{
   on_use = function(self, event, target, player, data)
     local room = player.room
     room:doIndicate(player.id, {target.id})
-    local mark = U.getMark(player, "yilin-turn")
+    local mark = player:getTableMark("yilin-turn")
     table.insert(mark, target.id)
     room:setPlayerMark(player, "yilin-turn", mark)
     local cards = {}
@@ -2182,7 +2182,7 @@ local chengshig = fk.CreateTriggerSkill{
       end
     else
       room:doIndicate(player.id, {data.to.id})
-      local mark = U.getMark(data.to, "chengshig-turn")
+      local mark = data.to:getTableMark("chengshig-turn")
       table.insert(mark, player.id)
       room:setPlayerMark(data.to, "chengshig-turn", mark)
     end
@@ -2191,7 +2191,7 @@ local chengshig = fk.CreateTriggerSkill{
 local chengshig_prohibit = fk.CreateProhibitSkill{
   name = "#chengshig_prohibit",
   is_prohibited = function(self, from, to, card)
-    return from:getMark("chengshig-turn") ~= 0 and card and not table.contains(U.getMark(from, "chengshig-turn"), to.id) and
+    return from:getMark("chengshig-turn") ~= 0 and card and not table.contains(from:getTableMark("chengshig-turn"), to.id) and
       card.is_damage_card
   end,
 }
@@ -2389,7 +2389,7 @@ local ansha = fk.CreateTriggerSkill{
     }
     room:useCard(use)
     if target.dead then return end
-    local mark = U.getMark(player, "ansha-round")
+    local mark = player:getTableMark("ansha-round")
     table.insert(mark, target.id)
     room:setPlayerMark(player, "ansha-round", mark)
   end,
@@ -2398,7 +2398,7 @@ local ansha_distance = fk.CreateDistanceSkill{
   name = "#ansha_distance",
   correct_func = function(self, from, to) return 0 end,
   fixed_func = function(self, from, to)
-    local mark = U.getMark(to, "ansha-round")
+    local mark = to:getTableMark("ansha-round")
     if table.contains(mark, from.id) then
       return 1
     end
@@ -2600,7 +2600,7 @@ local xianwu_trigger = fk.CreateTriggerSkill{
     if not data.from.dead then
       room:doIndicate(player.id, {data.from.id})
       room:setPlayerMark(data.from, "@@xianwu-round", 1)
-      local mark = U.getMark(player, "xianwu-round")
+      local mark = player:getTableMark("xianwu-round")
       table.insert(mark, data.from.id)
       room:setPlayerMark(player, "xianwu-round", mark)
     end
@@ -2611,13 +2611,13 @@ local xianwu_prohibit = fk.CreateProhibitSkill{
   name = "#xianwu_prohibit",
   is_prohibited = function(self, from, to, card)
     return from:getMark("xianwu-round") ~= 0 and card and table.contains(card.skillNames, "xianwu") and
-      not table.contains(U.getMark(from, "xianwu-round"), to.id)
+      not table.contains(from:getTableMark("xianwu-round"), to.id)
   end,
 }
 local xianwu_targetmod = fk.CreateTargetModSkill{
   name = "#xianwu_targetmod",
   bypass_distances = function(self, player, skill, card, to)
-    return player:getMark("xianwu-round") ~= 0 and table.contains(U.getMark(player, "xianwu-round"), to.id)
+    return player:getMark("xianwu-round") ~= 0 and table.contains(player:getTableMark("xianwu-round"), to.id)
   end,
 }
 xianwu:addRelatedSkill(xianwu_trigger)

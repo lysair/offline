@@ -751,7 +751,7 @@ local xiandao = fk.CreateTriggerSkill{
     local room = player.room
     room:doIndicate(player.id, {target.id})
     local card = Fk:getCardById(data)
-    local mark = U.getMark(target, "@xiandao-turn")
+    local mark = target:getTableMark("@xiandao-turn")
     table.insertIfNeed(mark, card:getSuitString(true))
     room:setPlayerMark(target, "@xiandao-turn", mark)
     if not player.dead then

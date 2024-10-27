@@ -3478,7 +3478,7 @@ local xiongye = fk.CreateActiveSkill{
       end
     end
     room:sortPlayersByAction(targets)
-    room:doYiji(room, list, player.id, self.name)
+    room:doYiji(list, player.id, self.name)
     for _, id in ipairs(targets) do
       local p = room:getPlayerById(id)
       if not p.dead then

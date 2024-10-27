@@ -235,7 +235,7 @@ local sxfy__beiwu = fk.CreateViewAsSkill{
   end,
   card_filter = function (self, to_select, selected)
     return #selected == 0 and Fk:currentRoom():getCardArea(to_select) == Card.PlayerEquip and
-      not table.contains(U.getMark(Self, "sxfy__beiwu-turn"), to_select)
+      not table.contains(Self:getTableMark("sxfy__beiwu-turn"), to_select)
   end,
   view_as = function(self, cards)
     if #cards ~= 1 or self.interaction.data == nil then return end
