@@ -418,7 +418,7 @@ local lianpoj = fk.CreateTriggerSkill{
       player:broadcastSkillInvoke(self.name, math.random(1, 2))
       local all_roles = {"lord", "loyalist", "rebel", "renegade"}
       local rolesMap = {["lord"] = 0, ["loyalist"] = 0, ["rebel"] = 0, ["renegade"] = 0}
-      if table.contains({"aaa_role_mode", "aab_role_mode", "vanished_dragon"}, room.settings.gameMode) then
+      if room:isGameMode("role_mode") then
         rolesMap = {["lord"] = 1, ["loyalist"] = 3, ["rebel"] = 4, ["renegade"] = 2}
         for _, p in ipairs(room.players) do
           if rolesMap[p.role] then
