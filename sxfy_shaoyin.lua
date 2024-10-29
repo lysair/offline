@@ -628,7 +628,7 @@ local sxfy__fengpo = fk.CreateTriggerSkill{
   events = {fk.DamageCaused},
   can_trigger = function(self, event, target, player, data)
     return target and target == player and player:hasSkill(self) and data.card and data.card.trueName == "slash" and
-      U.damageByCardEffect(player.room) and not (player:isNude() and data.to:isNude())
+      player.room.logic:damageByCardEffect() and not (player:isNude() and data.to:isNude())
   end,
   on_cost = function(self, event, target, player, data)
     local targets = {}

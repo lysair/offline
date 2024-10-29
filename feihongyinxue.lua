@@ -543,7 +543,7 @@ local fhyx__huimin = fk.CreateTriggerSkill{
     end)
     if #targets == 0 then return end
     local n = math.min(player:getHandcardNum(), #targets)
-    U.askForDistribution(player, player:getCardIds("h"), table.map(targets, Util.Id2PlayerMapper), self.name, n, n,
+    room:askForYiji(player, player:getCardIds("h"), table.map(targets, Util.Id2PlayerMapper), self.name, n, n,
       "#fhyx__huimin-give", nil, false, 1)
   end,
 }
@@ -581,7 +581,7 @@ local fhyx__tongbo = fk.CreateTriggerSkill{
     U.swapCardsWithPile(player, piles[1], piles[2], self.name, "caiyong_book")
     if player.dead or #player:getPile("caiyong_book") < 4 or #room.alive_players < 2 then return end
     if room:askForSkillInvoke(player, self.name, nil, "#fhyx__tongbo-give") then
-      local result = U.askForDistribution(player, player:getPile("caiyong_book"), room:getOtherPlayers(player), self.name, 4, 4,
+      local result = room:askForYiji(player, player:getPile("caiyong_book"), room:getOtherPlayers(player), self.name, 4, 4,
         "#fhyx__tongbo-distribute", "caiyong_book", false, 4)
       if player.dead then return end
       local suits = {}
@@ -867,7 +867,7 @@ local ofl_shiji__minshi = fk.CreateActiveSkill{
     for _, id in ipairs(cards) do
       room:setCardMark(Fk:getCardById(id), MarkEnum.DestructIntoDiscard, 1)
     end
-    local result = U.askForDistribution(player, cards, targets, self.name, 1, #cards, "#ofl_shiji__minshi-give", cards, false)
+    local result = room:askForYiji(player, cards, targets, self.name, 1, #cards, "#ofl_shiji__minshi-give", cards, false)
     local n = #table.filter(targets, function(p)
       return #result[tostring(p.id)] == 0
     end)
@@ -1929,7 +1929,7 @@ Fk:loadTranslationTable{
   ["~ofl_shiji__xujing"] = "靖获虚誉而得用，唯以荐才报君恩……",
 }
 
-local zhangwen = General(extension, "ofl_shiji__zhangwen", "wu", 3)
+--local zhangwen = General(extension, "ofl_shiji__zhangwen", "wu", 3)
 local ofl_shiji__songshu = fk.CreateTriggerSkill{
   name = "ofl_shiji__songshu",
   anim_type = "control",
@@ -1950,12 +1950,6 @@ local ofl_shiji__songshu = fk.CreateTriggerSkill{
     if target.dead then return end
     if #U.GetRenPile(room) >= target:getHandcardNum() then
       room:setPlayerMark(target, "@@ofl_shiji__songshu-turn", 1)
-      target.special_cards["RenPile&"] = U.GetRenPile(room)
-      target:doNotify("ChangeSelf", json.encode {
-        id = target.id,
-        handcards = target:getCardIds("h"),
-        special_cards = target.special_cards,
-      })
     end
   end,
 
@@ -1965,21 +1959,13 @@ local ofl_shiji__songshu = fk.CreateTriggerSkill{
   end,
   on_refresh  = function (self, event, target, player, data)
     local room = player.room
-    if event == fk.AfterTurnEnd then
+    --[[if event == fk.AfterTurnEnd then
       player.special_cards["RenPile&"] = nil
-      player:doNotify("ChangeSelf", json.encode {
-        id = player.id,
-        handcards = player:getCardIds("h"),
-        special_cards = player.special_cards,
       })
     else
       player.special_cards["RenPile&"] = U.GetRenPile(room)
-      player:doNotify("ChangeSelf", json.encode {
-        id = player.id,
-        handcards = player:getCardIds("h"),
-        special_cards = player.special_cards,
       })
-    end
+    end]]--  ChangeSelf丸辣！暂时想不到体验很好的实现方法
   end,
 }
 local ofl_shiji__songshu_prohibit = fk.CreateProhibitSkill{
@@ -2002,8 +1988,8 @@ local ofl_shiji__songshu_prohibit = fk.CreateProhibitSkill{
   end,
 }
 ofl_shiji__songshu:addRelatedSkill(ofl_shiji__songshu_prohibit)
-zhangwen:addSkill(ofl_shiji__songshu)
-zhangwen:addSkill("gebo")
+--zhangwen:addSkill(ofl_shiji__songshu)
+--zhangwen:addSkill("gebo")
 Fk:loadTranslationTable{
   ["ofl_shiji__zhangwen"] = "张温",
   ["#ofl_shiji__zhangwen"] = "炜晔曜世",

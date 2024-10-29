@@ -104,7 +104,7 @@ local junshen_trigger = fk.CreateTriggerSkill{
       end
     elseif event == fk.DamageCaused then
       return data.card and data.card.trueName == "slash" and table.contains(data.card.skillNames, "junshen") and
-      not data.to.dead and U.damageByCardEffect(player.room)
+      not data.to.dead and player.room.logic:damageByCardEffect()
     end
   end,
   on_cost = function(self, event, target, player, data)
@@ -428,7 +428,7 @@ local shouxiang_delay = fk.CreateTriggerSkill{
       return p:inMyAttackRange(player)
     end)
     n = math.min(n, 3)
-    U.askForDistribution(player, player:getCardIds("h"), room:getOtherPlayers(player), self.name, 0, n, "#shouxiang-give:::"..n,
+    room:askForYiji(player, player:getCardIds("h"), room:getOtherPlayers(player), "shouxiang", 0, n, "#shouxiang-give:::"..n,
       "", false, 1)
   end,
 }
@@ -496,7 +496,7 @@ local qingshil = fk.CreateTriggerSkill{
         return discussion.results[p.id].opinion == "black" and not p.dead and p ~= player
       end)
       if #targets == 0 then return end
-      U.askForDistribution(player, player:getCardIds("he"), targets, self.name, 0, 999, "#qingshil-give", nil, false, 1)
+      room:askForYiji(player, player:getCardIds("he"), targets, self.name, 0, 999, "#qingshil-give", nil, false, 1)
     end
   end,
 
