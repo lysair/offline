@@ -2858,7 +2858,7 @@ local qianjing_trigger = fk.CreateTriggerSkill{
     room:setCardMark(card, "@caning_whip", Fk:translate(mapper[self.cost_data.interaction]))
     Fk.printed_cards[self.cost_data.cards[1]].sub_type = Util.convertSubtypeAndEquipSlot(self.cost_data.interaction)
     local to = room:getPlayerById(self.cost_data.targets[1])
-    U.moveCardIntoEquip(room, to, self.cost_data.cards, "qianjing", false, player)
+    room:moveCardIntoEquip(to, self.cost_data.cards, "qianjing", false, player)
     if to == player and not player.dead then
       player:drawCards(1, "qianjing")
     end

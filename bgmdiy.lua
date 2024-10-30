@@ -361,7 +361,7 @@ local hantong_trigger = fk.CreateTriggerSkill{
         local logic = player.room.logic
         logic:getEventsOfScope(GameEvent.MoveCards, 1, function (e)
           for _, move in ipairs(e.data) do
-            if move.from == player.id and move.moveReason == fk.ReasonDiscard and move.skillName == "game_rule" then
+            if move.from == player.id and move.moveReason == fk.ReasonDiscard and move.skillName == "phase_discard" then
               for _, info in ipairs(move.moveInfo) do
                 if player.room:getCardArea(info.cardId) == Card.DiscardPile then
                   table.insertIfNeed(ids, info.cardId)

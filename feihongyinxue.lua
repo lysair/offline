@@ -1030,7 +1030,7 @@ local ofl_shiji__zuici = fk.CreateTriggerSkill{
   anim_type = "masochism",
   events = {fk.Damaged},
   can_trigger = function(self, event, target, player, data)
-    return target == player and player:hasSkill(self.name) and
+    return target == player and player:hasSkill(self) and
       table.find(player.room.alive_players, function(p)
         return #p:getPile("ofl_shiji__dingyi") > 0
       end)
@@ -1589,7 +1589,7 @@ local ofl_shiji__dinghan = fk.CreateTriggerSkill{
 
   refresh_events = {fk.GameStart},
   can_refresh = function(self, event, target, player, data)
-    return player:hasSkill(self.name, true)
+    return player:hasSkill(self, true)
   end,
   on_refresh = function(self, event, target, player, data)
     local room = player.room

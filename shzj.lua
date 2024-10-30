@@ -518,7 +518,7 @@ local qingshil = fk.CreateTriggerSkill{
     }, self.name), function (id)
       return player.room:getCardArea(id) == Card.Void
     end)
-    U.moveCardIntoEquip(room, player, cards[1], self.name, false, player)
+    room:moveCardIntoEquip(player, cards[1], self.name, false, player)
   end,
 }
 local qingshil_distance = fk.CreateDistanceSkill{
@@ -781,7 +781,7 @@ local qianshou = fk.CreateTriggerSkill{
     }, self.name), function (id)
       return player.room:getCardArea(id) == Card.Void
     end)
-    U.moveCardIntoEquip(room, player, cards[1], self.name, false, player)
+    room:moveCardIntoEquip(player, cards[1], self.name, false, player)
   end,
 }
 local qianshou_prohibit = fk.CreateProhibitSkill{
