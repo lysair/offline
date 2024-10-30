@@ -473,12 +473,7 @@ local qingshil = fk.CreateTriggerSkill{
     local room = player.room
     room:sortPlayersByAction(self.cost_data)
     local targets = table.map(self.cost_data, Util.Id2PlayerMapper)
-    local discussion = U.Discussion{
-      reason = self.name,
-      from = player,
-      tos = targets,
-      results = {},
-    }
+    local discussion = U.Discussion(player, targets, self.name)
     if discussion.color == "red" then
       for _, p in ipairs(targets) do
         if not p.dead and discussion.results[p.id].opinion == "red" then
@@ -518,7 +513,7 @@ local qingshil = fk.CreateTriggerSkill{
     }, self.name), function (id)
       return player.room:getCardArea(id) == Card.Void
     end)
-    room:moveCardIntoEquip(player, cards[1], self.name, false, player)
+    room:moveCardIntoEquip(player, cards[1], self.name, false, player.id)
   end,
 }
 local qingshil_distance = fk.CreateDistanceSkill{
@@ -781,7 +776,7 @@ local qianshou = fk.CreateTriggerSkill{
     }, self.name), function (id)
       return player.room:getCardArea(id) == Card.Void
     end)
-    room:moveCardIntoEquip(player, cards[1], self.name, false, player)
+    room:moveCardIntoEquip(player, cards[1], self.name, false, player.id)
   end,
 }
 local qianshou_prohibit = fk.CreateProhibitSkill{
