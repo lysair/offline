@@ -3288,7 +3288,7 @@ local yanggu = fk.CreateViewAsSkill{
   pattern = "diversion",
   prompt = "#ofl__yanggu-yin",
   card_filter = function(self, to_select, selected)
-    return #selected == 0 and Fk:currentRoom():getCardArea(to_select) ~= Player.Equip
+    return #selected == 0 and table.contains(Self:getHandlyIds(true), to_select)
   end,
   view_as = function(self, cards)
     if #cards ~= 1 then return end
@@ -3430,7 +3430,7 @@ local xuanshi = fk.CreateActiveSkill{
   end,
 }
 local xiongye = fk.CreateActiveSkill{
-  name = "ofl__xiongye",
+  name = "ofl__xiongye$",
   anim_type = "offensive",
   card_num = 1,
   target_num = 1,
