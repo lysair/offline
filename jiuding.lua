@@ -129,79 +129,10 @@ local fengtu = fk.CreateTriggerSkill{
 
   refresh_events = {fk.EventTurnChanging},
   can_refresh = function (self, event, target, player, data)
-    local room = player.room
-    if player ~= room.players[1] then
-      return false
-    end
-
-    if room:getTag("fengtuTurn") then
-      return true
-    end
-
-    local current = data.from
-    repeat
-      local next = current.next
-      if not next.dead then
-        break
-      end
-
-      if table.find(room.alive_players, function(p) return table.contains(p:getTableMark("@fengtu"), next.seat) end) then
-        return true
-      end
-
-      current = next
-    until current == data.to
-
-    return false
+    return table.contains(player:getTableMark("@fengtu"), data.to.seat)
   end,
   on_refresh = function (self, event, target, player, data)
-    local room = player.room
-    if room:getTag("fengtuTurn") then
-      local realSeat = room:getTag("fengtuTurn")
-      local realTurnOwner = table.find(room.players, function(p) return p.seat == realSeat end)
-      room:removeTag("fengtuTurn")
-      if realTurnOwner then
-        local current = realTurnOwner
-        repeat
-          local next = current.next
-          if not next.dead then
-            break
-          end
-    
-          local newNextCurrent = table.find(room.alive_players, function(p) return table.contains(p:getTableMark("@fengtu"), next.seat) end)
-          if newNextCurrent then
-            data.to = newNextCurrent
-            data.skipRoundPlus = realSeat < next.seat
-            room:setTag("fengtuTurn", next.seat)
-            return false
-          end
-  
-          current = next
-        until current == data.to
-
-        local nextPlayer = realTurnOwner:getNextAlive(true, nil, true)
-        data.to = nextPlayer
-        data.skipRoundPlus = realSeat < nextPlayer.seat
-      end
-    else
-      local current = data.from
-      repeat
-        local next = current.next
-        if not next.dead then
-          break
-        end
-  
-        local newNextCurrent = table.find(room.alive_players, function(p) return table.contains(p:getTableMark("@fengtu"), next.seat) end)
-        if newNextCurrent then
-          data.to = newNextCurrent
-          data.skipRoundPlus = data.from.seat < next.seat
-          room:setTag("fengtuTurn", next.seat)
-          break
-        end
-
-        current = next
-      until current == data.to
-    end
+    player:gainAnExtraTurn(false, "game_rule")
   end,
 }
 Fk:loadTranslationTable{
