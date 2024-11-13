@@ -323,15 +323,12 @@ Fk:loadTranslationTable{
 local shzj__burning_camps_skill = fk.CreateActiveSkill{
   name = "shzj__burning_camps_skill",
   prompt = "#shzj__burning_camps_skill",
+  can_use = Util.CanUse,
   target_num = 1,
   mod_target_filter = function(_, to_select, _, _, _, _)
     return not Fk:currentRoom():getPlayerById(to_select):isNude()
   end,
-  target_filter = function(self, to_select, selected, _, card)
-    if #selected < self:getMaxTargetNum(Self, card) then
-      return self:modTargetFilter(to_select, selected, Self.id, card)
-    end
-  end,
+  target_filter = Util.TargetFilter,
   on_action = function(self, room, use, finished)
     if finished and use.extra_data and use.extra_data.shzj__burning_camps then
       local from = room:getPlayerById(use.from)
