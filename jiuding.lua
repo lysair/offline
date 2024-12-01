@@ -1339,46 +1339,544 @@ Fk:loadTranslationTable{
   ["~ofl_mou__sunshangxiang"] = "今夫君已亡，复能……独生乎！",
 }
 
+local ganning = General(extension, "ofl_mou__ganning", "wu", 4)
+local qixi = fk.CreateActiveSkill{
+  name = "ofl_mou__qixi",
+  anim_type = "control",
+  prompt = "#ofl_mou__qixi",
+  can_use = function(self, player)
+    return player:usedSkillTimes(self.name, Player.HistoryPhase) == 0
+  end,
+  card_num = 1,
+  target_num = 1,
+  card_filter = function (self, to_select, selected)
+    return #selected == 0 and table.contains(Self:getCardIds("h"), to_select)
+  end,
+  target_filter = function(self, to_select, selected)
+    return #selected == 0 and to_select ~= Self.id
+  end,
+  on_use = function(self, room, effect)
+    local player = room:getPlayerById(effect.from)
+    local target = room:getPlayerById(effect.tos[1])
+    local suits = {"log_spade", "log_heart", "log_club", "log_diamond"}
+    local num = 0
+    while #suits > 0 do
+      local choice = room:askForChoice(target, suits, self.name, "#ofl_mou__qixi-choice:"..player.id)
+      num = num + 1
+      room:sendLog{
+        type = "#Choice",
+        from = target.id,
+        arg = choice,
+        toast = true,
+      }
+      if Fk:getCardById(effect.cards[1]):getSuitString(true) ~= choice then
+        table.removeOne(suits, choice)
+      else
+        room:throwCard(effect.cards, self.name, player, player)
+        break
+      end
+    end
+    local throw_num = math.min(#target:getCardIds("hej"), num - 1)
+    if player.dead or target.dead or throw_num == 0 then return end
+    local throw = room:askForCardsChosen(player, target, throw_num, throw_num, "hej", self.name)
+    room:throwCard(throw, self.name, target, player)
+  end
+}
+local fenwei = fk.CreateTriggerSkill{
+  name = "ofl_mou__fenwei",
+  anim_type = "defensive",
+  frequency = Skill.Limited,
+  events = {fk.TargetSpecified},
+  can_trigger = function(self, event, target, player, data)
+    return player:hasSkill(self) and data.card.type == Card.TypeTrick and #AimGroup:getAllTargets(data.tos) > 1 and data.firstTarget and
+      player:usedSkillTimes(self.name, Player.HistoryGame) == 0
+  end,
+  on_cost = function(self, event, target, player, data)
+    local tos = player.room:askForChoosePlayers(player, AimGroup:getAllTargets(data.tos), 1, 999,
+      "#ofl_mou__fenwei-choose:::"..data.card:toLogString(), self.name, true)
+    if #tos > 0 then
+      self.cost_data = tos
+      return true
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    table.insertTable(data.nullifiedTargets, self.cost_data)
+    if table.contains(self.cost_data, player.id) then
+      player.room:setPlayerMark(player, "ofl_mou__fenwei-turn", 1)
+    end
+  end,
+}
+local fenwei_delay = fk.CreateTriggerSkill{
+  name = "#ofl_mou__fenwei_delay",
+  mute = true,
+  events = {fk.TurnEnd},
+  can_trigger = function(self, event, target, player, data)
+    return player:getMark("ofl_mou__fenwei-turn") > 0 and not player:isKongcheng() and
+      table.find(player.room:getOtherPlayers(player), function (p)
+        return not p:isAllNude()
+      end)
+  end,
+  on_cost = Util.TrueFunc,
+  on_use = function(self, event, target, player, data)
+    player.room:askForUseActiveSkill(player, "ofl_mou__qixi", "#ofl_mou__qixi", true)
+  end,
+}
+fenwei:addRelatedSkill(fenwei_delay)
+ganning:addSkill(qixi)
+ganning:addSkill(fenwei)
 Fk:loadTranslationTable{
   ["ofl_mou__ganning"] = "谋甘宁",
   ["#ofl_mou__ganning"] = "兴王定霸",
-  ["illustrator:ofl_mou__ganning"] = "",
+  ["illustrator:ofl_mou__ganning"] = "铁杵",
 
   ["ofl_mou__qixi"] = "奇袭",
   [":ofl_mou__qixi"] = "出牌阶段限一次，你可以选择一张手牌并选择一名其他角色，令其猜测此牌的花色。若猜错，该角色从未猜测过的花色中再次猜测；"..
-  "若猜对，你弃置此牌，然后你弃置其区域内X张牌（X为该角色猜测的次数，不足则全弃）。",
+  "若猜对，你弃置此牌，然后你弃置其区域内X-1张牌（X为该角色猜测的次数，不足则全弃）。",
   ["ofl_mou__fenwei"] = "奋威",
   [":ofl_mou__fenwei"] = "限定技，当一张锦囊牌指定多个目标后，你可以令此牌对其中任意个目标无效，若包含你，本回合结束时你可以发动一次〖奇袭〗。",
+  ["#ofl_mou__qixi"] = "奇袭：选择一张手牌，令一名角色猜测此牌花色，你弃置此牌并弃置其猜测次数-1的牌",
+  ["#ofl_mou__qixi-choice"] = "奇袭：请猜测 %src 选择的手牌的花色",
+  ["#ofl_mou__fenwei-choose"] = "奋威：你可以令此%arg对任意个目标无效，若包含你则本回合结束时可以发动“奇袭”",
+  ["#ofl_mou__fenwei_delay"] = "奋威",
+
+  ["$ofl_mou__qixi1"] = "百甲倾袭出，片刻得胜归！",
+  ["$ofl_mou__qixi2"] = "奇袭中军帐，誓斩曹孟德！",
+  ["$ofl_mou__fenwei1"] = "浪淘英雄泪，血染将军魂！",
+  ["$ofl_mou__fenwei2"] = "立功护英主，奋威破敌酋！",
+  ["~ofl_mou__ganning"] = "折冲御侮半生世，忽忆当年锦帆时……",
 }
 
+local daqiao = General(extension, "ofl_mou__daqiao", "wu", 3, 3, General.Female)
+local guose = fk.CreateActiveSkill{
+  name = "ofl_mou__guose",
+  anim_type = "control",
+  min_card_num = 0,
+  max_card_num = 1,
+  min_target_num = 1,
+  max_target_num = 1,
+  prompt = function (self)
+    return "#"..self.interaction.data
+  end,
+  can_use = function(self, player)
+    return player:usedSkillTimes(self.name, Player.HistoryPhase) == 0
+  end,
+  interaction = function()
+    return UI.ComboBox {choices = {"ofl_mou__guose_use", "ofl_mou__guose_move"}}
+  end,
+  card_filter = function(self, to_select, selected)
+    if self.interaction.data == "ofl_mou__guose_use" then
+      if #selected > 0 or Fk:getCardById(to_select).suit ~= Card.Diamond then return end
+      local card = Fk:cloneCard("indulgence")
+      card:addSubcard(to_select)
+      return Self:canUse(card) and not Self:prohibitUse(card)
+    else
+      return false
+    end
+  end,
+  target_filter = function(self, to_select, selected, selected_cards)
+    local target = Fk:currentRoom():getPlayerById(to_select)
+    if self.interaction.data == "ofl_mou__guose_use" and #selected_cards == 1 then
+      local card = Fk:cloneCard("indulgence")
+      card:addSubcard(selected_cards[1])
+      return to_select ~= Self.id and not Self:isProhibited(target, card)
+    elseif self.interaction.data == "ofl_mou__guose_move" then
+      if #selected == 0 then
+        return target:hasDelayedTrick("indulgence")
+      elseif #selected == 1 then
+        local target1 = Fk:currentRoom():getPlayerById(selected[1])
+        for _, id in ipairs(target1:getCardIds("j")) do
+          local card = target1:getVirualEquip(id)
+          if not card then card = Fk:getCardById(id) end
+          if card.name == "indulgence" and target1:canMoveCardInBoardTo(target, id) and
+            not target:isProhibited(target, card) then
+            return true
+          end
+        end
+      end
+    end
+  end,
+  feasible = function (self, selected, selected_cards)
+    if self.interaction.data == "ofl_mou__guose_use" then
+      return #selected == 1 and #selected_cards == 1
+    else
+      if #selected == 2 and #selected_cards == 0 then
+        local target1 = Fk:currentRoom():getPlayerById(selected[1])
+        local target2 = Fk:currentRoom():getPlayerById(selected[2])
+        for _, id in ipairs(target1:getCardIds("j")) do
+          local card = target1:getVirualEquip(id)
+          if not card then card = Fk:getCardById(id) end
+          if card.name == "indulgence" and target1:canMoveCardInBoardTo(target2, id) and
+            not target2:isProhibited(target2, card) then
+            return true
+          end
+        end
+      end
+    end
+  end,
+  on_use = function(self, room, effect)
+    local player = room:getPlayerById(effect.from)
+    if self.interaction.data == "ofl_mou__guose_use" then
+      local target = room:getPlayerById(effect.tos[1])
+      room:useVirtualCard("indulgence", effect.cards, player, target, self.name)
+    elseif self.interaction.data == "ofl_mou__guose_move" then
+      local targets = table.map(effect.tos, Util.Id2PlayerMapper)
+      local excludeIds = {}
+      for _, id in ipairs(targets[1]:getCardIds("j")) do
+        local card = targets[1]:getVirualEquip(id)
+        if not card then card = Fk:getCardById(id) end
+        if card.name == "indulgence" and targets[1]:canMoveCardInBoardTo(targets[2], id) and
+          not targets[2]:isProhibited(targets[2], card) then
+        else
+          table.insert(excludeIds, id)
+        end
+      end
+      room:askForMoveCardInBoard(player, targets[1], targets[2], self.name, "j", targets[1], excludeIds)
+    end
+  end,
+}
+local liuli = fk.CreateTriggerSkill{
+  name = "ofl_mou__liuli",
+  anim_type = "defensive",
+  events = {fk.TargetConfirming},
+  can_trigger = function(self, event, target, player, data)
+    return target == player and player:hasSkill(self) and data.card.trueName == "slash" and not player:isNude() and
+      table.find(player.room.alive_players, function (p)
+        return player:inMyAttackRange(p) and p.id ~= data.from and not player.room:getPlayerById(data.from):isProhibited(p, data.card)
+      end)
+  end,
+  on_cost = function(self, event, target, player, data)
+    local room = player.room
+    local targets = table.filter(room.alive_players, function (p)
+      return player:inMyAttackRange(p) and p.id ~= data.from and not room:getPlayerById(data.from):isProhibited(p, data.card)
+    end)
+    local cards = table.filter(player:getCardIds("he"), function (id)
+      return not player:prohibitDiscard(id)
+    end)
+    local to, id = room:askForChooseCardAndPlayers(player, table.map(targets, Util.IdMapper), 1, 1,
+      tostring(Exppattern{ id = cards }), "#ofl_mou__liuli-choose:::"..data.card:toLogString(), self.name, true)
+    if #to > 0 and id then
+      self.cost_data = {tos = to, cards = {id}}
+      return true
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    local to = room:getPlayerById(self.cost_data.tos[1])
+    room:throwCard(self.cost_data.cards, self.name, player, player)
+    AimGroup:cancelTarget(data, player.id)
+    AimGroup:addTargets(room, data, to.id)
+    if not to.dead then
+      for _, p in ipairs(room.alive_players) do
+        room:setPlayerMark(p, "@@liuli_dangxian", 0)
+      end
+      room:setPlayerMark(to, "@@liuli_dangxian", 1)
+    end
+    return true
+  end,
+}
+local liuli_delay = fk.CreateTriggerSkill{
+  name = "#ofl_mou__liuli_delay",
+
+  refresh_events = {fk.EventPhaseChanging},
+  can_refresh = function(self, event, target, player, data)
+    return target == player and player:getMark("@@liuli_dangxian") ~= 0 and data.to == Player.Start
+  end,
+  on_refresh = function(self, event, target, player, data)
+    player.room:setPlayerMark(player, "@@liuli_dangxian", 0)
+    player:gainAnExtraPhase(Player.Play)
+  end,
+}
+liuli:addRelatedSkill(liuli_delay)
+daqiao:addSkill(guose)
+daqiao:addSkill(liuli)
 Fk:loadTranslationTable{
   ["ofl_mou__daqiao"] = "谋大乔",
   ["#ofl_mou__daqiao"] = "国色芳华",
-  ["illustrator:ofl_mou__daqiao"] = "",
+  ["illustrator:ofl_mou__daqiao"] = "凡果",
 
   ["ofl_mou__guose"] = "国色",
   [":ofl_mou__guose"] = "出牌阶段限一次，你可以将一张<font color='red'>♦</font>牌当【乐不思蜀】使用，或移动场上一张【乐不思蜀】。",
   ["ofl_mou__liuli"] = "流离",
   [":ofl_mou__liuli"] = "当你成为【杀】的目标时，你可以弃置一张牌，将目标转移给你攻击范围内除使用者以外的一名角色，令其获得“流离”标记"..
   "（若场上已有则转移给其）。有“流离”标记的角色回合开始时，移去“流离”标记并执行一个额外的出牌阶段。",
+  ["ofl_mou__guose_use"] = "使用【乐不思蜀】",
+  ["ofl_mou__guose_move"] = "移动【乐不思蜀】",
+  ["#ofl_mou__guose_use"] = "国色：将一张<font color='red'>♦</font>牌当【乐不思蜀】使用",
+  ["#ofl_mou__guose_move"] = "国色：移动场上一张【乐不思蜀】",
+  ["#ofl_mou__liuli-choose"] = "流离：你可以弃置一张牌，将此%arg转移给一名其他角色",
+  ["@@liuli_dangxian"] = "流离",
+
+  ["$ofl_mou__guose1"] = "逢郎欲语含羞笑，还走香囊投君怀。",
+  ["$ofl_mou__guose2"] = "凝眸望君浅笑，换君片刻停留。",
+  ["$ofl_mou__liuli1"] = "战火频仍，坐困此间。",
+  ["$ofl_mou__liuli2"] = "飘零复一载，何处是归程。",
+  ["~ofl_mou__daqiao"] = "瞻彼日月，悠悠我思……",
 }
 
+local xiaoqiao = General(extension, "ofl_mou__xiaoqiao", "wu", 3, 3, General.Female)
+local tianxiang = fk.CreateTriggerSkill{
+  name = "ofl_mou__tianxiang",
+  anim_type = "defensive",
+  events = {fk.DamageInflicted},
+  can_trigger = function (self, event, target, player, data)
+    return target == player and player:hasSkill(self) and player:getHandcardNum() > 1 and #player.room:getOtherPlayers(player) > 0
+  end,
+  on_cost = function(self, event, target, player, data)
+    local room = player.room
+    local to, cards = room:askForChooseCardsAndPlayers(player, 2, 2, table.map(room:getOtherPlayers(player), Util.IdMapper), 1, 1,
+    ".|.|.|hand", "#ofl_mou__tianxiang-choose", self.name, true)
+    if #to > 0 and #cards == 2 then
+      self.cost_data = {tos = to, cards = cards}
+      return true
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    local to = room:getPlayerById(self.cost_data.tos[1])
+    player:showCards(self.cost_data.cards)
+    local cards = U.askforChooseCardsAndChoice(to, self.cost_data.cards, {"OK"}, self.name, "#ofl_mou__tianxiang-prey:"..player.id)
+    local yes = Fk:getCardById(cards[1]).suit == Card.Heart
+    local type = Fk:getCardById(cards[1]):getTypeString()
+    room:moveCardTo(cards, Card.PlayerHand, to, fk.ReasonPrey, self.name, nil, true, to.id)
+    if yes then
+      if not to.dead then
+        room:damage{
+          from = data.from,
+          to = to,
+          damage = data.damage,
+          damageType = data.damageType,
+          skillName = data.skillName,
+          chain = data.chain,
+          card = data.card,
+        }
+      end
+      return true
+    elseif not to.dead then
+      room:addTableMark(to, "@ofl_mou__tianxiang-turn", type.."_char")
+    end
+  end,
+}
+local tianxiang_prohibit = fk.CreateProhibitSkill{
+  name = "#ofl_mou__tianxiang_prohibit",
+  prohibit_use = function(self, player, card)
+    local mark = player:getMark("@ofl_mou__tianxiang-turn")
+    if type(mark) == "table" and table.contains(mark, card:getTypeString() .. "_char") then
+      local subcards = card:isVirtual() and card.subcards or {card.id}
+      return #subcards > 0 and table.every(subcards, function(id)
+        return table.contains(player:getCardIds(Player.Hand), id)
+      end)
+    end
+  end,
+}
+local hongyan = fk.CreateFilterSkill{
+  name = "ofl_mou__hongyan",
+  card_filter = function(self, to_select, player, isJudgeEvent)
+    return to_select.suit == Card.Spade and player:hasSkill(self) and
+      (table.contains(player:getCardIds("he"), to_select.id) or isJudgeEvent)
+  end,
+  view_as = function(self, to_select)
+    return Fk:cloneCard(to_select.name, Card.Heart, to_select.number)
+  end,
+}
+local hongyan_trigger = fk.CreateTriggerSkill {
+  name = "#ofl_mou__hongyan_trigger",
+  anim_type = "drawcard",
+  frequency = Skill.Compulsory,
+  events = {fk.AfterCardsMove},
+  can_trigger = function(self, event, target, player, data)
+    if player:hasSkill(hongyan) and player:usedSkillTimes(self.name, Player.HistoryTurn) == 0 then
+      for _, move in ipairs(data) do
+        if move.from == player.id then
+          for _, info in ipairs(move.moveInfo) do
+            if info.extra_data and info.extra_data.ofl_mou__hongyan then
+              return true
+            end
+          end
+        end
+      end
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    player:drawCards(1, "ofl_mou__hongyan")
+  end,
+
+  refresh_events = {fk.BeforeCardsMove},
+  can_refresh = function (self, event, target, player, data)
+    if player:hasSkill(hongyan, true) then
+      for _, move in ipairs(data) do
+        if move.from == player.id then
+          for _, info in ipairs(move.moveInfo) do
+            if info.fromArea == Card.PlayerHand or info.fromArea == Card.PlayerEquip then
+              return true
+            end
+          end
+        end
+      end
+    end
+  end,
+  on_refresh = function (self, event, target, player, data)
+    for _, move in ipairs(data) do
+      if move.from == player.id then
+        for _, info in ipairs(move.moveInfo) do
+          if (info.fromArea == Card.PlayerHand or info.fromArea == Card.PlayerEquip) and
+            Fk:getCardById(info.cardId, false).suit == Card.Heart then
+            info.extra_data = info.extra_data or {}
+            info.extra_data.ofl_mou__hongyan = true
+          end
+        end
+      end
+    end
+  end,
+}
+hongyan:addRelatedSkill(hongyan_trigger)
+tianxiang:addRelatedSkill(tianxiang_prohibit)
+xiaoqiao:addSkill(tianxiang)
+xiaoqiao:addSkill(hongyan)
 Fk:loadTranslationTable{
   ["ofl_mou__xiaoqiao"] = "谋小乔",
-  ["#ofl_mou__xiaoqiao"] = "国色芳华",
-  ["illustrator:ofl_mou__xiaoqiao"] = "",
+  ["#ofl_mou__xiaoqiao"] = "矫情之花",
+  ["illustrator:ofl_mou__xiaoqiao"] = "黯荧岛",
 
   ["ofl_mou__tianxiang"] = "天香",
   [":ofl_mou__tianxiang"] = "当你受到伤害时，你可以展示两张手牌，令一名其他角色选择获得其中一张牌，若此牌：为<font color='red'>♥</font>，"..
   "你将此伤害转移给其；不为<font color='red'>♥</font>，其本回合不能使用与此牌类别相同的手牌。",
   ["ofl_mou__hongyan"] = "红颜",
-  [":ofl_mou__hongyan"] = "锁定技，你的♠牌或你的♠判定牌视为<font color='red'>♥</font>。当你每回合首次失去<font color='red'>♥</font>牌"..
-  "时，你摸一张牌。",
+  [":ofl_mou__hongyan"] = "锁定技，你的♠牌或你的♠判定牌视为<font color='red'>♥</font>。当你每回合首次失去<font color='red'>♥</font>牌后，"..
+  "你摸一张牌。",
+  ["#ofl_mou__tianxiang-choose"] = "天香：展示两张牌手牌，令一名角色获得一张，若为<font color='red'>♥</font>则伤害转移给其，否则其本回合"..
+  "不能使用此类别的手牌",
+  ["#ofl_mou__tianxiang-prey"] = "天香：获得其中一张牌",
+  ["#ofl_mou__hongyan_trigger"] = "红颜",
+  ["@ofl_mou__tianxiang-turn"] = "天香",
+
+  ["$ofl_mou__tianxiang1"] = "江东明珠，可不是汝掌中之物！",
+  ["$ofl_mou__tianxiang2"] = "容冠国色，华茂天香。",
+  ["~ofl_mou__xiaoqiao"] = "红颜易逝，天香难湮……",
 }
 
+local yuanshao = General(extension, "ofl_mou__yuanshao", "qun", 4)
+local luanji = fk.CreateViewAsSkill{
+  name = "ofl_mou__luanji",
+  anim_type = "offensive",
+  pattern = "archery_attack",
+  prompt = "#ofl_mou__luanji",
+  enabled_at_play = function(self, player)
+    return player:usedSkillTimes(self.name, Player.HistoryPhase) == 0
+  end,
+  card_filter = function(self, to_select, selected)
+    return #selected < 2 and Fk:currentRoom():getCardArea(to_select) ~= Player.Equip
+  end,
+  view_as = function(self, cards)
+    if #cards == 2 then
+      local archery_attack = Fk:cloneCard("archery_attack")
+      archery_attack:addSubcards(cards)
+      return archery_attack
+    end
+  end,
+}
+local luanji_trigger = fk.CreateTriggerSkill{
+  name = "#ofl_mou__luanji_trigger",
+  anim_type = "drawcard",
+  events = {fk.CardResponding},
+  can_trigger = function(self, event, target, player, data)
+    return player:hasSkill(luanji) and target ~= player and data.card.name == "jink" and
+      data.responseToEvent and data.responseToEvent.from == player.id and
+      data.responseToEvent.card.trueName =="archery_attack" and
+      player:getHandcardNum() < player.hp and player:getHandcardNum() < target:getHandcardNum()
+  end,
+  on_cost = Util.TrueFunc,
+  on_use = function(self, event, target, player, data)
+    player:broadcastSkillInvoke("ofl_mou__luanji")
+    player:drawCards(1, "ofl_mou__luanji")
+  end,
+}
+local xueyi = fk.CreateTriggerSkill{
+  name = "ofl_mou__xueyi$",
+  anim_type = "offensive",
+  events = {fk.CardUseFinished},
+  frequency = Skill.Compulsory,
+  can_trigger = function(self, event, target, player, data)
+    return target == player and player:hasSkill(self) and data.tos and
+      data.extra_data and data.extra_data.ofl_mou__xueyi and
+      table.find(data.extra_data.ofl_mou__xueyi, function (id)
+        local p = player.room:getPlayerById(id)
+        return not p.dead and p.kingdom == "qun"
+      end) and
+      player.room.logic:getCurrentEvent():findParent(GameEvent.Phase, true)
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    for _, id in ipairs(data.extra_data.ofl_mou__xueyi) do
+      room:setPlayerMark(room:getPlayerById(id), "@@ofl_mou__xueyi-phase", 1)
+    end
+  end,
+
+  refresh_events = {fk.AfterAskForCardUse, fk.AfterAskForCardResponse, fk.AfterAskForNullification},
+  can_refresh = function(self, event, target, player, data)
+    if data.eventData then
+      if event == fk.AfterAskForCardUse then
+        return target == player and data.result and data.result.from == player.id
+      elseif event == fk.AfterAskForCardResponse then
+        return target == player and data.result
+      elseif event == fk.AfterAskForNullification then
+        return data.result and data.result.from == player.id
+      end
+    end
+  end,
+  on_refresh = function(self, event, target, player, data)
+    local room = player.room
+    local use_event = room.logic:getCurrentEvent():findParent(GameEvent.UseCard, true)
+    if use_event == nil then return end
+    local use = use_event.data[1]
+    use.extra_data = use.extra_data or {}
+    use.extra_data.ofl_mou__xueyi = use.extra_data.ofl_mou__xueyi or {}
+    table.insertIfNeed(use.extra_data.ofl_mou__xueyi, player.id)
+  end,
+}
+local xueyi_maxcards = fk.CreateMaxCardsSkill{
+  name = "#ofl_mou__xueyi_maxcards",
+  correct_func = function(self, player)
+    if player:hasSkill(xueyi) then
+      local hmax = 0
+      for _, p in ipairs(Fk:currentRoom().alive_players) do
+        if p ~= player and p.kingdom == "qun" then
+          hmax = hmax + 1
+        end
+      end
+      return hmax *2
+    else
+      return 0
+    end
+  end,
+}
+local xueyi_prohibit = fk.CreateProhibitSkill{
+  name = "#ofl_mou__xueyi_prohibit",
+  prohibit_use = function(self, player, card)
+    if player:getMark("@@ofl_mou__xueyi-phase") > 0 then
+      local subcards = card:isVirtual() and card.subcards or {card.id}
+      return #subcards > 0 and table.every(subcards, function(id)
+        return table.contains(player:getCardIds(Player.Hand), id)
+      end)
+    end
+  end,
+  prohibit_response = function (self, player, card)
+    if player:getMark("@@ofl_mou__xueyi-phase") > 0 then
+      local subcards = card:isVirtual() and card.subcards or {card.id}
+      return #subcards > 0 and table.every(subcards, function(id)
+        return table.contains(player:getCardIds(Player.Hand), id)
+      end)
+    end
+  end,
+}
+luanji:addRelatedSkill(luanji_trigger)
+xueyi:addRelatedSkill(xueyi_maxcards)
+xueyi:addRelatedSkill(xueyi_prohibit)
+yuanshao:addSkill(luanji)
+yuanshao:addSkill(xueyi)
 Fk:loadTranslationTable{
   ["ofl_mou__yuanshao"] = "谋袁绍",
   ["#ofl_mou__yuanshao"] = "高贵的名门",
+  ["illustrator:ofl_mou__yuanshao"] = "荧光笔",
 
   ["ofl_mou__luanji"] = "乱击",
   [":ofl_mou__luanji"] = "出牌阶段限一次，你可以将两张手牌当【万箭齐发】使用。当其他角色打出【闪】响应你使用的【万箭齐发】时，"..
@@ -1386,6 +1884,16 @@ Fk:loadTranslationTable{
   ["ofl_mou__xueyi"] = "血裔",
   [":ofl_mou__xueyi"] = "主公技，锁定技，你的手牌上限+2X（X为其他群势力角色数）。当你使用牌结算后，你令响应过此牌的其他群势力角色"..
   "本阶段不能使用或打出手牌。",
+  ["#ofl_mou__luanji"] = "乱击：你可以将两张手牌当【万箭齐发】使用",
+  ["#ofl_mou__luanji_trigger"] = "乱击",
+  ["@@ofl_mou__xueyi-phase"] = "禁止使用打出手牌",
+
+  ["$ofl_mou__luanji1"] = "翦公孙，平夷患，起高橹，靖四州！",
+  ["$ofl_mou__luanji2"] = "乱箭之下，尽显吾袁门之威！",
+  ["$ofl_mou__xueyi1"] = "天下诸公，皆是我袁门故吏！",
+  ["$ofl_mou__xueyi2"] = "累四世功名，今朝定声震寰宇！",
+  ["~ofl_mou__yuanshao"] = "天命竟最终站在了……他那边……",
+  --帐下贤才多如江鲫，欲取天下岂非易事？
 }
 
 Fk:loadTranslationTable{
