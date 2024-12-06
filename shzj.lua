@@ -1076,7 +1076,7 @@ local fenwu = fk.CreateTriggerSkill{
     if player.dead or not table.contains(player:getCardIds("h"), id) then return end
     player:showCards(id)
     if player.dead or not table.contains(player:getCardIds("h"), id) then return end
-    local n = Fk:translate(Fk:getCardById(id).trueName, "zh_Cn"):len()
+    local n = Fk:translate(Fk:getCardById(id).trueName, "zh_CN"):len()
     local names = {}
     if n == 1 then
       names = U.getAllCardNames("b", false)
@@ -1145,7 +1145,7 @@ local qingkou = fk.CreateTriggerSkill{
     local names = {"slash"}
     for _, i in ipairs(Fk:getAllCardIds()) do
       local card = Fk:getCardById(i)
-      if card:isCommonTrick() and Fk:translate(card.trueName, "zh_Cn"):len() == player.hp and not card.is_derived then
+      if card:isCommonTrick() and Fk:translate(card.trueName, "zh_CN"):len() == player.hp and not card.is_derived then
         table.insertIfNeed(names, card.name)
       end
     end
