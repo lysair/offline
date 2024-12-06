@@ -1130,7 +1130,7 @@ Fk:loadTranslationTable{
   ["#ofl__cuiji-invoke"] = "摧击：你可以将任意张手牌当雷【杀】对 %dest 使用，若造成伤害你摸等量牌",
 }
 
-local chengyuofl__yaozhuo = General(extension, "chengyuofl__yaozhuo", "qun", 5)
+local chengyuanzhi = General(extension, "chengyuanzhi", "qun", 5)
 local wuxin = fk.CreateTriggerSkill{
   name = "ofl__wuxin",
   anim_type = "special",
@@ -1204,12 +1204,12 @@ local qianhu = fk.CreateViewAsSkill{
   end,
 }
 wuxin:addRelatedSkill(wuxin_delay)
-chengyuofl__yaozhuo:addSkill(wuxin)
-chengyuofl__yaozhuo:addSkill(qianhu)
+chengyuanzhi:addSkill(wuxin)
+chengyuanzhi:addSkill(qianhu)
 Fk:loadTranslationTable{
-  ["chengyuofl__yaozhuo"] = "程远志",
-  ["#chengyuofl__yaozhuo"] = "",
-  ["illustrator:chengyuofl__yaozhuo"] = "HOOO",
+  ["chengyuanzhi"] = "程远志",
+  ["#chengyuanzhi"] = "",
+  ["illustrator:chengyuanzhi"] = "HOOO",
 
   ["ofl__wuxin"] = "武衅",
   [":ofl__wuxin"] = "锁定技，当每回合首次有红色牌进入弃牌堆后，你本回合下次造成或受到的伤害+1。",
