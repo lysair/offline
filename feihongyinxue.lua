@@ -2348,9 +2348,6 @@ local ofl__sangu = fk.CreateTriggerSkill{
       moveReason = fk.ReasonJustMove,
     }
     room:notifyMoveCards({player}, {fakemove})
-    for i = #ids, 1, -1 do
-      table.insert(room.draw_pile, 1, ids[i])
-    end
     if success then
       room:doIndicate(player.id, {target.id})
       room:moveCards({

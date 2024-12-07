@@ -729,11 +729,6 @@ local yuqi = fk.CreateTriggerSkill{
         table.removeOne(cards, id)
       end
     end
-    if #cards > 0 then
-      for i = #cards, 1, -1 do
-        table.insert(room.draw_pile, 1, cards[i])
-      end
-    end
     room:moveCards(table.unpack(moveInfos))
   end,
 
