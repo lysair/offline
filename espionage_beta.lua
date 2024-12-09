@@ -60,46 +60,43 @@ local lifengs = fk.CreateActiveSkill{
   name = "lifengs",
   anim_type = "drawcard",
   prompt = "#lifengs",
-  card_num = 0,
+  card_num = 1,
   target_num = 0,
-  can_use = function(self, player)
-    return player:getMark("lifengs-phase") > 0 and player:usedSkillTimes(self.name, Player.HistoryPhase) == 0
+  expand_pile = function (self)
+    return table.filter(Fk:currentRoom().discard_pile, function (id)
+      return Fk:getCardById(id).type == Card.TypeEquip
+    end)
   end,
-  card_filter = Util.FalseFunc,
+  can_use = function(self, player)
+    return player:usedSkillTimes(self.name, Player.HistoryPhase) == 0 and
+      table.find(Fk:currentRoom().discard_pile, function (id)
+        return Fk:getCardById(id).type == Card.TypeEquip
+      end)
+  end,
+  card_filter = function (self, to_select, selected)
+    return #selected == 0 and table.contains(Fk:currentRoom().discard_pile, to_select)
+  end,
   on_use = function(self, room, effect)
     local player = room:getPlayerById(effect.from)
-    local cards = table.filter(room.discard_pile, function(id) return Fk:getCardById(id).type == Card.TypeEquip end)
-    local c = room:askForCardsChosen(player, player, 1, 1, {card_data = {{self.name, cards}}}, self.name)
-    room:moveCardTo(Fk:getCardById(c[1]), Card.PlayerHand, player, fk.ReasonJustMove, self.name, nil, true, player.id)
+    room:moveCardTo(effect.cards, Card.PlayerHand, player, fk.ReasonJustMove, self.name, nil, true, player.id)
   end,
-}
-local lifengs_trigger = fk.CreateTriggerSkill{
-  name = "#lifengs_trigger",
 
-  refresh_events = {fk.GameStart, fk.EventAcquireSkill, fk.StartPlayCard},
-  can_refresh = function(self, event, target, player, data)
-    if player:hasSkill(self) then
-      if event == fk.GameStart then
-        return true
-      elseif event == fk.EventAcquireSkill then
-        return target == player and data == self
-      elseif event == fk.StartPlayCard then
-        return target == player and player:usedSkillTimes("lifengs", Player.HistoryPhase) == 0
-      end
+  on_acquire = function (self, player, is_start)
+    local room = player.room
+    if player:hasSkill("present_skill&", true) then
+      room:handleAddLoseSkills(player, "-present_skill&|lifengs_present_skill&", nil, false, true)
+    else
+      room:handleAddLoseSkills(player, "lifengs_present_skill&", nil, false, true)
     end
   end,
-  on_refresh = function(self, event, target, player, data)
+  on_lose = function (self, player, is_death)
     local room = player.room
-    if event == fk.GameStart or event == fk.EventAcquireSkill then
-      if player:hasSkill("present_skill&") then
-        room:handleAddLoseSkills(player, "-present_skill&|lifengs_present_skill&", nil, false, true)
-      else
-        room:handleAddLoseSkills(player, "lifengs_present_skill&", nil, false, true)
-      end
-    elseif event == fk.StartPlayCard then
-      if table.find(room.discard_pile, function(id) return Fk:getCardById(id).type == Card.TypeEquip end) then
-        room:setPlayerMark(player, "lifengs-phase", 1)
-      end
+    if table.find(room:getOtherPlayers(player), function (p)
+      return p:hasSkill("present_skill&", true)
+    end) then
+      room:handleAddLoseSkills(player, "-lifengs_present_skill&|present_skill&", nil, false, true)
+    else
+      room:handleAddLoseSkills(player, "-lifengs_present_skill&", nil, false, true)
     end
   end,
 }
@@ -110,15 +107,19 @@ local lifengs_present_skill = fk.CreateActiveSkill{
   card_num = 1,
   target_num = 1,
   can_use = function(self, player)
-    return table.find(player:getCardIds("h"), function(id) return Fk:getCardById(id):getMark("@@present") > 0 end) or
-      (player:hasSkill("lifengs") and table.find(player:getCardIds("he"), function(id) return Fk:getCardById(id).type == Card.TypeEquip end))
+    return table.find(player:getCardIds("h"), function(id)
+      return Fk:getCardById(id):getMark("@@present") > 0
+    end) or (player:hasSkill(lifengs) and
+    table.find(player:getCardIds("he"), function(id)
+      return Fk:getCardById(id).type == Card.TypeEquip
+    end))
   end,
   card_filter = function(self, to_select, selected)
     if #selected == 0 then
       if Fk:getCardById(to_select):getMark("@@present") > 0 and table.contains(Self:getCardIds("h"), to_select) then
         return true
       end
-      if Self:hasSkill("lifengs") then
+      if Self:hasSkill(lifengs) then
         if Fk:getCardById(to_select).type == Card.TypeEquip then
           return true
         end
@@ -134,7 +135,6 @@ local lifengs_present_skill = fk.CreateActiveSkill{
     U.presentCard(player, target, Fk:getCardById(effect.cards[1]))
   end,
 }
-lifengs:addRelatedSkill(lifengs_trigger)
 Fk:addSkill(lifengs_present_skill)
 caohong:addSkill(lifengs)
 Fk:loadTranslationTable{

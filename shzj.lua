@@ -1462,19 +1462,22 @@ local lengjian = fk.CreateTriggerSkill{
     end
   end,
 
-  refresh_events = {fk.AfterCardUseDeclared, fk.EventAcquireSkill},
+  refresh_events = {fk.AfterCardUseDeclared},
   can_refresh = function (self, event, target, player, data)
-    if event == fk.AfterCardUseDeclared then
-      return target == player and player:hasSkill(self, true) and data.card.trueName == "slash"
-    elseif event == fk.EventAcquireSkill then
-      return target == player and data == self and
-      #player.room.logic:getEventsOfScope(GameEvent.UseCard, 1, function (e)
-        return e.data[1].from == player.id and e.data[1].card.trueName == "slash"
-      end, Player.HistoryTurn) > 0
-    end
+    return target == player and player:hasSkill(self, true) and data.card.trueName == "slash"
   end,
   on_refresh = function (self, event, target, player, data)
     player.room:addPlayerMark(player, "lengjian-turn", 1)
+  end,
+
+  on_acquire = function (self, player, is_start)
+    local room = player.room
+    if #room.logic:getEventsOfScope(GameEvent.UseCard, 1, function (e)
+      local use = e.data[1]
+      return use.from == player.id and use.card.trueName == "slash"
+    end, Player.HistoryTurn) > 0 then
+      room:addPlayerMark(player, "lengjian-turn", 1)
+    end
   end,
 }
 local lengjian_targetmod = fk.CreateTargetModSkill{
@@ -2960,7 +2963,7 @@ local xihun = fk.CreateTriggerSkill{
           who = player,
           num = num,
           recoverBy = player,
-          skillName = self.name
+          skillName = self.name,
         }
       end
     end
@@ -2968,29 +2971,7 @@ local xihun = fk.CreateTriggerSkill{
 }
 local xianqi = fk.CreateTriggerSkill{
   name = "xianqi",
-  mute = true,
-
-  refresh_events = {fk.EventAcquireSkill, fk.EventLoseSkill, fk.BuryVictim, fk.AfterPropertyChange},
-  can_refresh = function(self, event, target, player, data)
-    if event == fk.EventAcquireSkill or event == fk.EventLoseSkill then
-      return data == self
-    elseif event == fk.BuryVictim then
-      return target:hasSkill(self, true, true)
-    elseif event == fk.AfterPropertyChange then
-      return target == player
-    end
-  end,
-  on_refresh = function(self, event, target, player, data)
-    local room = player.room
-    local attached_huangtian = table.find(room.alive_players, function (p)
-      return p ~= player and p:hasSkill(self, true)
-    end)
-    if attached_huangtian and not player:hasSkill("xianqi_other&", true, true) then
-      room:handleAddLoseSkills(player, "xianqi_other&", nil, false, true)
-    elseif not attached_huangtian and player:hasSkill("xianqi_other&", true, true) then
-      room:handleAddLoseSkills(player, "-xianqi_other&", nil, false, true)
-    end
-  end,
+  attached_skill_name = "xianqi_other&",
 }
 local xianqi_other = fk.CreateActiveSkill{
   name = "xianqi_other&",
@@ -2999,7 +2980,7 @@ local xianqi_other = fk.CreateActiveSkill{
   mute = true,
   max_card_num = 2,
   target_num = 0,
-  card_filter = function(self, to_select, selected) 
+  card_filter = function(self, to_select, selected)
     return #selected < 2 and table.contains(Self:getCardIds("h"), to_select)
   end,
   can_use = function(self, player)

@@ -119,31 +119,7 @@ Fk:loadTranslationTable{
 local maliang = General(extension, "sxfy__maliang", "shu", 3)
 local sxfy__xiemu = fk.CreateTriggerSkill{
   name = "sxfy__xiemu",
-
-  refresh_events = {fk.GameStart, fk.EventAcquireSkill, fk.EventLoseSkill, fk.Deathed},
-  can_refresh = function(self, event, target, player, data)
-    if event == fk.GameStart then
-      return player:hasSkill(self, true)
-    elseif event == fk.EventAcquireSkill or event == fk.EventLoseSkill then
-      return target == player and data == self and
-        not table.find(player.room:getOtherPlayers(player), function(p) return p:hasSkill(self, true) end)
-    else
-      return target == player and player:hasSkill(self, true, true) and
-        not table.find(player.room:getOtherPlayers(player), function(p) return p:hasSkill(self, true) end)
-    end
-  end,
-  on_refresh = function(self, event, target, player, data)
-    local room = player.room
-    if event == fk.GameStart or event == fk.EventAcquireSkill then
-      for _, p in ipairs(room:getOtherPlayers(player)) do
-        room:handleAddLoseSkills(p, "sxfy__xiemu&", nil, false, true)
-      end
-    else
-      for _, p in ipairs(room:getOtherPlayers(player, true, true)) do
-        room:handleAddLoseSkills(p, "-sxfy__xiemu&", nil, false, true)
-      end
-    end
-  end,
+  attached_skill_name = "sxfy__xiemu&",
 }
 local sxfy__xiemu_active = fk.CreateActiveSkill{
   name = "sxfy__xiemu&",

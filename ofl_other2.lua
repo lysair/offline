@@ -1575,22 +1575,7 @@ local xiongshi = fk.CreateActiveSkill{
     target:addToPile(self.name, effect.cards, false, self.name, effect.from)
   end,
 
-  on_acquire = function (self, player, is_start)
-    local room = player.room
-    for _, p in ipairs(room:getOtherPlayers(player)) do
-      room:handleAddLoseSkills(p, "ofl__xiongshi&", nil, false, true)
-    end
-  end,
-  on_lose = function (self, player, is_death)
-    local room = player.room
-    if not table.find(room:getOtherPlayers(player), function (p)
-      return p:hasSkill(self, true)
-    end) then
-      for _, p in ipairs(room:getOtherPlayers(player)) do
-        room:handleAddLoseSkills(p, "-ofl__xiongshi&", nil, false, true)
-      end
-    end
-  end,
+  attached_skill_name = "ofl__xiongshi&",
 }
 local xiongshi_active = fk.CreateActiveSkill{
   name = "ofl__xiongshi&",
@@ -3271,23 +3256,7 @@ Fk:loadTranslationTable{
 local hankui = General(extension, "ofl__hankui", "qun", 4)
 local xiaolu = fk.CreateActiveSkill{
   name = "ofl__xiaolu",
-
-  on_acquire = function (self, player, is_start)
-    local room = player.room
-    for _, p in ipairs(room:getOtherPlayers(player)) do
-      room:handleAddLoseSkills(p, "ofl__xiaolu&", nil, false, true)
-    end
-  end,
-  on_lose = function (self, player, is_death)
-    local room = player.room
-    if not table.find(room:getOtherPlayers(player), function (p)
-      return p:hasSkill(self, true)
-    end) then
-      for _, p in ipairs(room:getOtherPlayers(player)) do
-        room:handleAddLoseSkills(p, "-ofl__xiaolu&", nil, false, true)
-      end
-    end
-  end,
+  attached_skill_name = "ofl__xiaolu&",
 }
 local xiaolu_active = fk.CreateActiveSkill{
   name = "ofl__xiaolu&",

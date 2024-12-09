@@ -135,29 +135,27 @@ local fuluan = fk.CreateActiveSkill{
       to:turnOver()
     end
   end,
+
+  on_acquire = function (self, player, is_start)
+    local room = player.room
+    if player.phase == Player.Play and player:getMark("fuluan_record") == 0 and
+      #room.logic:getEventsOfScope(GameEvent.UseCard, 1, function(e)
+        local use = e.data[1]
+        return use.from == player.id and use.card.trueName == "slash"
+      end, Player.HistoryPhase) > 0 then
+      room:setPlayerMark(player, "fuluan-phase", 1)
+    end
+  end,
 }
 local fuluan_record = fk.CreateTriggerSkill{
   name = "#fuluan_record",
-  refresh_events = {fk.EventAcquireSkill, fk.AfterCardUseDeclared},
+
+  refresh_events = {fk.AfterCardUseDeclared},
   can_refresh = function(self, event, target, player, data)
-    if player.phase ~= Player.Play or player:getMark("fuluan_record") > 0 then return end
-    if target == player and player:hasSkill(fuluan, true) then
-      if event == fk.EventAcquireSkill then
-        return data == self and target == player
-      else
-        return data.card.trueName == "slash"
-      end
-    end
+    return target == player and player.phase == Player.Play and player:hasSkill(fuluan, true) and data.card.trueName == "slash"
   end,
   on_refresh = function(self, event, target, player, data)
-    local room = player.room
-    if event == fk.EventAcquireSkill then
-      if #room.logic:getEventsOfScope(GameEvent.UseCard, 1, function(e)
-        local use = e.data[1]
-        return use.from == player.id and use.card.trueName == "slash"
-      end, Player.HistoryPhase) == 0 then return end
-    end
-    room:setPlayerMark(player, "fuluan-phase", 1)
+    player.room:setPlayerMark(player, "fuluan-phase", 1)
   end,
 }
 fuluan:addRelatedSkill(fuluan_record)

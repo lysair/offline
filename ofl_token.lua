@@ -7,6 +7,13 @@ Fk:loadTranslationTable{
 
 local U = require "packages/utility/utility"
 
+Fk:loadTranslationTable{
+  ["jingxiang_golden_age"] = "荆襄盛世",
+  ["jingxiang_golden_age_skill"] = "荆襄盛世",
+  [":jingxiang_golden_age"] = "锦囊牌<br/><b>时机</b>：出牌阶段<br/><b>目标</b>：X名其他角色（X为场上势力数）<br/><b>效果</b>："..
+  "你亮出牌堆顶存活角色张数的牌，目标角色依次获得其中一张牌，你获得其余的牌。",
+}
+
 local caningWhipSkill = fk.CreateTriggerSkill{
   name = "#caning_whip_skill",
   attached_equip = "caning_whip",
