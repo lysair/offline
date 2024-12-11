@@ -3456,6 +3456,63 @@ Fk:loadTranslationTable{
 }
 
 --官盗S7幽燕烽火：曹叡 司马懿 公孙渊 公孙瓒 袁绍 文丑
+local caorui = General(extension, "ofl__caorui", "wei", 3)
+local mingjian = fk.CreateTriggerSkill{
+  name = "ofl__mingjian",
+  anim_type = "support",
+  events = {fk.EventPhaseStart},
+  can_trigger = function(self, event, target, player, data)
+    return target ~= player and player:hasSkill(self) and target.phase == Player.Play and not target.dead and
+      not player:isKongcheng()
+  end,
+  on_cost = function(self, event, target, player, data)
+    local room = player.room
+    local listNames = {"log_spade", "log_club", "log_heart", "log_diamond"}
+    local listCards = {{}, {}, {}, {}}
+    for _, id in ipairs(player:getCardIds("h")) do
+      local suit = Fk:getCardById(id).suit
+      if suit ~= Card.NoSuit then
+        table.insertIfNeed(listCards[suit], id)
+      end
+    end
+    local choice = U.askForChooseCardList(room, player, listNames, listCards, 1, 1, self.name, "#ofl__mingjian-invoke::"..target.id)
+    if #choice == 1 then
+      self.cost_data = {tos = {target.id}, cards = listCards[U.ConvertSuit(choice[1], "sym", "int")]}
+      return true
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    player:showCards(player:getCardIds("h"))
+    if target.dead then return end
+    room:addPlayerMark(target, "@@ofl__mingjian-turn", 1)
+    local cards = table.filter(self.cost_data.cards, function (id)
+      return table.contains(player:getCardIds("h"), id)
+    end)
+    if #cards > 0 then
+      room:moveCardTo(cards, Card.PlayerHand, target, fk.ReasonGive, self.name, nil, true, player.id)
+    end
+  end,
+}
+local mingjian_delay = fk.CreateTriggerSkill{
+  name = "#ofl__mingjian_delay",
+
+  refresh_events = {fk.CardUsing},
+  can_refresh = function(self, event, target, player, data)
+    return target == player and player:getMark("@@ofl__mingjian-turn") > 0
+  end,
+  on_refresh = function (self, event, target, player, data)
+    local n = player:getMark("@@ofl__mingjian-turn")
+    player.room:setPlayerMark(player, "@@ofl__mingjian-turn", 0)
+    if (data.card.type == Card.TypeBasic or data.card:isCommonTrick()) and data.tos then
+      data.additionalEffect = (data.additionalEffect or 0) + n
+    end
+  end,
+}
+mingjian:addRelatedSkill(mingjian_delay)
+caorui:addSkill("huituo")
+caorui:addSkill(mingjian)
+caorui:addSkill("xingshuai")
 Fk:loadTranslationTable{
   ["ofl__caorui"] = "曹叡",
   ["#ofl__caorui"] = "魏明帝",
@@ -3463,6 +3520,8 @@ Fk:loadTranslationTable{
 
   ["ofl__mingjian"] = "明鉴",
   [":ofl__mingjian"] = "其他角色出牌阶段开始时，你可以展示手牌并将其中一种花色的所有牌交给该角色，然后其本回合使用的下一张牌额外结算一次。",
+  ["#ofl__mingjian-invoke"] = "明鉴：你可以交给 %dest 一种花色的手牌，其本回合使用的下一张牌额外结算一次",
+  ["@@ofl__mingjian-turn"] = "明鉴",
 }
 
 local simayi = General(extension, "ofl__simayi", "wei", 4)
