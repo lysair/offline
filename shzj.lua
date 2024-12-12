@@ -2865,9 +2865,6 @@ local liupo = fk.CreateTriggerSkill{
   switch_skill_name = "liupo",
   anim_type = "switch",
   events = {fk.TurnStart},
-  can_trigger = function(self, event, target, player, data)
-    return player:hasSkill(self) and target == player
-  end,
   on_cost = Util.TrueFunc,
   on_use = function(self, event, target, player, data)
     local isYang = player:getSwitchSkillState(self.name) == fk.SwitchYang

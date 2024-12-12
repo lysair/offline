@@ -706,9 +706,6 @@ local tianpan = fk.CreateTriggerSkill{
   mute = true,
   frequency = Skill.Compulsory,
   events = {fk.FinishJudge},
-  can_trigger = function(self, event, target, player, data)
-    return target == player and player:hasSkill(self)
-  end,
   on_use = function (self, event, target, player, data)
     local room = player.room
     player:broadcastSkillInvoke(self.name)

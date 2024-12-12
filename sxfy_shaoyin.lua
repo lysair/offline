@@ -788,9 +788,6 @@ local sxfy__canshi = fk.CreateTriggerSkill{
   anim_type = "drawcard",
   frequency = Skill.Compulsory,
   events ={fk.DrawNCards},
-  can_trigger = function(self, event, target, player, data)
-    return target == player and player:hasSkill(self)
-  end,
   on_use = function(self, event, target, player, data)
     local room = player.room
     local n = #table.filter(room.alive_players, function (p)

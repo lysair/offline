@@ -29,9 +29,6 @@ local langgu = fk.CreateTriggerSkill{
   name = "langgu",
   anim_type = "masochism",
   events = {fk.Damaged},
-  can_trigger = function(self, event, target, player, data)
-    return target == player and player:hasSkill(self)
-  end,
   on_trigger = function(self, event, target, player, data)
     self.cancel_cost = false
     for i = 1, data.damage do
