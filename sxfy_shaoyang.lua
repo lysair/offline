@@ -431,7 +431,7 @@ local diaodu = fk.CreateTriggerSkill{
   end,
   on_use = function(self, event, target, player, data)
     local room = player.room
-    local targets = table.map(self.cost_data.tos, function(id) return room:getPlayerById(id) end)
+    local targets = table.map(self.cost_data.tos, Util.Id2PlayerMapper)
     local result = room:askForMoveCardInBoard(player, targets[1], targets[2], self.name, "e")
     local to = room:getPlayerById(result.from)
     if not to.dead then

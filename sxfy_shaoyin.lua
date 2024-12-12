@@ -1107,8 +1107,7 @@ local sxfy__xiongxia = fk.CreateActiveSkill{
   on_use = function(self, room, effect)
     local player = room:getPlayerById(effect.from)
     room:sortPlayersByAction(effect.tos)
-    local use = room:useVirtualCard("duel", effect.cards, player, table.map(effect.tos, function(id)
-      return room:getPlayerById(id) end), self.name)
+    local use = room:useVirtualCard("duel", effect.cards, player, table.map(effect.tos, Util.Id2PlayerMapper), self.name)
     if use.damageDealt and use.damageDealt[effect.tos[1]] and use.damageDealt[effect.tos[2]] and not player.dead then
       room:setPlayerMark(player, "@@sxfy__xiongxia-turn", 1)
     end

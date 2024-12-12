@@ -840,7 +840,7 @@ local mouZaiQi = fk.CreateTriggerSkill{
   on_use = function(self, event, target, player, data)
     local room = player.room
     room:sortPlayersByAction(self.cost_data)
-    local targets = table.map(self.cost_data, function(id) return room:getPlayerById(id) end)
+    local targets = table.map(self.cost_data, Util.Id2PlayerMapper)
     for _, p in ipairs(targets) do
       if not player:isAlive() then
         break

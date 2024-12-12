@@ -178,7 +178,7 @@ local sxfy__naman = fk.CreateActiveSkill{
     local player = room:getPlayerById(effect.from)
     room:sortPlayersByAction(effect.tos)
     room:useVirtualCard("savage_assault", effect.cards, player,
-      table.map(effect.tos, function(id) return room:getPlayerById(id) end), self.name)
+      table.map(effect.tos, Util.Id2PlayerMapper), self.name)
   end
 }
 Fk:addSkill(sxfy__xiemu_active)
