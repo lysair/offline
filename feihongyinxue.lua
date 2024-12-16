@@ -1498,7 +1498,7 @@ local ofl_shiji__huishig = fk.CreateTriggerSkill{
       return s.frequency == Skill.Wake and to:usedSkillTimes(s.name, Player.HistoryGame) == 0 end), function(s) return s.name end)
     if #skills > 0 then
       local choice = room:askForChoice(player, skills, self.name, "#ofl_shiji__huishig-choice::"..to.id, true)
-      local toWakeSkills = type(to:getMark(MarkEnum.StraightToWake)) == "table" and to:getMark(MarkEnum.StraightToWake) or {}
+      local toWakeSkills = to:getTableMark(MarkEnum.StraightToWake)
       table.insertIfNeed(toWakeSkills, choice)
       room:setPlayerMark(to, MarkEnum.StraightToWake, toWakeSkills)
     else

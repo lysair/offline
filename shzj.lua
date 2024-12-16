@@ -323,9 +323,7 @@ local juesui = fk.CreateTriggerSkill{
   end,
   on_use = function(self, event, target, player, data)
     local room = player.room
-    local mark = player:getTableMark("juesui_used")
-    table.insert(mark, target.id)
-    room:setPlayerMark(player, "juesui_used", mark)
+    room:addTableMark(player, "juesui_used", target.id)
     if player ~= target and not room:askForSkillInvoke(target, self.name, nil, "#juesui-accept") then return false end
     room:recover({
       who = target,
@@ -601,9 +599,7 @@ local yilin = fk.CreateTriggerSkill{
   on_use = function(self, event, target, player, data)
     local room = player.room
     room:doIndicate(player.id, {target.id})
-    local mark = player:getTableMark("yilin-turn")
-    table.insert(mark, target.id)
-    room:setPlayerMark(player, "yilin-turn", mark)
+    room:addTableMark(player, "yilin-turn", target.id)
     local cards = {}
     if target == player then
       for _, move in ipairs(data) do
@@ -2379,9 +2375,7 @@ local ansha = fk.CreateTriggerSkill{
     }
     room:useCard(use)
     if target.dead then return end
-    local mark = player:getTableMark("ansha-round")
-    table.insert(mark, target.id)
-    room:setPlayerMark(player, "ansha-round", mark)
+    room:addTableMark(player, "ansha-round", target.id)
   end,
 }
 local ansha_distance = fk.CreateDistanceSkill{
@@ -2590,9 +2584,7 @@ local xianwu_trigger = fk.CreateTriggerSkill{
     if not data.from.dead then
       room:doIndicate(player.id, {data.from.id})
       room:setPlayerMark(data.from, "@@xianwu-round", 1)
-      local mark = player:getTableMark("xianwu-round")
-      table.insert(mark, data.from.id)
-      room:setPlayerMark(player, "xianwu-round", mark)
+      room:addTableMark(player, "xianwu-round", data.from.id)
     end
     room:throwCard(self.cost_data, "xianwu", player, player)
   end,
