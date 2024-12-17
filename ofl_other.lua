@@ -285,10 +285,10 @@ local kuangcai = fk.CreateTriggerSkill{
 local kuangcai_targetmod = fk.CreateTargetModSkill{
   name = "#ofl__kuangcai_targetmod",
   bypass_times = function(self, player, skill, scope, card)
-    return player:getMark("ofl__kuangcai-phase") > 0
+    return card and player:getMark("ofl__kuangcai-phase") > 0
   end,
   bypass_distances = function(self, player, skill, card)
-    return player:getMark("ofl__kuangcai-phase") > 0
+    return card and player:getMark("ofl__kuangcai-phase") > 0
   end,
 }
 kuangcai:addRelatedSkill(kuangcai_targetmod)
@@ -1005,10 +1005,10 @@ local ofl__shouli_distance = fk.CreateDistanceSkill{
 local ofl__shouli_targetmod = fk.CreateTargetModSkill{
   name = "#ofl__shouli_targetmod",
   bypass_times = function(self, player, skill, scope, card)
-    return table.contains(card.skillNames, "ofl__shouli")
+    return card and table.contains(card.skillNames, "ofl__shouli")
   end,
   bypass_distances = function(self, player, skill, card)
-    return table.contains(card.skillNames, "ofl__shouli")
+    return card and table.contains(card.skillNames, "ofl__shouli")
   end,
 }
 ofl__shouli:addRelatedSkill(ofl__shouli_trigger)
@@ -2103,7 +2103,7 @@ local ofl__xiongnve_delay = fk.CreateTriggerSkill{
 local ofl__xiongnve_targetmod = fk.CreateTargetModSkill{
   name = "#ofl__xiongnve_targetmod",
   bypass_times = function(self, player, skill, scope, card, to)
-    return player:getMark("@ofl__xiongnve_choice-turn") == "ofl__xiongnve_effect3"
+    return card and player:getMark("@ofl__xiongnve_choice-turn") == "ofl__xiongnve_effect3"
   end,
 }
 ofl__xiongnve:addRelatedSkill(ofl__xiongnve_delay)
@@ -2598,11 +2598,11 @@ local qingsuan = fk.CreateTargetModSkill{
   name = "qingsuan$",
   frequency = Skill.Compulsory,
   bypass_times = function(self, player, skill, scope, card, to)
-    return player:hasSkill(self) and scope == Player.HistoryPhase and to and
+    return card and player:hasSkill(self) and scope == Player.HistoryPhase and to and
       player.kingdom ~= to.kingdom and table.contains(player:getTableMark("qingsuan_enemy"), to.id)
   end,
   bypass_distances = function(self, player, skill, card, to)
-    return player:hasSkill(self) and to and
+    return card and player:hasSkill(self) and to and
       player.kingdom ~= to.kingdom and table.contains(player:getTableMark("qingsuan_enemy"), to.id)
   end,
 

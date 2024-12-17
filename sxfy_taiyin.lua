@@ -62,10 +62,10 @@ local sxfy__qianchong = fk.CreateTargetModSkill{
   name = "sxfy__qianchong",
   frequency = Skill.Compulsory,
   bypass_times = function (self, player, skill, scope, card, to)
-    return player:hasSkill(self) and #player:getCardIds("e") % 2 == 1
+    return card and player:hasSkill(self) and #player:getCardIds("e") % 2 == 1
   end,
   bypass_distances = function (self, player, skill, card, to)
-    return player:hasSkill(self) and #player:getCardIds("e") % 2 == 0
+    return card and player:hasSkill(self) and #player:getCardIds("e") % 2 == 0
   end,
 }
 local sxfy__shangjian = fk.CreateTriggerSkill{

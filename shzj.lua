@@ -303,7 +303,7 @@ local juesui_slash = fk.CreateViewAsSkill{
 local juesui_targetmod = fk.CreateTargetModSkill{
   name = "#juesui_targetmod",
   bypass_times = function(self, player, skill, scope, card)
-    return table.contains(card.skillNames, "juesui&")
+    return card and table.contains(card.skillNames, "juesui&")
   end,
 }
 local juesui = fk.CreateTriggerSkill{
@@ -1727,7 +1727,7 @@ local shzj_yiling__longnu_targetmod = fk.CreateTargetModSkill{
       table.contains(card.skillNames, "shzj_yiling__longnu")
   end,
   bypass_times = function(self, player, skill, scope, card, to)
-    return player:getMark("shzj_yiling__longnu-phase") == "yin" and scope == Player.HistoryPhase and
+    return card and player:getMark("shzj_yiling__longnu-phase") == "yin" and scope == Player.HistoryPhase and
       table.contains(card.skillNames, "shzj_yiling__longnu")
   end,
 }
@@ -2906,10 +2906,10 @@ local zhuiling = fk.CreateTriggerSkill{
 local zhuiling_targetmod = fk.CreateTargetModSkill{
   name = "#zhuiling_targetmod",
   bypass_times = function(self, player, skill, scope, card, to)
-    return player:hasSkill(self) and to:isKongcheng()
+    return card and player:hasSkill(self) and to:isKongcheng()
   end,
   bypass_distances =  function(self, player, skill, card, to)
-    return player:hasSkill(self) and to:isKongcheng()
+    return card and player:hasSkill(self) and to:isKongcheng()
   end,
 }
 local xihun = fk.CreateTriggerSkill{

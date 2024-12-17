@@ -72,7 +72,7 @@ local juqiOffensive = fk.CreateTriggerSkill{
 local juqiBuff = fk.CreateTargetModSkill{
   name = "#juqi_buff",
   bypass_times = function(self, player, skill, scope, card, to)
-    return player:getMark("@@juqi-turn") > 0
+    return card and player:getMark("@@juqi-turn") > 0
   end,
 }
 Fk:loadTranslationTable{
