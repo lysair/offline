@@ -749,9 +749,7 @@ local xiandao = fk.CreateTriggerSkill{
     local room = player.room
     room:doIndicate(player.id, {target.id})
     local card = Fk:getCardById(data)
-    local mark = target:getTableMark("@xiandao-turn")
-    table.insertIfNeed(mark, card:getSuitString(true))
-    room:setPlayerMark(target, "@xiandao-turn", mark)
+    room:addTableMarkIfNeed(target, "@xiandao-turn", card:getSuitString(true))
     if not player.dead then
       if card.type == Card.TypeTrick then
         player:drawCards(2, self.name)

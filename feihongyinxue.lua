@@ -1498,9 +1498,7 @@ local ofl_shiji__huishig = fk.CreateTriggerSkill{
       return s.frequency == Skill.Wake and to:usedSkillTimes(s.name, Player.HistoryGame) == 0 end), function(s) return s.name end)
     if #skills > 0 then
       local choice = room:askForChoice(player, skills, self.name, "#ofl_shiji__huishig-choice::"..to.id, true)
-      local toWakeSkills = to:getTableMark(MarkEnum.StraightToWake)
-      table.insertIfNeed(toWakeSkills, choice)
-      room:setPlayerMark(to, MarkEnum.StraightToWake, toWakeSkills)
+      room:addTableMarkIfNeed(to, MarkEnum.StraightToWake, choice)
     else
       to:drawCards(4, self.name)
     end
@@ -1803,9 +1801,7 @@ local ofl_shiji__boming = fk.CreateActiveSkill{
   on_use = function(self, room, effect)
     local player = room:getPlayerById(effect.from)
     local target = room:getPlayerById(effect.tos[1])
-    local mark = player:getTableMark(self.name)
-    table.insertIfNeed(mark, target.id)
-    room:setPlayerMark(player, self.name, mark)
+    room:addTableMarkIfNeed(player, self.name, target.id)
     room:moveCardTo(effect.cards, Card.PlayerHand, target, fk.ReasonGive, self.name, nil, false, player.id)
   end,
 }

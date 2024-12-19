@@ -122,9 +122,7 @@ local fengtu = fk.CreateTriggerSkill{
       room:setPlayerMark(to, "fengtu_lost", 1)
     end
 
-    local seats = to:getTableMark("@fengtu")
-    table.insertIfNeed(seats, target.seat)
-    room:setPlayerMark(to, "@fengtu", seats)
+    room:addTableMarkIfNeed(to, "@fengtu", target.seat)
   end,
 
   refresh_events = {fk.EventTurnChanging},
