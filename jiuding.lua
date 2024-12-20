@@ -1894,6 +1894,80 @@ Fk:loadTranslationTable{
   --帐下贤才多如江鲫，欲取天下岂非易事？
 }
 
+local caocao = General(extension, "ofl_mou__caocao", "wei", 4)
+local ofl_mou__jianxiong = fk.CreateTriggerSkill{
+  name = "ofl_mou__jianxiong",
+  anim_type = "masochism",
+  events = {fk.Damaged, fk.GameStart},
+  can_trigger = function(self, event, target, player, data)
+    if event == fk.GameStart then
+      return player:hasSkill(self)
+    end
+    if target == player and player:hasSkill(self) then
+      return (data.card and U.hasFullRealCard(player.room, data.card)) or player:getMark("@mou__jianxiong") == 0
+    end
+  end,
+  on_cost = function (self, event, target, player, data)
+    local room = player.room
+    if event == fk.GameStart then
+      local _, dat = room:askForUseActiveSkill(player, "#mou__jianxiong_gamestart", "#mou__jianxiong-gamestart")
+      if dat then
+        self.cost_data = dat.interaction
+        return true
+      end
+    else
+      return room:askForSkillInvoke(player, self.name)
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    if event == fk.GameStart then
+      room:addPlayerMark(player, "@mou__jianxiong", self.cost_data)
+    else
+      if data.card and U.hasFullRealCard(player.room, data.card) then
+        room:moveCardTo(data.card, Player.Hand, player, fk.ReasonPrey, self.name)
+        if player.dead then return end
+      end
+      local num = 2 - player:getMark("@mou__jianxiong")
+      if num > 0 then
+        player:drawCards(num, self.name)
+      end
+      if player:getMark("@mou__jianxiong") > 0 then
+        if room:askForSkillInvoke(player, self.name, nil, "#ofl_mou__jianxiong-dismark") then
+          room:removePlayerMark(player, "@mou__jianxiong", 1)
+        end
+      end
+    end
+  end,
+}
+
+caocao:addSkill(ofl_mou__jianxiong)
+caocao:addSkill("mou__qingzheng")
+caocao:addSkill("mou__hujia")
+
+local caocaoWin = fk.CreateActiveSkill{ name = "ofl_mou__caocao_win_audio" }
+caocaoWin.package = extension
+Fk:addSkill(caocaoWin)
+
+Fk:loadTranslationTable{
+  ["ofl_mou__caocao"] = "谋曹操",
+  ["#ofl_mou__caocao"] = "魏武大帝",
+  ["illustrator:ofl_mou__caocao"] = "第七个桔子",
+
+  ["ofl_mou__jianxiong"] = "奸雄",
+  ["#ofl_mou__jianxiong_gamestart"] = "奸雄",
+  [":ofl_mou__jianxiong"] = "游戏开始时，你可以获得至多两枚“治世”标记。当你受到伤害后，你可以获得对你造成伤害的牌并摸2-X张牌，然后你可以移除1枚“治世”（X为“治世”的数量）。",
+
+  ["$ofl_mou__jianxiong1"] = "恨其才不为我所用，宁杀之亦胜入他人之手！",
+  ["$ofl_mou__jianxiong2"] = "兵行错役之制，可绝负我之人！",
+  ["$mou__qingzheng_ofl_mou__caocao1"] = "治国当行严法，可慑逆臣乱心！",
+  ["$mou__qingzheng_ofl_mou__caocao2"] = "犯禁自当棒杀，岂因权贵宽宥！",
+  ["$mou__hujia_ofl_mou__caocao1"] = "众将速归，护我退贼！",
+  ["$mou__hujia_ofl_mou__caocao2"] = "亲征不可轻退，速诛眼前之贼！",
+  ["~ofl_mou__caocao"] = "惜天不假年，未成夙愿……",
+  ["$ofl_mou__caocao_win_audio"] = "天下烽烟起逐鹿，吾代弱主扫六合！",
+}
+
 Fk:loadTranslationTable{
   ["ofl_wende__huaxin"] = "华歆",
   ["#ofl_wende__huaxin"] = "渊清玉洁",
