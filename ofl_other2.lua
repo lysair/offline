@@ -103,7 +103,7 @@ local mingdao = fk.CreateTriggerSkill{
       room:setTag(self.name, tag)
       card = id
     end
-    room:setCardMark(Fk:getCardById(card), MarkEnum.DestructIntoDiscard, 1)
+    room:setCardMark(Fk:getCardById(card), MarkEnum.DestructOutMyEquip, 1)
     room:moveCardIntoEquip(player, card, self.name, false, player.id)
   end,
 }
@@ -112,7 +112,11 @@ local mingdao_active = fk.CreateActiveSkill{
   card_num = 1,
   target_num = 0,
   expand_pile = function (self)
-    return Fk:currentRoom():getBanner("ofl__mingdao")
+    return table.filter(Fk:currentRoom():getBanner("ofl__mingdao"), function (id)
+      return not table.find(Self:getCardIds("e"), function (id2)
+        return Fk:getCardById(id2).trueName == "populace" and Fk:getCardById(id2).name[1] == Fk:getCardById(id).name[1]
+      end)
+    end)
   end,
   interaction = function()
     local choices = {}
@@ -255,11 +259,11 @@ godzhangjiao:addSkill(dangjing)
 godzhangjiao:addSkill(sanshou)
 Fk:loadTranslationTable{
   ["ofl__godzhangjiao"] = "神张角",
-  ["#ofl__godzhangjiao"] = "万千",
+  ["#ofl__godzhangjiao"] = "庇佑万千",
   ["illustrator:ofl__godzhangjiao"] = "鬼画府",
 
   ["ofl__mingdao"] = "瞑道",
-  [":ofl__mingdao"] = "游戏开始时，你可以将一张“众”置入你的装备区，“众”进入弃牌堆时销毁。",
+  [":ofl__mingdao"] = "游戏开始时，你可以将一张<a href='populace_href'>【众】</a>置入你的装备区，【众】进入离开你的装备区时销毁。",
   ["ofl__zhongfu"] = "众附",
   [":ofl__zhongfu"] = "每轮开始时，你可以声明一种花色，然后令手牌最少的角色依次选择一项：1.将一张牌置于牌堆顶；2.从牌堆底摸一张牌。"..
   "本轮当以此法失去牌的角色造成伤害后，你可以发动一次〖瞑道〗。",
@@ -268,6 +272,7 @@ Fk:loadTranslationTable{
   "雷电伤害且可以重复此流程。",
   ["ofl__sanshou"] = "三首",
   [":ofl__sanshou"] = "锁定技，你的准备阶段和结束阶段改为出牌阶段，并在此阶段将武将牌改为张宝或张梁。此阶段结束后把武将牌替换回张角。",
+  ["populace_href"] = "【众】共有四张，均为装备牌，可以置入武器/防具/坐骑栏",
   ["ofl__mingdao_active"] = "瞑道",
   ["#ofl__mingdao-invoke"] = "瞑道：将一张“众”置入你的装备区（选择一种“众”及副类别，右键/长按可查看技能）",
   ["#ofl__zhongfu-choice"] = "众附：你可以声明本轮生效的“众附”花色，然后令手牌数最少的角色依次选择一项",
@@ -363,7 +368,7 @@ godzhangbao:addSkill(zhaobing)
 godzhangbao:addSkill("ofl__sanshou")
 Fk:loadTranslationTable{
   ["ofl__godzhangbao"] = "神张宝",
-  ["#ofl__godzhangbao"] = "万千",
+  ["#ofl__godzhangbao"] = "庇佑万千",
   ["illustrator:ofl__godzhangbao"] = "NOVART",
 
   ["ofl__zhouyuan"] = "咒怨",
@@ -389,7 +394,6 @@ godzhangliang.hidden = true
 local jijun = fk.CreateTriggerSkill{
   name = "ofl__jijun",
   anim_type = "drawcard",
-  derived_piles = "ofl__godzhangliang_fang",
   events = {fk.TargetSpecified},
   can_trigger = function(self, event, target, player, data)
     return target == player and player:hasSkill(self) and data.to == player.id
@@ -488,7 +492,7 @@ godzhangliang:addSkill(fangtong)
 godzhangliang:addSkill("ofl__sanshou")
 Fk:loadTranslationTable{
   ["ofl__godzhangliang"] = "神张梁",
-  ["#ofl__godzhangliang"] = "万千",
+  ["#ofl__godzhangliang"] = "庇佑万千",
   ["illustrator:ofl__godzhangliang"] = "王强",
 
   ["ofl__jijun"] = "集军",
@@ -577,8 +581,8 @@ yanzhengh:addSkill(dishi)
 yanzhengh:addSkill(xianxiang)
 Fk:loadTranslationTable{
   ["yanzhengh"] = "严政",
-  ["#yanzhengh"] = "",
-  ["illustrator:yanzhengh"] = "",
+  ["#yanzhengh"] = "献首投降",
+  ["illustrator:yanzhengh"] = "Xiaoi",
 
   ["ofl__dishi"] = "地逝",
   [":ofl__dishi"] = "限定技，出牌阶段开始时，若你已受伤，你可以将所有手牌当一张无距离限制且伤害为X的【杀】使用（X为你的手牌数）。",
@@ -590,19 +594,19 @@ Fk:loadTranslationTable{
 }
 
 local bairao = General(extension, "bairao", "qun", 5)
-local xyin = fk.CreateTriggerSkill{
-  name = "ofl__xyin",
+local huoyin = fk.CreateTriggerSkill{
+  name = "ofl__huoyin",
   anim_type = "control",
   frequency = Skill.Compulsory,
   events = {fk.Damage},
   can_trigger = function(self, event, target, player, data)
-    return target == player and player:hasSkill(self) and (data.extra_data or {}).ofl__xyin
+    return target == player and player:hasSkill(self) and (data.extra_data or {}).ofl__huoyin
   end,
   on_use = function(self, event, target, player, data)
     local room = player.room
     player:drawCards(1, self.name)
     if not data.to.dead then
-      U.askForPlayCard(room, data.to, nil, nil, self.name, "#ofl__xyin-use", {
+      U.askForPlayCard(room, data.to, nil, nil, self.name, "#ofl__huoyin-use", {
         bypass_times = true,
         extraUse = true,
       })
@@ -616,29 +620,29 @@ local xyin = fk.CreateTriggerSkill{
   end,
   on_refresh = function(self, event, target, player, data)
     data.damageEvent.extra_data = data.damageEvent.extra_data or {}
-    data.damageEvent.extra_data.ofl__xyin = true
+    data.damageEvent.extra_data.ofl__huoyin = true
   end,
 }
-local xyin_targetmod = fk.CreateTargetModSkill{
-  name = "#ofl__xyin_targetmod",
+local huoyin_targetmod = fk.CreateTargetModSkill{
+  name = "#ofl__huoyin_targetmod",
   frequency = Skill.Compulsory,
-  main_skill = xyin,
+  main_skill = huoyin,
   bypass_times = function(self, player, skill, scope, card, to)
-    return player:hasSkill(xyin) and card and card.trueName == "slash" and
+    return player:hasSkill(huoyin) and card and card.trueName == "slash" and
       to and player:inMyAttackRange(to) and to:inMyAttackRange(player)
   end,
 }
-xyin:addRelatedSkill(xyin_targetmod)
-bairao:addSkill(xyin)
+huoyin:addRelatedSkill(huoyin_targetmod)
+bairao:addSkill(huoyin)
 Fk:loadTranslationTable{
   ["bairao"] = "白绕",
-  ["#bairao"] = "",
-  ["illustrator:bairao"] = "",
+  ["#bairao"] = "黑山寇首",
+  ["illustrator:bairao"] = "君桓文化",
 
-  ["ofl__xyin"] = "技能",
-  [":ofl__xyin"] = "锁定技，你对攻击范围内含有你且你攻击范围内有其的其他角色：使用【杀】无次数限制；当你对这些角色造成伤害后，你摸一张牌，"..
+  ["ofl__huoyin"] = "祸引",
+  [":ofl__huoyin"] = "锁定技，你对攻击范围内含有你且你攻击范围内有其的其他角色：使用【杀】无次数限制；当你对这些角色造成伤害后，你摸一张牌，"..
   "然后其选择是否使用一张牌。",
-  ["#ofl__xyin-use"] = "技能：你可以使用一张牌",
+  ["#ofl__huoyin-use"] = "祸引：你可以使用一张牌",
 }
 
 local busi = General(extension, "busi", "qun", 4, 6)
@@ -782,8 +786,8 @@ busi:addSkill(tianpan)
 busi:addSkill(gaiming)
 Fk:loadTranslationTable{
   ["busi"] = "卜巳",
-  ["#busi"] = "",
-  ["illustrator:busi"] = "",
+  ["#busi"] = "黄巾渠帅",
+  ["illustrator:busi"] = "千秋秋千秋",
 
   ["ofl__weiluan"] = "为乱",
   [":ofl__weiluan"] = "锁定技，准备阶段/摸牌阶段/出牌阶段开始时，你进行判定，若结果为♠，你的攻击范围/摸牌阶段摸牌数/使用【杀】次数上限+1。",
@@ -796,8 +800,8 @@ Fk:loadTranslationTable{
 }
 
 local suigu = General(extension, "suigu", "qun", 5)
-local tuntians = fk.CreateTriggerSkill{
-  name = "ofl__tuntians",
+local tunquan = fk.CreateTriggerSkill{
+  name = "ofl__tunquan",
   anim_type = "special",
   frequency = Skill.Compulsory,
   events = {fk.EventPhaseStart},
@@ -805,16 +809,16 @@ local tuntians = fk.CreateTriggerSkill{
     return target == player and player:hasSkill(self) and player.phase == Player.Start
   end,
   on_use = function(self, event, target, player, data)
-    player.room:addPlayerMark(player, "@ofl__tuntians", 1)
+    player.room:addPlayerMark(player, "@ofl__tunquan", 1)
   end,
 }
-local tuntians_delay = fk.CreateTriggerSkill{
-  name = "#ofl__tuntians_delay",
+local tunquan_delay = fk.CreateTriggerSkill{
+  name = "#ofl__tunquan_delay",
   mute = true,
   frequency = Skill.Compulsory,
   events = {fk.DrawNCards, fk.DamageInflicted},
   can_trigger = function (self, event, target, player, data)
-    if target == player and player:getMark("@ofl__tuntians") > 0 then
+    if target == player and player:getMark("@ofl__tunquan") > 0 then
       if event == fk.DrawNCards then
         return true
       elseif event == fk.DamageInflicted then
@@ -826,20 +830,20 @@ local tuntians_delay = fk.CreateTriggerSkill{
   end,
   on_use = function (self, event, target, player, data)
     local room = player.room
-    player:broadcastSkillInvoke("ofl__tuntians")
+    player:broadcastSkillInvoke("ofl__tunquan")
     if event == fk.DrawNCards then
-      room:notifySkillInvoked(player, "ofl__tuntians", "drawcard")
-      data.n = data.n + player:getMark("@ofl__tuntians")
+      room:notifySkillInvoked(player, "ofl__tunquan", "drawcard")
+      data.n = data.n + player:getMark("@ofl__tunquan")
     elseif event == fk.DamageInflicted then
-      room:notifySkillInvoked(player, "ofl__tuntians", "negative")
-      data.damage = data.damage + player:getMark("@ofl__tuntians")
+      room:notifySkillInvoked(player, "ofl__tunquan", "negative")
+      data.damage = data.damage + player:getMark("@ofl__tunquan")
     end
   end,
 }
-local tuntians_maxcards = fk.CreateMaxCardsSkill{
-  name = "#ofl__tuntians_maxcards",
+local tunquan_maxcards = fk.CreateMaxCardsSkill{
+  name = "#ofl__tunquan_maxcards",
   correct_func = function(self, player)
-    return player:getMark("@ofl__tuntians")
+    return player:getMark("@ofl__tunquan")
   end,
 }
 local qianjun = fk.CreateActiveSkill{
@@ -860,7 +864,7 @@ local qianjun = fk.CreateActiveSkill{
   on_use = function(self, room, effect)
     local player = room:getPlayerById(effect.from)
     local target = room:getPlayerById(effect.tos[1])
-    room:setPlayerMark(player, "@ofl__tuntians", 0)
+    room:setPlayerMark(player, "@ofl__tunquan", 0)
     room:moveCardTo(player:getCardIds("e"), Card.PlayerHand, target, fk.ReasonGive, self.name, nil, true, player.id)
     room:swapSeat(player, target)
     if player.dead then return end
@@ -876,22 +880,22 @@ local qianjun = fk.CreateActiveSkill{
     room:handleAddLoseSkills(player, "luanji", nil, true, false)
   end,
 }
-tuntians:addRelatedSkill(tuntians_delay)
-tuntians:addRelatedSkill(tuntians_maxcards)
-suigu:addSkill(tuntians)
+tunquan:addRelatedSkill(tunquan_delay)
+tunquan:addRelatedSkill(tunquan_maxcards)
+suigu:addSkill(tunquan)
 suigu:addSkill(qianjun)
 suigu:addRelatedSkill("luanji")
 Fk:loadTranslationTable{
   ["suigu"] = "眭固",
-  ["#suigu"] = "",
-  ["illustrator:suigu"] = "",
+  ["#suigu"] = "兔入犬城",
+  ["illustrator:suigu"] = "君桓文化",
 
-  ["ofl__tuntians"] = "屯天",
-  [":ofl__tuntians"] = "锁定技，准备阶段，你令你本局游戏摸牌阶段的摸牌数，手牌上限和每回合首次受到的伤害+1，直到你发动〖迁军〗。",
+  ["ofl__tunquan"] = "屯犬",
+  [":ofl__tunquan"] = "锁定技，准备阶段，你令你本局游戏摸牌阶段的摸牌数，手牌上限和每回合首次受到的伤害+1，直到你发动〖迁军〗。",
   ["ofl__qianjun"] = "迁军",
   [":ofl__qianjun"] = "限定技，出牌阶段，你可以交给一名其他角色装备区里的所有牌并与其交换座次，然后你回复1点体力并获得〖乱击〗。",
-  ["@ofl__tuntians"] = "屯天",
-  ["#ofl__tuntians_delay"] = "屯天",
+  ["@ofl__tunquan"] = "屯犬",
+  ["#ofl__tunquan_delay"] = "屯犬",
   ["#ofl__qianjun"] = "迁军：将所有装备交给一名角色并与其交换座次，你回复1点体力并获得〖乱击〗！",
 }
 
@@ -1051,8 +1055,8 @@ yudu:addSkill(dafu)
 yudu:addSkill(jipin)
 Fk:loadTranslationTable{
   ["yudu"] = "于毒",
-  ["#yudu"] = "",
-  ["illustrator:yudu"] = "",
+  ["#yudu"] = "劫富济贫",
+  ["illustrator:yudu"] = "MUMU1",
 
   ["ofl__dafu"] = "打富",
   [":ofl__dafu"] = "当你使用伤害牌指定目标后，你可以令目标角色摸一张牌，然后其不能响应此牌。",
@@ -1121,13 +1125,13 @@ local jukou_prohibit = fk.CreateProhibitSkill{
     end
   end,
 }
-local weipan = fk.CreateActiveSkill{
-  name = "ofl__weipan",
+local shupan = fk.CreateActiveSkill{
+  name = "ofl__shupan",
   anim_type = "control",
   frequency = Skill.Limited,
   card_num = 0,
   target_num = 2,
-  prompt = "#ofl__weipan",
+  prompt = "#ofl__shupan",
   can_use = function(self, player)
     return player:usedSkillTimes(self.name, Player.HistoryGame) == 0
   end,
@@ -1155,8 +1159,8 @@ local weipan = fk.CreateActiveSkill{
       target2:drawCards(3, self.name)
     end
     if target1.dead or target2.dead then return end
-    room:addTableMark(target1, "@@ofl__weipan", target2.id)
-    room:addTableMark(target2, "@@ofl__weipan", target1.id)
+    room:addTableMark(target1, "@@ofl__shupan", target2.id)
+    room:addTableMark(target2, "@@ofl__shupan", target1.id)
     local cards = table.filter(target2:getCardIds("h"), function (id)
       return Fk:getCardById(id).is_damage_card
     end)
@@ -1180,25 +1184,25 @@ local weipan = fk.CreateActiveSkill{
     end
   end,
 }
-local weipan_targetmod = fk.CreateTargetModSkill{
-  name = "#ofl__weipan_targetmod",
+local shupan_targetmod = fk.CreateTargetModSkill{
+  name = "#ofl__shupan_targetmod",
   bypass_times = function(self, player, skill, scope, card, to)
-    return card and table.contains(player:getTableMark("@@ofl__weipan"), to.id)
+    return card and table.contains(player:getTableMark("@@ofl__shupan"), to.id)
   end,
 }
 jukou:addRelatedSkill(jukou_prohibit)
-weipan:addRelatedSkill(weipan_targetmod)
+shupan:addRelatedSkill(shupan_targetmod)
 tangzhou:addSkill(jukou)
-tangzhou:addSkill(weipan)
+tangzhou:addSkill(shupan)
 Fk:loadTranslationTable{
   ["tangzhou"] = "唐周",
-  ["#tangzhou"] = "",
-  ["illustrator:tangzhou"] = "",
+  ["#tangzhou"] = "叛门高足",
+  ["illustrator:tangzhou"] = "sky",
 
   ["ofl__jukou"] = "举寇",
   [":ofl__jukou"] = "出牌阶段限一次，你可以令一名角色摸一张牌/获得其武将牌上的所有牌，然后其本回合不能使用【杀】/手牌。",
-  ["ofl__weipan"] = "违叛",
-  [":ofl__weipan"] = "限定技，出牌阶段，你可以选择两名其他角色：展示第一名角色的所有手牌，你与第二名角色各摸三张牌，然后其对第一名角色依次使用"..
+  ["ofl__shupan"] = "述叛",
+  [":ofl__shupan"] = "限定技，出牌阶段，你可以选择两名其他角色：展示第一名角色的所有手牌，你与第二名角色各摸三张牌，然后其对第一名角色依次使用"..
   "手牌中所有伤害牌；这两名角色互相使用牌无次数限制直到游戏结束。",
   ["#ofl__jukou1"] = "举寇：令一名角色摸一张牌，其本回合不能使用【杀】",
   ["#ofl__jukou2"] = "举寇：令一名角色获得其武将牌上的牌，其本回合不能使用手牌",
@@ -1206,13 +1210,13 @@ Fk:loadTranslationTable{
   ["ofl__jukou2"] = "获得武将牌上的牌",
   ["@@ofl__jukou1-turn"] = "禁止使用杀",
   ["@@ofl__jukou2-turn"] = "禁止使用手牌",
-  ["#ofl__weipan"] = "违叛：选择两名角色，展示第一名角色的手牌，你与第二名角色各摸三张牌，然后后者对前者使用伤害牌！",
-  ["@@ofl__weipan"] = "违叛",
+  ["#ofl__shupan"] = "述叛：选择两名角色，展示第一名角色的手牌，你与第二名角色各摸三张牌，然后后者对前者使用伤害牌！",
+  ["@@ofl__shupan"] = "述叛",
 }
 
 local bocai = General(extension, "bocai", "qun", 5)
-local weijun = fk.CreateTriggerSkill{
-  name = "ofl__weijun",
+local kunjun = fk.CreateTriggerSkill{
+  name = "ofl__kunjun",
   mute = true,
   frequency = Skill.Compulsory,
   events = {fk.DrawInitialCards, fk.CardUsing},
@@ -1320,16 +1324,16 @@ local cuiji_viewas = fk.CreateViewAsSkill{
   end,
 }
 Fk:addSkill(cuiji_viewas)
-bocai:addSkill(weijun)
+bocai:addSkill(kunjun)
 bocai:addSkill(yingzhan)
 bocai:addSkill(cuiji)
 Fk:loadTranslationTable{
   ["bocai"] = "波才",
-  ["#bocai"] = "",
+  ["#bocai"] = "黄巾执首",
   ["illustrator:bocai"] = "HOOO",
 
-  ["ofl__weijun"] = "围军",
-  [":ofl__weijun"] = "锁定技，你的初始手牌数+4，手牌数小于你的角色不能响应你使用的牌，你不能响应手牌数大于你的角色使用的牌。",
+  ["ofl__kunjun"] = "困军",
+  [":ofl__kunjun"] = "锁定技，你的初始手牌数+4，手牌数小于你的角色不能响应你使用的牌，你不能响应手牌数大于你的角色使用的牌。",
   ["ofl__yingzhan"] = "营战",
   [":ofl__yingzhan"] = "锁定技，你造成或受到的属性伤害+1。",
   ["ofl__cuiji"] = "摧击",
@@ -1340,8 +1344,8 @@ Fk:loadTranslationTable{
 }
 
 local chengyuanzhi = General(extension, "chengyuanzhi", "qun", 5)
-local wuxin = fk.CreateTriggerSkill{
-  name = "ofl__wuxin",
+local wuxiao = fk.CreateTriggerSkill{
+  name = "ofl__wuxiao",
   anim_type = "special",
   frequency = Skill.Compulsory,
   events = {fk.AfterCardsMove},
@@ -1361,27 +1365,27 @@ local wuxin = fk.CreateTriggerSkill{
     end
   end,
   on_use = function(self, event, target, player, data)
-    player.room:addPlayerMark(player, "@@ofl__wuxin-turn", 1)
+    player.room:addPlayerMark(player, "@@ofl__wuxiao-turn", 1)
   end,
 }
-local wuxin_delay = fk.CreateTriggerSkill{
-  name = "#ofl__wuxin_delay",
+local wuxiao_delay = fk.CreateTriggerSkill{
+  name = "#ofl__wuxiao_delay",
   mute = true,
   frequency = Skill.Compulsory,
   events = {fk.DamageCaused, fk.DamageInflicted},
   can_trigger = function (self, event, target, player, data)
-    return target == player and player:getMark("@@ofl__wuxin-turn") > 0
+    return target == player and player:getMark("@@ofl__wuxiao-turn") > 0
   end,
   on_use = function (self, event, target, player, data)
     local room = player.room
-    player:broadcastSkillInvoke("ofl__wuxin")
+    player:broadcastSkillInvoke("ofl__wuxiao")
     if event == fk.DamageCaused then
-      room:notifySkillInvoked(player, "ofl__wuxin", "offensive")
+      room:notifySkillInvoked(player, "ofl__wuxiao", "offensive")
     elseif event == fk.DamageInflicted then
-      room:notifySkillInvoked(player, "ofl__wuxin", "negative")
+      room:notifySkillInvoked(player, "ofl__wuxiao", "negative")
     end
-    data.damage = data.damage + player:getMark("@@ofl__wuxin-turn")
-    room:setPlayerMark(player, "@@ofl__wuxin-turn", 0)
+    data.damage = data.damage + player:getMark("@@ofl__wuxiao-turn")
+    room:setPlayerMark(player, "@@ofl__wuxiao-turn", 0)
   end,
 }
 local qianhu = fk.CreateViewAsSkill{
@@ -1412,20 +1416,20 @@ local qianhu = fk.CreateViewAsSkill{
     end
   end,
 }
-wuxin:addRelatedSkill(wuxin_delay)
-chengyuanzhi:addSkill(wuxin)
+wuxiao:addRelatedSkill(wuxiao_delay)
+chengyuanzhi:addSkill(wuxiao)
 chengyuanzhi:addSkill(qianhu)
 Fk:loadTranslationTable{
   ["chengyuanzhi"] = "程远志",
-  ["#chengyuanzhi"] = "",
+  ["#chengyuanzhi"] = "逆流而动",
   ["illustrator:chengyuanzhi"] = "HOOO",
 
-  ["ofl__wuxin"] = "武衅",
-  [":ofl__wuxin"] = "锁定技，当每回合首次有红色牌进入弃牌堆后，你本回合下次造成或受到的伤害+1。",
+  ["ofl__wuxiao"] = "武嚣",
+  [":ofl__wuxiao"] = "锁定技，当每回合首次有红色牌进入弃牌堆后，你本回合下次造成或受到的伤害+1。",
   ["ofl__qianhu"] = "前呼",
   [":ofl__qianhu"] = "出牌阶段，你可以弃置两张红色牌视为使用一张【决斗】，若你造成了伤害，你摸一张牌。",
-  ["@@ofl__wuxin-turn"] = "造成/受到伤害+1",
-  ["#ofl__wuxin_delay"] = "武衅",
+  ["@@ofl__wuxiao-turn"] = "造成/受到伤害+1",
+  ["#ofl__wuxiao_delay"] = "武嚣",
   ["#ofl__qianhu"] = "前呼：弃置两张红色牌视为使用【决斗】，若你造成伤害则摸一张牌",
 }
 
@@ -1539,7 +1543,7 @@ dengmao:addSkill(paoxi)
 dengmao:addSkill(houying)
 Fk:loadTranslationTable{
   ["dengmao"] = "邓茂",
-  ["#dengmao"] = "",
+  ["#dengmao"] = "逆势而行",
   ["illustrator:dengmao"] = "HOOO",
 
   ["ofl__paoxi"] = "咆袭",
@@ -1670,8 +1674,8 @@ gaosheng:addSkill(xiongshi)
 gaosheng:addSkill(difeng)
 Fk:loadTranslationTable{
   ["gaosheng"] = "高升",
-  ["#gaosheng"] = "",
-  ["illustrator:gaosheng"] = "",
+  ["#gaosheng"] = "地公之锋",
+  ["illustrator:gaosheng"] = "livsinno",
 
   ["ofl__xiongshi"] = "凶势",
   [":ofl__xiongshi"] = "每名角色出牌阶段限一次，其可以将一张手牌置于你武将牌上。",
@@ -1867,7 +1871,7 @@ taosheng:addSkill(hanwei)
 Fk:loadTranslationTable{
   ["taosheng"] = "陶升",
   ["#taosheng"] = "平汉将军",
-  ["illustrator:taosheng"] = "",
+  ["illustrator:taosheng"] = "佚名",
 
   ["ofl__zainei"] = "载内",
   [":ofl__zainei"] = "限定技，出牌阶段，你可以选择一名其他角色，然后你与其距离视为1，直到你进入濒死状态。",

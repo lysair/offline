@@ -418,10 +418,7 @@ local PopulaceSkill = fk.CreateTriggerSkill{
       if player.dead then return end
       local equip = Fk:getCardById(id)
       if equip.trueName == "populace" then
-        if equip.name:startsWith("weapon") then
-          room:addPlayerMark(player, MarkEnum.SlashResidue, 1)
-          room:addPlayerMark(player, "@populace_attackrange", 1)
-        elseif equip.name:startsWith("armor") then
+        if equip.name:startsWith("armor") then
           player:drawCards(2, self.name)
         elseif equip.name:startsWith("defensive_horse") then
           room:addPlayerMark(player, MarkEnum.AddMaxCards, 1)
@@ -432,11 +429,34 @@ local PopulaceSkill = fk.CreateTriggerSkill{
     end
   end,
 }
-local populace_attackrange = fk.CreateAttackRangeSkill{
-  name = "#populace_attackrange",
+local populace_targetmod = fk.CreateTargetModSkill{
+  name = "#populace_targetmod",
   frequency = Skill.Compulsory,
-  correct_func = function (self, from, to)
-    return from:getMark("@populace_attackrange")
+  bypass_distances = function (self, player, skill, card, to)
+    if skill.trueName == "slash_skill" then
+      for _, id in ipairs(player:getCardIds("e")) do
+        local equip = Fk:getCardById(id)
+        if equip.trueName == "populace" then
+          if equip.name:startsWith("weapon") then
+            return true
+          end
+        end
+      end
+    end
+  end,
+  residue_func = function (self, player, skill, scope, card, to)
+    if skill.trueName == "slash_skill" then
+      local n = 0
+      for _, id in ipairs(player:getCardIds("e")) do
+        local equip = Fk:getCardById(id)
+        if equip.trueName == "populace" then
+          if equip.name:startsWith("weapon") then
+            n = n + 1
+          end
+        end
+      end
+      return n
+    end
   end,
 }
 local populace_distance = fk.CreateDistanceSkill{
@@ -446,7 +466,7 @@ local populace_distance = fk.CreateDistanceSkill{
     return to:getMark("@populace_distance") - from:getMark("@populace_distance")
   end,
 }
-PopulaceSkill:addRelatedSkill(populace_attackrange)
+PopulaceSkill:addRelatedSkill(populace_targetmod)
 PopulaceSkill:addRelatedSkill(populace_distance)
 Fk:addSkill(PopulaceSkill)
 
@@ -532,14 +552,12 @@ end
 Fk:loadTranslationTable{
   ["populace"] = "众",
   ["#populace_skill"] = "众",
-  ["@populace_attackrange"] = "攻击范围+",
   ["@populace_distance"] = "距离±",
 }
 for i = 1, 4, 1 do
   Fk:loadTranslationTable{
     ["weapon"..i.."__populace"] = "众",
-    [":weapon"..i.."__populace"] = "装备牌·武器/防具/坐骑<br/><b>装备技能</b>：锁定技，当你受到伤害后，你出牌阶段使用【杀】次数上限+1，"..
-    "攻击范围+1。",
+    [":weapon"..i.."__populace"] = "装备牌·武器/防具/坐骑<br/><b>装备技能</b>：锁定技，你出牌阶段使用【杀】次数上限+1，使用【杀】无距离限制。",
     ["armor"..i.."__populace"] = "众",
     [":armor"..i.."__populace"] = "装备牌·武器/防具/坐骑<br/><b>装备技能</b>：锁定技，当你受到伤害后，你摸两张牌。",
     ["defensive_horse"..i.."__populace"] = "众",
