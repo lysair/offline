@@ -1805,7 +1805,10 @@ local xueyi = fk.CreateTriggerSkill{
   on_use = function(self, event, target, player, data)
     local room = player.room
     for _, id in ipairs(data.extra_data.ofl_mou__xueyi) do
-      room:setPlayerMark(room:getPlayerById(id), "@@ofl_mou__xueyi-phase", 1)
+      local p = player.room:getPlayerById(id)
+      if not p.dead and p.kingdom == "qun" then
+        room:setPlayerMark(p, "@@ofl_mou__xueyi-phase", 1)
+      end
     end
   end,
 
@@ -1841,7 +1844,7 @@ local xueyi_maxcards = fk.CreateMaxCardsSkill{
           hmax = hmax + 1
         end
       end
-      return hmax *2
+      return hmax * 2
     else
       return 0
     end
@@ -1956,7 +1959,8 @@ Fk:loadTranslationTable{
 
   ["ofl_mou__jianxiong"] = "奸雄",
   ["#ofl_mou__jianxiong_gamestart"] = "奸雄",
-  [":ofl_mou__jianxiong"] = "游戏开始时，你可以获得至多两枚“治世”标记。当你受到伤害后，你可以获得对你造成伤害的牌并摸2-X张牌，然后你可以移除1枚“治世”（X为“治世”的数量）。",
+  [":ofl_mou__jianxiong"] = "游戏开始时，你可以获得至多两枚“治世”标记。当你受到伤害后，你可以获得对你造成伤害的牌并摸2-X张牌，"..
+  "然后你可以移除1枚“治世”（X为“治世”的数量）。",
 
   ["$ofl_mou__jianxiong1"] = "恨其才不为我所用，宁杀之亦胜入他人之手！",
   ["$ofl_mou__jianxiong2"] = "兵行错役之制，可绝负我之人！",
@@ -1966,6 +1970,134 @@ Fk:loadTranslationTable{
   ["$mou__hujia_ofl_mou__caocao2"] = "亲征不可轻退，速诛眼前之贼！",
   ["~ofl_mou__caocao"] = "惜天不假年，未成夙愿……",
   ["$ofl_mou__caocao_win_audio"] = "天下烽烟起逐鹿，吾代弱主扫六合！",
+}
+
+local yujin = General(extension, "ofl_mou__yujin", "wei", 4)
+local jieyue = fk.CreateTriggerSkill{
+  name = "ofl_mou__jieyue",
+  anim_type = "support",
+  events = {fk.EventPhaseStart},
+  can_trigger = function(self, event, target, player, data)
+    return target == player and player:hasSkill(self) and player.phase == Player.Finish and
+      #player.room:getOtherPlayers(player) > 0
+  end,
+  on_cost = function (self, event, target, player, data)
+    local tos = player.room:askForChoosePlayers(player, table.map(player.room:getOtherPlayers(player), Util.IdMapper), 1, 1,
+      "#ofl_mou__jieyue-choose", self.name, true)
+    if #tos > 0 then
+      self.cost_data = {tos = tos}
+      return true
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    local to = room:getPlayerById(self.cost_data.tos[1])
+    to:drawCards(2, self.name)
+    if to.dead then return end
+    room:changeShield(to, 1)
+    if not to:isNude() and not player.dead then
+      local n = math.min(#to:getCardIds("he"), 2)
+      local cards = room:askForCard(to, n, n, true, self.name, false, nil, "#ofl_mou__jieyue-give:"..player.id)
+      room:moveCardTo(cards, Card.PlayerHand, player, fk.ReasonGive, self.name, nil, false, to.id)
+    end
+  end,
+}
+yujin:addSkill("mou__xiayuan")
+yujin:addSkill(jieyue)
+Fk:loadTranslationTable{
+  ["ofl_mou__yujin"] = "谋于禁",
+  ["#ofl_mou__yujin"] = "威严毅重",
+  ["illustrator:ofl_mou__yujin"] = "7点Game",
+
+  ["ofl_mou__jieyue"] = "节钺",
+  [":ofl_mou__jieyue"] = "结束阶段，你可以令一名其他角色摸两张牌并获得1点护甲，然后其交给你两张牌。",
+  ["#ofl_mou__jieyue-choose"] = "节钺：令一名角色摸两张牌并获得1点护甲，然后其交给你两张牌。",
+  ["#ofl_mou__jieyue-give"] = "节钺：请交给 %src 两张牌",
+}
+
+local pangtong = General(extension, "ofl_mou__pangtong", "shu", 3)
+local lianhuan = fk.CreateActiveSkill{
+  name = "ofl_mou__lianhuan",
+  mute = true,
+  card_num = 1,
+  min_target_num = 0,
+  prompt = "#ofl_mou__lianhuan",
+  can_use = function(self, player)
+    return not player:isKongcheng()
+  end,
+  card_filter = function(self, to_select, selected, selected_targets)
+    return #selected == 0 and Fk:getCardById(to_select).suit == Card.Club and table.contains(Self:getCardIds("h"), to_select)
+  end,
+  target_filter = function(self, to_select, selected, selected_cards)
+    if #selected_cards == 1 then
+      local card = Fk:cloneCard("iron_chain")
+      card:addSubcard(selected_cards[1])
+      card.skillName = self.name
+      return card.skill:canUse(Self, card) and card.skill:targetFilter(to_select, selected, selected_cards, card) and
+      not Self:prohibitUse(card) and not Self:isProhibited(Fk:currentRoom():getPlayerById(to_select), card)
+    end
+  end,
+  on_use = function(self, room, effect)
+    local player = room:getPlayerById(effect.from)
+    player:broadcastSkillInvoke(self.name)
+    if #effect.tos == 0 then
+      room:notifySkillInvoked(player, self.name, "drawcard")
+      room:recastCard(effect.cards, player, self.name)
+    else
+      room:notifySkillInvoked(player, self.name, "control")
+      room:sortPlayersByAction(effect.tos)
+      room:useVirtualCard("iron_chain", effect.cards, player, table.map(effect.tos, Util.Id2PlayerMapper), self.name)
+    end
+  end,
+}
+local lianhuan_trigger = fk.CreateTriggerSkill{
+  name = "#ofl_mou__lianhuan_trigger",
+  anim_type = "control",
+  events = {fk.TargetSpecified},
+  can_trigger = function(self, event, target, player, data)
+    if target == player and player:hasSkill(lianhuan) and data.card.trueName == "iron_chain" then
+      local to = player.room:getPlayerById(data.to)
+      if not to.chained and not to:isNude() and not to.dead then
+        return to ~= player or
+          table.find(player:getCardIds("he"), function (id)
+            return not player:prohibitDiscard(id)
+          end)
+      end
+    end
+  end,
+  on_cost = function(self, event, target, player, data)
+    if player.room:askForSkillInvoke(player, "ofl_mou__lianhuan", nil, "#ofl_mou__lianhuan-invoke::"..data.to) then
+      self.cost_data = {tos = {data.to}}
+      return true
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    room:notifySkillInvoked(player, "ofl_mou__lianhuan", "control")
+    local to = room:getPlayerById(data.to)
+    if to == player then
+      room:askForDiscard(player, 1, 1, true, "ofl_mou__lianhuan", false, nil, "#ofl_mou__lianhuan-discard::"..to.id)
+    else
+      local cards = room:askForCardsChosen(player, to, 1, 1, "he", "ofl_mou__lianhuan", "#ofl_mou__lianhuan-discard::"..to.id)
+      room:throwCard(cards, "ofl_mou__lianhuan", to, player)
+    end
+  end,
+}
+lianhuan:addRelatedSkill(lianhuan_trigger)
+pangtong:addSkill(lianhuan)
+pangtong:addSkill("niepan")
+Fk:loadTranslationTable{
+  ["ofl_mou__pangtong"] = "谋庞统",
+  ["#ofl_mou__pangtong"] = "凤雏",
+  ["illustrator:ofl_mou__pangtong"] = "鬼画府",
+
+  ["ofl_mou__lianhuan"] = "连环",
+  [":ofl_mou__lianhuan"] = "出牌阶段，你可以将一张♣手牌当【铁索连环】使用或重铸；当你使用【铁索连环】指定一名未横置的角色为目标后，"..
+  "你可以弃置其一张牌。",
+  ["#ofl_mou__lianhuan"] = "连环：你可以将一张♣手牌当【铁索连环】使用或重铸",
+  ["#ofl_mou__lianhuan_trigger"] = "连环",
+  ["#ofl_mou__lianhuan-invoke"] = "连环：是否弃置 %dest 一张牌？",
+  ["#ofl_mou__lianhuan-discard"] = "连环：弃置 %dest 一张牌",
 }
 
 Fk:loadTranslationTable{

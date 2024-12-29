@@ -374,6 +374,54 @@ Fk:loadTranslationTable{
   ["#juesui-viewas"] = "发动 玦碎，将黑色非基本牌当无次数限制的【杀】使用或打出",
 }
 
+local shzj_xiangfan__pangde = General(extension, "shzj_xiangfan__pangde", "wei", 4)
+local taiguan = fk.CreateActiveSkill{
+  name = "taiguan",
+  anim_type = "offensive",
+  card_num = 1,
+  target_num = 1,
+  prompt = "#taiguan",
+  times = function(self)
+    return Self.phase == Player.Play and math.max(Self:getLostHp(), 1) - Self:usedSkillTimes(self.name, Player.HistoryPhase) or -1
+  end,
+  can_use = function(self, player)
+    return player:usedSkillTimes(self.name, Player.HistoryPhase) < math.max(player:getLostHp(), 1)
+  end,
+  card_filter = function(self, to_select, selected)
+    return #selected == 0 and not Self:prohibitDiscard(Fk:getCardById(to_select))
+  end,
+  target_filter = function(self, to_select, selected)
+    local target = Fk:currentRoom():getPlayerById(to_select)
+    return #selected == 0 and not target:isNude() and Self:inMyAttackRange(target)
+  end,
+  on_use = function(self, room, effect)
+    local player = room:getPlayerById(effect.from)
+    local target = room:getPlayerById(effect.tos[1])
+    room:throwCard(effect.cards, self.name, player, player)
+    if target.dead then return end
+    local card = room:askForDiscard(target, 1, 1, true, self.name, false, nil, "#taiguan-discard:"..player.id)
+    if #card > 0 then
+      card = Fk:getCardById(card[1])
+      if card.trueName ~= "slash" and target.hp >= player.hp and not player.dead and not target.dead then
+        room:useVirtualCard("duel", nil, player, target, self.name)
+      end
+    end
+  end,
+}
+shzj_xiangfan__pangde:addSkill(taiguan)
+shzj_xiangfan__pangde:addSkill("mashu")
+Fk:loadTranslationTable{
+  ["shzj_xiangfan__pangde"] = "庞德",
+  ["#shzj_xiangfan__pangde"] = "意怒气壮",
+  ["illustrator:shzj_xiangfan__pangde"] = "鬼画府",
+
+  ["taiguan"] = "抬棺",
+  [":taiguan"] = "出牌阶段限X次，你可以弃置一张牌并令攻击范围内的一名其他角色弃置一张牌，若其弃置的不为【杀】且你的体力值不大于其，你视为对其"..
+  "使用一张【决斗】（X为你已损失体力值，至少为1）。",
+  ["#taiguan"] = "抬棺：弃置一张牌，令一名角色弃一张牌",
+  ["#taiguan-discard"] = "抬棺：你需弃置一张牌，若不为【杀】且你体力值不小于 %src，视为其对你使用【决斗】",
+}
+
 local lvchang = General(extension, "lvchang", "wei", 4)
 local juwu = fk.CreateTriggerSkill{
   name = "juwu",
@@ -409,7 +457,7 @@ local shouxiang = fk.CreateTriggerSkill{
   end,
 }
 local shouxiang_delay = fk.CreateTriggerSkill{
-  name = "#shouxiang",
+  name = "#shouxiang_delay",
   mute = true,
   events = {fk.EventPhaseStart},
   can_trigger = function(self, event, target, player, data)
@@ -444,6 +492,7 @@ Fk:loadTranslationTable{
   [":shouxiang"] = "摸牌阶段，你可以多摸X张牌，然后跳过你的出牌阶段。若如此做，此回合的弃牌阶段开始时，你可以交给至多X名角色各一张手牌"..
   "（X为攻击范围内含有你的角色数且至多为3）。",
   ["#shouxiang-invoke"] = "守襄：你可以多摸%arg张牌并跳过出牌阶段，弃牌阶段开始时可以将牌交给其他角色",
+  ["#shouxiang_delay"] = "守襄",
   ["#shouxiang-give"] = "守襄：你可以交给%arg名角色各一张手牌",
 }
 
@@ -2849,6 +2898,238 @@ Fk:loadTranslationTable{
   ["#fuhans2-invoke"] = "辅汉：是否恢复 %src 一个装备栏？回合结束时当前回合角色将手牌摸至体力上限",
   ["#chende"] = "臣德：交给一名角色至少两张手牌，然后你可以视为使用其中一张牌",
   ["#chende-use"] = "臣德：你可以视为使用其中一张牌",
+}
+
+local shzj_yiling__ganning = General(extension, "shzj_yiling__ganning", "wu", 4)
+local qixi = fk.CreateViewAsSkill{
+  name = "shzj_yiling__qixi",
+  anim_type = "control",
+  pattern = "dismantlement",
+  prompt = "#shzj_yiling__qixi",
+  card_filter = function(self, to_select, selected)
+    return #selected == 0 and Fk:getCardById(to_select).color == Card.Black
+  end,
+  view_as = function(self, cards)
+    if #cards ~= 1 then return end
+    local c = Fk:cloneCard("dismantlement")
+    c.skillName = self.name
+    c:addSubcard(cards[1])
+    return c
+  end,
+  before_use = function (self, player, use)
+    if Fk:getCardById(use.card.subcards[1]).type ~= Card.TypeBasic then
+      use.disresponsiveList = table.map(player.room.players, Util.IdMapper)
+    end
+  end,
+  enabled_at_response = function (self, player, response)
+    return not response
+  end
+}
+local fenwei = fk.CreateTriggerSkill{
+  name = "shzj_yiling__fenwei",
+  anim_type = "defensive",
+  events = {fk.TargetSpecified},
+  can_trigger = function(self, event, target, player, data)
+    return player:hasSkill(self) and data.card.type == Card.TypeTrick and #AimGroup:getAllTargets(data.tos) > 1 and data.firstTarget
+  end,
+  on_cost = function(self, event, target, player, data)
+    local room = player.room
+    local success, dat = room:askForUseActiveSkill(player, "shzj_yiling__fenwei_active",
+      "#shzj_yiling__fenwei-choose:::"..data.card:toLogString(), true, {exclusive_targets = AimGroup:getAllTargets(data.tos)})
+    if success and dat then
+      self.cost_data = {tos = dat.targets, choice = dat.interaction}
+      return true
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    table.insertTable(data.nullifiedTargets, self.cost_data.tos)
+    if self.cost_data.choice == "shzj_yiling__fenwei2" then
+      room:handleAddLoseSkills(player, "-"..self.name, nil, true, false)
+    else
+      room:loseHp(player, math.max(player:usedSkillTimes(self.name, Player.HistoryGame) - 1, 1), self.name)
+    end
+  end,
+}
+local fenwei_active = fk.CreateActiveSkill{
+  name = "shzj_yiling__fenwei_active",
+  card_num = 0,
+  min_target_num = 1,
+  interaction = function ()
+    local n = math.max(Self:usedSkillTimes("shzj_yiling__fenwei", Player.HistoryGame), 1)
+    return UI.ComboBox { choices = {"shzj_yiling__fenwei1:::"..n, "shzj_yiling__fenwei2"} }
+  end,
+  card_filter = Util.FalseFunc,
+  target_filter = function (self, to_select, selected, selected_cards, card, extra_data)
+    return table.contains(extra_data.exclusive_targets, to_select)
+  end,
+}
+Fk:addSkill(fenwei_active)
+shzj_yiling__ganning:addSkill(qixi)
+shzj_yiling__ganning:addSkill(fenwei)
+Fk:loadTranslationTable{
+  ["shzj_yiling__ganning"] = "甘宁",
+  ["#shzj_yiling__ganning"] = "锦帆英豪",
+  ["illustrator:shzj_yiling__ganning"] = "鬼画府",
+
+  ["shzj_yiling__qixi"] = "奇袭",
+  [":shzj_yiling__qixi"] = "你可以将一张黑色牌当【过河拆桥】使用；你以此法用非基本牌转化的【过河拆桥】不能被响应。",
+  ["shzj_yiling__fenwei"] = "奋威",
+  [":shzj_yiling__fenwei"] = "当一张锦囊牌指定至少两个目标后，你可以失去X点体力或〖奋威〗，令此牌对其中任意名目标角色无效（X为你发动"..
+  "〖奋威〗次数，至少为1）。",
+  ["#shzj_yiling__qixi"] = "奇袭：将一张黑色牌当【过河拆桥】使用，用非基本牌转化的不能被响应",
+  ["shzj_yiling__fenwei_active"] = "奋威",
+  ["#shzj_yiling__fenwei-choose"] = "奋威：你可以执行一项，令此%arg对任意个目标无效",
+  ["shzj_yiling__fenwei1"] = "失去%arg点体力",
+  ["shzj_yiling__fenwei2"] = "失去“奋威”",
+}
+
+local shzj_yiling__buzhi = General(extension, "shzj_yiling__buzhi", "wu", 3)
+local hongde = fk.CreateTriggerSkill{
+  name = "shzj_yiling__hongde",
+  anim_type = "control",
+  events = {fk.AfterCardsMove},
+  can_trigger = function(self, event, target, player, data)
+    if player:hasSkill(self) then
+      for _, move in ipairs(data) do
+        if #move.moveInfo > 1 and ((move.from == player.id and move.to ~= player.id) or
+          (move.to == player.id and move.toArea == Card.PlayerHand)) then
+          return true
+        end
+      end
+    end
+  end,
+  on_cost = function(self, event, target, player, data)
+    local room = player.room
+    local success, dat = room:askForUseActiveSkill(player, "shzj_yiling__hongde_active", "#shzj_yiling__hongde-choose", true)
+    if success and dat then
+      self.cost_data = {tos = dat.targets, choice = dat.interaction}
+      return true
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    local to = room:getPlayerById(self.cost_data.tos[1])
+    if self.cost_data.choice == "draw1" then
+      to:drawCards(1, self.name)
+    else
+      room:askForDiscard(to, 1, 1, true, self.name, false)
+    end
+  end,
+}
+local hongde_active = fk.CreateActiveSkill{
+  name = "shzj_yiling__hongde_active",
+  card_num = 0,
+  target_num = 1,
+  interaction = function ()
+    return UI.ComboBox { choices = {"draw1", "shzj_yiling__hongde_discard"} }
+  end,
+  card_filter = Util.FalseFunc,
+  target_filter = function (self, to_select, selected, selected_cards)
+    if #selected == 0 then
+      if self.interaction.data == "draw1" then
+        return true
+      else
+        if to_select == Self.id then
+          return table.find(Self:getCardIds("he"), function (id)
+            return not Self:prohibitDiscard(id)
+          end)
+        else
+          return not Fk:currentRoom():getPlayerById(to_select):isNude()
+        end
+      end
+    end
+  end,
+}
+local dingpan = fk.CreateActiveSkill{
+  name = "shzj_yiling__dingpan",
+  anim_type = "offensive",
+  card_num = 0,
+  target_num = 1,
+  prompt = "#shzj_yiling__dingpan",
+  times = function(self)
+    return Self.phase == Player.Play and
+      #Self:getTableMark("shzj_yiling__dingpan-turn") - Self:usedSkillTimes(self.name, Player.HistoryPhase) or -1
+  end,
+  can_use = function(self, player)
+    return player:usedSkillTimes(self.name, Player.HistoryPhase) < #player:getTableMark("shzj_yiling__dingpan-turn")
+  end,
+  card_filter = Util.FalseFunc,
+  target_filter = function(self, to_select, selected)
+    return #selected == 0 and #Fk:currentRoom():getPlayerById(to_select):getCardIds("e") > 0
+  end,
+  on_use = function(self, room, effect)
+    local player = room:getPlayerById(effect.from)
+    local target = room:getPlayerById(effect.tos[1])
+    target:drawCards(1, self.name)
+    if player.dead or target.dead then return end
+    local choice = room:askForChoice(target, {"shzj_yiling__dingpan_discard:"..player.id, "dingpan_damage:"..player.id}, self.name)
+    if choice:startsWith("shzj_yiling__dingpan_discard") then
+      if target == player then
+        room:askForDiscard(player, 2, 2, true, self.name, false, nil, "#shzj_yiling__dingpan-discard::"..target.id)
+      else
+        local n = math.min(#target:getCardIds("he"), 2)
+        local cards = room:askForCardsChosen(player, target, n, n, "he", self.name, "#shzj_yiling__dingpan-discard::"..target.id)
+        room:throwCard(cards, self.name, target, player)
+      end
+    else
+      room:moveCardTo(target:getCardIds("e"), Card.PlayerHand, target, fk.ReasonJustMove, self.name, nil, true, target.id)
+      if not target.dead then
+        room:damage{
+          from = player,
+          to = target,
+          damage = 1,
+          skillName = self.name,
+        }
+      end
+    end
+  end,
+
+  on_acquire = function (self, player, is_start)
+    local room = player.room
+    if player.phase == Player.Play then
+      local types = {}
+      room.logic:getEventsOfScope(GameEvent.UseCard, 1, function (e)
+        local use = e.data[1]
+        if use.from == player.id then
+          table.insertIfNeed(types, use.card.type)
+        end
+      end, Player.HistoryTurn)
+      room:setPlayerMark(player, "shzj_yiling__dingpan-turn", types)
+    end
+  end,
+}
+local dingpan_trigger = fk.CreateTriggerSkill{
+  name = "#shzj_yiling__dingpan_trigger",
+
+  refresh_events = {fk.AfterCardUseDeclared},
+  can_refresh = function(self, event, target, player, data)
+    return target == player and player:hasSkill("shzj_yiling__dingpan", true) and player.phase == Player.Play
+  end,
+  on_refresh = function(self, event, target, player, data)
+    player.room:addTableMarkIfNeed(player, "shzj_yiling__dingpan-turn", data.card.type)
+  end,
+}
+dingpan:addRelatedSkill(dingpan_trigger)
+Fk:addSkill(hongde_active)
+shzj_yiling__buzhi:addSkill(hongde)
+shzj_yiling__buzhi:addSkill(dingpan)
+Fk:loadTranslationTable{
+  ["shzj_yiling__buzhi"] = "步骘",
+  ["#shzj_yiling__buzhi"] = "积跬靖边",
+  ["illustrator:shzj_yiling__buzhi"] = "匠人绘",
+
+  ["shzj_yiling__hongde"] = "弘德",
+  [":shzj_yiling__hongde"] = "当你一次获得或失去至少两张牌后，你可以令一名角色摸一张牌或弃一张牌。",
+  ["shzj_yiling__dingpan"] = "定叛",
+  [":shzj_yiling__dingpan"] = "出牌阶段限X次，你可以令一名装备区里有牌的角色摸一张牌，然后其选择一项：1.令你弃置其两张牌；"..
+  "2.获得其装备区里的所有牌，你对其造成1点伤害（X为你本回合使用过牌的类别数）。",
+  ["shzj_yiling__hongde_active"] = "弘德",
+  ["#shzj_yiling__hongde-choose"] = "弘德：你可以令一名角色摸一张牌或弃一张牌",
+  ["#shzj_yiling__dingpan"] = "定叛：令一名装备区里有牌的角色摸一张牌，然后其选择你弃置其两张牌或收回装备并受到伤害",
+  ["shzj_yiling__hongde_discard"] = "弃一张牌",
+  ["shzj_yiling__dingpan_discard"] = "%src弃置你两张牌",
+  ["#shzj_yiling__dingpan-discard"] = "定叛：弃置 %dest 两张牌",
 }
 
 local anying = General(extension, "anying", "qun", 3)
