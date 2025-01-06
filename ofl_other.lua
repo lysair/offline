@@ -3965,6 +3965,17 @@ Fk:loadTranslationTable{
   ["#ofl__lizhen"] = "历阵：你可以将装备区内的牌当【杀】使用或打出",
 }
 
+--官盗E3至臻·权谋：纪灵
+Fk:loadTranslationTable{
+  ["ofl__jiling"] = "纪灵",
+  ["#ofl__jiling"] = "仲家的主将",
+  ["illustrator:ofl__jiling"] = "铁杵文化",
+
+  ["ofl__shuangren"] = "双刃",
+  [":ofl__shuangren"] = "出牌阶段，你可以与一名角色拼点。若你赢，你可以依次视为使用X张【杀】；若你没赢，本回合你的【杀】视为K点的【闪】"..
+  "（X为你本回合拼点赢的次数）。",
+}
+
 --官盗E24侠客行：彭虎 彭绮 罗厉 祖郎 崔廉 单福
 local function JoinInsurrectionary(player)
   local room = player.room

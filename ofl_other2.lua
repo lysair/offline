@@ -3349,4 +3349,243 @@ Fk:loadTranslationTable{
   ["$ofl__xiaolu2"] = "切！宁享短福，莫为汝等庸奴！",
 }
 
+local godsimayi = General(extension, "ofl__godsimayi", "god", 4)
+local jilin = fk.CreateTriggerSkill{
+  name = "jilin",
+  anim_type = "special",
+  events = {fk.GameStart},
+  can_trigger = function(self, event, target, player, data)
+    return player:hasSkill(self)
+  end,
+  on_cost = Util.TrueFunc,
+  on_use = function (self, event, target, player, data)
+    player:addToPile("$yingtian_ambition", player.room:getNCards(3), false, self.name, player.id)
+  end,
+
+  on_lose = function (self, player, is_death)
+    if not player:hasSkill("yingyou", true) then
+      local room = player.room
+      room:setPlayerMark(player, "yingtian_ambition_shown", 0)
+      room:moveCards({
+        ids = player:getPile("$yingtian_ambition"),
+        from = player.id,
+        toArea = Card.DiscardPile,
+        moveReason = fk.ReasonPutIntoDiscardPile,
+      })
+    end
+  end,
+}
+local jilin_trigger = fk.CreateTriggerSkill{
+  name = "#jilin_trigger",
+  anim_type = "defensive",
+  events = {fk.TargetConfirming},
+  can_trigger = function(self, event, target, player, data)
+    return target == player and player:hasSkill(jilin) and data.from ~= player.id and
+      table.find(player:getPile("$yingtian_ambition"), function (id)
+        return not table.contains(player:getTableMark("yingtian_ambition_shown"), id)
+      end)
+  end,
+  on_cost = function (self, event, target, player, data)
+    local cards = table.filter(player:getPile("$yingtian_ambition"), function (id)
+      return not table.contains(player:getTableMark("yingtian_ambition_shown"), id)
+    end)
+    local card = player.room:askForCard(player, 1, 1, false, "jilin", true, tostring(Exppattern{ id = cards }),
+      "#jilin-invoke::"..data.from..":"..data.card:toLogString(), player:getPile("$yingtian_ambition"))
+    if #card > 0 then
+      self.cost_data = {cards = card}
+      return true
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    if data.card.type == Card.TypeEquip or data.card.subtype == Card.SubtypeDelayedTrick then
+      data.tos = {}
+    else
+      table.insertIfNeed(data.nullifiedTargets, player.id)
+    end
+    room:addTableMark(player, "yingtian_ambition_shown", self.cost_data.cards[1])
+  end,
+}
+local jilin_trigger2 = fk.CreateTriggerSkill{
+  name = "#jilin_trigger2",
+  anim_type = "special",
+  events = {fk.TurnStart},
+  can_trigger = function(self, event, target, player, data)
+    return target == player and player:hasSkill(jilin) and not player:isKongcheng() and
+      table.find(player:getPile("$yingtian_ambition"), function (id)
+        return not table.contains(player:getTableMark("yingtian_ambition_shown"), id)
+      end)
+  end,
+  on_cost = function (self, event, target, player, data)
+    local cards = player.room:askForPoxi(player, "jilin", {
+      { "$yingtian_ambition", player:getPile("$yingtian_ambition") },
+      { "$Hand", player:getCardIds("h") },
+    }, { shown = player:getTableMark("yingtian_ambition_shown") }, true)
+    if #cards > 0 then
+      self.cost_data = {cards = cards}
+      return true
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    local cards1 = table.filter(self.cost_data.cards, function (id)
+      return table.contains(player:getCardIds("h"), id)
+    end)
+    local cards2 = table.filter(self.cost_data.cards, function (id)
+      return table.contains(player:getPile("$yingtian_ambition"), id)
+    end)
+    U.swapCardsWithPile(player, cards1, cards2, "jilin", "$yingtian_ambition", false, player.id)
+  end,
+}
+Fk:addPoxiMethod{
+  name = "jilin",
+  prompt = function (data, extra_data)
+    return "#jilin"
+  end,
+  card_filter = function(to_select, selected, data, extra_data)
+    return not table.contains(extra_data.shown, to_select)
+  end,
+  feasible = function(selected, data, extra_data)
+    return #selected > 0 and #selected % 2 == 0 and
+      #table.filter(selected, function (id)
+        return table.contains(data[1][2], id)
+      end) * 2 == #selected
+  end,
+}
+local jilin_visibility = fk.CreateVisibilitySkill{
+  name = "#jilin_visibility",
+  card_visible = function(self, player, card)
+    if table.find(Fk:currentRoom().alive_players, function (p)
+      return table.contains(p:getPile("$yingtian_ambition"), card.id) and
+        table.contains(p:getTableMark("yingtian_ambition_shown"), card.id)
+    end) then
+      return true
+    end
+  end
+}
+local yingyou = fk.CreateTriggerSkill{
+  name = "yingyou",
+  anim_type = "drawcard",
+  events = {fk.EventPhaseStart},
+  can_trigger = function(self, event, target, player, data)
+    return target == player and player:hasSkill(jilin) and player.phase == Player.Play and
+      table.find(player:getPile("$yingtian_ambition"), function (id)
+        return not table.contains(player:getTableMark("yingtian_ambition_shown"), id)
+      end)
+  end,
+  on_cost = function (self, event, target, player, data)
+    local cards = table.filter(player:getPile("$yingtian_ambition"), function (id)
+      return not table.contains(player:getTableMark("yingtian_ambition_shown"), id)
+    end)
+    local card = player.room:askForCard(player, 1, 1, false, self.name, true, tostring(Exppattern{ id = cards }),
+      "#yingyou-invoke", player:getPile("$yingtian_ambition"))
+    if #card > 0 then
+      self.cost_data = {cards = card}
+      return true
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    room:addTableMark(player, "yingtian_ambition_shown", self.cost_data.cards[1])
+    local n = #table.filter(player:getPile("$yingtian_ambition"), function (id)
+      return table.contains(player:getTableMark("yingtian_ambition_shown"), id)
+    end)
+    player:drawCards(n, self.name)
+  end,
+
+  on_lose = function (self, player, is_death)
+    if not player:hasSkill("jilin", true) then
+      local room = player.room
+      room:setPlayerMark(player, "yingtian_ambition_shown", 0)
+      room:moveCards({
+        ids = player:getPile("$yingtian_ambition"),
+        from = player.id,
+        toArea = Card.DiscardPile,
+        moveReason = fk.ReasonPutIntoDiscardPile,
+      })
+    end
+  end,
+}
+local yingyou_trigger = fk.CreateTriggerSkill{
+  name = "#yingyou_trigger",
+  anim_type = "drawcard",
+  events = {fk.AfterCardsMove},
+  can_trigger = function(self, event, target, player, data)
+    if player:hasSkill(self) and #player:getPile("$yingtian_ambition") > 0 and player:getMark("yingtian_ambition_shown") ~= 0 then
+      for _, move in ipairs(data) do
+        if move.from == player.id then
+          for _, info in ipairs(move.moveInfo) do
+            if (info.fromArea == Card.PlayerHand or info.fromArea == Card.PlayerEquip) and
+              table.find(player:getPile("$yingtian_ambition"), function (id)
+                return table.contains(player:getTableMark("yingtian_ambition_shown"), id) and
+                Fk:getCardById(id):compareSuitWith(Fk:getCardById(info.cardId))
+              end) then
+              return true
+            end
+          end
+        end
+      end
+    end
+  end,
+  on_cost = Util.TrueFunc,
+  on_use = function(self, event, target, player, data)
+    player:drawCards(1, "yingyou")
+  end,
+}
+local yingtian = fk.CreateTriggerSkill{
+  name = "yingtian",
+  anim_type = "special",
+  frequency = Skill.Wake,
+  events = {fk.Deathed},
+  can_trigger = function (self, event, target, player, data)
+    return player:hasSkill(self) and player:usedSkillTimes(self.name, Player.HistoryGame) == 0
+  end,
+  can_wake = function(self, event, target, player, data)
+    local kingdoms = {}
+    for _, p in ipairs(player.room.alive_players) do
+      table.insertIfNeed(kingdoms, p.kingdom)
+    end
+    return #kingdoms < 3
+  end,
+  on_use = function (self, event, target, player, data)
+    player.room:handleAddLoseSkills(player, "ex__guicai|wansha|lianpo|-yingyou", nil, true, false)
+  end,
+}
+local yingtian_targetmod = fk.CreateTargetModSkill{
+  name = "#yingtian_targetmod",
+  bypass_distances =  function(self, player, skill, card)
+    return card and player:usedSkillTimes("yingtian", Player.HistoryGame) > 0
+  end,
+}
+jilin:addRelatedSkill(jilin_trigger)
+jilin:addRelatedSkill(jilin_trigger2)
+jilin:addRelatedSkill(jilin_visibility)
+yingyou:addRelatedSkill(yingyou_trigger)
+yingtian:addRelatedSkill(yingtian_targetmod)
+godsimayi:addSkill(jilin)
+godsimayi:addSkill(yingyou)
+godsimayi:addSkill(yingtian)
+godsimayi:addRelatedSkill("ex__guicai")
+godsimayi:addRelatedSkill("wansha")
+godsimayi:addRelatedSkill("lianpo")
+Fk:loadTranslationTable{
+  ["ofl__godsimayi"] = "神司马懿",
+  ["#ofl__godsimayi"] = "鉴往知来",
+  ["illustrator:ofl__godsimayi"] = "墨三千",
+
+  ["jilin"] = "戢鳞",
+  [":jilin"] = "游戏开始时，将牌堆顶三张牌暗置于你武将牌上，称为“志”；当你成为其他角色使用牌的目标时，你可以明置一张暗置的“志”令此牌对你无效；"..
+  "回合开始时，你可以用任意张手牌替换等量暗置的“志”。",
+  ["yingyou"] = "英猷",
+  [":yingyou"] = "出牌阶段开始时，你可以明置一张“志”，然后摸X张牌（X为你明置的“志”数）。当你失去与明置的“志”花色相同的牌后，你摸一张牌。",
+  ["yingtian"] = "应天",
+  [":yingtian"] = "觉醒技，一名角色死亡后，若场上势力数不大于2，你获得〖鬼才〗〖完杀〗〖连破〗，本局游戏使用牌无距离限制，失去〖英猷〗。",
+  ["$yingtian_ambition"] = "志",
+  ["#jilin_trigger"] = "戢鳞",
+  ["#jilin-invoke"] = "戢鳞：是否明置一张“志”，令 %dest 对你使用的%arg无效？",
+  ["#jilin_trigger2"] = "戢鳞",
+  ["#jilin"] = "戢鳞：你可以用手牌替换等量暗置的“志”",
+  ["#yingyou-invoke"] = "英猷：你可以明置一张“志”，摸明置数的牌",
+  ["#yingyou_trigger"] = "英猷",
+}
+
 return extension
