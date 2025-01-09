@@ -4508,7 +4508,7 @@ local xianxing = fk.CreateTriggerSkill{
   events = {fk.TargetSpecifying},
   can_trigger = function(self, event, target, player, data)
     return target == player and player:hasSkill(self) and data.card.is_damage_card and player.phase == Player.Play and
-      #AimGroup:getAllTargets(data.tos) == 1 and data.to ~= player.id and player:getMark("@@xianxing-turn") == 0
+      #AimGroup:getAllTargets(data.tos) == 1 and data.to ~= player.id
   end,
   on_cost = function(self, event, target, player, data)
     return player.room:askForSkillInvoke(player, self.name, nil,
@@ -4534,7 +4534,7 @@ local xianxing_delay = fk.CreateTriggerSkill{
     local n = player:usedSkillTimes("xianxing", Player.HistoryTurn) - 1
     local choice = room:askForChoice(player, {"xianxing_loseHp:::"..n, "xianxing_invalid"}, "xianxing")
     if choice == "xianxing_invalid" then
-      room:setPlayerMark(player, "@@xianxing-turn", 1)
+      room:invalidateSkill(player, "xianxing", "-turn")
     else
       room:loseHp(player, n, "xianxing")
     end
@@ -4559,7 +4559,6 @@ Fk:loadTranslationTable{
   ["#juluan-ask"] = "聚乱：点“确定”加入起义军（起义军技能点击左上角查看），或点“取消” %src 弃置你一张手牌！",
   ["#juluan-discard"] = "聚乱：弃置 %dest 一张手牌",
   ["#xianxing-invoke"] = "险行：是否摸 %arg 张牌？",
-  ["@@xianxing-turn"] = "险行失效",
   ["#xianxing_delay"] = "险行",
   ["xianxing_loseHp"] = "失去%arg点体力",
   ["xianxing_invalid"] = "“险行”本回合失效",

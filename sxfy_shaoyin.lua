@@ -501,6 +501,7 @@ Fk:loadTranslationTable{
   [":sxfy__shefu"] = "结束阶段，你可以将一张手牌扣置于武将牌上；当一名角色使用牌时，你可以移去你武将牌上的一张同名牌令之无效。",
   ["sxfy__yibing"] = "益兵",
   [":sxfy__yibing"] = "一名其他角色进入濒死状态时，你可以获得其一张手牌。",
+  ["$sxfy__shefu"] = "设伏",
   ["#sxfy__shefu-put"] = "设伏：你可以将一张手牌扣置为“设伏”牌",
   ["#sxfy__shefu-invoke"] = "设伏：是否移去同名“设伏”牌，令 %dest 使用的%arg无效？",
   ["#sxfy__yibing-invoke"] = "益兵：是否获得 %dest 一张手牌？",
@@ -927,9 +928,7 @@ local sxfy__mingfa = fk.CreateActiveSkill{
   card_num = 0,
   target_num = 1,
   prompt = "#sxfy__mingfa",
-  can_use = function(self, player)
-    return player:getMark("@@sxfy__mingfa") == 0
-  end,
+  can_use = Util.TrueFunc,
   card_filter = Util.FalseFunc,
   target_filter = function(self, to_select, selected, selected_cards)
     return #selected == 0 and Fk:currentRoom():getPlayerById(to_select).hp > 1
@@ -937,7 +936,8 @@ local sxfy__mingfa = fk.CreateActiveSkill{
   on_use = function(self, room, effect)
     local player = room:getPlayerById(effect.from)
     local target = room:getPlayerById(effect.tos[1])
-    room:setPlayerMark(player, "@@sxfy__mingfa", target.id)
+    room:setPlayerMark(player, self.name, target.id)
+    room:invalidateSkill(player, self.name)
     room:damage{
       from = player,
       to = target,
@@ -949,18 +949,14 @@ local sxfy__mingfa = fk.CreateActiveSkill{
 local sxfy__mingfa_trigger = fk.CreateTriggerSkill{
   name = "#sxfy__mingfa_trigger",
 
-  refresh_events = {fk.Deathed, fk.HpRecover, fk.EventLoseSkill},
+  refresh_events = {fk.Deathed, fk.HpRecover},
   can_refresh = function(self, event, target, player, data)
-    if player:getMark("@@sxfy__mingfa") ~= 0 then
-      if event == fk.Deathed or event == fk.HpRecover then
-        return player:getMark("@@sxfy__mingfa") == target.id
-      else
-        return target == player and data == sxfy__mingfa
-      end
-    end
+    return player:getMark("sxfy__mingfa") == target.id
   end,
   on_refresh = function(self, event, target, player, data)
-    player.room:setPlayerMark(player, "@@sxfy__mingfa", 0)
+    local room = player.room
+    room:validateSkill(player, self.name)
+    room:setPlayerMark(player, self.name, 0)
   end,
 }
 sxfy__mingfa:addRelatedSkill(sxfy__mingfa_trigger)
@@ -973,7 +969,6 @@ Fk:loadTranslationTable{
   ["sxfy__mingfa"] = "明伐",
   [":sxfy__mingfa"] = "出牌阶段，你可以对一名体力值大于1的角色造成1点伤害，然后此技能失效直到其死亡或回复体力。",
   ["#sxfy__mingfa"] = "明伐：对一名体力值大于1的角色造成1点伤害",
-  ["@@sxfy__mingfa"] = "明伐失效",
 
   ["$sxfy__mingfa1"] = "以诚相待，吴人倾心，攻之必克。",
   ["$sxfy__mingfa2"] = "以强击弱，易如反掌，何须诡诈？",
@@ -1086,9 +1081,7 @@ local sxfy__xiongxia = fk.CreateActiveSkill{
   card_num = 2,
   target_num = 2,
   prompt = "#sxfy__xiongxia",
-  can_use = function(self, player)
-    return player:getMark("@@sxfy__xiongxia-turn") == 0
-  end,
+  can_use = Util.TrueFunc,
   card_filter = function(self, to_select, selected, selected_targets)
     return #selected < 2
   end,
@@ -1105,8 +1098,8 @@ local sxfy__xiongxia = fk.CreateActiveSkill{
     local player = room:getPlayerById(effect.from)
     room:sortPlayersByAction(effect.tos)
     local use = room:useVirtualCard("duel", effect.cards, player, table.map(effect.tos, Util.Id2PlayerMapper), self.name)
-    if use.damageDealt and use.damageDealt[effect.tos[1]] and use.damageDealt[effect.tos[2]] and not player.dead then
-      room:setPlayerMark(player, "@@sxfy__xiongxia-turn", 1)
+    if use and use.damageDealt and use.damageDealt[effect.tos[1]] and use.damageDealt[effect.tos[2]] and not player.dead then
+      room:invalidateSkill(player, self.name, "-turn")
     end
   end,
 }
@@ -1120,7 +1113,6 @@ Fk:loadTranslationTable{
   [":sxfy__xiongxia"] = "出牌阶段，你可以将两张牌当【决斗】对两名其他角色使用，然后此牌结算结束后，若此牌对所有目标角色均造成过伤害，此技能"..
   "本回合失效。",
   ["#sxfy__xiongxia"] = "凶侠：你可以将两张牌当【决斗】对两名其他角色使用",
-  ["@@sxfy__xiongxia-turn"] = "凶侠失效",
 }
 
 return extension

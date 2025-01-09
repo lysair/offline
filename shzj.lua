@@ -2359,8 +2359,9 @@ local siji = fk.CreateTriggerSkill{
 }
 local cangshen = fk.CreateDistanceSkill{
   name = "cangshen",
+  frequency = Skill.Compulsory,
   correct_func = function(self, from, to)
-    if to:hasSkill(self) and to:getMark("@@cangshen-round") == 0 then
+    if to:hasSkill(self) then
       return 1
     end
     return 0
@@ -2371,11 +2372,10 @@ local cangshen_trigger = fk.CreateTriggerSkill{
 
   refresh_events = {fk.CardUseFinished},
   can_refresh = function (self, event, target, player, data)
-    return target == player and player:hasSkill(cangshen) and data.card.trueName == "slash" and
-      player:getMark("@@cangshen-round") == 0
+    return target == player and player:hasSkill(cangshen) and data.card.trueName == "slash"
   end,
   on_refresh = function (self, event, target, player, data)
-    player.room:setPlayerMark(player, "@@cangshen-round", 1)
+    player.room:invalidateSkill(player, "cangshen", "-round")
   end,
 }
 cangshen:addRelatedSkill(cangshen_trigger)
@@ -2392,7 +2392,6 @@ Fk:loadTranslationTable{
   [":cangshen"] = "锁定技，其他角色计算与你距离+1；当你使用【杀】后，〖藏身〗本轮失效。",
   ["ansha_active"] = "",
   ["#siji-invoke"] = "伺机：你可以将一张牌当无距离限制的刺【杀】对 %dest 使用",
-  ["@@cangshen-round"] = "藏身失效",
 }
 
 local wuque = General(extension, "wuque", "qun", 4)
