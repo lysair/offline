@@ -74,31 +74,40 @@ local sxfy__shangjian = fk.CreateTriggerSkill{
   anim_type = "drawcard",
   can_trigger = function(self, event, target, player, data)
     if target == player and player:hasSkill(self) and player.phase == Player.Finish then
-      local cards, num = {}, 0
+      local yes, num = false, 0
       player.room.logic:getEventsOfScope(GameEvent.MoveCards, 1, function(e)
         for _, move in ipairs(e.data) do
           if move.from == player.id then
             for _, info in ipairs(move.moveInfo) do
               if info.fromArea == Card.PlayerHand or info.fromArea == Card.PlayerEquip then
                 num = num + 1
-                if table.contains(player.room.discard_pile, info.cardId) then
-                  table.insertIfNeed(cards, info.cardId)
+                if not yes and table.contains(player.room.discard_pile, info.cardId) then
+                  yes = true
                 end
               end
             end
           end
         end
-        return false
       end, Player.HistoryTurn)
-      if num <= player.hp and #cards > 0 then
-        self.cost_data = cards
-        return true
-      end
+      return num <= player.hp and yes
     end
   end,
   on_use = function(self, event, target, player, data)
     local room = player.room
-    local cards = U.askforChooseCardsAndChoice(player, self.cost_data, {"OK"}, self.name, "#sxfy__shangjian-prey")
+    local cards = {}
+    room.logic:getEventsOfScope(GameEvent.MoveCards, 1, function(e)
+      for _, move in ipairs(e.data) do
+        if move.from == player.id then
+          for _, info in ipairs(move.moveInfo) do
+            if (info.fromArea == Card.PlayerHand or info.fromArea == Card.PlayerEquip) and
+              table.contains(room.discard_pile, info.cardId) then
+              table.insertIfNeed(cards, info.cardId)
+            end
+          end
+        end
+      end
+    end, Player.HistoryTurn)
+    cards = U.askforChooseCardsAndChoice(player, cards, {"OK"}, self.name, "#sxfy__shangjian-prey")
     room:moveCardTo(cards, Card.PlayerHand, player, fk.ReasonJustMove, self.name, nil, true, player.id)
   end,
 }

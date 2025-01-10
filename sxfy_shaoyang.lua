@@ -776,9 +776,14 @@ local jiaozhao = fk.CreateActiveSkill{
   on_use = function(self, room, effect)
     local player = room:getPlayerById(effect.from)
     local target = room:getPlayerById(effect.tos[1])
-    local cards = room:askForCard(target, 2, 2, false, self.name, false, nil, "#sxfy__jiaozhao-show")
+    local cards = {}
+    if target:getHandcardNum() > 2 then
+      cards = room:askForCard(target, 2, 2, false, self.name, false, nil, "#sxfy__jiaozhao-show")
+    else
+      cards = target:getCardIds("h")
+    end
     target:showCards(cards)
-    if player.dead or target.dead or player:isKongcheng() then return end
+    if player.dead or target.dead then return end
     cards = table.filter(cards, function (id)
       return table.contains(target:getCardIds("h"), id)
     end)
@@ -787,7 +792,7 @@ local jiaozhao = fk.CreateActiveSkill{
       self.cost_data = nil
       local card = U.askforChooseCardsAndChoice(player, cards, {"OK"}, self.name, "#sxfy__jiaozhao-prey")
       room:moveCardTo(card, Card.PlayerHand, player, fk.ReasonPrey, self.name, nil, true, player.id)
-    else
+    elseif not player:isKongcheng() then
       local results = U.askForExchange(player, Fk:translate(target.general), Fk:translate(player.general),
         cards, player:getCardIds("h"), "#sxfy__jiaozhao-exchange::"..target.id, 1, true)
       if #results > 0 then
@@ -807,13 +812,13 @@ local danxin = fk.CreateTriggerSkill{
   can_trigger = function(self, event, target, player, data)
     return target == player and player:hasSkill(self) and
       table.find(player.room:getOtherPlayers(player), function(p)
-        return p:getHandcardNum() > 1
+        return not p:isKongcheng()
       end)
   end,
   on_cost = function(self, event, target, player, data)
     local room = player.room
     local targets = table.filter(room:getOtherPlayers(player), function(p)
-      return p:getHandcardNum() > 1
+      return not p:isKongcheng()
     end)
     local to = room:askForChoosePlayers(player, table.map(targets, Util.IdMapper), 1, 1,
       "#sxfy__danxin-choose:::"..data.card:toLogString(), self.name, true)
@@ -1043,9 +1048,9 @@ local mingjian = fk.CreateActiveSkill{
     local target = room:getPlayerById(effect.tos[1])
     local id = effect.cards[1]
     player:showCards(effect.cards)
-    if not table.contains(player:getCardIds("h"), id) then return end
+    if not table.contains(player:getCardIds("he"), id) then return end
     room:moveCardTo(effect.cards, Card.PlayerHand, target, fk.ReasonGive, self.name, nil, true, player.id)
-    if not target.dead and table.contains(target:getCardIds("h"), id) then
+    if not target.dead and table.contains(target:getCardIds("he"), id) then
       U.askForUseRealCard(room, target, {id}, nil, self.name, "#sxfy__mingjian-use", {extraUse = true}, false, true)
     end
   end,
