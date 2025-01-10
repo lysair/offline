@@ -350,10 +350,10 @@ local shzj__burning_camps_skill = fk.CreateActiveSkill{
     to:showCards(id)
 
     local card = Fk:getCardById(id)
-    local cards = room:askForDiscard(from, 1, 1, true, self.name, true,
+    local cards = room:askForDiscard(from, 1, 1, false, self.name, true,
       ".|.|" .. card:getSuitString(), "#shzj__burning_camps-discard:"..to.id.."::"..card:getSuitString())
     if #cards > 0 then
-      if table.contains(to:getCardIds("h"), id) then
+      if table.contains(to:getCardIds("he"), id) then
         room:throwCard(id, self.name, to, from)
       end
       if not to.dead then
