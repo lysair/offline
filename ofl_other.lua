@@ -325,6 +325,7 @@ local rom__zhenglian = fk.CreateTriggerSkill{
   on_use = function(self, event, target, player, data)
     local room = player.room
     local targets = room:getOtherPlayers(player)
+    room:doIndicate(player.id, table.map(targets, Util.IdMapper))
     local prompt = "#rom__zhenglian-ask:" .. player.id
     local tos = {}
     for _, p in ipairs(targets) do
@@ -889,7 +890,7 @@ local ofl__shouli = fk.CreateViewAsSkill{
     use.extraUse = true
     local mark = (use.card.trueName == "slash") and "@ofl__jun" or "@ofl__li"
     room:addPlayerMark(player, "ofl__shouli_"..use.card.trueName.."-turn")
-    local targets = table.filter(room:getOtherPlayers(player), function (p)
+    local targets = table.filter(room:getOtherPlayers(player, false), function (p)
       return p:getMark(mark) > 0
     end)
     if #targets > 0 then
@@ -947,7 +948,7 @@ local ofl__shouli_trigger = fk.CreateTriggerSkill{
       return player:hasSkill(self) and target == player and player:getMark("@ofl__li") > 2
     end
   end,
-  on_cost = function() return true end,
+  on_cost = Util.TrueFunc,
   on_use = function(self, event, target, player, data)
     local room = player.room
     player:broadcastSkillInvoke(ofl__shouli.name)
@@ -1093,7 +1094,7 @@ local feixiong = fk.CreateTriggerSkill{
   events = {fk.EventPhaseStart},
   can_trigger = function(self, event, target, player, data)
     if not (target == player and player:hasSkill(self) and player.phase == Player.Play and not player:isKongcheng()) then return end
-    local targets = table.map(table.filter(player.room:getOtherPlayers(player), function (p)
+    local targets = table.map(table.filter(player.room:getOtherPlayers(player, false), function (p)
       return not p:isKongcheng()
     end), Util.IdMapper)
     if #targets > 0 then
@@ -1233,7 +1234,7 @@ local ofl__lianji = fk.CreateTriggerSkill{
       })
     end
     if player.dead or self.cost_data < 3 or #room.alive_players < 2 then return end
-    to = room:askForChoosePlayers(player, table.map(room:getOtherPlayers(player), Util.IdMapper), 1, 1,
+    to = room:askForChoosePlayers(player, table.map(room:getOtherPlayers(player, false), Util.IdMapper), 1, 1,
       "#ofl__lianji3-invoke", self.name, true)
     if #to > 0 then
       room:setPlayerMark(player, "ofl__lianji-turn", to[1])
@@ -2481,7 +2482,7 @@ local mouchuan = fk.CreateTriggerSkill{
     local room = player.room
     player:drawCards(2, self.name)
     if player.dead or player:isKongcheng() or #room.alive_players == 1 then return end
-    local to, card = room:askForChooseCardAndPlayers(player, table.map(room:getOtherPlayers(player), Util.IdMapper), 1, 1,
+    local to, card = room:askForChooseCardAndPlayers(player, table.map(room:getOtherPlayers(player, false), Util.IdMapper), 1, 1,
       ".|.|.|hand", "#mouchuan-choose", self.name, false)
     to = room:getPlayerById(to[1])
     room:moveCardTo(card, Card.PlayerHand, to, fk.ReasonGive, self.name, nil, false, player.id)
@@ -3660,7 +3661,7 @@ local xuanshi = fk.CreateActiveSkill{
       player:showCards(player:getCardIds("h"))
       if player.dead then return end
     end
-    local targets = table.filter(room:getOtherPlayers(player), function (p)
+    local targets = table.filter(room:getOtherPlayers(player, false), function (p)
       return not p:isNude()
     end)
     if #targets == 0 then return end
@@ -3691,7 +3692,7 @@ local xiongye = fk.CreateActiveSkill{
     local target = room:getPlayerById(effect.tos[1])
     local list = {}
     list[target.id] = effect.cards
-    local targets = table.map(table.filter(room:getOtherPlayers(player), function (p)
+    local targets = table.map(table.filter(room:getOtherPlayers(player, false), function (p)
       return p ~= target and target.kingdom == "qun"
     end), Util.IdMapper)
     local cards = table.filter(player:getCardIds("h"), function (id)
@@ -4307,12 +4308,12 @@ local liaoluan_trigger = fk.CreateTriggerSkill{
       return target:hasSkill("liaoluan&", true)
     elseif event == fk.EventAcquireSkill or event == fk.EventLoseSkill then
       return target == player and data == self and
-        not table.find(player.room:getOtherPlayers(player), function(p)
+        not table.find(player.room:getOtherPlayers(player, false), function(p)
           return p:hasSkill(self, true)
         end)
     elseif event == fk.Deathed then
       return target == player and player:hasSkill(self, true, true) and
-        not table.find(player.room:getOtherPlayers(player), function(p)
+        not table.find(player.room:getOtherPlayers(player, false), function(p)
           return p:hasSkill(self, true)
         end)
     end
@@ -4324,7 +4325,7 @@ local liaoluan_trigger = fk.CreateTriggerSkill{
     elseif event == "fk.QuitInsurrectionary" then
       room:handleAddLoseSkills(target, "-liaoluan&", nil, false, true)
     elseif event == fk.EventAcquireSkill then
-      for _, p in ipairs(room:getOtherPlayers(player)) do
+      for _, p in ipairs(room:getOtherPlayers(player, false)) do
         if IsInsurrectionary(p) then
           room:handleAddLoseSkills(p, "liaoluan&", nil, false, true)
         end

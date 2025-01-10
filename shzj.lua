@@ -474,7 +474,7 @@ local shouxiang_delay = fk.CreateTriggerSkill{
       return p:inMyAttackRange(player)
     end)
     n = math.min(n, 3)
-    room:askForYiji(player, player:getCardIds("h"), room:getOtherPlayers(player), "shouxiang", 0, n, "#shouxiang-give:::"..n,
+    room:askForYiji(player, player:getCardIds("h"), room:getOtherPlayers(player, false), "shouxiang", 0, n, "#shouxiang-give:::"..n,
       "", false, 1)
   end,
 }
@@ -690,13 +690,13 @@ local chengming = fk.CreateTriggerSkill{
   events = {fk.EnterDying},
   can_trigger = function(self, event, target, player, data)
     return target == player and player:hasSkill(self) and player:usedSkillTimes(self.name, Player.HistoryGame) == 0 and
-      table.find(player.room:getOtherPlayers(player), function (p)
+      table.find(player.room:getOtherPlayers(player, false), function (p)
         return p.kingdom == "shu"
       end)
   end,
   on_cost = function(self, event, target, player, data)
     local room = player.room
-    local targets = table.map(table.filter(room:getOtherPlayers(player), function (p)
+    local targets = table.map(table.filter(room:getOtherPlayers(player, false), function (p)
       return p.kingdom == "shu"
     end), Util.IdMapper)
     local to = room:askForChoosePlayers(player, targets, 1, 1, "#chengming-choose", self.name, true)
@@ -1499,7 +1499,7 @@ local lengjian = fk.CreateTriggerSkill{
       data.damage = data.damage + 1
     else
       data.disresponsiveList = data.disresponsiveList or {}
-      for _, p in ipairs(player.room:getOtherPlayers(player)) do
+      for _, p in ipairs(player.room:getOtherPlayers(player, false)) do
         if not player:inMyAttackRange(p) then
           table.insertIfNeed(data.disresponsiveList, p.id)
         end
@@ -1915,7 +1915,7 @@ local benxiang = fk.CreateTriggerSkill{
   end,
   on_use = function(self, event, target, player, data)
     local room = player.room
-    local to = room:askForChoosePlayers(player, table.map(room:getOtherPlayers(player), Util.IdMapper), 1, 1,
+    local to = room:askForChoosePlayers(player, table.map(room:getOtherPlayers(player, false), Util.IdMapper), 1, 1,
       "#benxiang-invoke", self.name, false)
     room:getPlayerById(to[1]):drawCards(3, self.name)
   end,
@@ -2082,13 +2082,13 @@ local xianshouz = fk.CreateTriggerSkill{
   frequency = Skill.Compulsory,
   can_trigger = function(self, event, target, player, data)
     return player:hasSkill(self) and data.damage and data.damage.from == player and
-      table.find(player.room:getOtherPlayers(player), function (p)
+      table.find(player.room:getOtherPlayers(player, false), function (p)
         return p:isWounded()
       end)
   end,
   on_use = function(self, event, target, player, data)
     local room = player.room
-    local targets = table.filter(room:getOtherPlayers(player), function (p)
+    local targets = table.filter(room:getOtherPlayers(player, false), function (p)
       return p:isWounded()
     end)
     local to = room:askForChoosePlayers(player, table.map(targets, Util.IdMapper), 1, 1,
@@ -3202,7 +3202,7 @@ local xihun = fk.CreateTriggerSkill{
   end,
   on_use = function(self, event, target, player, data)
     local room = player.room
-    local targets = table.map(room:getOtherPlayers(player), Util.IdMapper)
+    local targets = table.map(room:getOtherPlayers(player, false), Util.IdMapper)
     room:sortPlayersByAction(targets)
     room:doIndicate(player.id, targets)
     for _, id in ipairs(targets) do
@@ -3304,7 +3304,7 @@ local fansheng = fk.CreateTriggerSkill{
       recoverBy = player,
       skillName = self.name
     }
-    local targets = table.map(room:getOtherPlayers(player), Util.IdMapper)
+    local targets = table.map(room:getOtherPlayers(player, false), Util.IdMapper)
     room:sortPlayersByAction(targets)
     room:doIndicate(player.id, targets)
     for _, id in ipairs(targets) do

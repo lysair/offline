@@ -60,7 +60,7 @@ local caningWhipSkill = fk.CreateTriggerSkill{
       local tos = {}
       for _, p in ipairs(room:getAllPlayers()) do
         if (p.general == "tianchuan" or p.deputyGeneral == "tianchuan") and not p.dead then
-          local to = room:askForChoosePlayers(p, table.map(room:getOtherPlayers(player), Util.IdMapper), 1, 1,
+          local to = room:askForChoosePlayers(p, table.map(room:getOtherPlayers(player, false), Util.IdMapper), 1, 1,
             "#caning_whip-choose:"..player.id, "caning_whip", false)
           room:notifySkillInvoked(p, self.name, "control")
           table.insertIfNeed(tos, to[1])

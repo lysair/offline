@@ -250,13 +250,13 @@ local zenhui = fk.CreateTriggerSkill{
   events = {fk.CardUsing},
   can_trigger = function(self, event, target, player, data)
     return target == player and player:hasSkill(self) and (data.card.trueName == "slash" or data.card.type == Card.TypeTrick) and
-      table.find(player.room:getOtherPlayers(player), function (p)
+      table.find(player.room:getOtherPlayers(player, false), function (p)
         return not data.tos or not table.contains(TargetGroup:getRealTargets(data.tos), p.id)
       end)
   end,
   on_cost = function(self, event, target, player, data)
     local room = player.room
-    local targets = table.filter(room:getOtherPlayers(player), function (p)
+    local targets = table.filter(room:getOtherPlayers(player, false), function (p)
       return not data.tos or not table.contains(TargetGroup:getRealTargets(data.tos), p.id)
     end)
     local to = room:askForChoosePlayers(player, table.map(targets, Util.IdMapper), 1, 1,
@@ -500,13 +500,13 @@ local baobian = fk.CreateTriggerSkill{
   events = {fk.EventPhaseStart},
   can_trigger = function(self, event, target, player, data)
     return target == player and player:hasSkill(self) and player.phase == Player.Play and
-      table.find(player.room:getOtherPlayers(player), function(p)
+      table.find(player.room:getOtherPlayers(player, false), function(p)
         return not p:isKongcheng()
       end)
   end,
   on_cost = function (self,event, target, player, data)
     local room = player.room
-    local targets = table.filter(room:getOtherPlayers(player), function(p)
+    local targets = table.filter(room:getOtherPlayers(player, false), function(p)
       return not p:isKongcheng()
     end)
     local to = room:askForChoosePlayers(player, table.map(targets, Util.IdMapper), 1, 1,
@@ -547,12 +547,12 @@ local yirang = fk.CreateTriggerSkill{
   events = {fk.EventPhaseStart},
   can_trigger = function(self, event, target, player, data)
     return target == player and player:hasSkill(self) and player.phase == Player.Play and
-      not player:isKongcheng() and #player.room:getOtherPlayers(player) > 0
+      not player:isKongcheng() and #player.room:getOtherPlayers(player, false) > 0
   end,
   on_cost = function (self,event, target, player, data)
     local room = player.room
-    local targets = table.filter(room:getOtherPlayers(player), function (p)
-      return table.every(room:getOtherPlayers(player), function (q)
+    local targets = table.filter(room:getOtherPlayers(player, false), function (p)
+      return table.every(room:getOtherPlayers(player, false), function (q)
         return q:getHandcardNum() >= p:getHandcardNum()
       end)
     end)
@@ -602,13 +602,13 @@ local shuangren = fk.CreateTriggerSkill{
   events = {fk.EventPhaseStart},
   can_trigger = function(self, event, target, player, data)
     return target == player and player:hasSkill(self) and player.phase == Player.Play and not player:isKongcheng() and
-      table.find(player.room:getOtherPlayers(player), function(p)
+      table.find(player.room:getOtherPlayers(player, false), function(p)
         return player:canPindian(p)
       end)
   end,
   on_cost = function(self, event, target, player, data)
     local room = player.room
-    local targets = table.filter(room:getOtherPlayers(player), function(p)
+    local targets = table.filter(room:getOtherPlayers(player, false), function(p)
         return player:canPindian(p)
       end)
     local to = room:askForChoosePlayers(player, table.map(targets, Util.IdMapper), 1, 1,
@@ -627,7 +627,7 @@ local shuangren = fk.CreateTriggerSkill{
       local card = Fk:cloneCard("slash")
       card.skillName = self.name
       if player:prohibitUse(card) then return end
-      local targets = table.filter(room:getOtherPlayers(player), function(p)
+      local targets = table.filter(room:getOtherPlayers(player, false), function(p)
           return p:distanceTo(to) == 1 and not player:isProhibited(p, card)
         end)
       if #targets == 0 then return end
@@ -811,13 +811,13 @@ local danxin = fk.CreateTriggerSkill{
   events = {fk.Damaged},
   can_trigger = function(self, event, target, player, data)
     return target == player and player:hasSkill(self) and
-      table.find(player.room:getOtherPlayers(player), function(p)
+      table.find(player.room:getOtherPlayers(player, false), function(p)
         return not p:isKongcheng()
       end)
   end,
   on_cost = function(self, event, target, player, data)
     local room = player.room
-    local targets = table.filter(room:getOtherPlayers(player), function(p)
+    local targets = table.filter(room:getOtherPlayers(player, false), function(p)
       return not p:isKongcheng()
     end)
     local to = room:askForChoosePlayers(player, table.map(targets, Util.IdMapper), 1, 1,

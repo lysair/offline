@@ -30,7 +30,7 @@ local sxfy__jujian = fk.CreateTriggerSkill{
       player.room:getCardArea(data.card) == Card.Processing
   end,
   on_cost = function(self, event, target, player, data)
-    local to = player.room:askForChoosePlayers(player, table.map(player.room:getOtherPlayers(player), Util.IdMapper), 1, 1,
+    local to = player.room:askForChoosePlayers(player, table.map(player.room:getOtherPlayers(player, false), Util.IdMapper), 1, 1,
       "#sxfy__jujian-give:::"..data.card:toLogString(), self.name, true)
     if #to > 0 then
       self.cost_data = {tos = to}
@@ -357,7 +357,7 @@ local sxfy__xingfa = fk.CreateTriggerSkill{
   end,
   on_cost = function(self, event, target, player, data)
     local room = player.room
-    local to = room:askForChoosePlayers(player, table.map(room:getOtherPlayers(player), Util.IdMapper), 1, 1,
+    local to = room:askForChoosePlayers(player, table.map(room:getOtherPlayers(player, false), Util.IdMapper), 1, 1,
       "#sxfy__xingfa-choose", self.name, true)
     if #to > 0 then
       self.cost_data = {tos = to}
@@ -1101,13 +1101,13 @@ local sxfy__qiuyuan = fk.CreateTriggerSkill{
   events = {fk.TargetConfirming},
   can_trigger = function(self, event, target, player, data)
     return target == player and player:hasSkill(self) and data.card.trueName == "slash" and
-      table.find(player.room:getOtherPlayers(player), function (p)
+      table.find(player.room:getOtherPlayers(player, false), function (p)
         return p.id ~= data.from
       end)
   end,
   on_cost = function(self, event, target, player, data)
     local room = player.room
-    local targets = table.map(table.filter(room:getOtherPlayers(player), function(p)
+    local targets = table.map(table.filter(room:getOtherPlayers(player, false), function(p)
       return p.id ~= data.from end), Util.IdMapper)
     local to = room:askForChoosePlayers(player, targets, 1, 1, "#sxfy__qiuyuan-choose", self.name, true)
     if #to > 0 then

@@ -239,7 +239,7 @@ local fhyx__zhengrong = fk.CreateTriggerSkill{
           if player:getSwitchSkillState(self.name, false) == fk.SwitchYang then
             return not player:isKongcheng()
           else
-            return table.find(player.room:getOtherPlayers(player), function (p)
+            return table.find(player.room:getOtherPlayers(player, false), function (p)
               return not p:isNude()
             end)
           end
@@ -257,7 +257,7 @@ local fhyx__zhengrong = fk.CreateTriggerSkill{
           {player:getPile("$fhyx__glory"), player:getCardIds("h"), "$fhyx__glory", "$Hand"}, "#fhyx__zhengrong-exchange", true)
         U.swapCardsWithPile(player, cards[1], cards[2], self.name, "$fhyx__glory")
       else
-        local targets = table.filter(room:getOtherPlayers(player), function (p)
+        local targets = table.filter(room:getOtherPlayers(player, false), function (p)
           return not p:isNude()
         end)
         local to = room:askForChoosePlayers(player, table.map(targets, Util.IdMapper), 1, 1,
@@ -581,7 +581,7 @@ local fhyx__tongbo = fk.CreateTriggerSkill{
     U.swapCardsWithPile(player, piles[1], piles[2], self.name, "caiyong_book")
     if player.dead or #player:getPile("caiyong_book") < 4 or #room.alive_players < 2 then return end
     if room:askForSkillInvoke(player, self.name, nil, "#fhyx__tongbo-give") then
-      local result = room:askForYiji(player, player:getPile("caiyong_book"), room:getOtherPlayers(player), self.name, 4, 4,
+      local result = room:askForYiji(player, player:getPile("caiyong_book"), room:getOtherPlayers(player, false), self.name, 4, 4,
         "#fhyx__tongbo-distribute", "caiyong_book", false, 4)
       if player.dead then return end
       local suits = {}
@@ -1635,7 +1635,7 @@ local ofl_shiji__mingfa = fk.CreateTriggerSkill{
     if player:hasSkill(self) then
       if event == fk.EventPhaseStart then
         return target == player and player.phase == Player.Play and not player:isKongcheng() and
-          table.find(player.room:getOtherPlayers(player), function (p)
+          table.find(player.room:getOtherPlayers(player, false), function (p)
             return player:canPindian(p)
           end)
       elseif event == fk.PindianCardsDisplayed then
@@ -1646,7 +1646,7 @@ local ofl_shiji__mingfa = fk.CreateTriggerSkill{
   on_cost = function(self, event, target, player, data)
     if event == fk.EventPhaseStart then
       local room = player.room
-      local targets = table.filter(room:getOtherPlayers(player), function (p)
+      local targets = table.filter(room:getOtherPlayers(player, false), function (p)
         return player:canPindian(p)
       end)
       local tos, card =  room:askForChooseCardAndPlayers(player, table.map(targets, Util.IdMapper), 1, 1, ".|.|.|hand",

@@ -19,7 +19,7 @@ local sxfy__jimeng = fk.CreateTriggerSkill{
   end,
   on_cost = function(self, event, target, player, data)
     local room = player.room
-    local tos, cards = room:askForChooseCardsAndPlayers(player, 1, 999, table.map(room:getOtherPlayers(player), Util.IdMapper), 1, 1,
+    local tos, cards = room:askForChooseCardsAndPlayers(player, 1, 999, table.map(room:getOtherPlayers(player, false), Util.IdMapper), 1, 1,
       nil, "#sxfy__jimeng-invoke", self.name, true, false)
     if #tos > 0 and #cards > 0 then
       self.cost_data = {tos[1], cards}
@@ -42,13 +42,13 @@ local sxfy__hehe = fk.CreateTriggerSkill{
   events = {fk.EventPhaseEnd},
   can_trigger = function(self, event, target, player, data)
     return target == player and player:hasSkill(self) and player.phase == Player.Draw and
-      table.find(player.room:getOtherPlayers(player), function (p)
+      table.find(player.room:getOtherPlayers(player, false), function (p)
         return p:getHandcardNum() == player:getHandcardNum()
       end)
   end,
   on_cost = function(self, event, target, player, data)
     local room = player.room
-    local targets = table.filter(room:getOtherPlayers(player), function (p)
+    local targets = table.filter(room:getOtherPlayers(player, false), function (p)
       return p:getHandcardNum() == player:getHandcardNum()
     end)
     local tos = room:askForChoosePlayers(player, table.map(targets, Util.IdMapper), 1, 2, "#sxfy__hehe-invoke", self.name, true)
@@ -122,7 +122,7 @@ local sxfy__chunlao = fk.CreateTriggerSkill{
   events = {fk.EventPhaseEnd},
   can_trigger = function(self, event, target, player, data)
     if target == player and player:hasSkill(self) and player.phase == Player.Discard and 
-      table.find(player.room:getOtherPlayers(player), function (p)
+      table.find(player.room:getOtherPlayers(player, false), function (p)
         return not p:isKongcheng()
       end) then
       local room = player.room
@@ -153,7 +153,7 @@ local sxfy__chunlao = fk.CreateTriggerSkill{
     local room = player.room
     local choice = U.askforViewCardsAndChoice(player, self.cost_data, {"OK", "Cancel"}, self.name, "#sxfy__chunlao-choice")
     if choice == "OK" then
-      local targets = table.filter(room:getOtherPlayers(player), function (p)
+      local targets = table.filter(room:getOtherPlayers(player, false), function (p)
         return not p:isKongcheng()
       end)
       local to = room:askForChoosePlayers(player, table.map(targets, Util.IdMapper), 1, 1,

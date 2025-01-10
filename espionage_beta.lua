@@ -89,7 +89,7 @@ local lifengs = fk.CreateActiveSkill{
   end,
   on_lose = function (self, player, is_death)
     local room = player.room
-    if table.find(room:getOtherPlayers(player), function (p)
+    if table.find(room:getOtherPlayers(player, false), function (p)
       return p:hasSkill("present_skill&", true)
     end) then
       room:handleAddLoseSkills(player, "-lifengs_present_skill&|present_skill&", nil, false, true)
@@ -520,8 +520,7 @@ local yaoling = fk.CreateTriggerSkill{
     return target == player and player:hasSkill(self) and player.phase == Player.Play
   end,
   on_cost = function(self, event, target, player, data)
-    local to = player.room:askForChoosePlayers(player, table.map(player.room:getOtherPlayers(player), function(p)
-      return p.id end), 1, 1, "#yaoling-choose", self.name, true)
+    local to = player.room:askForChoosePlayers(player, table.map(player.room:getOtherPlayers(player, false), Util.IdMapper), 1, 1, "#yaoling-choose", self.name, true)
     if #to > 0 then
       self.cost_data = to[1]
       return true
@@ -578,7 +577,7 @@ local yongquan = fk.CreateTriggerSkill{
   events = {fk.EventPhaseStart},
   can_trigger = function(self, event, target, player, data)
     return target == player and player:hasSkill(self) and player.phase == Player.Finish and
-      table.find(player.room:getOtherPlayers(player), function(p) return p.kingdom == "qun" and not p:isNude() end)
+      table.find(player.room:getOtherPlayers(player, false), function(p) return p.kingdom == "qun" and not p:isNude() end)
   end,
   on_cost = Util.TrueFunc,
   on_use = function(self, event, target, player, data)
@@ -817,7 +816,7 @@ local sancai = fk.CreateActiveSkill{
     if table.every(cards, function(id) return Fk:getCardById(id).type == Fk:getCardById(cards[1]).type end) then
       cards = table.filter(cards, function(id) return table.contains(player:getCardIds("h"), id) end)
       if #cards > 0 and #room.alive_players > 1 then
-        local to, card = room:askForChooseCardAndPlayers(player, table.map(player.room:getOtherPlayers(player), Util.IdMapper), 1, 1,
+        local to, card = room:askForChooseCardAndPlayers(player, table.map(player.room:getOtherPlayers(player, false), Util.IdMapper), 1, 1,
           ".|.|.|.|.|.|"..table.concat(cards, ","), "#sancai-choose", self.name, true)
         if #to > 0 and card then
           U.presentCard(player, room:getPlayerById(to[1]), Fk:getCardById(card))

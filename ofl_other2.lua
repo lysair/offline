@@ -571,7 +571,7 @@ local xianxiang = fk.CreateTriggerSkill{
   end,
   on_use = function(self, event, target, player, data)
     local room = player.room
-    local to = room:askForChoosePlayers(player, table.map(room:getOtherPlayers(player), Util.IdMapper), 1, 1,
+    local to = room:askForChoosePlayers(player, table.map(room:getOtherPlayers(player, false), Util.IdMapper), 1, 1,
       "#ofl__xianxiang-invoke::"..target.id, self.name, false)
     room:moveCardTo(target:getCardIds("hej"), Card.PlayerHand, to[1], fk.ReasonJustMove, self.name, nil, false, player.id)
   end,
@@ -1043,8 +1043,8 @@ local jipin = fk.CreateTriggerSkill{
     local room = player.room
     local card = room:askForCardChosen(target, data.to, "h", self.name, "#ofl__jipin-prey::"..data.to.id)
     room:moveCardTo(card, Card.PlayerHand, target, fk.ReasonPrey, self.name, nil, false, target.id)
-    if player.dead or not table.contains(player:getCardIds("h"), card) or #room:getOtherPlayers(player) == 0 then return end
-    local to = room:askForChoosePlayers(player, table.map(room:getOtherPlayers(player), Util.IdMapper), 1, 1,
+    if player.dead or not table.contains(player:getCardIds("h"), card) or #room:getOtherPlayers(player, false) == 0 then return end
+    local to = room:askForChoosePlayers(player, table.map(room:getOtherPlayers(player, false), Util.IdMapper), 1, 1,
       "#ofl__jipin-give:::"..Fk:getCardById(card):toLogString(), self.name, true)
     if #to > 0 then
       room:moveCardTo(card, Card.PlayerHand, to[1], fk.ReasonGive, self.name, nil, false, target.id)
@@ -2201,9 +2201,9 @@ local weizhu = fk.CreateActiveSkill{
       room:moveCardTo(cards, Card.PlayerHand, player, fk.ReasonJustMove, self.name, nil, true, player.id)
       if player.dead then return end
     end
-    n = math.min(n, #room:getOtherPlayers(player), #player:getCardIds("he"))
+    n = math.min(n, #room:getOtherPlayers(player, false), #player:getCardIds("he"))
     if n == 0 then return end
-    local result =  room:askForYiji(player, player:getCardIds("he"), room:getOtherPlayers(player), self.name, n, n,
+    local result =  room:askForYiji(player, player:getCardIds("he"), room:getOtherPlayers(player, false), self.name, n, n,
       "#ofl__weizhu-give:::"..n, nil, false, 1)
     for id, ids in pairs(result) do
       if #ids > 0 then
@@ -2313,7 +2313,7 @@ local cheji = fk.CreateActiveSkill{
     local n = #effect.cards
     room:recastCard(effect.cards, player, self.name)
     if player.dead then return end
-    local targets = table.filter(room:getOtherPlayers(player), function (p)
+    local targets = table.filter(room:getOtherPlayers(player, false), function (p)
       return p:getHandcardNum() >= n
     end)
     if #targets == 0 then return end
@@ -2511,7 +2511,7 @@ local changshi_trigger = fk.CreateTriggerSkill{
         return target.seat == 1 and target.phase == Player.Discard
       elseif event == fk.DamageInflicted then
         return target == player and data.damage >= player.hp + player.shield and
-          table.find(player.room:getOtherPlayers(player), function (p)
+          table.find(player.room:getOtherPlayers(player, false), function (p)
             return p:getMark("@@changshi") > 0
           end) ~= nil
       end
@@ -2525,7 +2525,7 @@ local changshi_trigger = fk.CreateTriggerSkill{
         return true
       end
     elseif event == fk.DamageInflicted then
-      local targets = table.filter(room:getOtherPlayers(player), function (p)
+      local targets = table.filter(room:getOtherPlayers(player, false), function (p)
         return p:getMark("@@changshi") > 0
       end)
       local to = room:askForChoosePlayers(player, table.map(targets, Util.IdMapper), 1, 1, "#changshi-choose", self.name, true)
@@ -2731,12 +2731,12 @@ local zimou = fk.CreateTriggerSkill{
   events = {fk.EventPhaseStart},
   can_trigger = function (self, event, target, player, data)
     return target == player and player:hasSkill(self) and player.phase == Player.Play and
-      #player.room:getOtherPlayers(player) > 0
+      #player.room:getOtherPlayers(player, false) > 0
   end,
   on_use = function (self, event, target, player, data)
     local room = player.room
     room:doIndicate(player.id, table.map(room.alive_players, Util.IdMapper))
-    for _, p in ipairs(room:getOtherPlayers(player)) do
+    for _, p in ipairs(room:getOtherPlayers(player, false)) do
       if player.dead then return end
       if not p.dead then
         if player:isNude() then
@@ -2924,7 +2924,7 @@ local yaozhuo_trigger = fk.CreateTriggerSkill{
     if player:hasSkill(yaozhuo) then
       if event == fk.Damaged then
         return target == player and
-          table.find(player.room:getOtherPlayers(player), function (p)
+          table.find(player.room:getOtherPlayers(player, false), function (p)
             return player:canPindian(p)
           end) ~= nil
       elseif event == fk.PindianFinished then
@@ -2943,7 +2943,7 @@ local yaozhuo_trigger = fk.CreateTriggerSkill{
   on_cost = function(self, event, target, player, data)
     if event == fk.Damaged then
       local room = player.room
-      local targets = table.filter(room:getOtherPlayers(player), function (p)
+      local targets = table.filter(room:getOtherPlayers(player, false), function (p)
         return player:canPindian(p)
       end)
       local to = room:askForChoosePlayers(player, table.map(targets, Util.IdMapper), 1, 1,
