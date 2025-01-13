@@ -3186,10 +3186,10 @@ local zhuiling = fk.CreateTriggerSkill{
 local zhuiling_targetmod = fk.CreateTargetModSkill{
   name = "#zhuiling_targetmod",
   bypass_times = function(self, player, skill, scope, card, to)
-    return card and player:hasSkill(self) and to:isKongcheng()
+    return card and player:hasSkill("zhuiling") and to and to:isKongcheng()
   end,
   bypass_distances =  function(self, player, skill, card, to)
-    return card and player:hasSkill(self) and to:isKongcheng()
+    return card and player:hasSkill("zhuiling") and to and to:isKongcheng()
   end,
 }
 local xihun = fk.CreateTriggerSkill{
