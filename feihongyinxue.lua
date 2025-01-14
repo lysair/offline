@@ -1923,8 +1923,8 @@ Fk:loadTranslationTable{
   ["~ofl_shiji__xujing"] = "靖获虚誉而得用，唯以荐才报君恩……",
 }
 
---local zhangwen = General(extension, "ofl_shiji__zhangwen", "wu", 3)
-local ofl_shiji__songshu = fk.CreateTriggerSkill{
+local zhangwen = General(extension, "ofl_shiji__zhangwen", "wu", 3)
+local songshu = fk.CreateTriggerSkill{
   name = "ofl_shiji__songshu",
   anim_type = "control",
   events = {fk.EventPhaseStart},
@@ -1946,29 +1946,14 @@ local ofl_shiji__songshu = fk.CreateTriggerSkill{
       room:setPlayerMark(target, "@@ofl_shiji__songshu-turn", 1)
     end
   end,
-
-  refresh_events = {fk.AfterTurnEnd, fk.StartPlayCard, "fk.AfterRenMove"},
-  can_refresh  = function (self, event, target, player, data)
-    return player:getMark("@@ofl_shiji__songshu-turn") > 0
-  end,
-  on_refresh  = function (self, event, target, player, data)
-    local room = player.room
-    --[[if event == fk.AfterTurnEnd then
-      player.special_cards["RenPile&"] = nil
-      })
-    else
-      player.special_cards["RenPile&"] = U.GetRenPile(room)
-      })
-    end]]--  ChangeSelf丸辣！暂时想不到体验很好的实现方法
-  end,
 }
-local ofl_shiji__songshu_prohibit = fk.CreateProhibitSkill{
+local songshu_prohibit = fk.CreateProhibitSkill{
   name = "#ofl_shiji__songshu_prohibit",
   prohibit_use = function(self, player, card)
     if player:getMark("@@ofl_shiji__songshu-turn") > 0 then
       local subcards = card:isVirtual() and card.subcards or {card.id}
       return #subcards == 0 or table.find(subcards, function(id)
-        return not table.contains(player.special_cards["RenPile&"] or {}, id)
+        return not table.contains(U.GetRenPile(Fk:currentRoom()) or {}, id)
       end)
     end
   end,
@@ -1976,14 +1961,23 @@ local ofl_shiji__songshu_prohibit = fk.CreateProhibitSkill{
     if player:getMark("@@ofl_shiji__songshu-turn") > 0 then
       local subcards = card:isVirtual() and card.subcards or {card.id}
       return #subcards == 0 or table.find(subcards, function(id)
-        return not table.contains(player.special_cards["RenPile&"] or {}, id)
+        return not table.contains(U.GetRenPile(Fk:currentRoom()) or {}, id)
       end)
     end
   end,
 }
-ofl_shiji__songshu:addRelatedSkill(ofl_shiji__songshu_prohibit)
---zhangwen:addSkill(ofl_shiji__songshu)
---zhangwen:addSkill("gebo")
+local songshu_filter = fk.CreateFilterSkill{
+  name = "#ofl_shiji__songshu_filter",
+  handly_cards = function (self, player)
+    if player:getMark("@@ofl_shiji__songshu-turn") > 0 then
+      return U.GetRenPile(Fk:currentRoom())
+    end
+  end,
+}
+songshu:addRelatedSkill(songshu_prohibit)
+songshu:addRelatedSkill(songshu_filter)
+zhangwen:addSkill(songshu)
+zhangwen:addSkill("gebo")
 Fk:loadTranslationTable{
   ["ofl_shiji__zhangwen"] = "张温",
   ["#ofl_shiji__zhangwen"] = "炜晔曜世",
@@ -1994,7 +1988,7 @@ Fk:loadTranslationTable{
   "使用或打出“仁”区牌。",
   ["#ofl_shiji__songshu-put"] = "颂蜀：你可以将一张牌置入仁区，然后若仁区牌数不小于 %dest 手牌数，其本回合只能使用打出仁区牌",
   ["@@ofl_shiji__songshu-turn"] = "颂蜀",
-  ["RenPile&"] = "仁区",
+  ["#ofl_shiji__songshu_filter"] = "颂蜀",
 
   ["$gebo_ofl_shiji__zhangwen1"] = "高宗守丧而兴殷，成王德治以太平。",
   ["$gebo_ofl_shiji__zhangwen2"] = "化干戈玉帛，共伐乱贼。",
