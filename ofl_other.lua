@@ -2812,19 +2812,187 @@ Fk:loadTranslationTable{
   ["#ofl__zhanyanz-choice"] = "绽焱：请猜测 %src 的红色手牌数",
 }
 
---local godliubiao = General(extension, "godliubiao", "god", 4)
+local godliubiao = General(extension, "godliubiao", "god", 4)
+local xiongju = fk.CreateTriggerSkill{
+  name = "xiongju",
+  anim_type = "support",
+  frequency = Skill.Compulsory,
+  events = {fk.GameStart},
+  can_trigger = function(self, event, target, player, data)
+    return player:hasSkill(self)
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    local cards = {}
+    for _ = 1, 2, 1 do
+      local id = room:printCard("jingxiang_golden_age", Card.Heart, 5).id
+      table.insert(cards, id)
+    end
+    room:moveCardTo(cards, Card.PlayerHand, player, fk.ReasonJustMove, self.name, nil, true, player.id)
+    if player.dead then return end
+    local kingdoms = {}
+    for _, p in ipairs(room.alive_players) do
+      table.insertIfNeed(kingdoms, p.kingdom)
+    end
+    room:changeMaxHp(player, #kingdoms)
+    if player:isWounded() and not player.dead then
+      room:recover{
+        who = player,
+        num = player.maxHp - player.hp,
+        recoverBy = player,
+        skillName = self.name,
+      }
+    end
+  end,
+}
+local xiongju_trigger = fk.CreateTriggerSkill{
+  name = "#xiongju_trigger",
+  main_skill = xiongju,
+  mute = true,
+  frequency = Skill.Compulsory,
+  events = {fk.DrawInitialCards},
+  can_trigger = function(self, event, target, player, data)
+    return target == player and player:hasSkill("xiongju")
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    local kingdoms = {}
+    for _, p in ipairs(room.alive_players) do
+      table.insertIfNeed(kingdoms, p.kingdom)
+    end
+    data.num = data.num + #kingdoms
+  end,
+}
+local xiongju_maxcards = fk.CreateMaxCardsSkill{
+  name = "#xiongju_maxcards",
+  correct_func = function(self, player)
+    if player:hasSkill("xiongju") then
+      local kingdoms = {}
+      for _, p in ipairs(Fk:currentRoom().alive_players) do
+        table.insertIfNeed(kingdoms, p.kingdom)
+      end
+      return #kingdoms
+    end
+  end,
+}
+local fujing = fk.CreateTriggerSkill{
+  name = "fujing",
+  anim_type = "negative",
+  frequency = Skill.Compulsory,
+  events = {fk.EventPhaseChanging},
+  can_trigger = function(self, event, target, player, data)
+    return target == player and player:hasSkill(self) and data.to == Player.Draw
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    local use = room:askForUseCard(player, self.name, "jingxiang_golden_age", "#fujing-use", true)
+    if use then
+      use.extra_data = use.extra_data or {}
+      use.extra_data.fujing = true
+      room:useCard(use)
+    end
+    return true
+  end,
+
+  refresh_events = {fk.CardUseFinished},
+  can_refresh = function (self, event, target, player, data)
+    return target == player and not player.dead and data.extra_data and
+      data.extra_data.fujing and data.extra_data.jingxiangGoldenAgeResult
+  end,
+  on_refresh = function (self, event, target, player, data)
+    local room = player.room
+    local mark = {}
+    for _, dat in ipairs(data.extra_data.jingxiangGoldenAgeResult) do
+      table.insertIfNeed(mark, dat[1])
+    end
+    room:setPlayerMark(player, "fujing-round", mark)
+  end,
+}
+local fujing_delay = fk.CreateTriggerSkill{
+  name = "#fujing_delay",
+  anim_type = "defensive",
+  frequency = Skill.Compulsory,
+  events = {fk.TargetSpecified},
+  can_trigger = function(self, event, target, player, data)
+    return data.to == player.id and table.contains(player:getTableMark("fujing-round"), target.id) and not target.dead
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    room:removeTableMark(player, "fujing-round", target.id)
+    room:askForDiscard(target, 1, 1, true, "fujing", false)
+  end,
+}
+local yongrong = fk.CreateTriggerSkill{
+  name = "yongrong",
+  mute = true,
+  events = {fk.DamageCaused, fk.DamageInflicted},
+  can_trigger = function(self, event, target, player, data)
+    if target == player and player:hasSkill(self) and player:usedSkillTimes(self.name, Player.HistoryTurn) == 0 then
+      if event == fk.DamageCaused then
+        return data.to:getHandcardNum() < player:getHandcardNum()
+      else
+        return data.from and data.from:getHandcardNum() < player:getHandcardNum()
+      end
+    end
+  end,
+  on_cost = function(self, event, target, player, data)
+    local prompt, tos
+    if event == fk.DamageCaused then
+      prompt = "#yongrong1-invoke::"..data.to.id
+      tos = {data.to.id}
+    else
+      prompt = "#yongrong2-invoke::"..data.from.id
+      tos = {data.from.id}
+    end
+    local card = player.room:askForCard(player, 1, 1, true, self.name, true, nil, prompt)
+    if #card > 0 then
+      self.cost_data = {tos = tos, cards = card}
+      return true
+    end
+  end,
+  on_use = function(self, event, target, player, data)
+    local room = player.room
+    if event == fk.DamageCaused then
+      player:broadcastSkillInvoke(self.name, 1)
+      room:notifySkillInvoked(player, self.name, "offensive")
+      data.damage = data.damage + 1
+      room:moveCardTo(self.cost_data.cards, Card.PlayerHand, data.to, fk.ReasonGive, self.name, nil, false, player.id)
+    else
+      player:broadcastSkillInvoke(self.name, 2)
+      room:notifySkillInvoked(player, self.name, "defensive")
+      data.damage = data.damage - 1
+      room:moveCardTo(self.cost_data.cards, Card.PlayerHand, data.from, fk.ReasonGive, self.name, nil, false, player.id)
+    end
+  end,
+}
+xiongju:addRelatedSkill(xiongju_trigger)
+xiongju:addRelatedSkill(xiongju_maxcards)
+fujing:addRelatedSkill(fujing_delay)
+godliubiao:addSkill(xiongju)
+godliubiao:addSkill(fujing)
+godliubiao:addSkill(yongrong)
 Fk:loadTranslationTable{
   ["godliubiao"] = "神刘表",
   ["#godliubiao"] = "称雄荆襄",
   ["illustrator:godliubiao"] = "六道目",
-
+}
+Fk:loadTranslationTable{
   ["xiongju"] = "雄踞",
   [":xiongju"] = "锁定技，游戏开始时，你从游戏外获得两张【荆襄盛世】，然后加X点体力上限，回复X点体力；你的起始手牌数+X、手牌上限+X"..
   "（X为场上势力数）。",
+  ["#xiongju_trigger"] = "雄踞",
+}
+Fk:loadTranslationTable{
   ["fujing"] = "富荆",
   [":fujing"] = "锁定技，你跳过摸牌阶段，改为使用一张【荆襄盛世】。以此法获得牌的其他角色本轮首次使用牌指定你为目标后，其需弃置一张牌。",
+  ["#fujing-use"] = "富荆：请使用一张【荆襄盛世】",
+  ["#fujing_delay"] = "富荆",
+}
+Fk:loadTranslationTable{
   ["yongrong"] = "雍容",
   [":yongrong"] = "每回合限一次，当你造成/受到伤害时，若受伤角色/伤害来源的手牌数小于你，你可以交给其一张牌，令此伤害+1/-1。",
+  ["#yongrong1-invoke"] = "雍容：是否交给 %dest 一张牌，令你对其造成的伤害+1？",
+  ["#yongrong2-invoke"] = "雍容：是否交给 %dest 一张牌，令其对你造成的伤害-1？",
 }
 
 local godcaoren = General(extension, "godcaoren", "god", 4)

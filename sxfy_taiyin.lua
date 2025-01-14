@@ -48,7 +48,7 @@ xushu:addSkill(sxfy__jujian)
 Fk:loadTranslationTable{
   ["sxfy__xushu"] = "徐庶",
   ["#sxfy__xushu"] = "身曹心汉",
-  ["illustrator:sxfy__xushu"] = "Zero",
+  ["illustrator:sxfy__xushu"] = "Aimer彩三",
 
   ["sxfy__wuyan"] = "无言",
   [":sxfy__wuyan"] = "锁定技，你的锦囊牌视为【无懈可击】。",
