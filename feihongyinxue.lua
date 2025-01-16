@@ -504,12 +504,15 @@ local fhyx__shouxi = fk.CreateTriggerSkill{
   on_use = function(self, event, target, player, data)
     local room = player.room
     local from = room:getPlayerById(data.from)
-    if #room:askForDiscard(from, 1, 1, false, self.name, true, ".|.|.|.|.|"..self.cost_data.choice,
-      "#fhyx__shouxi-discard:"..player.id.."::"..data.card:toLogString()) == 0 then
+    local cardType = self.cost_data.choice
+    if from.dead or #room:askForDiscard(from, 1, 1, false, self.name, true, ".|.|.|.|.|"..cardType,
+      "#fhyx__shouxi-discard:"..player.id.."::"..cardType) == 0 then
       table.insertIfNeed(data.nullifiedTargets, player.id)
     elseif not player:isKongcheng() and not player.dead and not from.dead then
-      local card = room:askForCardChosen(from, player, "h", self.name)
-      room:moveCardTo(card, Card.PlayerHand, from, fk.ReasonPrey, self.name, nil, false, from.id)
+      local cards = room:askForCardsChosen(from, player, 0, 1, "h",self.name)
+      if #cards > 0 then
+        room:moveCardTo(cards, Card.PlayerHand, from, fk.ReasonPrey, self.name, nil, false, from.id)
+      end
     end
   end,
 }
@@ -528,8 +531,9 @@ local fhyx__huimin = fk.CreateTriggerSkill{
     local targets = table.map(table.filter(room.alive_players, function (p)
       return p:getHandcardNum() < p.hp
     end), Util.IdMapper)
-    local tos = room:askForChoosePlayers(player, targets, 1, 10, "#fhyx__huimin-choose", self.name, true)
+    local tos = room:askForChoosePlayers(player, targets, 1, 999, "#fhyx__huimin-choose", self.name, true)
     if #tos > 0 then
+      room:sortPlayersByAction(tos)
       self.cost_data = {tos = tos}
       return true
     end
@@ -560,7 +564,7 @@ Fk:loadTranslationTable{
   ["fhyx__huimin"] = "惠民",
   [":fhyx__huimin"] = "结束阶段，你可以选择任意名手牌数小于体力值的角色，你摸等量的牌，然后交给这些角色各一张手牌。",
   ["#fhyx__shouxi-invoke"] = "守玺：你可以声明类别，%dest 需弃置一张此类别牌并获得你一张手牌，否则%arg对你无效",
-  ["#fhyx__shouxi-discard"] = "守玺：弃置一张%arg并获得 %src 一张手牌，否则%arg对其无效",
+  ["#fhyx__shouxi-discard"] = "守玺：弃置一张 %arg 并获得 %src 一张手牌，否则%arg对其无效",
   ["#fhyx__huimin-choose"] = "惠民：选择任意名手牌数小于体力值的角色，你摸等量牌，然后交给这些角色各一张手牌",
   ["#fhyx__huimin-give"] = "惠民：请交给这些角色各一张手牌",
 }
