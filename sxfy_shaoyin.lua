@@ -90,6 +90,7 @@ local sxfy__quedi = fk.CreateViewAsSkill{
   anim_type = "offensive",
   pattern = "duel",
   prompt = "#sxfy__quedi",
+  handly_pile = true,
   card_filter = function(self, to_select, selected)
     return #selected == 0 and Fk:getCardById(to_select).trueName == "slash"
   end,

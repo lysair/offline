@@ -237,8 +237,9 @@ local mouWuSheng = fk.CreateViewAsSkill{
   name = "ofl_mou__wusheng",
   pattern = "slash",
   card_num = 1,
+  handly_pile = true,
   card_filter = function(self, to_select, selected)
-    if #selected == 1 or Fk:currentRoom():getCardArea(to_select) ~= Player.Hand then return false end
+    if #selected == 1 or not table.contains(Self:getHandlyIds(), to_select) then return false end
     local c = Fk:cloneCard("slash")
     return (Fk.currentResponsePattern == nil and Self:canUse(c)) or
       (Fk.currentResponsePattern and Exppattern:Parse(Fk.currentResponsePattern):match(c))
@@ -258,7 +259,7 @@ local mouWuSheng = fk.CreateViewAsSkill{
         table.insert(allCardNames, card.name)
       end
     end
-    return UI.ComboBox { choices = allCardNames }
+    return U.CardNameBox { choices = allCardNames }
   end,
   view_as = function(self, cards)
     local choice = self.interaction.data
@@ -1042,7 +1043,7 @@ local fhyx_pile = {
   {"role__wooden_ox", Card.Diamond, 5},
 }
 local function PrepareExtraPile(room)
-  if room.tag["fhyx_extra_pile"] then return end
+  if room:getBanner("fhyx_extra_pile") then return end
   local all_names = {}
   for _, card in ipairs(Fk.cards) do
     if not table.contains(room.disabled_packs, card.package.name) and not card.is_derived then
@@ -1051,20 +1052,23 @@ local function PrepareExtraPile(room)
   end
   local cards = {}
   for _, name in ipairs(all_names) do
-    local c = table.filter(fhyx_pile, function(card)
-      return card[1] == name
+    local c = table.filter(fhyx_pile, function(info)
+      return info[1] == name
     end)
+    local id
     if #c > 0 then
-      table.insert(cards, c[1])
+      id = room:printCard(table.unpack(c[1])).id
     else
-      table.insert(cards, {name, math.random(1, 4), math.random(1, 13)})
+      id = room:printCard(name, math.random(1, 4), math.random(1, 13)).id
     end
+    table.insert(cards, id)
+    room:setCardMark(Fk:getCardById(id), MarkEnum.DestructIntoDiscard, 1)
   end
-  U.prepareDeriveCards(room, cards, "fhyx_extra_pile")
-  room:setBanner("@$fhyx_extra_pile", table.simpleClone(room.tag["fhyx_extra_pile"]))
+  room:setBanner("fhyx_extra_pile", cards)
+  room:setBanner("@$fhyx_extra_pile", table.simpleClone(cards))
 end
 local function SetFhyxExtraPileBanner(room)
-  local ids = table.filter(room.tag["fhyx_extra_pile"], function(id)
+  local ids = table.filter(room:getBanner("fhyx_extra_pile"), function(id)
     return room:getCardArea(id) == Card.Void
   end)
   room:setBanner("@$fhyx_extra_pile", ids)
@@ -1128,26 +1132,27 @@ local qicai = fk.CreateActiveSkill{
         if #cards == 0 then return end
         room:moveCardTo(cards, Card.PlayerHand, player, fk.ReasonGive, self.name, nil, true, target.id)
       else
-        room:moveCardTo(table.random(cards2, 2), Card.PlayerHand, player, fk.ReasonJustMove, self.name, nil, true,
-          player.id, MarkEnum.DestructIntoDiscard)
+        room:moveCardTo(table.random(cards2, 2), Card.PlayerHand, player, fk.ReasonJustMove, self.name, nil, true, player.id)
       end
     elseif #cards2 > 0 then
-      room:moveCardTo(table.random(cards2, 2), Card.PlayerHand, player, fk.ReasonJustMove, self.name, nil, true,
-        player.id, MarkEnum.DestructIntoDiscard)
+      room:moveCardTo(table.random(cards2, 2), Card.PlayerHand, player, fk.ReasonJustMove, self.name, nil, true, player.id)
     end
+  end,
+
+  on_acquire = function (self, player, is_start)
+    PrepareExtraPile(player.room)
   end,
 }
 local qicai_trigger = fk.CreateTriggerSkill{
   name = "#ofl_mou__qicai_trigger",
 
-  refresh_events = {fk.EventAcquireSkill, fk.AfterCardsMove},
+  refresh_events = {fk.AfterCardsMove},
   can_refresh = function(self, event, target, player, data)
-    if event == fk.EventAcquireSkill then
-      return target == player and data == self
-    elseif player.seat == 1 and player.room.tag["fhyx_extra_pile"] then
+    if player.seat == 1 then
       for _, move in ipairs(data) do
         for _, info in ipairs(move.moveInfo) do
-          if table.contains(player.room.tag["fhyx_extra_pile"], info.cardId) then
+          if player.room:getBanner("fhyx_extra_pile") and
+            table.contains(player.room:getBanner("fhyx_extra_pile"), info.cardId) then
             return true
           end
         end
@@ -1155,11 +1160,7 @@ local qicai_trigger = fk.CreateTriggerSkill{
     end
   end,
   on_refresh = function(self, event, target, player, data)
-    if event == fk.EventAcquireSkill then
-      PrepareExtraPile(player.room)
-    else
-      SetFhyxExtraPileBanner(player.room)
-    end
+    SetFhyxExtraPileBanner(player.room)
   end,
 }
 local qicai_targetmod = fk.CreateTargetModSkill{
@@ -1758,11 +1759,9 @@ local luanji = fk.CreateViewAsSkill{
   anim_type = "offensive",
   pattern = "archery_attack",
   prompt = "#ofl_mou__luanji",
-  enabled_at_play = function(self, player)
-    return player:usedSkillTimes(self.name, Player.HistoryPhase) == 0
-  end,
+  handly_pile = true,
   card_filter = function(self, to_select, selected)
-    return #selected < 2 and Fk:currentRoom():getCardArea(to_select) ~= Player.Equip
+    return #selected < 2 and table.contains(Self:getHandlyIds(), to_select)
   end,
   view_as = function(self, cards)
     if #cards == 2 then
@@ -1770,6 +1769,9 @@ local luanji = fk.CreateViewAsSkill{
       archery_attack:addSubcards(cards)
       return archery_attack
     end
+  end,
+  enabled_at_play = function(self, player)
+    return player:usedSkillTimes(self.name, Player.HistoryPhase) == 0
   end,
 }
 local luanji_trigger = fk.CreateTriggerSkill{

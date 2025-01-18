@@ -132,8 +132,9 @@ local miaojian = fk.CreateViewAsSkill{
     return ""
   end,
   interaction = function()
-    return UI.ComboBox {choices = {"stab__slash", "ex_nihilo"}}
+    return U.CardNameBox {choices = {"stab__slash", "ex_nihilo"}}
   end,
+  handly_pile = true,
   card_filter = function(self, to_select, selected)
     if #selected == 0 then
       local card = Fk:getCardById(to_select)
@@ -166,9 +167,6 @@ local miaojian = fk.CreateViewAsSkill{
   end,
   enabled_at_play = function(self, player)
     return player:usedSkillTimes(self.name, Player.HistoryPhase) == 0
-  end,
-  enabled_at_response = function(self, player)
-    return false
   end,
 }
 local lianhuas = fk.CreateTriggerSkill{
@@ -473,18 +471,12 @@ local lianpoj = fk.CreateTriggerSkill{
     end
   end,
 
-  refresh_events = {fk.GameStart, fk.EventAcquireSkill, fk.GameOverJudge, fk.AfterPlayerRevived, fk.RoundEnd, fk.EventLoseSkill},
+  refresh_events = {fk.GameStart, fk.GameOverJudge, fk.AfterPlayerRevived, fk.RoundEnd},
   can_refresh = function(self, event, target, player, data)
     if event == fk.RoundEnd then
       return type(player.room:getBanner("@lianpoj_add")) == "table"
-    elseif event == fk.EventLoseSkill then
-      return target == player and data == self
-    elseif player:hasSkill(self, true) then
-      if event == fk.EventAcquireSkill then
-        return target == player and data == self
-      else
-        return true
-      end
+    else
+      return player:hasSkill(self, true)
     end
   end,
   on_refresh = function(self, event, target, player, data)
@@ -496,11 +488,16 @@ local lianpoj = fk.CreateTriggerSkill{
           UpdateLianpo(p)
         end
       end
-    elseif event == fk.EventLoseSkill then
-      room:setPlayerMark(player, "@lianpoj", 0)
     else
       UpdateLianpo(player)
     end
+  end,
+
+  on_acquire = function (self, player, is_start)
+    UpdateLianpo(player)
+  end,
+  on_lose = function (self, player, is_death)
+    player.room:setPlayerMark(player, "@lianpoj", 0)
   end,
 }
 local lianpoj_maxcards = fk.CreateMaxCardsSkill{
@@ -1297,6 +1294,7 @@ local ofl__moucheng = fk.CreateViewAsSkill{
   anim_type = "control",
   pattern = "collateral",
   prompt = "#ofl__moucheng",
+  handly_pile = true,
   card_filter = function (self, to_select, selected)
     return #selected == 0 and Fk:getCardById(to_select).color == Card.Black
   end,
@@ -3698,6 +3696,7 @@ local yanggu = fk.CreateViewAsSkill{
   anim_type = "switch",
   pattern = "diversion",
   prompt = "#ofl__yanggu-yin",
+  handly_pile = true,
   card_filter = function(self, to_select, selected)
     return #selected == 0 and table.contains(Self:getHandlyIds(true), to_select)
   end,
@@ -4799,6 +4798,7 @@ local xijun = fk.CreateViewAsSkill{
       return U.CardNameBox { choices = names, all_choices = all_names }
     end
   end,
+  handly_pile = true,
   card_filter = function(self, to_select, selected)
     return #selected == 0 and Fk:getCardById(to_select).color == Card.Black
   end,
@@ -4978,8 +4978,9 @@ local bimeng = fk.CreateViewAsSkill{
       return U.CardNameBox { choices = names, all_choices = all_names }
     end
   end,
+  handly_pile = true,
   card_filter = function (self, to_select, selected)
-    return #selected < Self.hp and not table.contains(Self:getCardIds("e"), to_select)
+    return #selected < Self.hp and table.contains(Self:getHandlyIds(), to_select)
   end,
   view_as = function(self, cards)
     if #cards ~= Self.hp or not self.interaction.data then return end

@@ -57,7 +57,7 @@ local fhyx_pile = {
   {"role__wooden_ox", Card.Diamond, 5},
 }
 local function PrepareExtraPile(room)
-  if room.tag["fhyx_extra_pile"] then return end
+  if room:getBanner("fhyx_extra_pile") then return end
   local all_names = {}
   for _, card in ipairs(Fk.cards) do
     if not table.contains(room.disabled_packs, card.package.name) and not card.is_derived then
@@ -66,20 +66,23 @@ local function PrepareExtraPile(room)
   end
   local cards = {}
   for _, name in ipairs(all_names) do
-    local c = table.filter(fhyx_pile, function(card)
-      return card[1] == name
+    local c = table.filter(fhyx_pile, function(info)
+      return info[1] == name
     end)
+    local id
     if #c > 0 then
-      table.insert(cards, c[1])
+      id = room:printCard(table.unpack(c[1])).id
     else
-      table.insert(cards, {name, math.random(1, 4), math.random(1, 13)})
+      id = room:printCard(name, math.random(1, 4), math.random(1, 13)).id
     end
+    table.insert(cards, id)
+    room:setCardMark(Fk:getCardById(id), MarkEnum.DestructIntoDiscard, 1)
   end
-  U.prepareDeriveCards(room, cards, "fhyx_extra_pile")
-  room:setBanner("@$fhyx_extra_pile", table.simpleClone(room.tag["fhyx_extra_pile"]))
+  room:setBanner("fhyx_extra_pile", cards)
+  room:setBanner("@$fhyx_extra_pile", table.simpleClone(cards))
 end
 local function SetFhyxExtraPileBanner(room)
-  local ids = table.filter(room.tag["fhyx_extra_pile"], function(id)
+  local ids = table.filter(room:getBanner("fhyx_extra_pile"), function(id)
     return room:getCardArea(id) == Card.Void
   end)
   room:setBanner("@$fhyx_extra_pile", ids)
@@ -220,7 +223,7 @@ Fk:loadTranslationTable{
 }
 
 local guanqiujian = General(extension, "fhyx__guanqiujian", "wei", 4)
-local fhyx__zhengrong = fk.CreateTriggerSkill{
+local zhengrong = fk.CreateTriggerSkill{
   name = "fhyx__zhengrong",
   anim_type = "switch",
   switch_skill_name = "fhyx__zhengrong",
@@ -269,7 +272,7 @@ local fhyx__zhengrong = fk.CreateTriggerSkill{
     end
   end,
 }
-local fhyx__hongju = fk.CreateTriggerSkill{
+local hongju = fk.CreateTriggerSkill{
   name = "fhyx__hongju",
   frequency = Skill.Wake,
   events = {fk.EventPhaseStart},
@@ -290,7 +293,7 @@ local fhyx__hongju = fk.CreateTriggerSkill{
     room:handleAddLoseSkills(player, "fhyx__qingce", nil, true, false)
   end,
 }
-local fhyx__qingce = fk.CreateActiveSkill{
+local qingce = fk.CreateActiveSkill{
   name = "fhyx__qingce",
   anim_type = "control",
   target_num = 1,
@@ -312,9 +315,9 @@ local fhyx__qingce = fk.CreateActiveSkill{
     room:throwCard(card, self.name, target, player)
   end,
 }
-guanqiujian:addSkill(fhyx__zhengrong)
-guanqiujian:addSkill(fhyx__hongju)
-guanqiujian:addRelatedSkill(fhyx__qingce)
+guanqiujian:addSkill(zhengrong)
+guanqiujian:addSkill(hongju)
+guanqiujian:addRelatedSkill(qingce)
 Fk:loadTranslationTable{
   ["fhyx__guanqiujian"] = "毌丘俭",
   ["#fhyx__guanqiujian"] = "镌功铭征荣",
@@ -334,7 +337,7 @@ Fk:loadTranslationTable{
 }
 
 local liyan = General(extension, "fhyx__liyans", "shu", 3)
-local fhyx__duliang = fk.CreateActiveSkill{
+local duliang = fk.CreateActiveSkill{
   name = "fhyx__duliang",
   anim_type = "support",
   card_num = 0,
@@ -357,12 +360,12 @@ local fhyx__duliang = fk.CreateActiveSkill{
     if player.dead or target.dead then return end
     local choice = room:askForChoice(player, {"fhyx__duliang_view:::"..(2*n), "fhyx__duliang_draw:::"..n}, self.name,
       "#fhyx__duliang-choice::"..target.id)
-    if choice[15] == "v" then
-      local all_cards = room:getNCards(2*n)
-      cards = table.filter(cards, function (id)
+    if choice:startsWith("fhyx__duliang_view") then
+      local all_cards = room:getNCards(2 * n)
+      cards = table.filter(all_cards, function (id)
         return Fk:getCardById(id).type == Card.TypeBasic
       end)
-      cards = U.askforChooseCardsAndChoice(target, cards, {"OK"}, self.name, "#fhyx__duliang-get", nil, 0, #cards, all_cards)
+      cards = U.askforChooseCardsAndChoice(target, cards, {"OK"}, self.name, "#fhyx__duliang-get", {"Cancel"}, 0, #cards, all_cards)
       if #cards > 0 then
         room:moveCardTo(cards, Card.PlayerHand, target, fk.ReasonJustMove, self.name, nil, false, target.id)
       end
@@ -371,7 +374,7 @@ local fhyx__duliang = fk.CreateActiveSkill{
     end
   end,
 }
-local fhyx__duliang_trigger = fk.CreateTriggerSkill{
+local duliang_trigger = fk.CreateTriggerSkill{
   name = "#fhyx__duliang_trigger",
 
   refresh_events = {fk.DrawNCards},
@@ -383,7 +386,7 @@ local fhyx__duliang_trigger = fk.CreateTriggerSkill{
     player.room:setPlayerMark(player, "@duliang", 0)
   end,
 }
-local fhyx__fulin = fk.CreateTriggerSkill{
+local fulin = fk.CreateTriggerSkill{
   name = "fhyx__fulin",
   anim_type = "control",
   events = {fk.AfterCardsMove},
@@ -439,7 +442,7 @@ local fhyx__fulin = fk.CreateTriggerSkill{
     end
   end,
 }
-local fhyx__fulin_delay = fk.CreateTriggerSkill{
+local fulin_delay = fk.CreateTriggerSkill{
   name = "#fhyx__fulin_delay",
   mute = true,
   events = {fk.TurnEnd},
@@ -453,10 +456,10 @@ local fhyx__fulin_delay = fk.CreateTriggerSkill{
     player:drawCards(player:getMark("@fhyx__fulin-turn"), "fhyx__fulin")
   end,
 }
-fhyx__duliang:addRelatedSkill(fhyx__duliang_trigger)
-fhyx__fulin:addRelatedSkill(fhyx__fulin_delay)
-liyan:addSkill(fhyx__duliang)
-liyan:addSkill(fhyx__fulin)
+duliang:addRelatedSkill(duliang_trigger)
+fulin:addRelatedSkill(fulin_delay)
+liyan:addSkill(duliang)
+liyan:addSkill(fulin)
 Fk:loadTranslationTable{
   ["fhyx__liyans"] = "李严",
   ["#fhyx__liyans"] = "矜风流务",
@@ -626,7 +629,7 @@ Fk:loadTranslationTable{
 }
 
 local bianfuren = General(extension, "ofl_shiji__bianfuren", "wei", 3, 3, General.Female)
-local ofl_shiji__fuding = fk.CreateTriggerSkill{
+local fuding = fk.CreateTriggerSkill{
   name = "ofl_shiji__fuding",
   anim_type = "support",
   events = {fk.EnterDying, fk.AfterDying},
@@ -670,27 +673,16 @@ local ofl_shiji__fuding = fk.CreateTriggerSkill{
     end
   end,
 }
-local ofl_shiji__yuejian = fk.CreateViewAsSkill{
+local yuejian = fk.CreateViewAsSkill{
   name = "ofl_shiji__yuejian",
   pattern = ".|.|.|.|.|basic",
   prompt = "#ofl_shiji__yuejian",
-  interaction = function()
-    local names = {}
-    for _, id in ipairs(Fk:getAllCardIds()) do
-      local card = Fk:getCardById(id)
-      if card.type == Card.TypeBasic and not card.is_derived then
-        local to_use = Fk:cloneCard(card.name)
-        if ((Fk.currentResponsePattern == nil and Self:canUse(to_use) and not Self:prohibitUse(to_use)) or
-        (Fk.currentResponsePattern and Exppattern:Parse(Fk.currentResponsePattern):match(to_use))) then
-          table.insertIfNeed(names, card.name)
-        end
-      end
-    end
-    return UI.ComboBox { choices = names }
+  interaction = function(self)
+    local all_names = U.getAllCardNames("b")
+    local names = U.getViewAsCardNames(Self, self.name, all_names)
+    return U.CardNameBox { choices = names, all_choices = all_names }
   end,
-  card_filter = function(self, to_select, selected)
-    return false
-  end,
+  card_filter = Util.FalseFunc,
   view_as = function(self, cards)
     if not self.interaction.data then return nil end
     local card = Fk:cloneCard(self.interaction.data)
@@ -703,28 +695,29 @@ local ofl_shiji__yuejian = fk.CreateViewAsSkill{
   enabled_at_response = function(self, player, response)
     return not response and player:getMark("ofl_shiji__yuejian-round") == 0
   end,
+
+  on_acquire = function (self, player, is_start)
+    local room = player.room
+    if #room.logic:getEventsOfScope(GameEvent.UseCard, 1, function(e)
+      local use = e.data[1]
+        return use.from == player.id and use.card.type == Card.TypeBasic
+      end, Player.HistoryRound) > 0 then
+      room:setPlayerMark(player, "ofl_shiji__yuejian-round", 1)
+    end
+  end,
 }
-local ofl_shiji__yuejian_record = fk.CreateTriggerSkill{
+local yuejian_record = fk.CreateTriggerSkill{
   name = "#ofl_shiji__yuejian_record",
 
-  refresh_events = {fk.AfterCardUseDeclared, fk.EventAcquireSkill},
+  refresh_events = {fk.AfterCardUseDeclared},
   can_refresh = function(self, event, target, player, data)
-    if event == fk.AfterCardUseDeclared then
-      return target == player and data.card.type == Card.TypeBasic and player:getMark("ofl_shiji__yuejian-round") == 0
-    else
-      return target == player and data == self and
-        player:getMark("ofl_shiji__yuejian-round") == 0 and player.room:getTag("RoundCount") and
-        #player.room.logic:getEventsOfScope(GameEvent.UseCard, 1, function(e)
-        local use = e.data[1]
-          return use.from == player.id and use.card.type == Card.TypeBasic
-        end, Player.HistoryRound) > 0
-    end
+    return target == player and data.card.type == Card.TypeBasic and player:getMark("ofl_shiji__yuejian-round") == 0
   end,
   on_refresh = function(self, event, target, player, data)
     player.room:setPlayerMark(player, "ofl_shiji__yuejian-round", 1)
   end,
 }
-local ofl_shiji__yuejian_maxcards = fk.CreateMaxCardsSkill{
+local yuejian_maxcards = fk.CreateMaxCardsSkill{
   name = "#ofl_shiji__yuejian_maxcards",
   correct_func = function(self, player)
     if player:hasSkill("ofl_shiji__yuejian") then
@@ -734,10 +727,10 @@ local ofl_shiji__yuejian_maxcards = fk.CreateMaxCardsSkill{
     end
   end,
 }
-ofl_shiji__yuejian:addRelatedSkill(ofl_shiji__yuejian_record)
-ofl_shiji__yuejian:addRelatedSkill(ofl_shiji__yuejian_maxcards)
-bianfuren:addSkill(ofl_shiji__fuding)
-bianfuren:addSkill(ofl_shiji__yuejian)
+yuejian:addRelatedSkill(yuejian_record)
+yuejian:addRelatedSkill(yuejian_maxcards)
+bianfuren:addSkill(fuding)
+bianfuren:addSkill(yuejian)
 Fk:loadTranslationTable{
   ["ofl_shiji__bianfuren"] = "卞夫人",
   ["#ofl_shiji__bianfuren"] = "内助贤后",
@@ -753,7 +746,7 @@ Fk:loadTranslationTable{
 }
 
 local chenzhen = General(extension, "ofl_shiji__chenzhen", "shu", 3)
-local ofl_shiji__shameng = fk.CreateActiveSkill{
+local shameng = fk.CreateActiveSkill{
   name = "ofl_shiji__shameng",
   anim_type = "drawcard",
   min_card_num = 1,
@@ -824,7 +817,7 @@ local ofl_shiji__shameng = fk.CreateActiveSkill{
     end
   end,
 }
-chenzhen:addSkill(ofl_shiji__shameng)
+chenzhen:addSkill(shameng)
 Fk:loadTranslationTable{
   ["ofl_shiji__chenzhen"] = "陈震",
   ["#ofl_shiji__chenzhen"] = "歃盟使节",
@@ -839,7 +832,7 @@ Fk:loadTranslationTable{
 }
 
 local luotong = General(extension, "ofl_shiji__luotong", "wu", 4)
-local ofl_shiji__minshi = fk.CreateActiveSkill{
+local minshi = fk.CreateActiveSkill{
   name = "ofl_shiji__minshi",
   anim_type = "support",
   card_num = 0,
@@ -868,9 +861,6 @@ local ofl_shiji__minshi = fk.CreateActiveSkill{
     end)
     cards = table.random(cards, 3)
     if #cards == 0 then return end
-    for _, id in ipairs(cards) do
-      room:setCardMark(Fk:getCardById(id), MarkEnum.DestructIntoDiscard, 1)
-    end
     local result = room:askForYiji(player, cards, targets, self.name, 1, #cards, "#ofl_shiji__minshi-give", cards, false)
     local n = #table.filter(targets, function(p)
       return #result[tostring(p.id)] == 0
@@ -879,19 +869,21 @@ local ofl_shiji__minshi = fk.CreateActiveSkill{
       room:loseHp(player, n, self.name)
     end
   end,
+
+  on_acquire = function (self, player, is_start)
+    PrepareExtraPile(player.room)
+  end,
 }
-local ofl_shiji__minshi_trigger = fk.CreateTriggerSkill{
+local minshi_trigger = fk.CreateTriggerSkill{
   name = "#ofl_shiji__minshi_trigger",
 
-  refresh_events = {fk.EventAcquireSkill, fk.AfterCardsMove},
+  refresh_events = {fk.AfterCardsMove},
   can_refresh = function(self, event, target, player, data)
-    if event == fk.EventAcquireSkill then
-      return target == player and data == self
-    elseif player.seat == 1 then
+    if player.seat == 1 then
       for _, move in ipairs(data) do
         for _, info in ipairs(move.moveInfo) do
-          if player.room.tag["fhyx_extra_pile"] and
-            table.contains(player.room.tag["fhyx_extra_pile"], info.cardId) then
+          if player.room:getBanner("fhyx_extra_pile") and
+            table.contains(player.room:getBanner("fhyx_extra_pile"), info.cardId) then
             return true
           end
         end
@@ -899,20 +891,16 @@ local ofl_shiji__minshi_trigger = fk.CreateTriggerSkill{
     end
   end,
   on_refresh = function(self, event, target, player, data)
-    if event == fk.EventAcquireSkill then
-      PrepareExtraPile(player.room)
-    else
-      SetFhyxExtraPileBanner(player.room)
-    end
+    SetFhyxExtraPileBanner(player.room)
   end,
 }
-local ofl_shiji__xianming = fk.CreateTriggerSkill{
+local xianming = fk.CreateTriggerSkill{
   name = "ofl_shiji__xianming",
   anim_type = "drawcard",
   events = {fk.BeforeCardsMove},
   can_trigger = function(self, event, target, player, data)
     if player:hasSkill(self) and player:usedSkillTimes(self.name, Player.HistoryTurn) == 0 and
-      player.room.tag["fhyx_extra_pile"] then
+      player.room:getBanner("fhyx_extra_pile") then
       local ids = {}
       for _, move in ipairs(data) do
         for _, info in ipairs(move.moveInfo) do
@@ -939,9 +927,9 @@ local ofl_shiji__xianming = fk.CreateTriggerSkill{
     end
   end,
 }
-ofl_shiji__minshi:addRelatedSkill(ofl_shiji__minshi_trigger)
-luotong:addSkill(ofl_shiji__minshi)
-luotong:addSkill(ofl_shiji__xianming)
+minshi:addRelatedSkill(minshi_trigger)
+luotong:addSkill(minshi)
+luotong:addSkill(xianming)
 Fk:loadTranslationTable{
   ["ofl_shiji__luotong"] = "骆统",
   ["#ofl_shiji__luotong"] = "辨如悬河",
@@ -1061,18 +1049,16 @@ local ofl_shiji__zuici = fk.CreateTriggerSkill{
     if #cards == 0 then return end
     local card = room:askForCard(player, 1, 1, false, self.name, false, ".|.|.|.|.|.|"..table.concat(cards, ","),
       "#ofl_shiji__zuici-give::"..to.id, cards)
-    room:moveCardTo(card, Card.PlayerHand, to, fk.ReasonJustMove, self.name, "", true, player.id, MarkEnum.DestructIntoDiscard)
+    room:moveCardTo(card, Card.PlayerHand, to, fk.ReasonJustMove, self.name, nil, true, player.id)
   end,
 
-  refresh_events = {fk.EventAcquireSkill, fk.AfterCardsMove},
+  refresh_events = {fk.AfterCardsMove},
   can_refresh = function(self, event, target, player, data)
-    if event == fk.EventAcquireSkill then
-      return target == player and data == self
-    elseif player.seat == 1 then
+    if player.seat == 1 then
       for _, move in ipairs(data) do
         for _, info in ipairs(move.moveInfo) do
-          if player.room.tag["fhyx_extra_pile"] and
-            table.contains(player.room.tag["fhyx_extra_pile"], info.cardId) then
+          if player.room:getBanner("fhyx_extra_pile") and
+            table.contains(player.room:getBanner("fhyx_extra_pile"), info.cardId) then
             return true
           end
         end
@@ -1080,11 +1066,11 @@ local ofl_shiji__zuici = fk.CreateTriggerSkill{
     end
   end,
   on_refresh = function(self, event, target, player, data)
-    if event == fk.EventAcquireSkill then
-      PrepareExtraPile(player.room)
-    else
-      SetFhyxExtraPileBanner(player.room)
-    end
+    SetFhyxExtraPileBanner(player.room)
+  end,
+
+  on_acquire = function (self, player, is_start)
+    PrepareExtraPile(player.room)
   end,
 }
 ofl_shiji__dingyi:addRelatedSkill(ofl_shiji__dingyi_delay)
@@ -1295,23 +1281,31 @@ local ofl_shiji__weipo = fk.CreateActiveSkill{
     end)
     if #cards > 0 then
       cards = U.askforChooseCardsAndChoice(player, cards, {"OK"}, self.name, "#ofl_shiji__weipo-give::"..target.id)
-      room:moveCardTo(cards, Card.PlayerHand, target, fk.ReasonJustMove, self.name, nil, true, player.id,
-        MarkEnum.DestructIntoDiscard)
+      room:moveCardTo(cards, Card.PlayerHand, target, fk.ReasonJustMove, self.name, nil, true, player.id)
     end
+  end,
+
+  on_acquire = function (self, player, is_start)
+    local room = player.room
+    PrepareExtraPile(room)
+    local cards = room:getBanner("fhyx_extra_pile")
+    local id = room:printCard("enemy_at_the_gates", Card.Spade, 7).id
+    table.insert(cards, id)
+    room:setCardMark(Fk:getCardById(id), MarkEnum.DestructIntoDiscard, 1)
+    room:setBanner("fhyx_extra_pile", cards)
+    room:setBanner("@$fhyx_extra_pile", table.simpleClone(cards))
   end,
 }
 local ofl_shiji__weipo_trigger = fk.CreateTriggerSkill{
   name = "#ofl_shiji__weipo_trigger",
 
-  refresh_events = {fk.EventAcquireSkill, fk.AfterCardsMove},
+  refresh_events = {fk.AfterCardsMove},
   can_refresh = function(self, event, target, player, data)
-    if event == fk.EventAcquireSkill then
-      return target == player and data == self
-    elseif player.seat == 1 then
+    if player.seat == 1 then
       for _, move in ipairs(data) do
         for _, info in ipairs(move.moveInfo) do
-          if player.room.tag["fhyx_extra_pile"] and
-            table.contains(player.room.tag["fhyx_extra_pile"], info.cardId) then
+          if player.room:getBanner("fhyx_extra_pile") and
+            table.contains(player.room:getBanner("fhyx_extra_pile"), info.cardId) then
             return true
           end
         end
@@ -1319,16 +1313,7 @@ local ofl_shiji__weipo_trigger = fk.CreateTriggerSkill{
     end
   end,
   on_refresh = function(self, event, target, player, data)
-    if event == fk.EventAcquireSkill then
-      local room = player.room
-      PrepareExtraPile(room)
-      local cards = room:getTag("fhyx_extra_pile")
-      table.insert(cards, room:printCard("enemy_at_the_gates", Card.Spade, 7).id)
-      room:setTag("fhyx_extra_pile", cards)
-      room:setBanner("@$fhyx_extra_pile", table.simpleClone(room.tag["fhyx_extra_pile"]))
-    else
-      SetFhyxExtraPileBanner(player.room)
-    end
+    SetFhyxExtraPileBanner(player.room)
   end,
 }
 local ofl_shiji__chenshi = fk.CreateTriggerSkill{
@@ -1725,7 +1710,6 @@ local ofl_shiji__rongbei = fk.CreateActiveSkill{
         end)
         if #cards > 0 then
           local card = Fk:getCardById(table.random(cards))
-          room:setCardMark(card, MarkEnum.DestructIntoDiscard, 1)
           room:useCard({
             from = effect.tos[1],
             tos = {{effect.tos[1]}},
@@ -1735,19 +1719,21 @@ local ofl_shiji__rongbei = fk.CreateActiveSkill{
       end
     end
   end,
+
+  on_acquire = function (self, player, is_start)
+    PrepareExtraPile(player.room)
+  end,
 }
 local ofl_shiji__rongbei_trigger = fk.CreateTriggerSkill{
   name = "#ofl_shiji__rongbei_trigger",
 
-  refresh_events = {fk.EventAcquireSkill, fk.AfterCardsMove},
+  refresh_events = {fk.AfterCardsMove},
   can_refresh = function(self, event, target, player, data)
-    if event == fk.EventAcquireSkill then
-      return target == player and data == self
-    elseif player.seat == 1 then
+    if player.seat == 1 then
       for _, move in ipairs(data) do
         for _, info in ipairs(move.moveInfo) do
-          if player.room.tag["fhyx_extra_pile"] and
-            table.contains(player.room.tag["fhyx_extra_pile"], info.cardId) then
+          if player.room:getBanner("fhyx_extra_pile") and
+            table.contains(player.room:getBanner("fhyx_extra_pile"), info.cardId) then
             return true
           end
         end
@@ -1755,11 +1741,7 @@ local ofl_shiji__rongbei_trigger = fk.CreateTriggerSkill{
     end
   end,
   on_refresh = function(self, event, target, player, data)
-    if event == fk.EventAcquireSkill then
-      PrepareExtraPile(player.room)
-    else
-      SetFhyxExtraPileBanner(player.room)
-    end
+    SetFhyxExtraPileBanner(player.room)
   end,
 }
 ofl_shiji__mingfa:addRelatedSkill(ofl_shiji__mingfa_prohibit)

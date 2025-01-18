@@ -286,6 +286,7 @@ local juesui_slash = fk.CreateViewAsSkill{
   anim_type = "offensive",
   pattern = "slash",
   prompt = "#juesui-viewas",
+  handly_pile = true,
   card_filter = function(self, to_select, selected)
     if #selected == 0 then
       local card = Fk:getCardById(to_select)
@@ -1147,7 +1148,7 @@ local fenwu = fk.CreateTriggerSkill{
 local fenwu_viewas = fk.CreateViewAsSkill{
   name = "fenwu_viewas",
   interaction = function()
-    return UI.ComboBox {choices = Self:getMark("fenwu-tmp")[2] }
+    return U.CardNameBox {choices = Self:getMark("fenwu-tmp")[2] }
   end,
   card_filter = function(self, to_select, selected)
     return to_select == Self:getMark("fenwu-tmp")[1]
@@ -1214,7 +1215,7 @@ local qingkou = fk.CreateTriggerSkill{
 local qingkou_viewas = fk.CreateViewAsSkill{
   name = "qingkou_viewas",
   interaction = function()
-    return UI.ComboBox {choices = Self:getMark("qingkou-tmp")[2] }
+    return U.CardNameBox {choices = Self:getMark("qingkou-tmp")[2] }
   end,
   card_filter = function(self, to_select, selected)
     return to_select == Self:getMark("qingkou-tmp")[1]
@@ -1697,6 +1698,7 @@ local shzj_yiling__longnu = fk.CreateViewAsSkill{
       return "#shzj_yiling__longnu_yin"
     end
   end,
+  handly_pile = true,
   card_filter = function(self, to_select, selected)
     if #selected == 0 then
       if Self:getMark("shzj_yiling__longnu-phase") == "yang" then
@@ -2128,6 +2130,7 @@ local shzj_yiling__wusheng = fk.CreateViewAsSkill{
   anim_type = "offensive",
   pattern = "slash",
   prompt = "#shzj_yiling__wusheng",
+  handly_pile = true,
   card_filter = function(self, to_select, selected)
     return #selected == 0 and Fk:getCardById(to_select).color == Card.Red
   end,
@@ -2304,6 +2307,7 @@ Fk:loadTranslationTable{
 
 local ansha_active = fk.CreateViewAsSkill{
   name = "ansha_active",
+  handly_pile = true,
   card_filter = function(self, to_select, selected)
     return #selected == 0
   end,
@@ -2322,7 +2326,7 @@ local siji = fk.CreateTriggerSkill{
   anim_type = "offensive",
   events = {fk.TurnEnd},
   can_trigger = function(self, event, target, player, data)
-    return player:hasSkill(self) and target ~= player and not target.dead and not player:isNude() and
+    return player:hasSkill(self) and target ~= player and not target.dead and #player:getHandlyIds() > 0 and
     #player.room.logic:getEventsOfScope(GameEvent.MoveCards, 1, function(e)
       for _, move in ipairs(e.data) do
         if move.from == target.id and move.moveReason ~= fk.ReasonUse and move.moveReason ~= fk.ReasonResonpse then
@@ -2400,7 +2404,7 @@ local ansha = fk.CreateTriggerSkill{
   anim_type = "offensive",
   events = {fk.TurnStart},
   can_trigger = function(self, event, target, player, data)
-    return player:hasSkill(self) and target ~= player and not target.dead and not player:isNude()
+    return player:hasSkill(self) and target ~= player and not target.dead and #player:getHandlyIds() > 0
   end,
   on_cost = function(self, event, target, player, data)
     local success, dat = player.room:askForUseActiveSkill(player, "ansha_active",
@@ -2485,7 +2489,7 @@ local daifa = fk.CreateTriggerSkill{
   anim_type = "offensive",
   events = {fk.TurnEnd},
   can_trigger = function(self, event, target, player, data)
-    return player:hasSkill(self) and target ~= player and not target.dead and not player:isNude() and
+    return player:hasSkill(self) and target ~= player and not target.dead and #player:getHandlyIds() > 0 and
     #player.room.logic:getEventsOfScope(GameEvent.MoveCards, 1, function(e)
       for _, move in ipairs(e.data) do
         if move.to == target.id and move.from and move.from ~= move.to then
@@ -2593,6 +2597,7 @@ local xianwu = fk.CreateViewAsSkill{
   anim_type = "offensive",
   pattern = "slash",
   prompt = "#xianwu",
+  handly_pile = true,
   card_filter = function(self, to_select, selected)
     return #selected == 0 and Fk:getCardById(to_select).color == Card.Red
   end,
@@ -2905,6 +2910,7 @@ local qixi = fk.CreateViewAsSkill{
   anim_type = "control",
   pattern = "dismantlement",
   prompt = "#shzj_yiling__qixi",
+  handly_pile = true,
   card_filter = function(self, to_select, selected)
     return #selected == 0 and Fk:getCardById(to_select).color == Card.Black
   end,

@@ -42,6 +42,7 @@ local chengjiz = fk.CreateViewAsSkill{
   anim_type = "offensive",
   pattern = "slash",
   prompt = "#sxfy__chengjiz",
+  handly_pile = true,
   card_filter = function(self, to_select, selected)
     if #selected == 0 then
       return true
@@ -860,7 +861,7 @@ local zhengnan = fk.CreateTriggerSkill{
   anim_type = "offensive",
   events = {fk.EventPhaseStart},
   can_trigger = function(self, event, target, player, data)
-    return target == player and player:hasSkill(self) and player.phase == Player.Start and not player:isKongcheng()
+    return target == player and player:hasSkill(self) and player.phase == Player.Start and #player:getHandlyIds() > 0
   end,
   on_cost = function(self, event, target, player, data)
     local success, dat = player.room:askForUseActiveSkill(player, "sxfy__zhengnan_viewas",
@@ -901,8 +902,9 @@ local zhengnan_delay = fk.CreateTriggerSkill{
 }
 local zhengnan_viewas = fk.CreateViewAsSkill{
   name = "sxfy__zhengnan_viewas",
+  handly_pile = true,
   card_filter = function (self, to_select, selected)
-    return #selected == 0 and table.contains(Self:getCardIds("h"), to_select) and Fk:getCardById(to_select).color == Card.Red
+    return #selected == 0 and table.contains(Self:getHandlyIds(), to_select) and Fk:getCardById(to_select).color == Card.Red
   end,
   view_as = function(self, cards)
     if #cards ~= 1 then return end
@@ -1078,6 +1080,7 @@ local yunji = fk.CreateViewAsSkill{
   anim_type = "control",
   pattern = "collateral",
   prompt = "#sxfy__yunji",
+  handly_pile = true,
   card_filter = function (self, to_select, selected)
     return #selected == 0 and Fk:getCardById(to_select).type == Card.TypeEquip
   end,

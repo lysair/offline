@@ -320,7 +320,7 @@ local zhouyuan = fk.CreateActiveSkill{
         return Fk:getCardById(id):getColorString() == color2
       end)
       if #cards > 0 then
-        player:addToPile(player:hasSkill("ofl__zhaobing") and "ofl__zhoubing&" or "ofl__zhoubing", cards, false, self.name, player.id)
+        player:addToPile("ofl__zhoubing", cards, false, self.name, player.id)
       end
     end
   end,
@@ -330,35 +330,22 @@ local zhouyuan_delay = fk.CreateTriggerSkill{
   mute = true,
   events = {fk.EventPhaseEnd},
   can_trigger = function(self, event, target, player, data)
-    return #player:getPile("ofl__zhoubing&") + #player:getPile("ofl__zhoubing") > 0
+    return #player:getPile("ofl__zhoubing") > 0
   end,
   on_cost = Util.TrueFunc,
   on_use = function(self, event, target, player, data)
-    local cards = table.simpleClone(player:getPile("ofl__zhoubing&"))
-    table.insertTableIfNeed(cards, player:getPile("ofl__zhoubing"))
-    player.room:moveCardTo(cards, Card.PlayerHand, player, fk.ReasonJustMove, "ofl__zhouyuan")
+    player.room:moveCardTo(player:getPile("ofl__zhoubing"), Card.PlayerHand, player, fk.ReasonJustMove, "ofl__zhouyuan")
   end,
 }
-local zhaobing = fk.CreateProhibitSkill{
+local zhaobing = fk.CreateFilterSkill{
   name = "ofl__zhaobing",
-  prohibit_use = function(self, player, card)
-    if not player:hasSkill(self) then
-      local subcards = card:isVirtual() and card.subcards or {card.id}
-      if #subcards > 0 and table.find(subcards, function(id)
-        return table.contains(player:getPile("ofl__zhoubing&"), id)
-      end) then
-        return player.phase ~= Player.Play
+  handly_cards = function (self, player)
+    if player:hasSkill(self) and player.phase == Player.Play then
+      local ids = {}
+      for _, p in ipairs(Fk:currentRoom().alive_players) do
+        table.insertTableIfNeed(ids, p:getPile("ofl__zhoubing"))
       end
-    end
-  end,
-  prohibit_response = function(self, player, card)
-    if not player:hasSkill(self) then
-      local subcards = card:isVirtual() and card.subcards or {card.id}
-      if #subcards > 0 and table.find(subcards, function(id)
-        return table.contains(player:getPile("ofl__zhoubing&"), id)
-      end) then
-        return player.phase ~= Player.Play
-      end
+      return ids
     end
   end,
 }
@@ -380,7 +367,6 @@ Fk:loadTranslationTable{
   ["#ofl__zhouyuan-choice"] = "咒怨：请选择一种颜色，你将此颜色、%src 将另一种颜色手牌分别置于武将牌上",
   ["#ofl__zhouyuan_delay"] = "咒怨",
   ["ofl__zhoubing"] = "咒兵",
-  ["ofl__zhoubing&"] = "咒兵",
 
   ["$ofl__zhouyuan1"] = "习得一道新符，试试看吧！",
   ["$ofl__zhouyuan2"] = "这事，你管不了！",
@@ -404,19 +390,14 @@ local jijun = fk.CreateTriggerSkill{
       who = player,
       reason = self.name,
       pattern = ".",
-      skipDrop = true,
     }
     room:judge(judge)
-    if room:getCardArea(judge.card) == Card.Processing then
-      if player.dead then
-        room:moveCardTo(judge.card, Card.DiscardPile, nil, fk.ReasonJudge)
+    if room:getCardArea(judge.card) == Card.DiscardPile then
+      local choice = room:askForChoice(player, {"ofl__jijun1", "ofl__jijun2"}, self.name)
+      if choice == "ofl__jijun1" then
+        room:moveCardTo(judge.card, Card.PlayerHand, player, fk.ReasonJustMove, self.name, nil, true, player.id)
       else
-        local choice = room:askForChoice(player, {"ofl__jijun1", "ofl__jijun2"})
-        if choice == "ofl__jijun1" then
-          room:moveCardTo(judge.card, Card.PlayerHand, player, fk.ReasonJustMove, self.name, nil, true, player.id)
-        else
-          player:addToPile("ofl__godzhangliang_fang", judge.card, true, self.name, player.id)
-        end
+        player:addToPile("ofl__godzhangliang_fang", judge.card, true, self.name, player.id)
       end
     end
   end,
@@ -1287,15 +1268,12 @@ local cuiji = fk.CreateTriggerSkill{
   end,
   on_cost = function(self, event, target, player, data)
     local room = player.room
-    local n = player:getHandcardNum() - target:getHandcardNum()
-    room:setPlayerMark(player, "ofl__cuiji-tmp", n)
     local success, dat = room:askForUseActiveSkill(player, "ofl__cuiji_viewas",
-      "#ofl__cuiji-invoke::"..target.id..":"..n, true, {
+      "#ofl__cuiji-invoke::"..target.id, true, {
         bypass_distances = true,
         bypass_times = true,
         must_targets = {target.id},
       })
-    room:setPlayerMark(player, "ofl__cuiji-tmp", 0)
     if success and dat then
       self.cost_data = {cards = dat.cards}
       return true
@@ -1304,7 +1282,7 @@ local cuiji = fk.CreateTriggerSkill{
   on_use = function(self, event, target, player, data)
     local room = player.room
     local use = room:useVirtualCard("thunder__slash", self.cost_data.cards, player, target, self.name, true)
-    if use.damageDealt and not player.dead then
+    if use and use.damageDealt and not player.dead then
       player:drawCards(#self.cost_data.cards, self.name)
     end
   end,
@@ -1312,10 +1290,9 @@ local cuiji = fk.CreateTriggerSkill{
 local cuiji_viewas = fk.CreateViewAsSkill{
   name = "ofl__cuiji_viewas",
   card_filter = function (self, to_select, selected)
-    return table.contains(Self:getCardIds("h"), to_select)-- and #selected < Self:getMark("ofl__cuiji-tmp")
+    return table.contains(Self:getHandlyIds(), to_select)
   end,
   view_as = function(self, cards)
-    --if #cards ~= Self:getMark("ofl__cuiji-tmp") then return end
     if #cards == 0 then return end
     local card = Fk:cloneCard("thunder__slash")
     card.skillName = "ofl__cuiji"
@@ -1337,8 +1314,7 @@ Fk:loadTranslationTable{
   ["ofl__yingzhan"] = "营战",
   [":ofl__yingzhan"] = "锁定技，你造成或受到的属性伤害+1。",
   ["ofl__cuiji"] = "摧击",
-  [":ofl__cuiji"] = "其他角色的出牌阶段开始时，若你手牌数大于其，你可以将X张手牌当一张雷【杀】对其使用，"..
-  "若你以此法造成了伤害，你摸等量的牌。",
+  [":ofl__cuiji"] = "其他角色的出牌阶段开始时，若你手牌数大于其，你可以将任意张手牌当一张雷【杀】对其使用，若你以此法造成了伤害，你摸等量的牌。",
   ["ofl__cuiji_viewas"] = "摧击",
   ["#ofl__cuiji-invoke"] = "摧击：你可以将任意张手牌当雷【杀】对 %dest 使用，若造成伤害你摸等量牌",
 }
@@ -2196,7 +2172,7 @@ local weizhu = fk.CreateActiveSkill{
     end)
     if #cards > 0 then
       if #cards > n then
-        cards = U.askforChooseCardsAndChoice(player, cards, {"OK"}, self.name, "#ofl__weizhu-prey:::"..n)
+        cards = U.askforChooseCardsAndChoice(player, cards, {"OK"}, self.name, "#ofl__weizhu-prey:::"..n, nil, n, n)
       end
       room:moveCardTo(cards, Card.PlayerHand, player, fk.ReasonJustMove, self.name, nil, true, player.id)
       if player.dead then return end
@@ -2233,6 +2209,7 @@ local zequan = fk.CreateViewAsSkill{
       default_choice = self.name,
     }
   end,
+  handly_pile = true,
   card_filter = function(self, to_select, selected)
     return #selected == 0 and Fk:getCardById(to_select).type == Card.TypeEquip and Fk.all_card_types[self.interaction.data] ~= nil
   end,
@@ -2592,6 +2569,7 @@ local taoluan = fk.CreateViewAsSkill{
       default_choice = self.name,
     }
   end,
+  handly_pile = true,
   card_filter = function(self, to_select, selected)
     return #selected == 0 and Fk.all_card_types[self.interaction.data] ~= nil
   end,

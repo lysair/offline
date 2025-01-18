@@ -216,7 +216,7 @@ local sxfy__beiwu = fk.CreateViewAsSkill{
   anim_type = "special",
   prompt = "#sxfy__beiwu",
   interaction = function()
-    return UI.ComboBox {choices = {"ex_nihilo", "duel"}}
+    return U.CardNameBox {choices = {"ex_nihilo", "duel"}}
   end,
   card_filter = function (self, to_select, selected)
     return #selected == 0 and Fk:currentRoom():getCardArea(to_select) == Card.PlayerEquip and

@@ -249,6 +249,7 @@ local jielve = fk.CreateViewAsSkill{
   name = "jielve",
   anim_type = "control",
   prompt = "#jielve",
+  handly_pile = true,
   card_filter = function(self, to_select, selected)
     if #selected == 1 then
       return Fk:getCardById(to_select).color == Fk:getCardById(selected[1]).color
@@ -663,7 +664,7 @@ Fk:loadTranslationTable{
 }
 
 local zhenji = General(extension, "es__zhenji", "wei", 3, 3, General.Female)
-local es__luoshen = fk.CreateTriggerSkill{
+local luoshen = fk.CreateTriggerSkill{
   name = "es__luoshen",
   anim_type = "drawcard",
   events = {fk.EventPhaseStart},
@@ -684,14 +685,12 @@ local es__luoshen = fk.CreateTriggerSkill{
         who = player,
         reason = self.name,
         pattern = pattern,
-        skipdrop = true,
       }
+      room:setPlayerMark(player, "es__luoshen-tmp", color)
       room:judge(judge)
+      room:setPlayerMark(player, "es__luoshen-tmp", 0)
       if color == "" then
         color = judge.card:getColorString()
-      end
-      if room:getCardArea(judge.card.id) == Card.DiscardPile and not player.dead then
-        room:obtainCard(player.id, judge.card.id, true, fk.ReasonJustMove)
       end
       if judge.card:getColorString() ~= color or player.dead or not room:askForSkillInvoke(player, self.name) then
         break
@@ -699,7 +698,21 @@ local es__luoshen = fk.CreateTriggerSkill{
     end
   end,
 }
-zhenji:addSkill(es__luoshen)
+local luoshen_obtain = fk.CreateTriggerSkill{
+  name = "#es__luoshen_obtain",
+  mute = true,
+  frequency = Skill.Compulsory,
+  events = {fk.FinishJudge},
+  can_trigger = function(self, event, target, player, data)
+    return target == player and data.reason == "es__luoshen" and
+    data.card.color == player:getMark("es__luoshen-tmp") and player.room:getCardArea(data.card.id) == Card.Processing
+  end,
+  on_use = function(self, event, target, player, data)
+    player.room:obtainCard(player, data.card, true, nil, player.id, "es__luoshen")
+  end,
+}
+luoshen:addRelatedSkill(luoshen_obtain)
+zhenji:addSkill(luoshen)
 zhenji:addSkill("qingguo")
 Fk:loadTranslationTable{
   ["es__zhenji"] = "甄姬",
