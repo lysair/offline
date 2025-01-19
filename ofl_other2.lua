@@ -3233,7 +3233,7 @@ Fk:loadTranslationTable{
 }
 
 local hankui = General(extension, "ofl__hankui", "qun", 4)
-local xiaolu = fk.CreateActiveSkill{
+local xiaolu = fk.CreateTriggerSkill{
   name = "ofl__xiaolu",
   attached_skill_name = "ofl__xiaolu&",
 }
@@ -3250,7 +3250,7 @@ local xiaolu_active = fk.CreateActiveSkill{
     return #selected == 0
   end,
   target_filter = function(self, to_select, selected, cards)
-    return #selected == 0 and Fk:currentRoom():getPlayerById(to_select):hasSkill(xiaolu)
+    return #selected == 0 and to_select ~= Self.id and Fk:currentRoom():getPlayerById(to_select):hasSkill(xiaolu)
   end,
   on_use = function(self, room, effect)
     local player = room:getPlayerById(effect.from)
