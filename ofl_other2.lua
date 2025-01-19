@@ -3285,24 +3285,24 @@ local xiaolu_viewas = fk.CreateActiveSkill{
   card_filter = function(self, to_select, selected, targets)
     return #selected == 0 and table.contains(Fk:currentRoom():getBanner("ofl__xiaolu"), to_select)
   end,
-  target_filter = function(self, to_select, selected, selected_cards, card, extra_data)
+  target_filter = function(self, to_select, selected, selected_cards, card, extra_data, player)
     if #selected_cards == 1 then
       local c = Fk:cloneCard(Fk:getCardById(selected_cards[1]).name)
       c.skillName = "ofl__xiaolu"
       if #selected == 0 then
-        return c.skill:modTargetFilter(to_select, {}, Self.id, c, false)
+        return c.skill:modTargetFilter(to_select, {}, player, c, false)
       elseif #selected == 1 then
-        if c.skill:modTargetFilter(selected[1], {}, Self.id, c, false) then
+        if c.skill:modTargetFilter(selected[1], {}, player, c, false) then
           return c.skill:getMinTargetNum() > 1 and c.skill:targetFilter(to_select, selected, {}, c, extra_data)
         end
       end
     end
   end,
-  feasible = function (self, selected, selected_cards)
+  feasible = function (self, selected, selected_cards, player)
     if #selected > 0 and #selected_cards == 1 then
       local card = Fk:cloneCard(Fk:getCardById(selected_cards[1]).name)
       card.skillName = "ofl__xiaolu"
-      return card.skill:feasible(selected, {}, Self, card)
+      return card.skill:feasible(selected, {}, player, card)
     end
   end,
 }

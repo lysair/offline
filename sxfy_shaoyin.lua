@@ -1086,12 +1086,12 @@ local sxfy__xiongxia = fk.CreateActiveSkill{
   card_filter = function(self, to_select, selected, selected_targets)
     return #selected < 2
   end,
-  target_filter = function(self, to_select, selected, selected_cards)
+  target_filter = function(self, to_select, selected, selected_cards, _, _, player)
     if #selected_cards == 2 then
       local card = Fk:cloneCard("duel")
       card:addSubcards(selected_cards)
       card.skillName = self.name
-      return card.skill:canUse(Self, card) and card.skill:modTargetFilter(to_select, selected, Self.id, card) and
+      return card.skill:canUse(player, card) and card.skill:modTargetFilter(to_select, selected, player, card) and
         not Self:prohibitUse(card) and not Self:isProhibited(Fk:currentRoom():getPlayerById(to_select), card)
     end
   end,

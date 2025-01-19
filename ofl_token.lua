@@ -24,12 +24,12 @@ local jingxiangGoldenAgeSkill = fk.CreateActiveSkill{
     end
     return #kingdoms
   end,
-  mod_target_filter = function(self, to_select, selected, user, card)
-    return user ~= to_select
+  mod_target_filter = function(self, to_select, selected, player, card)
+    return to_select ~= player.id
   end,
-  target_filter = function(self, to_select, selected, _, card, extra_data)
-    return Util.TargetFilter(self, to_select, selected, _, card, extra_data) and
-      self:modTargetFilter(to_select, selected, Self.id, card)
+  target_filter = function(self, to_select, selected, _, card, extra_data, player)
+    return Util.TargetFilter(self, to_select, selected, _, card, extra_data, player) and
+      self:modTargetFilter(to_select, selected, player, card)
   end,
   on_action = function(self, room, use, finished)
     if not finished then

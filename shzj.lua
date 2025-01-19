@@ -98,7 +98,7 @@ local junshen_trigger = fk.CreateTriggerSkill{
       local current_targets = TargetGroup:getRealTargets(data.tos)
       for _, p in ipairs(player.room.alive_players) do
         if not table.contains(current_targets, p.id) and not player:isProhibited(p, data.card) and
-            data.card.skill:modTargetFilter(p.id, current_targets, data.from, data.card, true) then
+            data.card.skill:modTargetFilter(p.id, current_targets, player, data.card, true) then
           return true
         end
       end
@@ -114,7 +114,7 @@ local junshen_trigger = fk.CreateTriggerSkill{
       local targets = {}
       for _, p in ipairs(room.alive_players) do
         if not table.contains(current_targets, p.id) and not player:isProhibited(p, data.card) and
-            data.card.skill:modTargetFilter(p.id, current_targets, data.from, data.card, true) then
+            data.card.skill:modTargetFilter(p.id, current_targets, player, data.card, true) then
           table.insert(targets, p.id)
         end
       end

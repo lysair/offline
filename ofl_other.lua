@@ -2348,27 +2348,13 @@ local ofl__suiluan = fk.CreateTriggerSkill{
   anim_type = "offensive",
   events = {fk.AfterCardTargetDeclared},
   can_trigger = function(self, event, target, player, data)
-    if target == player and player:hasSkill(self) and data.card.trueName == "slash" then
-      local current_targets = TargetGroup:getRealTargets(data.tos)
-      for _, p in ipairs(player.room.alive_players) do
-        if not table.contains(current_targets, p.id) and not player:isProhibited(p, data.card) and
-            data.card.skill:modTargetFilter(p.id, current_targets, data.from, data.card, true) then
-          return true
-        end
-      end
-    end
+    return target == player and player:hasSkill(self) and data.card.trueName == "slash" and
+      #player.room:getUseExtraTargets(data) > 0
   end,
   on_cost = function(self, event, target, player, data)
     local room = player.room
-    local current_targets = TargetGroup:getRealTargets(data.tos)
-    local targets = {}
-    for _, p in ipairs(room.alive_players) do
-      if not table.contains(current_targets, p.id) and not player:isProhibited(p, data.card) and
-          data.card.skill:modTargetFilter(p.id, current_targets, data.from, data.card, true) then
-        table.insert(targets, p.id)
-      end
-    end
-    local tos = room:askForChoosePlayers(player, targets, 1, 2, "#ofl__suiluan-choose:::"..data.card:toLogString(), self.name, true)
+    local tos = room:askForChoosePlayers(player, room:getUseExtraTargets(data), 1, 2,
+      "#ofl__suiluan-choose:::"..data.card:toLogString(), self.name, true)
     if #tos > 0 then
       self.cost_data = tos
       return true
@@ -3395,7 +3381,7 @@ local lieshen_trigger = fk.CreateTriggerSkill{
 
   refresh_events = {fk.RoundStart},
   can_refresh = function(self, event, target, player, data)
-    return player.room:getTag("RoundCount") == 1 and player.seat == 1
+    return player.room:getBanner("RoundCount") == 1 and player.seat == 1
   end,
   on_refresh = function(self, event, target, player, data)
     local room = player.room
