@@ -1092,7 +1092,7 @@ local sxfy__xiongxia = fk.CreateActiveSkill{
       card:addSubcards(selected_cards)
       card.skillName = self.name
       return card.skill:canUse(player, card) and card.skill:modTargetFilter(to_select, selected, player, card) and
-        not Self:prohibitUse(card) and not Self:isProhibited(Fk:currentRoom():getPlayerById(to_select), card)
+        not player:prohibitUse(card) and not player:isProhibited(Fk:currentRoom():getPlayerById(to_select), card)
     end
   end,
   on_use = function(self, room, effect)

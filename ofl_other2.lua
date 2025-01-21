@@ -3293,7 +3293,7 @@ local xiaolu_viewas = fk.CreateActiveSkill{
         return c.skill:modTargetFilter(to_select, {}, player, c, false)
       elseif #selected == 1 then
         if c.skill:modTargetFilter(selected[1], {}, player, c, false) then
-          return c.skill:getMinTargetNum() > 1 and c.skill:targetFilter(to_select, selected, {}, c, extra_data)
+          return c.skill:getMinTargetNum() > 1 and c.skill:targetFilter(to_select, selected, {}, c, extra_data, player)
         end
       end
     end

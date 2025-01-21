@@ -27,10 +27,7 @@ local jingxiangGoldenAgeSkill = fk.CreateActiveSkill{
   mod_target_filter = function(self, to_select, selected, player, card)
     return to_select ~= player.id
   end,
-  target_filter = function(self, to_select, selected, _, card, extra_data, player)
-    return Util.TargetFilter(self, to_select, selected, _, card, extra_data, player) and
-      self:modTargetFilter(to_select, selected, player, card)
-  end,
+  target_filter = Util.TargetFilter,
   on_action = function(self, room, use, finished)
     if not finished then
       local toDisplay = room:getNCards(#room.alive_players)
