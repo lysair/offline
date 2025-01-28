@@ -686,9 +686,7 @@ local luoshen = fk.CreateTriggerSkill{
         reason = self.name,
         pattern = pattern,
       }
-      room:setPlayerMark(player, "es__luoshen-tmp", color)
       room:judge(judge)
-      room:setPlayerMark(player, "es__luoshen-tmp", 0)
       if color == "" then
         color = judge.card:getColorString()
       end
@@ -704,11 +702,12 @@ local luoshen_obtain = fk.CreateTriggerSkill{
   frequency = Skill.Compulsory,
   events = {fk.FinishJudge},
   can_trigger = function(self, event, target, player, data)
-    return target == player and data.reason == "es__luoshen" and
-    data.card.color == player:getMark("es__luoshen-tmp") and player.room:getCardArea(data.card.id) == Card.Processing
+    return target == player and data.reason == luoshen.name and
+    data.card:matchPattern(data.pattern)
+    and player.room:getCardArea(data.card:getEffectiveId()) == Card.Processing
   end,
   on_use = function(self, event, target, player, data)
-    player.room:obtainCard(player, data.card, true, nil, player.id, "es__luoshen")
+    player.room:obtainCard(player, data.card, true, nil, player.id, luoshen.name)
   end,
 }
 luoshen:addRelatedSkill(luoshen_obtain)
