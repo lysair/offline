@@ -1831,7 +1831,10 @@ local hanwei = fk.CreateActiveSkill{
       return table.contains(target:getCardIds("h"), id)
     end)
     while #cards > 0 and not target.dead do
-      local use = U.askForUseRealCard(room, target, cards, nil, self.name, "#ofl__hanwei-use", {bypass_times = true}, false, true)
+      local use = room:askForUseRealCard(target, cards, self.name, "#ofl__hanwei-use", {
+        bypass_times = true,
+        extraUse = true,
+      }, true, true)
       if use then
         table.removeOne(cards, use.card.id)
       else
@@ -2116,17 +2119,16 @@ local zhengan = fk.CreateTriggerSkill{
     for _, id in ipairs(self.cost_data.tos) do
       local p = room:getPlayerById(id)
       if not p.dead then
-      local use = U.askForUseRealCard(room, p, cards, nil, self.name, "#ofl__zhengan-use",
-        {
+      local use = room:askForUseRealCard(p, cards, self.name, "#ofl__zhengan-use", {
           expand_pile = cards,
           bypass_times = true,
-          extraUse = true
         }, true, true)
         if use then
           use = {
             card = Fk:cloneCard(use.card.name),
             from = p.id,
             tos = use.tos,
+            extraUse = true,
           }
           use.card.skillName = self.name
           room:useCard(use)

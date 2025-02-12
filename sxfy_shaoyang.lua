@@ -1053,7 +1053,10 @@ local mingjian = fk.CreateActiveSkill{
     if not table.contains(player:getCardIds("he"), id) then return end
     room:moveCardTo(effect.cards, Card.PlayerHand, target, fk.ReasonGive, self.name, nil, true, player.id)
     if not target.dead and table.contains(target:getCardIds("he"), id) then
-      U.askForUseRealCard(room, target, {id}, nil, self.name, "#sxfy__mingjian-use", {extraUse = true}, false, true)
+      room:askForUseRealCard(target, {id}, self.name, "#sxfy__mingjian-use", {
+        bypass_times = true,
+        extraUse = true,
+      })
     end
   end,
 }

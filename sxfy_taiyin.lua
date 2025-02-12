@@ -1090,8 +1090,12 @@ local sxfy__zhuikong = fk.CreateTriggerSkill{
         card = pindian.fromCard:getEffectiveId()
       end
       if not table.contains(room.discard_pile, card) then return end
-      U.askForUseRealCard(room, winner, {card}, ".", self.name,
-        "#sxfy__zhuikong-use:::"..Fk:getCardById(card):toLogString(), {extraUse = true, expand_pile = {card}})
+      room:askForUseRealCard(winner, {card}, self.name,
+        "#sxfy__zhuikong-use:::"..Fk:getCardById(card):toLogString(), {
+          expand_pile = {card},
+          bypass_times = true,
+          extraUse = true,
+        })
     end
   end
 }

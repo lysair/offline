@@ -1970,8 +1970,8 @@ Fk:loadTranslationTable{
   ["illustrator:ofl_shiji__zhangwen"] = "zoo",
 
   ["ofl_shiji__songshu"] = "颂蜀",
-  [":ofl_shiji__songshu"] = "一名角色出牌阶段开始时，你可以将一张牌置入“仁”区，然后若“仁”区牌数不小于其手牌数，你令其本回合只能"..
-  "使用或打出“仁”区牌。",
+  [":ofl_shiji__songshu"] = "一名角色出牌阶段开始时，你可以将一张牌置入<a href='RenPile_href'>“仁”区</a>，然后若“仁”区牌数不小于其手牌数，"..
+  "你令其本回合只能使用或打出“仁”区牌。",
   ["#ofl_shiji__songshu-put"] = "颂蜀：你可以将一张牌置入仁区，然后若仁区牌数不小于 %dest 手牌数，其本回合只能使用打出仁区牌",
   ["@@ofl_shiji__songshu-turn"] = "颂蜀",
   ["#ofl_shiji__songshu_filter"] = "颂蜀",
@@ -2177,8 +2177,12 @@ local ofl_shiji__yinge = fk.CreateActiveSkill{
     U.AddToRenPile(room, card, self.name, target.id)
     local cards = U.GetRenPile(room)
     if target.dead or #cards == 0 then return end
-    local use = U.askForUseRealCard(room, target, cards, nil, self.name,
-      "#ofl_shiji__yinge-use:"..player.id, {bypass_times = true, expand_pile = cards, extraUse = true}, true, true)
+    local use = room:askForUseRealCard(target, cards, self.name,
+      "#ofl_shiji__yinge-use:"..player.id, {
+        bypass_times = true,
+        expand_pile = cards,
+        extraUse = true,
+      }, true, true)
     if use then
       if use.card.is_damage_card and not use.card.multiple_targets and
         table.contains(room:getUseExtraTargets(use, true), player.id) then
@@ -2267,15 +2271,14 @@ Fk:loadTranslationTable{
   ["illustrator:ofl_shiji__liuzhang"] = "",
 
   ["ofl_shiji__yinge"] = "引戈",
-  [":ofl_shiji__yinge"] = "出牌阶段限一次，你可以令一名其他角色将一张手牌置入“仁”区，然后其可以使用一张“仁”区牌，若此牌为伤害类牌，"..
-  "额外指定你为目标。"..
-  "<br/><font color='grey'>#\"<b>仁区</b>\"<br/>"..
-  "仁区是一个存于场上，用于存放牌的公共区域。仁区中的牌上限为6张，当仁区中的牌超过6张时，最先置入仁区中的牌将置入弃牌堆。",
+  [":ofl_shiji__yinge"] = "出牌阶段限一次，你可以令一名其他角色将一张手牌置入<a href='RenPile_href'>“仁”区</a>，然后其可以使用一张“仁”区牌，"..
+  "若此牌为伤害类牌，额外指定你为目标。",
   ["ofl_shiji__shiren"] = "施仁",
-  [":ofl_shiji__shiren"] = "当你成为其他角色使用伤害类牌的目标后，你可以选择一项：1.将牌堆顶两张牌置入“仁”区，然后你获得一张“仁”区牌；"..
-  "2.摸两张牌，然后将一张手牌置入“仁”区。",
+  [":ofl_shiji__shiren"] = "当你成为其他角色使用伤害类牌的目标后，你可以选择一项：1.将牌堆顶两张牌置入<a href='RenPile_href'>“仁”区</a>，"..
+  "然后你获得一张“仁”区牌；2.摸两张牌，然后将一张手牌置入“仁”区。",
   ["ofl_shiji__jvyi"] = "据益",
-  [":ofl_shiji__jvyi"] = "主公技，其他群势力角色弃牌阶段开始时，其可以将一张手牌置入“仁”区，然后若“仁”区溢出，你获得因此溢出的牌。",
+  [":ofl_shiji__jvyi"] = "主公技，其他群势力角色弃牌阶段开始时，其可以将一张手牌置入<a href='RenPile_href'>“仁”区</a>，然后若“仁”区溢出，"..
+  "你获得因此溢出的牌。",
   ["#ofl_shiji__yinge"] = "引戈：令一名角色将一张手牌置入仁区，然后其可以使用一张仁区牌，若为伤害牌则额外指定你为目标",
   ["#ofl_shiji__yinge-card"] = "引戈：请将一张手牌置入仁区，然后你可以使用一张仁区牌",
   ["#ofl_shiji__yinge-use"] = "引戈：你可以使用一张仁区牌，若为伤害牌，额外指定 %src 为目标",

@@ -2197,8 +2197,10 @@ local ofl__yanmouz = fk.CreateTriggerSkill{
     if self.cost_data[2] == 1 then
       return room:askForSkillInvoke(player, self.name, nil, "#ofl__yanmouz-invoke")
     else
-      local use = U.askForUseRealCard(room, player, self.cost_data[1], ".", self.name, "#ofl__yanmouz-use",
-      { bypass_times = true, extraUse = true }, true)
+      local use = room:askForUseRealCard(player, self.cost_data[1], self.name, "#ofl__yanmouz-use", {
+        bypass_times = true,
+        extraUse = true,
+      }, true)
       if use then
         self.cost_data = {use, 2}
         return true
@@ -2225,9 +2227,7 @@ local ofl__zhanyan = fk.CreateActiveSkill{
   anim_type = "offensive",
   card_num = 0,
   target_num = 0,
-  prompt = function(self, card)
-    return "#ofl__zhanyan-active"
-  end,
+  prompt = "#ofl__zhanyan-active",
   can_use = function(self, player)
     return player:usedSkillTimes(self.name, Player.HistoryPhase) == 0 and
       table.find(Fk:currentRoom().alive_players, function(p) return player:inMyAttackRange(p) end)

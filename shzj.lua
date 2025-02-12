@@ -676,9 +676,11 @@ local yilin = fk.CreateTriggerSkill{
     end
     cards = U.moveCardsHoldingAreaCheck(room, cards)
     if #cards > 0 then
-      local use = U.askForUseRealCard(room, target, cards, nil, self.name, "#yilin-use", {bypass_times = true}, true)
+      local use = room:askForUseRealCard(target, cards, self.name, "#yilin-use", {
+        bypass_times = true,
+        extraUse = true,
+      }, true, true)
       if use then
-        use.extraUse = true
         room:useCard(use)
       end
     end
@@ -1876,11 +1878,16 @@ local bianzhua = fk.CreateTriggerSkill{
     end
   end,
   on_cost = function (self, event, target, player, data)
+    local room = player.room
     if event == fk.TargetConfirmed then
-      return player.room:askForSkillInvoke(player, self.name, nil, "#bianzhua-invoke:::"..data.card:toLogString())
+      return room:askForSkillInvoke(player, self.name, nil, "#bianzhua-invoke:::"..data.card:toLogString())
     else
-      local use = U.askForUseRealCard(player.room, player, {player:getPile("$fanjiangzhangda_yuan")[1]}, nil, self.name,
-        "#bianzhua-use", {bypass_times = true, expand_pile = "$fanjiangzhangda_yuan"}, true, true)
+      local use = room:askForUseRealCard(player, {player:getPile("$fanjiangzhangda_yuan")[1]}, self.name,
+        "#bianzhua-use", {
+          bypass_times = true,
+          extraUse = true,
+          expand_pile = "$fanjiangzhangda_yuan",
+        }, true, true)
       if use then
         self.cost_data = use
         return true
@@ -1896,8 +1903,11 @@ local bianzhua = fk.CreateTriggerSkill{
       local use = self.cost_data
       room:useCard(use)
       while not player.dead and #player:getPile("$fanjiangzhangda_yuan") > 0 do
-        use = U.askForUseRealCard(player.room, player, {player:getPile("$fanjiangzhangda_yuan")[1]}, nil, self.name,
-          "#bianzhua-use", {bypass_times = true, expand_pile = "$fanjiangzhangda_yuan"}, true, true)
+        use = room:askForUseRealCard(player, {player:getPile("$fanjiangzhangda_yuan")[1]}, self.name,
+          "#bianzhua-use", {
+            bypass_times = true,
+            expand_pile = "$fanjiangzhangda_yuan",
+          }, true, true)
         if use then
           room:useCard(use)
         else
@@ -2827,11 +2837,13 @@ local chende = fk.CreateActiveSkill{
     cards = table.filter(player:getMark(self.name), function (id)
       return table.find(effect.cards, function (c)
         return Fk:getCardById(c).name == Fk:getCardById(id).name
-      end)
+      end) ~= nil
     end)
     if #cards > 0 then
-      local use = U.askForUseRealCard(room, player, cards, nil, self.name,
-        "#chende-use", {expand_pile = cards, bypass_times = true}, true, false)
+      local use = room:askForUseRealCard(player, cards, self.name, "#chende-use", {
+        expand_pile = cards,
+        bypass_times = true,
+      }, true, true)
       if use then
         local card = Fk:cloneCard(use.card.name)
         card.skillName = self.name
