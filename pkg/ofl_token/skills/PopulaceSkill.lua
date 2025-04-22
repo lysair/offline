@@ -11,7 +11,7 @@ Fk:loadTranslationTable{
 populaceSkill:addEffect(fk.Damaged, {
   attached_equip = "weapon1__populace",
   frequency = Skill.Compulsory,
-  can_trigger = function(self, event, target, player)
+  can_trigger = function(self, event, target, player, data)
     if target == player then
       for _, id in ipairs(player:getCardIds("e")) do
         if Fk:getCardById(id).trueName == "populace" then
@@ -20,7 +20,7 @@ populaceSkill:addEffect(fk.Damaged, {
       end
     end
   end,
-  on_use = function(self, event, target, player)
+  on_use = function(self, event, target, player, data)
     local room = player.room
     for _, id in ipairs(player:getCardIds("e")) do
       if player.dead then return end

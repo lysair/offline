@@ -1,5 +1,5 @@
 local luoshen = fk.CreateSkill {
-  name = "es__luoshen"
+  name = "es__luoshen",
 }
 
 Fk:loadTranslationTable{
@@ -8,10 +8,10 @@ Fk:loadTranslationTable{
 }
 
 luoshen:addEffect(fk.EventPhaseStart, {
-  can_trigger = function(self, event, target, player)
+  can_trigger = function(self, event, target, player, data)
     return target == player and player:hasSkill(luoshen.name) and player.phase == Player.Start
   end,
-  on_use = function(self, event, target, player)
+  on_use = function(self, event, target, player, data)
     local room = player.room
     local color = ""
     local pattern = ".|.|."

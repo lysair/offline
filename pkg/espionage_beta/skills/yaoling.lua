@@ -1,5 +1,5 @@
 local yaoling = fk.CreateSkill {
-  name = "yaoling"
+  name = "yaoling",
 }
 
 Fk:loadTranslationTable{
@@ -11,10 +11,10 @@ Fk:loadTranslationTable{
 }
 
 yaoling:addEffect(fk.EventPhaseEnd, {
-  can_trigger = function(self, event, target, player)
+  can_trigger = function(self, event, target, player, data)
     return target == player and player:hasSkill(yaoling.name) and player.phase == Player.Play
   end,
-  on_cost = function(self, event, target, player)
+  on_cost = function(self, event, target, player, data)
     local to = player.room:askToChoosePlayers(player, {
       targets = table.map(player.room:getOtherPlayers(player, false), Util.IdMapper),
       min_num = 1,
@@ -28,7 +28,7 @@ yaoling:addEffect(fk.EventPhaseEnd, {
       return true
     end
   end,
-  on_use = function(self, event, target, player)
+  on_use = function(self, event, target, player, data)
     local room = player.room
     room:changeMaxHp(player, -1)
     local to = room:getPlayerById(event:getCostData(self))

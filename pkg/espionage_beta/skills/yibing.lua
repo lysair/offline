@@ -1,5 +1,5 @@
 local yibing = fk.CreateSkill {
-  name = "yibing"
+  name = "yibing",
 }
 
 Fk:loadTranslationTable{
@@ -10,7 +10,7 @@ Fk:loadTranslationTable{
 
 yibing:addEffect(fk.AfterCardsMove, {
   anim_type = "offensive",
-  can_trigger = function(self, event, target, player)
+  can_trigger = function(self, event, target, player, data)
     if player:hasSkill(yibing.name) and player:getMark(yibing.name) == 0 then
       for _, move in ipairs(target.data) do
         if move.to == player.id and move.toArea == Player.Hand and player.phase ~= Player.Draw then
@@ -23,7 +23,7 @@ yibing:addEffect(fk.AfterCardsMove, {
       end
     end
   end,
-  on_trigger = function(self, event, target, player)
+  on_trigger = function(self, event, target, player, data)
     local cards = {}
     for _, move in ipairs(target.data) do
       if move.to == player.id and move.toArea == Player.Hand then
@@ -36,7 +36,7 @@ yibing:addEffect(fk.AfterCardsMove, {
     end
     self:doCost(event, nil, player, cards)
   end,
-  on_cost = function(self, event, target, player)
+  on_cost = function(self, event, target, player, data)
     local use = player.room:askToUseRealCard(player, {
       pattern = "slash",
       skill_name = yibing.name,
@@ -49,7 +49,7 @@ yibing:addEffect(fk.AfterCardsMove, {
       return true
     end
   end,
-  on_use = function(self, event, target, player)
+  on_use = function(self, event, target, player, data)
     local room = player.room
     room:setPlayerMark(player, yibing.name, 1)
     local use = event:getCostData(self)
@@ -57,10 +57,10 @@ yibing:addEffect(fk.AfterCardsMove, {
     use.extra_data.yibing_user = player.id
     player.room:useCard(use)
   end,
-  can_refresh = function (self, event, target, player)
+  can_refresh = function (self, event, target, player, data)
     return target.data.extra_data and target.data.extra_data.yibing_user == player.id
   end,
-  on_refresh = function (self, event, target, player)
+  on_refresh = function (self, event, target, player, data)
     player.room:setPlayerMark(player, yibing.name, 0)
   end,
 })

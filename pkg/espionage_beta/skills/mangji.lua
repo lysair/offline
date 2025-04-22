@@ -1,5 +1,5 @@
 local mangji = fk.CreateSkill {
-  name = "mangji"
+  name = "mangji",
 }
 
 Fk:loadTranslationTable{
@@ -9,7 +9,7 @@ Fk:loadTranslationTable{
 }
 
 mangji:addEffect({fk.HpChanged, fk.AfterCardsMove}, {
-  can_trigger = function(self, event, target, player)
+  can_trigger = function(self, event, target, player, data)
     if player:hasSkill(mangji.name) and player.hp > 0 then
       if event == fk.HpChanged then
         return target == player
@@ -29,7 +29,7 @@ mangji:addEffect({fk.HpChanged, fk.AfterCardsMove}, {
     end
     return false
   end,
-  on_use = function(self, event, target, player)
+  on_use = function(self, event, target, player, data)
     local room = player.room
     if not player:isKongcheng() then
       room:askToDiscard(player, {

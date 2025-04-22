@@ -1,43 +1,44 @@
 local yicong = fk.CreateSkill {
-  name = "bgm__yicong"
+  name = "bgm__yicong",
 }
 
 Fk:loadTranslationTable{
-  ['bgm__yicong'] = '义从',
-  ['bgm_follower'] = '扈',
-  ['#bgm__yicong-cost'] = '义从：你可以将至少一张牌置于武将牌上称为“扈”',
-  [':bgm__yicong'] = '弃牌阶段结束时，你可以将至少一张牌置于武将牌上，称为“扈”。其他角色与你的距离+X。（X为“扈”的数量）',
+  ["bgm__yicong"] = "义从",
+  [":bgm__yicong"] = "弃牌阶段结束时，你可以将任意张牌置于武将牌上，称为“扈”。其他角色与你的距离+X。（X为“扈”的数量）",
+
+  ["bgm_follower"] = "扈",
+  ["#bgm__yicong-invoke"] = "义从：你可以将任意张牌置为“扈”，其他角色与你距离增加“扈”的数量",
 }
 
 yicong:addEffect(fk.EventPhaseEnd, {
+  anim_type = "control",
   derived_piles = "bgm_follower",
-  can_trigger = function(self, event, target, player)
-    return player:hasSkill(yicong) and target == player and player.phase == Player.Discard and not player:isNude()
+  can_trigger = function(self, event, target, player, data)
+    return target == player and player:hasSkill(yicong.name) and player.phase == Player.Discard and
+      not player:isNude()
   end,
-  on_cost = function (skill, event, target, player)
+  on_cost = function (self, event, target, player, data)
     local cards = player.room:askToCards(player, {
       min_num = 1,
-      max_num = 9999,
+      max_num = 999,
       include_equip = true,
       skill_name = yicong.name,
       cancelable = true,
-      prompt = "#bgm__yicong-cost",
+      prompt = "#bgm__yicong-invoke",
     })
     if #cards > 0 then
-      event:setCostData(skill, cards)
+      event:setCostData(self, {cards = cards})
       return true
     end
   end,
-  on_use = function(self, event, target, player)
-    local cost_data = event:getCostData(skill)
-    player:addToPile("bgm_follower", cost_data, true, yicong.name)
+  on_use = function(self, event, target, player, data)
+    player:addToPile("bgm_follower", event:getCostData(self).cards, true, yicong.name)
   end,
 })
 
-yicong:addEffect('distance', {
-  name = "#bgm__yicong_distance",
+yicong:addEffect("distance", {
   correct_func = function(self, from, to)
-    if to:hasSkill(yicong) then
+    if to:hasSkill(yicong.name) then
       return #to:getPile("bgm_follower")
     end
   end,

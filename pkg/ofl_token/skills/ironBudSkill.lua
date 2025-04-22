@@ -10,16 +10,16 @@ Fk:loadTranslationTable{
 
 ironBudSkill:addEffect(fk.EventPhaseStart, {
   attached_equip = "iron_bud",
-  can_trigger = function(self, event, target, player)
+  can_trigger = function(self, event, target, player, data)
     return target == player and player:hasSkill(ironBudSkill.name) and player.phase == Player.Start and player.hp ~= 2
   end,
-  on_cost = function(self, event, target, player)
+  on_cost = function(self, event, target, player, data)
     return player.room:askToSkillInvoke(player, {
       skill_name = ironBudSkill.name,
       prompt = "#iron_bud_skill-invoke:::" .. player.hp
     })
   end,
-  on_use = function(self, event, target, player)
+  on_use = function(self, event, target, player, data)
     player.room:setPlayerMark(player, "iron_bud-turn", player.hp)
   end
 })

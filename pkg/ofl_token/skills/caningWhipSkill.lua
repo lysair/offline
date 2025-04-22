@@ -12,7 +12,7 @@ Fk:loadTranslationTable{
 caningWhipSkill:addEffect(fk.EventPhaseStart, {
   attached_equip = "caning_whip",
   frequency = Skill.Compulsory,
-  can_trigger = function(self, event, target, player)
+  can_trigger = function(self, event, target, player, data)
     if target == player then
       if player:hasSkill(caningWhipSkill) and player.phase == Player.Play and #player.room.alive_players > 1 then
         return table.find(player.room.alive_players, function (p)
@@ -21,7 +21,7 @@ caningWhipSkill:addEffect(fk.EventPhaseStart, {
       end
     end
   end,
-  on_use = function(self, event, target, player)
+  on_use = function(self, event, target, player, data)
     local room = player.room
     if event == fk.EventPhaseStart then
       local tos = {}
@@ -47,7 +47,7 @@ caningWhipSkill:addEffect(fk.EventPhaseStart, {
 caningWhipSkill:addEffect(fk.EventPhaseEnd, {
   attached_equip = "caning_whip",
   frequency = Skill.Compulsory,
-  can_trigger = function(self, event, target, player)
+  can_trigger = function(self, event, target, player, data)
     if target == player then
       if player.phase == Player.Finish and player:getMark("caning_whip-turn") ~= 0 then
         local room = player.room
@@ -78,7 +78,7 @@ caningWhipSkill:addEffect(fk.EventPhaseEnd, {
       end
     end
   end,
-  on_use = function(self, event, target, player)
+  on_use = function(self, event, target, player, data)
     local room = player.room
     if event == fk.EventPhaseEnd then
       room:notifySkillInvoked(player, caningWhipSkill.name, "negative")
@@ -94,7 +94,7 @@ caningWhipSkill:addEffect(fk.EventPhaseEnd, {
 
 caningWhipSkill:addEffect('atkrange', {
   frequency = Skill.Compulsory,
-  correct_func = function (skill, from)
+  correct_func = function (self, from)
     if from:hasSkill(caningWhipSkill) then
       return #table.filter(from:getCardIds("e"), function (id)
         return Fk:getCardById(id).name == "caning_whip"
