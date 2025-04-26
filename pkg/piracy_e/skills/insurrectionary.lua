@@ -21,7 +21,6 @@ local U = require "packages/offline/pkg/piracy_e/insurrectionary_util"
 
 insurrectionary:addEffect(fk.TurnEnd, {
   anim_type = "negative",
-  frequency = Skill.Compulsory,
   can_trigger = function(self, event, target, player, data)
     return target == player and U.isInsurrectionary(player) and not player.dead and
       #player.room.logic:getEventsOfScope(GameEvent.UseCard, 1, function(e)

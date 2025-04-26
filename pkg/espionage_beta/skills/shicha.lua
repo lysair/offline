@@ -30,5 +30,3 @@ shicha:addEffect('maxcards', {
 })
 
 return shicha
-  ```
-

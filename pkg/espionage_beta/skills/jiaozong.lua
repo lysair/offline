@@ -1,14 +1,14 @@
 local jiaozong = fk.CreateSkill {
-  name = "jiaozong"
+  name = "jiaozong",
+  tags = { Skill.Compulsory },
 }
 
 Fk:loadTranslationTable{
-  ['jiaozong'] = '骄纵',
-  [':jiaozong'] = '锁定技，其他角色于其出牌阶段使用的第一张红色牌目标须为你，且无距离限制。',
+  ["jiaozong"] = "骄纵",
+  [":jiaozong"] = "锁定技，其他角色于其出牌阶段使用的第一张红色牌目标须为你，且无距离限制。",
 }
 
-jiaozong:addEffect('prohibit', {
-  frequency = Skill.Compulsory,
+jiaozong:addEffect("prohibit", {
   is_prohibited = function(self, from, to, card)
     if from.phase == Player.Play and card.color == Card.Red and from:getMark("jiaozong-phase") == 0 then
       return table.find(Fk:currentRoom().alive_players, function(p)
@@ -33,7 +33,7 @@ jiaozong:addEffect(fk.AfterCardUseDeclared, {
   end,
 })
 
-jiaozong:addEffect('targetmod', {
+jiaozong:addEffect("targetmod", {
   bypass_distances = function(self, player, skill_name, card, to)
     return to:hasSkill(jiaozong.name) and player.phase == Player.Play and player:getMark("jiaozong-phase") == 0 and
       card and card.color == Card.Red

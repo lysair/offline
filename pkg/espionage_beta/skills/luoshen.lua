@@ -38,9 +38,8 @@ luoshen:addEffect(fk.EventPhaseStart, {
 })
 
 luoshen:addEffect(fk.FinishJudge, {
-  name = "#es__luoshen_obtain",
   mute = true,
-  frequency = Skill.Compulsory,
+  is_delay_effect = true,
   can_trigger = function(self, event, target, player, data)
     return target == player and data.reason == luoshen.name
       and data.card:matchPattern(data.pattern)

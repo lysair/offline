@@ -1,11 +1,11 @@
 local yuhuo = fk.CreateSkill {
-  name = "ofl__yuhuo",
+  name = "ofl__yuhuop",
   tags = { Skill.Compulsory },
 }
 
 Fk:loadTranslationTable{
-  ["ofl__yuhuo"] = "浴火",
-  [":ofl__yuhuo"] = "锁定技，处于连环状态的其他角色受到的属性伤害+1，非属性伤害-1。",
+  ["ofl__yuhuop"] = "浴火",
+  [":ofl__yuhuop"] = "锁定技，处于连环状态的其他角色受到的属性伤害+1，非属性伤害-1。",
 }
 
 yuhuo:addEffect(fk.DamageInflicted, {

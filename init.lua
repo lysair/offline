@@ -9,7 +9,7 @@ local piracy_s = require "packages/offline/pkg/piracy_s"
 local assassins = require "packages/offline/pkg/assassins"
 local bgmdiy = require "packages/offline/pkg/bgmdiy"
 
---local ofl_token = require "packages/offline/pkg/ofl_token"
+local ofl_token = require "packages/offline/pkg/ofl_token"
 
 Fk:loadTranslationTable{
   ["offline"] = "线下",
@@ -30,5 +30,5 @@ return {
   assassins,
   bgmdiy,
 
-  --ofl_token,
+  ofl_token,
 }

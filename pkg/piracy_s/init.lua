@@ -54,7 +54,7 @@ Fk:loadTranslationTable{
 --官盗S2武将传贾诩S2079
 
 --官盗S7幽燕烽火：曹叡 司马懿 公孙渊 公孙瓒 袁绍 文丑
-General:new(extension, "ofl__caorui", "wei", 3):addSkills { "huituo", "ofl__mingjian", "xingshuai" }
+General:new(extension, "ofl__caorui", "wei", 3):addSkills { "ofl__huituo", "ofl__mingjian", "xingshuai" }
 Fk:loadTranslationTable{
   ["ofl__caorui"] = "曹叡",
   ["#ofl__caorui"] = "魏明帝",
@@ -148,7 +148,7 @@ Fk:loadTranslationTable{
 
 local pangtong = General:new(extension, "ofl__pangtong", "wei", 3)
 pangtong.subkingdom = "wu"
-pangtong:addSkills { "ofl__lianhuan", "ofl__suozhou", "ofl__yuhuo" }
+pangtong:addSkills { "ofl__lianhuan", "ofl__suozhou", "ofl__yuhuop" }
 Fk:loadTranslationTable{
   ["ofl__pangtong"] = "庞统",
   ["#ofl__pangtong"] = "铁索连舟",

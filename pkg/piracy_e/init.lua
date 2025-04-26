@@ -79,6 +79,8 @@ Fk:loadTranslationTable{
   ["~ofl__sunchen"] = "愿陛下念臣昔日之功，陛下？陛下！！",
 }
 
+--官盗E0051 尊享版2023：曹丕 杜畿 夏侯玄 李严 关银屏 马云騄 黄权 周泰 范疆张达
+
 --官盗E14至宝：周姬
 General:new(extension, "zhouji", "wu", 3, 3, General.Female):addSkills { "ofl__yanmouz", "ofl__zhanyan", "ofl__yuhuo" }
 Fk:loadTranslationTable{
@@ -205,8 +207,221 @@ Fk:loadTranslationTable{
 }
 
 --官盗E5002：风云志·汉末风云
+General:new(extension, "ofl__godzhangjiao", "god", 4):addSkills { "ofl__mingdao", "ofl__zhongfu", "ofl__dangjing", "ofl__sanshou" }
+Fk:loadTranslationTable{
+  ["ofl__godzhangjiao"] = "神张角",
+  ["#ofl__godzhangjiao"] = "庇佑万千",
+  ["illustrator:ofl__godzhangjiao"] = "鬼画府",
+}
+
+local godzhangbao = General:new(extension, "ofl__godzhangbao", "god", 4)
+godzhangbao.hidden = true
+godzhangbao:addSkills { "ofl__zhouyuan", "ofl__zhaobing", "ofl__sanshou" }
+Fk:loadTranslationTable{
+  ["ofl__godzhangbao"] = "神张宝",
+  ["#ofl__godzhangbao"] = "庇佑万千",
+  ["illustrator:ofl__godzhangbao"] = "NOVART",
+
+  ["~ofl__godzhangbao"] = "这咒不管用了吗……？",
+}
+
+local godzhangliang = General:new(extension, "ofl__godzhangliang", "god", 4)
+godzhangliang.hidden = true
+godzhangliang:addSkills { "ofl__jijun", "ofl__fangtong", "ofl__sanshou" }
+Fk:loadTranslationTable{
+  ["ofl__godzhangliang"] = "神张梁",
+  ["#ofl__godzhangliang"] = "庇佑万千",
+  ["illustrator:ofl__godzhangliang"] = "王强",
+
+  ["~ofl__godzhangliang"] = "黄天之道，哥哥我们错了吗？",
+}
+
+General:new(extension, "yanzhengh", "qun", 4):addSkills { "ofl__dishi", "ofl__xianxiang" }
+Fk:loadTranslationTable{
+  ["yanzhengh"] = "严政",
+  ["#yanzhengh"] = "献首投降",
+  ["illustrator:yanzhengh"] = "Xiaoi",
+}
+
+General:new(extension, "bairao", "qun", 5):addSkills { "ofl__huoyin" }
+Fk:loadTranslationTable{
+  ["bairao"] = "白绕",
+  ["#bairao"] = "黑山寇首",
+  ["illustrator:bairao"] = "君桓文化",
+}
+
+General:new(extension, "busi", "qun", 4, 6):addSkills { "ofl__weiluan", "ofl__tianpan", "ofl__gaiming" }
+Fk:loadTranslationTable{
+  ["busi"] = "卜巳",
+  ["#busi"] = "黄巾渠帅",
+  ["illustrator:busi"] = "千秋秋千秋",
+}
+
+local suigu = General:new(extension, "suigu", "qun", 5)
+suigu:addSkills { "ofl__tunquan", "ofl__qianjun" }
+suigu:addRelatedSkill("luanji")
+Fk:loadTranslationTable{
+  ["suigu"] = "眭固",
+  ["#suigu"] = "兔入犬城",
+  ["illustrator:suigu"] = "君桓文化",
+}
+
+General:new(extension, "heman", "qun", 5, 6):addSkills { "ofl__juedian", "ofl__nitian" }
+Fk:loadTranslationTable{
+  ["heman"] = "何曼",
+  ["#heman"] = "截天夜叉",
+  ["illustrator:heman"] = "千秋秋千秋",
+}
+
+General:new(extension, "yudu", "qun", 4):addSkills { "ofl__dafu", "ofl__jipin" }
+Fk:loadTranslationTable{
+  ["yudu"] = "于毒",
+  ["#yudu"] = "劫富济贫",
+  ["illustrator:yudu"] = "MUMU1",
+}
+
+General:new(extension, "tangzhou", "qun", 4):addSkills { "ofl__jukou", "ofl__shupan" }
+Fk:loadTranslationTable{
+  ["tangzhou"] = "唐周",
+  ["#tangzhou"] = "叛门高足",
+  ["illustrator:tangzhou"] = "sky",
+}
+
+General:new(extension, "bocai", "qun", 5):addSkills { "ofl__kunjun", "ofl__yingzhan", "ofl__cuiji" }
+Fk:loadTranslationTable{
+  ["bocai"] = "波才",
+  ["#bocai"] = "黄巾执首",
+  ["illustrator:bocai"] = "HOOO",
+}
+
+General:new(extension, "chengyuanzhi", "qun", 5):addSkills { "ofl__wuxiao", "ofl__qianhu" }
+Fk:loadTranslationTable{
+  ["chengyuanzhi"] = "程远志",
+  ["#chengyuanzhi"] = "逆流而动",
+  ["illustrator:chengyuanzhi"] = "HOOO",
+}
+
+General:new(extension, "dengmao", "qun", 5):addSkills { "ofl__paoxi", "ofl__houying" }
+Fk:loadTranslationTable{
+  ["dengmao"] = "邓茂",
+  ["#dengmao"] = "逆势而行",
+  ["illustrator:dengmao"] = "HOOO",
+}
+
+General:new(extension, "gaosheng", "qun", 5):addSkills { "ofl__xiongshi", "ofl__difeng" }
+Fk:loadTranslationTable{
+  ["gaosheng"] = "高升",
+  ["#gaosheng"] = "地公之锋",
+  ["illustrator:gaosheng"] = "livsinno",
+}
+
+General:new(extension, "fuyun", "qun", 4):addSkills { "ofl__suiqu", "ofl__yure" }
+Fk:loadTranslationTable{
+  ["fuyun"] = "浮云",
+  ["#fuyun"] = "黄天末代",
+  ["illustrator:fuyun"] = "苍月白龙",
+}
+
+General:new(extension, "taosheng", "qun", 5):addSkills { "ofl__zainei", "ofl__hanwei" }
+Fk:loadTranslationTable{
+  ["taosheng"] = "陶升",
+  ["#taosheng"] = "平汉将军",
+  ["illustrator:taosheng"] = "佚名",
+}
+
+General:new(extension, "godhuangfusong", "god", 4):addSkills { "ofl__shice", "ofl__podai" }
+Fk:loadTranslationTable{
+  ["godhuangfusong"] = "神皇甫嵩",
+  ["#godhuangfusong"] = "厥功至伟",
+  ["illustrator:godhuangfusong"] = "王宁",
+}
+
+General:new(extension, "godluzhi", "god", 4):addSkills { "ofl__zhengan", "ofl__weizhu", "ofl__zequan" }
+Fk:loadTranslationTable{
+  ["godluzhi"] = "神卢植",
+  ["#godluzhi"] = "鏖战广宗",
+  ["illustrator:godluzhi"] = "聚一_L.M.YANG",
+}
+
+General:new(extension, "godzhujun", "god", 4):addSkills { "ofl__cheji", "ofl__jicui", "ofl__kuixiang" }
+Fk:loadTranslationTable{
+  ["godzhujun"] = "神朱儁",
+  ["#godzhujun"] = "围师必阙",
+  ["illustrator:godzhujun"] = "鱼仔",
+}
 
 --官盗E10：蛇年限定礼盒
+General:new(extension, "ofl__zhangrang", "qun", 4):addSkills { "ofl__taoluan", "changshi" }
+Fk:loadTranslationTable{
+  ["ofl__zhangrang"] = "张让",
+  ["#ofl__zhangrang"] = "妄尊帝父",
+  ["illustrator:ofl__zhangrang"] = "凡果",
+}
+
+General:new(extension, "ofl__zhaozhong", "qun", 4):addSkills { "ofl__chiyan", "changshi" }
+Fk:loadTranslationTable{
+  ["ofl__zhaozhong"] = "赵忠",
+  ["#ofl__zhaozhong"] = "宦刑啄心",
+  ["illustrator:ofl__zhaozhong"] = "凡果",
+}
+
+General:new(extension, "ofl__sunzhang", "qun", 4):addSkills { "ofl__zimou", "changshi" }
+Fk:loadTranslationTable{
+  ["ofl__sunzhang"] = "孙璋",
+  ["#ofl__sunzhang"] = "唯利是从",
+  ["illustrator:ofl__sunzhang"] = "鬼画府",
+}
+
+General:new(extension, "ofl__bilan", "qun", 4):addSkills { "ofl__picai", "changshi" }
+Fk:loadTranslationTable{
+  ["ofl__bilan"] = "毕岚",
+  ["#ofl__bilan"] = "糜财广筑",
+  ["illustrator:ofl__bilan"] = "鬼画府",
+}
+
+General:new(extension, "ofl__xiayun", "qun", 4):addSkills { "ofl__yaozhuo", "changshi" }
+Fk:loadTranslationTable{
+  ["ofl__xiayun"] = "夏恽",
+  ["#ofl__xiayun"] = "言蔽朝尊",
+  ["illustrator:ofl__xiayun"] = "铁杵文化",
+}
+
+local lisong = General:new(extension, "ofl__lisong", "qun", 4)
+lisong:addSkills { "ofl__kuiji", "changshi" }
+lisong:addRelatedSkill("chouhai")
+Fk:loadTranslationTable{
+  ["ofl__lisong"] = "栗嵩",
+  ["#ofl__lisong"] = "道察衕异",
+  ["illustrator:ofl__lisong"] = "铁杵文化",
+}
+
+General:new(extension, "ofl__duangui", "qun", 4):addSkills { "ofl__chihe", "changshi" }
+Fk:loadTranslationTable{
+  ["ofl__duangui"] = "段珪",
+  ["#ofl__duangui"] = "断途避圣",
+  ["illustrator:ofl__duangui"] = "鬼画府",
+}
+
+General:new(extension, "ofl__guosheng", "qun", 4):addSkills { "ofl__niqu", "changshi" }
+Fk:loadTranslationTable{
+  ["ofl__guosheng"] = "郭胜",
+  ["#ofl__guosheng"] = "诱杀党朋",
+  ["illustrator:ofl__guosheng"] = "鬼画府",
+}
+
+General:new(extension, "ofl__gaowang", "qun", 4):addSkills { "ofl__miaoyu", "changshi" }
+Fk:loadTranslationTable{
+  ["ofl__gaowang"] = "高望",
+  ["#ofl__gaowang"] = "蛇蝎为药",
+  ["illustrator:ofl__gaowang"] = "鬼画府",
+}
+
+General:new(extension, "ofl__hankui", "qun", 4):addSkills { "ofl__xiaolu", "changshi" }
+Fk:loadTranslationTable{
+  ["ofl__hankui"] = "韩悝",
+  ["#ofl__hankui"] = "贪财好贿",
+  ["illustrator:ofl__hankui"] = "鬼画府",
+}
 
 --官盗E7肃问：雍闿 车胄
 local yongkai = General:new(extension, "yongkai", "shu", 5)
@@ -225,5 +440,15 @@ Fk:loadTranslationTable{
   ["illustrator:ofl__chezhou"] = "YanBai",
 }
 
+--官盗2025尊享
+local caocaoyuanshao = General:new(extension, "caocaoyuanshao", "qun", 4)
+caocaoyuanshao.subkingdom = "wei"
+caocaoyuanshao:addSkills { "guibei", "jiechu", "daojue", "tuonan" }
+caocaoyuanshao:addRelatedSkills { "ofl__qingzheng", "ofl__zhian", "feiying", "ol_ex__hujia", "shenliy", "ofl__zhuni", "shishouy" }
+Fk:loadTranslationTable{
+  ["caocaoyuanshao"] = "曹操袁绍",
+  ["#caocaoyuanshao"] = "总角之交",
+  ["illustrator:caocaoyuanshao"] = "荆芥",
+}
 
 return extension

@@ -1,14 +1,14 @@
 local dumou = fk.CreateSkill {
-  name = "dumou"
+  name = "dumou",
+  tags = { Skill.Compulsory },
 }
 
 Fk:loadTranslationTable{
-  ['dumou'] = '毒谋',
-  [':dumou'] = '锁定技，你的回合内，其他角色的黑色手牌均视为【毒】，你的【毒】均视为【过河拆桥】。',
+  ["dumou"] = "毒谋",
+  [":dumou"] = "锁定技，你的回合内，其他角色的黑色手牌均视为【毒】，你的【毒】均视为【过河拆桥】。",
 }
 
-dumou:addEffect('filter', {
-  frequency = Skill.Compulsory,
+dumou:addEffect("filter", {
   card_filter = function(self, player, to_select)
     if player:hasSkill(skill.name) and player.phase ~= Player.NotActive and table.contains(player:getCardIds("h"), to_select.id) then
       return to_select.trueName == "poison"

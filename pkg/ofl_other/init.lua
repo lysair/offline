@@ -55,27 +55,34 @@ Fk:loadTranslationTable{
   ["~ofl__caojinyu"] = "娘亲，雪人不怕冷吗？",
 }
 
+General:new(extension, "ofl__sunhanhua", "wu", 3, 3, General.Female):addSkills { "ofl__chongxu", "ofl__miaojian", "ofl__lianhuas" }
+Fk:loadTranslationTable{
+  ["ofl__sunhanhua"] = "孙寒华",
+  ["#ofl__sunhanhua"] = "挣绽的青莲",
+  ["illustrator:ofl__sunhanhua"] = "圆子",
+
+  ["~ofl__sunhanhua"] = "身腾紫云天门去，随声赴感佑兆民……",
+}
+
 --2024手杀欢乐斗地主合集：郑玄 祢衡
---General:new(extension, "ofl__zhengxuan", "qun", 3):addSkills { "ofl__zhengjing" }
+General:new(extension, "ofl__zhengxuan", "qun", 3):addSkills { "ofl__zhengjing" }
 Fk:loadTranslationTable{
   ["ofl__zhengxuan"] = "郑玄",
   ["#ofl__zhengxuan"] = "兼采定道",
-  ["illustrator:ofl__zhengxuan"] = "",
+  ["illustrator:ofl__zhengxuan"] = "枭瞳",
 
-  ["~ofl__zhengxuan"] = "",
-
-  ["ofl__zhengjing"] = "整经",
-  [":ofl__zhengjing"] = "出牌阶段限一次，你可以进行一次判定，若因此判定结果的点数之和不大于21，你选择一项：1.选择其中任意张牌令一名其他角色"..
-  "获得，跳过其下个判定阶段和摸牌阶段，你获得其余判定牌；2.继续进行判定",
+  ["~ofl__zhengxuan"] = "学海无涯，憾吾生，有涯矣……",
 }
 
 General:new(extension, "ofl__miheng", "qun", 3):addSkills { "ofl__kuangcai", "mobile__shejian" }
 Fk:loadTranslationTable{
   ["ofl__miheng"] = "祢衡",
   ["#ofl__miheng"] = "鸷鹗啄孤凤",
-  ["illustrator:ofl__miheng"] = "",
+  ["illustrator:ofl__miheng"] = "聚一工作室",
 
-  ["~ofl__miheng"] = "",
+  ["$mobile__shejian_ofl__miheng1"] = "强辩无人语，言辞可伤人。",
+  ["$mobile__shejian_ofl__miheng2"] = "含兵为剑，傲舌以刃。",
+  ["~ofl__miheng"] = "我还有话……要说……",
 }
 
 --九鼎：司马炎
