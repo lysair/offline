@@ -1,9 +1,9 @@
 local ofl_other = require "packages/offline/pkg/ofl_other"
+local fhyx = require "packages/offline/pkg/fhyx"
+local ofl_mou = require "packages/offline/pkg/ofl_mou"
 local piracy_e = require "packages/offline/pkg/piracy_e"
 local piracy_s = require "packages/offline/pkg/piracy_s"
 --local espionage_beta = require "packages/offline/pkg/espionage_beta"
---local fhyx = require "packages/offline/pkg/fhyx"
---local ofl_mou = require "packages/offline/pkg/ofl_mou"
 --local shzj = require "packages/offline/pkg/shzj"
 --local sxfy = require "packages/offline/pkg/sxfy_shaoyin"
 local assassins = require "packages/offline/pkg/assassins"
@@ -20,11 +20,11 @@ Fk:loadTranslationTable{
 
 return {
   ofl_other,
+  fhyx,
+  ofl_mou,
   piracy_e,
   piracy_s,
   --espionage_beta,
-  --fhyx,
-  --ofl_mou,
   --shzj,
   --sxfy,
   assassins,

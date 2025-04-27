@@ -8,7 +8,7 @@ Fk:loadTranslationTable{
   [":zhepo"] = "锁定技，每回合限一次，当你对体力值不大于你的角色造成伤害后，你摸X张牌（X为场上起义军数量）。",
 }
 
-local U = require "packages/offline/pkg/piracy_e/insurrectionary_util"
+local U = require "packages/offline/ofl_util"
 
 zhepo:addEffect(fk.Damage, {
   anim_type = "drawcard",

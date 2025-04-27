@@ -9,7 +9,7 @@ Fk:loadTranslationTable{
   [":haokou"] = "群势力技，锁定技，游戏开始时，你获得起义军标记；当你失去起义军标记后，你变更势力至吴。",
 }
 
-local U = require "packages/offline/pkg/piracy_e/insurrectionary_util"
+local U = require "packages/offline/ofl_util"
 
 haokou:addEffect(fk.GameStart, {
   can_trigger = function(self, event, target, player, data)

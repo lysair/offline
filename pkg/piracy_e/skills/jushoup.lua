@@ -13,7 +13,7 @@ Fk:loadTranslationTable{
   ["#jushoup-prey"] = "聚首：获得 %dest 一张手牌",
 }
 
-local U = require "packages/offline/pkg/piracy_e/insurrectionary_util"
+local U = require "packages/offline/ofl_util"
 
 jushoup:addEffect(fk.GameStart, {
   anim_type = "control",

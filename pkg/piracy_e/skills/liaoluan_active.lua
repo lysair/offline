@@ -7,7 +7,7 @@ Fk:loadTranslationTable{
   [":liaoluan&"] = "每局游戏限一次，出牌阶段，你可以翻面，对攻击范围内一名非起义军角色造成1点伤害。",
 }
 
-local U = require "packages/offline/pkg/piracy_e/insurrectionary_util"
+local U = require "packages/offline/ofl_util"
 
 liaoluan:addEffect("active", {
   anim_type = "offensive",

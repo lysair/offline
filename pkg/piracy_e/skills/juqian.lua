@@ -12,7 +12,7 @@ Fk:loadTranslationTable{
   ["#juqian-ask"] = "聚黔：点“确定”加入起义军（起义军技能点击左上角查看），或点“取消” %src 对你造成1点伤害！",
 }
 
-local U = require "packages/offline/pkg/piracy_e/insurrectionary_util"
+local U = require "packages/offline/ofl_util"
 
 juqian:addEffect(fk.GameStart, {
   anim_type = "offensive",

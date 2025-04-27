@@ -18,7 +18,7 @@ Fk:loadTranslationTable{
 }
 
 --神马超道具礼盒
---General:new(extension, "ofl__godmachao", "god", 4):addSkills { "ofl__shouli", "ofl__hengwu" }
+General:new(extension, "ofl__godmachao", "god", 4):addSkills { "ofl__shouli", "ofl__hengwu" }
 Fk:loadTranslationTable{
   ["ofl__godmachao"] = "神马超",
   ["#ofl__godmachao"] = "雷挝缚苍",
@@ -85,7 +85,7 @@ Fk:loadTranslationTable{
   ["~ofl__miheng"] = "我还有话……要说……",
 }
 
---九鼎：司马炎
+--九鼎：司马炎 华歆 韩龙
 General:new(extension, "simayan", "jin", 3):addSkills { "juqi", "fengtu", "taishi" }
 Fk:loadTranslationTable{
   ["simayan"] = "司马炎",

@@ -8,7 +8,7 @@ Fk:loadTranslationTable{
   [":yizhongp"] = "锁定技，当一名角色成为起义军后，其获得1点护甲。",
 }
 
-local U = require "packages/offline/pkg/piracy_e/insurrectionary_util"
+local U = require "packages/offline/ofl_util"
 
 yizhongp:addEffect(U.JoinInsurrectionary, {
   anim_type = "support",

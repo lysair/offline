@@ -8,7 +8,7 @@ Fk:loadTranslationTable{
   [":ofl__jizhong"] = "锁定技，起义军摸牌阶段额外摸一张牌，计算与除其以外的角色距离-1。",
 }
 
-local U = require "packages/offline/pkg/piracy_e/insurrectionary_util"
+local U = require "packages/offline/ofl_util"
 
 jizhong:addEffect(fk.DrawNCards, {
   anim_type = "drawcard",

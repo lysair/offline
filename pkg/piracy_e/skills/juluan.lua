@@ -13,7 +13,7 @@ Fk:loadTranslationTable{
   ["#juluan-discard"] = "聚乱：弃置 %dest 一张手牌",
 }
 
-local U = require "packages/offline/pkg/piracy_e/insurrectionary_util"
+local U = require "packages/offline/ofl_util"
 
 juluan:addEffect(fk.GameStart, {
   can_trigger = function(self, event, target, player, data)

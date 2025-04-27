@@ -9,7 +9,7 @@ Fk:loadTranslationTable{
   ["#huaying-choose"] = "花影：你可以令一名起义军复原武将牌且视为其未发动过“缭乱”",
 }
 
-local U = require "packages/offline/pkg/piracy_e/insurrectionary_util"
+local U = require "packages/offline/ofl_util"
 
 huaying:addEffect(fk.Deathed, {
   anim_type = "support",

@@ -24,7 +24,7 @@ General:new(extension, "ofl__wangyun", "qun", 3):addSkills { "ofl__lianji", "ofl
 Fk:loadTranslationTable{
   ["ofl__wangyun"] = "王允",
   ["#ofl__wangyun"] = "计随鞘出",
-  ["illustrator:ofl__wangyun"] = "鬼画府",
+  ["illustrator:ofl__wangyun"] = "YanBai",
 }
 
 --官盗E系列战役-问鼎中原E0035：
@@ -56,6 +56,15 @@ Fk:loadTranslationTable{
 --南中平定战：一堆神孟获？
 --五丈原之战：神诸葛亮 神司马懿
 --天下一统：文鸯
+local wenyang = General:new(extension, "ofl__wenyang", "wei", 4)
+wenyang.subkingdom = "wu"
+wenyang:addSkills { "quedi", "ofl__choujue", "ofl__chuifeng", "ofl__chongjian" }
+Fk:loadTranslationTable{
+  ["ofl__wenyang"] = "文鸯",
+  ["#ofl__wenyang"] = "独骑破军",
+  ["illustrator:ofl__wenyang"] = "biou09",
+}
+
 --国战转身份：文钦 钟会 孙綝
 local wenqin = General:new(extension, "ofl__wenqin", "wei", 4)
 wenqin.subkingdom = "wu"
@@ -67,6 +76,15 @@ Fk:loadTranslationTable{
   ["illustrator:ofl__wenqin"] = "匠人绘-零二",
 
   ["~ofl__wenqin"] = "公休，汝这是何意，呃……",
+}
+
+General:new(extension, "ofl2__zhonghui", "wei", 4):addSkills { "ofl__quanji", "ofl__paiyi" }
+Fk:loadTranslationTable{
+  ["ofl2__zhonghui"] = "钟会",
+  ["#ofl2__zhonghui"] = "桀骜的野心家",
+  ["illustrator:ofl2__zhonghui"] = "磐蒲",
+
+  ["~ofl2__zhonghui"] = "",
 }
 
 General:new(extension, "ofl__sunchen", "wu", 4):addSkills { "ofl__shilus", "ofl__xiongnve" }
@@ -107,7 +125,7 @@ Fk:loadTranslationTable{
   ["ofl__zhonghui"] = "钟会",
   ["#ofl__zhonghui"] = "统定河山",
   ["cv:ofl__zhonghui"] = "Kazami",
-  ["illustrator:ofl__zhonghui"] = "磐蒲",
+  ["illustrator:ofl__zhonghui"] = "黯荧岛工作室",
 
   ["~ofl__zhonghui"] = "时也…命也…",
 }
@@ -440,6 +458,14 @@ Fk:loadTranslationTable{
   ["illustrator:ofl__chezhou"] = "YanBai",
 }
 
+--官盗E9：全武将太虚幻境
+--General:new(extension, "quexiaojiang", "qun", 4):addSkills { "anmou", "tousuan" }
+Fk:loadTranslationTable{
+  ["quexiaojiang"] = "曲阿小将",
+  ["#quexiaojiang"] = "",
+  ["illustrator:quexiaojiang"] = "",
+}
+
 --官盗2025尊享
 local caocaoyuanshao = General:new(extension, "caocaoyuanshao", "qun", 4)
 caocaoyuanshao.subkingdom = "wei"
@@ -450,5 +476,8 @@ Fk:loadTranslationTable{
   ["#caocaoyuanshao"] = "总角之交",
   ["illustrator:caocaoyuanshao"] = "荆芥",
 }
+
+--官盗E：风云志·长安风云
+--李傕 郭汜 张济 王允 吕布 樊稠 神贾诩 神曹操 神李傕郭汜 神王允 丧尸
 
 return extension

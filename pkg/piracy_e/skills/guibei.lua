@@ -14,11 +14,13 @@ guibei:addEffect(fk.GameStart, {
     return player:hasSkill(guibei.name)
   end,
   on_use = function(self, event, target, player, data)
+    local room = player.room
     player:drawCards(4, guibei.name)
     if not player.dead then
-      local to = player.room:getPlayerBySeat(1):getLastAlive()
+      local to = room:getPlayerBySeat(1):getLastAlive()
       if to ~= player then
-        player.room:swapSeat(player, to)
+        room:swapSeat(player, to)
+        room.current = room:getPlayerBySeat(1)
       end
     end
   end,

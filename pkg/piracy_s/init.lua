@@ -7,7 +7,40 @@ Fk:loadTranslationTable{
   ["piracy_s"] = "官盗S系列",
 }
 
---官盗S1竞技标准版S1061：吕布 董卓
+--官盗S0-004神威九伐 神将篇：神马超
+--General:new(extension, "ofl2__godmachao", "god", 4):addSkills { "ofl2__shouli", "ofl2__hengwu" }
+Fk:loadTranslationTable{
+  ["ofl2__godmachao"] = "神马超",
+  ["#ofl2__godmachao"] = "神威天将军",
+  ["illustrator:ofl2__godmachao"] = "",
+
+  ["ofl2__shouli"] = "狩骊",
+  [":ofl2__shouli"] = "锁定技，游戏开始时，所有角色依次选择一项：1。使用一张坐骑牌，然后摸一张牌；2.随机从游戏外使用一张坐骑牌。你可以将场上的一张进攻坐骑当【杀】（无次数限制）、防御马当【闪】使用或打出，"..
+  "以此法失去坐骑的其他角色本回合非锁定技失效，你与其本回合受到的伤害+1且改为雷电伤害。",
+  ["ofl2__hengwu"] = "横骛",
+  [":ofl2__hengwu"] = "当你使用或打出牌时，若场上有与之花色相同的装备牌，你可以弃置任意张与之花色相同的手牌，然后摸X张牌(X为你以此法弃置的牌数与场上该花色的装备牌数之和)",
+}
+
+--官盗S1068主公杀：吕布 董卓
+--General:new(extension, "ofl__lvbu", "qun", 4):addSkills { "wushuang", "ofl__sheji" }
+Fk:loadTranslationTable{
+  ["ofl__lvbu"] = "吕布",
+  ["#ofl__lvbu"] = "武的化身",
+  ["illustrator:ofl__lvbu"] = "7点Game",
+
+  ["ofl__sheji"] = "射戟",
+  [":ofl__sheji"] = "出牌阶段限一次，你可以将所有手牌当一张无距离限制的【杀】使用，若对目标角色造成伤害，你获得其装备区的武器和坐骑牌。",
+}
+
+--General:new(extension, "ofl__dongzhuo", "qun", 4):addSkills { "ofl__hengzheng" }
+Fk:loadTranslationTable{
+  ["ofl__dongzhuo"] = "董卓",
+  ["#ofl__dongzhuo"] = "魔王",
+  ["illustrator:ofl__dongzhuo"] = "巴萨小马",
+
+  ["ofl__hengzheng"] = "横征",
+  [":ofl__hengzheng"] = "回合开始时，若你没有手牌或体力值为1，你可以获得所有角色区域内各一张牌。",
+}
 
 --官盗S1058三国杀空城计 诸葛亮
 General:new(extension, "ofl__zhugeliang", "shu", 3):addSkills { "kongcheng", "ofl__qixingz" }
@@ -51,7 +84,13 @@ Fk:loadTranslationTable{
 
 --官盗S1074过关斩将：双势力关羽
 
---官盗S2武将传贾诩S2079
+--官盗S2079武将传 乱武天下贾诩
+--General:new(extension, "ofl2__jiaxu", "qun", 3):addSkills { "ofl__yice", "luanwu" }
+Fk:loadTranslationTable{
+  ["ofl2__jiaxu"] = "贾诩",
+  ["#ofl2__jiaxu"] = "乱武天下",
+  ["illustrator:ofl2__jiaxu"] = "木美人",
+}
 
 --官盗S7幽燕烽火：曹叡 司马懿 公孙渊 公孙瓒 袁绍 文丑
 General:new(extension, "ofl__caorui", "wei", 3):addSkills { "ofl__huituo", "ofl__mingjian", "xingshuai" }

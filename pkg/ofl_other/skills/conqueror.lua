@@ -5,7 +5,7 @@ local conqueror = fk.CreateSkill {
 Fk:loadTranslationTable{
   ["conqueror"] = "Conqueror",
   [":conqueror"] = "When you use a <b>Strike</b> and successfully target another hero, you may declare a card type"..
-  "(Basic, Equipment, or Scroll) and then the target must select one of the following: <br> 1. Negate the effect of the"..
+  "(Basic, Equipment, or Scroll) and then the target must select one of the following: <br> 1. Negate the effect of the "..
   "<b>Strike</b> and give you a card of the declared type. <br> 2. That <b>Strike</b> may not be <b>Dodged</b>.",
 
   ["#conqueror-choice"] = "Conqueror: You may declare a card type, %dest shall give you a card of the declared type<br>"..

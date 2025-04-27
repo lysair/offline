@@ -17,7 +17,7 @@ Fk:loadTranslationTable{
   ["QuitInsurrectionary"] = "退出起义军并弃置所有手牌",
 }
 
-local U = require "packages/offline/pkg/piracy_e/insurrectionary_util"
+local U = require "packages/offline/ofl_util"
 
 insurrectionary:addEffect(fk.TurnEnd, {
   anim_type = "negative",
