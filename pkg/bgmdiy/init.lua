@@ -4,7 +4,7 @@ extension.extensionName = "offline"
 extension:loadSkillSkelsByPath("./packages/offline/pkg/bgmdiy/skills")
 
 Fk:loadTranslationTable{
-  ["bgmdiy"] = "桌游志贴纸",
+  ["bgmdiy"] = "线下-桌游志贴纸",
   ["bgm"] = "桌游志",
 }
 

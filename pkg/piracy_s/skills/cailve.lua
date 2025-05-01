@@ -32,7 +32,7 @@ cailve:addEffect("viewas", {
   end,
   after_use = function (self, player, use)
     local room = player.room
-    if not player.dead and not player:isNude() and #use.tos > 0 then
+    if not player.dead and not player:isNude() and use.tos and #use.tos > 0 then
       room:sortByAction(use.tos)
       for _, p in ipairs(use.tos) do
         if not p.dead and

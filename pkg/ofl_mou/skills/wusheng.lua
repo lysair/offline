@@ -33,7 +33,7 @@ wusheng:addEffect("viewas", {
   card_filter = function(self, player, to_select, selected)
     return #selected == 1 and table.contains(player:getHandlyIds(), to_select)
   end,
-  view_as = function(self, cards)
+  view_as = function(self, player, cards)
     if self.interaction.data == nil or #cards ~= 1 then return end
     local card = Fk:cloneCard(self.interaction.data)
     card:addSubcards(cards)

@@ -50,7 +50,7 @@ local chengjiz = fk.CreateViewAsSkill{
       return Fk:getCardById(to_select):compareColorWith(Fk:getCardById(selected[1]), true)
     end
   end,
-  view_as = function(self, cards)
+  view_as = function(self, player, cards)
     if #cards ~= 2 then return end
     local c = Fk:cloneCard("slash")
     c.skillName = self.name
@@ -79,7 +79,7 @@ local zhanjue = fk.CreateViewAsSkill{
   anim_type = "offensive",
   prompt = "#sxfy__zhanjue",
   card_filter = Util.FalseFunc,
-  view_as = function(self, cards)
+  view_as = function(self, player, cards)
     local card = Fk:cloneCard("duel")
     card:addSubcards(Self:getCardIds("h"))
     return card
@@ -119,7 +119,7 @@ local qinwang = fk.CreateViewAsSkill{
       return self.name
     end
   end,
-  view_as = function(self, cards)
+  view_as = function(self, player, cards)
     local card = Fk:cloneCard("slash")
     card.skillName = self.name
     return card
@@ -906,7 +906,7 @@ local zhengnan_viewas = fk.CreateViewAsSkill{
   card_filter = function (self, to_select, selected)
     return #selected == 0 and table.contains(Self:getHandlyIds(), to_select) and Fk:getCardById(to_select).color == Card.Red
   end,
-  view_as = function(self, cards)
+  view_as = function(self, player, cards)
     if #cards ~= 1 then return end
     local card = Fk:cloneCard("slash")
     card.skillName = "sxfy__zhengnan"
@@ -1087,7 +1087,7 @@ local yunji = fk.CreateViewAsSkill{
   card_filter = function (self, to_select, selected)
     return #selected == 0 and Fk:getCardById(to_select).type == Card.TypeEquip
   end,
-  view_as = function(self, cards)
+  view_as = function(self, player, cards)
     if #cards ~= 1 then return end
     local card = Fk:cloneCard("collateral")
     card.skillName = self.name

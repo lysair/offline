@@ -222,7 +222,7 @@ local sxfy__beiwu = fk.CreateViewAsSkill{
     return #selected == 0 and Fk:currentRoom():getCardArea(to_select) == Card.PlayerEquip and
       not table.contains(Self:getTableMark("sxfy__beiwu-turn"), to_select)
   end,
-  view_as = function(self, cards)
+  view_as = function(self, player, cards)
     if #cards ~= 1 or self.interaction.data == nil then return end
     local card = Fk:cloneCard(self.interaction.data)
     card.skillName = self.name
@@ -613,7 +613,7 @@ local sxfy__shuchen = fk.CreateViewAsSkill{
   card_filter = function(self, to_select, selected)
     return Fk:currentRoom():getCardArea(to_select) == Card.PlayerHand and #selected < (Self:getHandcardNum() - Self:getMaxCards())
   end,
-  view_as = function(self, cards)
+  view_as = function(self, player, cards)
     if #cards ~= (Self:getHandcardNum() - Self:getMaxCards()) then return end
     local c = Fk:cloneCard("peach")
     c.skillName = self.name

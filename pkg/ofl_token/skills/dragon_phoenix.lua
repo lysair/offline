@@ -14,7 +14,7 @@ skill:addEffect(fk.TargetSpecified, {
       player:usedSkillTimes(skill.name, Player.HistoryTurn) == 0
   end,
   on_cost = function(self, event, target, player, data)
-    local all_choices = {"draw1", "shzj__dragon_phoenix_skill_discard::"..data.to, "Cancel"}
+    local all_choices = {"draw1", "shzj__dragon_phoenix_skill_discard::"..data.to.id, "Cancel"}
     local choices = table.simpleClone(all_choices)
     if data.to.dead or data.to:isNude() then
       table.remove(choices, 2)

@@ -1,9 +1,10 @@
-local extension = Package:new("ofl_mou")
+local extension = Package:new("ofl_mougong")
 extension.extensionName = "offline"
 
 extension:loadSkillSkelsByPath("./packages/offline/pkg/ofl_mou/skills")
 
 Fk:loadTranslationTable{
+  ["ofl_mougong"] = "线下-谋攻篇",
   ["ofl_mou"] = "线下谋攻篇",
 }
 
@@ -14,7 +15,6 @@ Fk:loadTranslationTable{
   ["illustrator:ofl_mou__yuanshao"] = "荧光笔",
 
   ["~ofl_mou__yuanshao"] = "天命竟最终站在了……他那边……",
-  ["!ofl_mou__yuanshao"] = "帐下贤才多如江鲫，欲取天下岂非易事？",
 }
 
 local jiangwei = General:new(extension, "ofl_mou__jiangwei", "shu", 4)

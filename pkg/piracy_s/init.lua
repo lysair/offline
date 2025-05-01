@@ -4,7 +4,7 @@ extension.extensionName = "offline"
 extension:loadSkillSkelsByPath("./packages/offline/pkg/piracy_s/skills")
 
 Fk:loadTranslationTable{
-  ["piracy_s"] = "官盗S系列",
+  ["piracy_s"] = "线下-官盗S系列",
 }
 
 --官盗S0-004神威九伐 神将篇：神马超

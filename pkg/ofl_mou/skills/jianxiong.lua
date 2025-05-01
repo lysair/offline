@@ -17,12 +17,16 @@ jianxiong:addEffect(fk.GameStart, {
     return player:hasSkill(jianxiong.name)
   end,
   on_cost = function (self, event, target, player, data)
-    local _, dat = player.room:askToUseActiveSkill(player, {
-      skill_name = "mou__jianxiong_gamestart",
+    local room = player.room
+    local n = room:askToNumber(player, {
+      skill_name = jianxiong.name,
       prompt = "#mou__jianxiong-gamestart",
+      min = 1,
+      max = 2,
+      cancelable = true,
     })
-    if dat then
-      event:setCostData(self, {choice = dat.interaction})
+    if n then
+      event:setCostData(self, {choice = n})
       return true
     end
   end,

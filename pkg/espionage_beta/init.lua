@@ -258,7 +258,7 @@ local jielve = fk.CreateViewAsSkill{
     end
     return true
   end,
-  view_as = function(self, cards)
+  view_as = function(self, player, cards)
     if #cards ~= 2 then return end
     local card = Fk:cloneCard("looting")
     card:addSubcards(cards)
@@ -504,7 +504,7 @@ local tuicheng = fk.CreateViewAsSkill{
   pattern = "sincere_treat",
   prompt = "#tuicheng",
   card_filter = Util.FalseFunc,
-  view_as = function(self, cards)
+  view_as = function(self, player, cards)
     local card = Fk:cloneCard("sincere_treat")
     card.skillName = self.name
     return card

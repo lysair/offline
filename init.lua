@@ -4,7 +4,7 @@ local ofl_mou = require "packages/offline/pkg/ofl_mou"
 local piracy_e = require "packages/offline/pkg/piracy_e"
 local piracy_s = require "packages/offline/pkg/piracy_s"
 --local espionage_beta = require "packages/offline/pkg/espionage_beta"
---local shzj = require "packages/offline/pkg/shzj"
+local shzj = require "packages/offline/pkg/shzj"
 --local sxfy = require "packages/offline/pkg/sxfy_shaoyin"
 local assassins = require "packages/offline/pkg/assassins"
 local bgmdiy = require "packages/offline/pkg/bgmdiy"
@@ -25,7 +25,7 @@ return {
   piracy_e,
   piracy_s,
   --espionage_beta,
-  --shzj,
+  shzj,
   --sxfy,
   assassins,
   bgmdiy,

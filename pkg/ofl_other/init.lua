@@ -4,7 +4,7 @@ extension.extensionName = "offline"
 extension:loadSkillSkelsByPath("./packages/offline/pkg/ofl_other/skills")
 
 Fk:loadTranslationTable{
-  ["ofl_other"] = "官正产品综合",
+  ["ofl_other"] = "线下-官正产品综合",
   ["rom"] = "风花雪月",
   ["chaos"] = "文和乱武",
   ["sgsh"] = "三国杀·幻",

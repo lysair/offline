@@ -4,7 +4,7 @@ extension.extensionName = "offline"
 extension:loadSkillSkelsByPath("./packages/offline/pkg/assassins/skills")
 
 Fk:loadTranslationTable{
-  ["assassins"] = "铜雀台",
+  ["assassins"] = "线下-铜雀台",
   ["tqt"] = "铜雀台",
 }
 

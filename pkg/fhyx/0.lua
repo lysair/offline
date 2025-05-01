@@ -25,7 +25,7 @@ local fhyx_ex__shuangxiong = fk.CreateViewAsSkill{
     end
     return table.contains(Self:getHandlyIds(true), to_select) and Self:getMark("@fhyx_ex__shuangxiong-phase") == color
   end,
-  view_as = function(self, cards)
+  view_as = function(self, player, cards)
     if #cards ~= 1 then return end
     local c = Fk:cloneCard("duel")
     c:addSubcard(cards[1])
@@ -581,7 +581,7 @@ local yuejian = fk.CreateViewAsSkill{
     return U.CardNameBox { choices = names, all_choices = all_names }
   end,
   card_filter = Util.FalseFunc,
-  view_as = function(self, cards)
+  view_as = function(self, player, cards)
     if not self.interaction.data then return nil end
     local card = Fk:cloneCard(self.interaction.data)
     card.skillName = self.name
@@ -1068,7 +1068,7 @@ local ofl_shiji__miewu = fk.CreateViewAsSkill{
   card_filter = function(self, to_select, selected)
     return #selected == 0
   end,
-  view_as = function(self, cards)
+  view_as = function(self, player, cards)
     if #cards ~= 1 or not self.interaction.data then return end
     local card = Fk:cloneCard(self.interaction.data)
     card:addSubcards(cards)
@@ -2248,7 +2248,7 @@ local ofl__sangu_active = fk.CreateViewAsSkill{
   card_filter = function(self, to_select, selected)
     return #selected == 0 and Fk:currentRoom():getCardArea(to_select) == Player.Hand
   end,
-  view_as = function(self, cards)
+  view_as = function(self, player, cards)
     if #cards ~= 1 or not self.interaction.data then return end
     local card = Fk:cloneCard(self.interaction.data)
     card:addSubcard(cards[1])

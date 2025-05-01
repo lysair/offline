@@ -94,7 +94,7 @@ local sxfy__quedi = fk.CreateViewAsSkill{
   card_filter = function(self, to_select, selected)
     return #selected == 0 and Fk:getCardById(to_select).trueName == "slash"
   end,
-  view_as = function(self, cards)
+  view_as = function(self, player, cards)
     if #cards ~= 1 then return end
     local card = Fk:cloneCard("duel")
     card.skillName = self.name

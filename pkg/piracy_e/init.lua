@@ -4,7 +4,7 @@ extension.extensionName = "offline"
 extension:loadSkillSkelsByPath("./packages/offline/pkg/piracy_e/skills")
 
 Fk:loadTranslationTable{
-  ["piracy_e"] = "官盗E系列",
+  ["piracy_e"] = "线下-官盗E系列",
 }
 
 --E0034暗金豪华版/S1标准版龙魂 龙羽飞
