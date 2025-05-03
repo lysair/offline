@@ -165,7 +165,7 @@ local sgsh__huashen = fk.CreateActiveSkill{
     return player:usedSkillTimes(self.name, Player.HistoryPhase) == 0
   end,
   card_filter = Util.FalseFunc,
-  target_filter = function(self, to_select, selected)
+  target_filter = function(self, player, to_select, selected)
     return #selected == 0 and to_select ~= Self.id
   end,
   on_use = function(self, room, effect)
@@ -254,7 +254,7 @@ local sgsh__daoshu = fk.CreateActiveSkill{
     return player:usedSkillTimes(self.name, Player.HistoryPhase) == 0
   end,
   card_filter = Util.FalseFunc,
-  target_filter = function(self, to_select, selected)
+  target_filter = function(self, player, to_select, selected)
     return #selected == 0 and to_select ~= Self.id
   end,
   on_use = function(self, room, effect)

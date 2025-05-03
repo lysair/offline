@@ -5,7 +5,7 @@ local piracy_e = require "packages/offline/pkg/piracy_e"
 local piracy_s = require "packages/offline/pkg/piracy_s"
 --local espionage_beta = require "packages/offline/pkg/espionage_beta"
 local shzj = require "packages/offline/pkg/shzj"
---local sxfy = require "packages/offline/pkg/sxfy_shaoyin"
+local sxfy = require "packages/offline/pkg/sxfy"
 local assassins = require "packages/offline/pkg/assassins"
 local bgmdiy = require "packages/offline/pkg/bgmdiy"
 
@@ -26,7 +26,7 @@ return {
   piracy_s,
   --espionage_beta,
   shzj,
-  --sxfy,
+  sxfy,
   assassins,
   bgmdiy,
 

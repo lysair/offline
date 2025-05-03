@@ -78,7 +78,7 @@ local mingdao_active = fk.CreateActiveSkill{
     end
     return UI.ComboBox { choices = choices }
   end,
-  card_filter = function(self, to_select, selected)
+  card_filter = function(self, player, to_select, selected)
     return #selected == 0 and table.contains(Fk:currentRoom():getBanner("ofl__mingdao"), to_select)
   end,
 }
