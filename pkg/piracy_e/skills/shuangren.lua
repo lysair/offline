@@ -26,7 +26,7 @@ shuangren:addEffect("active", {
   on_use = function(self, room, effect)
     local player = effect.from
     local target = effect.tos[1]
-    local pindian = player:pindian({target}, skill.name)
+    local pindian = player:pindian({target}, shuangren.name)
     if player.dead then return end
     if pindian.results[target].winner == player then
       local n = #room.logic:getEventsOfScope(GameEvent.Pindian, 999, function(e)

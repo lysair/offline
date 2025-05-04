@@ -56,7 +56,7 @@ zhengan:addEffect(fk.TurnEnd, {
   on_cost = function(self, event, target, player, data)
     local room = player.room
     local tos = room:askToChoosePlayers(player, {
-      targets = event:getCostData(self),
+      targets = table.map(event:getCostData(self), Util.Id2PlayerMapper),
       min_num = 1,
       max_num = 2,
       skill_name = zhengan.name,

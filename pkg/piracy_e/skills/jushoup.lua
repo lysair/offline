@@ -32,7 +32,7 @@ jushoup:addEffect(fk.GameStart, {
     local tos = room:askToChoosePlayers(player, {
       min_num = 1,
       max_num = 2,
-      targets = table.map(targets, Util.IdMapper),
+      targets = targets,
       prompt = "#jushoup-choose",
       skill_name = jushoup.name,
       cancelable = true,
