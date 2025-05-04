@@ -31,7 +31,7 @@ siji:addEffect(fk.TurnEnd, {
     local use = room:askToUseVirtualCard(player, {
       name = "stab__slash",
       skill_name = siji.name,
-      prompt = "#siji-invoke:"..target.id,
+      prompt = "#siji-invoke::"..target.id,
       cancelable = true,
       extra_data = {
         bypass_distances = true,

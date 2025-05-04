@@ -20,7 +20,7 @@ ansha:addEffect(fk.TurnStart, {
     local use = room:askToUseVirtualCard(player, {
       name = "stab__slash",
       skill_name = ansha.name,
-      prompt = "#ansha-invoke:"..target.id,
+      prompt = "#ansha-invoke::"..target.id,
       cancelable = true,
       extra_data = {
         bypass_distances = true,

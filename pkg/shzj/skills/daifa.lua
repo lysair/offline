@@ -31,7 +31,7 @@ daifa:addEffect(fk.TurnEnd, {
     local use = room:askToUseVirtualCard(player, {
       name = "stab__slash",
       skill_name = daifa.name,
-      prompt = "#daifa-invoke:"..target.id,
+      prompt = "#daifa-invoke::"..target.id,
       cancelable = true,
       extra_data = {
         bypass_distances = true,
