@@ -18,9 +18,12 @@ guibei:addEffect(fk.GameStart, {
     player:drawCards(4, guibei.name)
     if not player.dead then
       local to = room:getPlayerBySeat(1):getLastAlive()
+      local yes = player == room.current
       if to ~= player then
         room:swapSeat(player, to)
-        room.current = room:getPlayerBySeat(1)
+        if yes then
+          room:setCurrent(to)
+        end
       end
     end
   end,

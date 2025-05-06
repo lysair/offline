@@ -33,6 +33,7 @@ fenwei:addEffect(fk.TargetSpecified, {
   end,
   on_use = function(self, event, target, player, data)
     local room = player.room
+    data.use.nullifiedTargets = data.use.nullifiedTargets or {}
     table.insertTable(data.use.nullifiedTargets, event:getCostData(self).tos)
     if event:getCostData(self).choice == "shzj_yiling__fenwei2" then
       room:handleAddLoseSkills(player, "-shzj_yiling__fenwei")

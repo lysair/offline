@@ -9,7 +9,7 @@ Fk:loadTranslationTable{
   "阴：准备阶段，令你本回合使用牌无次数限制且造成的伤害+1/其他角色的准备阶段，其可以展示并交给你一张红色手牌。",
 
   ["@@juqi-turn"] = "举棋 进攻",
-  ["#juqi-give"] = "举棋：你可以交给 %des t一张对应颜色的手牌，切换其“举棋”状态",
+  ["#juqi-give"] = "举棋：你可以交给 %dest 一张对应颜色的手牌，切换其“举棋”状态",
 }
 
 juqi:addEffect(fk.EventPhaseStart, {

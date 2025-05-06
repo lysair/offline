@@ -458,15 +458,7 @@ Fk:loadTranslationTable{
   ["illustrator:ofl__chezhou"] = "YanBai",
 }
 
---官盗E9：全武将太虚幻境
---General:new(extension, "quexiaojiang", "qun", 4):addSkills { "anmou", "tousuan" }
-Fk:loadTranslationTable{
-  ["quexiaojiang"] = "曲阿小将",
-  ["#quexiaojiang"] = "",
-  ["illustrator:quexiaojiang"] = "",
-}
-
---官盗2025尊享
+--官盗E150017：至臻-全武将典藏
 local caocaoyuanshao = General:new(extension, "caocaoyuanshao", "qun", 4)
 caocaoyuanshao.subkingdom = "wei"
 caocaoyuanshao:addSkills { "guibei", "jiechu", "daojue", "tuonan" }
@@ -477,7 +469,62 @@ Fk:loadTranslationTable{
   ["illustrator:caocaoyuanshao"] = "荆芥",
 }
 
+--官盗E9：全武将太虚幻境
+local quexiaojiang = General:new(extension, "quexiaojiang", "qun", 4)
+quexiaojiang:addSkills { "yingzhen", "yuanjue", "aoyong" }
+quexiaojiang:addRelatedSkill("tongkai")
+Fk:loadTranslationTable{
+  ["quexiaojiang"] = "曲阿小将",
+  ["#quexiaojiang"] = "神",
+  ["illustrator:quexiaojiang"] = "荆芥",
+}
+
 --官盗E：风云志·长安风云
 --李傕 郭汜 张济 王允 吕布 樊稠 神贾诩 神曹操 神李傕郭汜 神王允 丧尸
+--General:new(extension, "ofl__lijue", "qun", 6):addSkills { "", "" }
+Fk:loadTranslationTable{
+  ["ofl__lijue"] = "李傕",
+  ["#ofl__lijue"] = "",
+  ["illustrator:ofl__lijue"] = "",
+
+  ["xi"] = "撅袭",
+  [":xi"] = "出牌阶段限两次，你可以弃置任意张手牌，选择两名体力值小于你的角色，你与这些角色依次亮出牌堆顶的一张牌，点数不为最大的角色"..
+  "受到2点伤害。你可以令你的点数+X（X为你弃置的手牌数）。",
+  ["jujun"] = "聚军",
+  [":jujun"] = "限定技，出牌阶段，你可以将手牌和体力补至体力上限，若如此做，你不能回复体力直到你杀死一名角色。",
+}
+
+local guosi = General:new(extension, "ofl__guosi", "qun", 4)
+guosi:addSkills { "sixi", "lvedao" }
+guosi:addRelatedSkill("ofl__bixiong")
+Fk:loadTranslationTable{
+  ["ofl__guosi"] = "郭汜",
+  ["#ofl__guosi"] = "",
+  ["illustrator:ofl__guosi"] = "MUMU",
+}
+
+--General:new(extension, "ofl__zhangji", "qun", 4):addSkills { "", "" }
+Fk:loadTranslationTable{
+  ["ofl__zhangji"] = "张济",
+  ["#ofl__zhangji"] = "",
+  ["illustrator:ofl__zhangji"] = "",
+
+  ["silve"] = "肆掠",
+  [":silve"] = "摸牌阶段开始时，你可以改为获得任意名角色合计至多两张牌，然后将等量的牌置于武将牌上，称为“掠”。",
+  ["suibian"] = "随变",
+  [":suibian"] = "一名角色使用与“掠”花色相同的牌时，你可以选择一项：1.移去所有此花色的“掠”，对其造成1点伤害；"..
+  "2.与其各摸一张牌；3.失去1点体力令此牌无效，然后将此牌交给一名角色并摸一张牌。",
+}
+
+General:new(extension, "ofl__fanchou", "qun", 4):addSkills { "xingwei" }--, ""
+Fk:loadTranslationTable{
+  ["ofl__fanchou"] = "樊稠",
+  ["#ofl__fanchou"] = "",
+  ["illustrator:ofl__fanchou"] = "三道纹",
+
+  ["zzxxzxzx"] = "",
+  [":zzxxzxzx"] = "每回合各限一次，你可以xx并将一张<font color='red'>♦</font>牌当、基本牌<font color='red'>♥</font>牌当锦囊牌"..
+  "使用或打出。",
+}
 
 return extension

@@ -27,6 +27,7 @@ songshu:addEffect(fk.EventPhaseStart, {
       min_num = 1,
       max_num = 1,
       skill_name = songshu.name,
+      include_equip = true,
       prompt = "#ofl_shiji__songshu-invoke::" .. target.id,
       cancelable = true,
     })
