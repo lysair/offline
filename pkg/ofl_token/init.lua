@@ -118,6 +118,90 @@ Fk:loadTranslationTable{
   ["#shzj__burning_camps_skill"] = "选择一名有牌的角色，展示其一张牌，然后可以弃置一张花色相同的手牌对其造成1点火焰伤害并弃置其展示牌",
 }
 
+local populace1 = fk.CreateCard{
+  name = "&spade__populace",
+  type = Card.TypeEquip,
+  sub_type = Card.SubtypeWeapon,
+  dynamic_equip_skills = function (self, player)
+    if player then
+      local skill_name = "#"..self:getSuitString().."__populace_skill"
+      if Fk.skills[skill_name] == nil then
+        skill_name = "#spade__populace_skill"
+      end
+      return {Fk.skills[skill_name]}
+    end
+  end,
+}
+extension:addCardSpec("spade__populace", Card.Spade, 1)
+Fk:loadTranslationTable{
+  ["spade__populace"] = "众",
+  [":spade__populace"] = "装备牌·武器/防具/坐骑<br/>"..
+  "<b>装备技能</b>：锁定技，你造成的雷电伤害+1，你受到的雷电伤害-1。",
+}
+
+local populace2 = fk.CreateCard{
+  name = "&heart__populace",
+  type = Card.TypeEquip,
+  sub_type = Card.SubtypeArmor,
+  dynamic_equip_skills = function (self, player)
+    if player then
+      local skill_name = "#"..self:getSuitString().."__populace_skill"
+      if Fk.skills[skill_name] == nil then
+        skill_name = "#heart__populace_skill"
+      end
+      return {Fk.skills[skill_name]}
+    end
+  end,
+}
+extension:addCardSpec("heart__populace", Card.Heart, 1)
+Fk:loadTranslationTable{
+  ["heart__populace"] = "众",
+  [":heart__populace"] = "装备牌·武器/防具/坐骑<br/>"..
+  "<b>装备技能</b>：锁定技，你出牌阶段使用【杀】次数上限+1，你使用【杀】无距离限制。",
+}
+
+local populace3 = fk.CreateCard{
+  name = "&club__populace",
+  type = Card.TypeEquip,
+  sub_type = Card.SubtypeDefensiveRide,
+  dynamic_equip_skills = function (self, player)
+    if player then
+      local skill_name = "#"..self:getSuitString().."__populace_skill"
+      if Fk.skills[skill_name] == nil then
+        skill_name = "#club__populace_skill"
+      end
+      return {Fk.skills[skill_name]}
+    end
+  end,
+}
+extension:addCardSpec("club__populace", Card.Club, 1)
+Fk:loadTranslationTable{
+  ["club__populace"] = "众",
+  [":club__populace"] = "装备牌·武器/防具/坐骑<br/>"..
+  "<b>装备技能</b>：锁定技，摸牌阶段，你额外摸一张牌；你的手牌上限+1。",
+}
+
+local populace4 = fk.CreateCard{
+  name = "&diamond__populace",
+  type = Card.TypeEquip,
+  sub_type = Card.SubtypeOffensiveRide,
+  dynamic_equip_skills = function (self, player)
+    if player then
+      local skill_name = "#"..self:getSuitString().."__populace_skill"
+      if Fk.skills[skill_name] == nil then
+        skill_name = "#diamond__populace_skill"
+      end
+      return {Fk.skills[skill_name]}
+    end
+  end,
+}
+extension:addCardSpec("diamond__populace", Card.Diamond, 1)
+Fk:loadTranslationTable{
+  ["diamond__populace"] = "众",
+  [":diamond__populace"] = "装备牌·武器/防具/坐骑<br/>"..
+  "<b>装备技能</b>：锁定技，当你受到伤害后，你摸两张牌。",
+}
+
 extension:loadCardSkels {
   jingxiang_golden_age,
 
@@ -127,6 +211,10 @@ extension:loadCardSkels {
   imperial_sword,
   iron_bud,
   shzj__burning_camps,
+  populace1,
+  populace2,
+  populace3,
+  populace4,
 }
 
 return extension

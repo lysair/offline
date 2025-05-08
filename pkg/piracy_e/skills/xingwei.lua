@@ -66,7 +66,7 @@ local spec = {
     end)
     local card = room:askToChooseCard(player, {
       target = player,
-      flag = { card_data = {{ "discard_pile", cards }} },
+      flag = { card_data = {{ "pile_discard", cards }} },
       skill_name = xingwei.name,
       prompt = "#xingwei-prey",
     })

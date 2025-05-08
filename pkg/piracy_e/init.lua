@@ -481,7 +481,7 @@ Fk:loadTranslationTable{
 
 --官盗E：风云志·长安风云
 --李傕 郭汜 张济 王允 吕布 樊稠 神贾诩 神曹操 神李傕郭汜 神王允 丧尸
---General:new(extension, "ofl__lijue", "qun", 6):addSkills { "", "" }
+--General:new(extension, "ofl__lijue", "qun", 6):addSkills { "", "jujun" }
 Fk:loadTranslationTable{
   ["ofl__lijue"] = "李傕",
   ["#ofl__lijue"] = "",
@@ -490,8 +490,6 @@ Fk:loadTranslationTable{
   ["xi"] = "撅袭",
   [":xi"] = "出牌阶段限两次，你可以弃置任意张手牌，选择两名体力值小于你的角色，你与这些角色依次亮出牌堆顶的一张牌，点数不为最大的角色"..
   "受到2点伤害。你可以令你的点数+X（X为你弃置的手牌数）。",
-  ["jujun"] = "聚军",
-  [":jujun"] = "限定技，出牌阶段，你可以将手牌和体力补至体力上限，若如此做，你不能回复体力直到你杀死一名角色。",
 }
 
 local guosi = General:new(extension, "ofl__guosi", "qun", 4)
@@ -503,28 +501,32 @@ Fk:loadTranslationTable{
   ["illustrator:ofl__guosi"] = "MUMU",
 }
 
---General:new(extension, "ofl__zhangji", "qun", 4):addSkills { "", "" }
+General:new(extension, "ofl__zhangji", "qun", 4):addSkills { "silve", "suibian" }
 Fk:loadTranslationTable{
   ["ofl__zhangji"] = "张济",
-  ["#ofl__zhangji"] = "",
-  ["illustrator:ofl__zhangji"] = "",
-
-  ["silve"] = "肆掠",
-  [":silve"] = "摸牌阶段开始时，你可以改为获得任意名角色合计至多两张牌，然后将等量的牌置于武将牌上，称为“掠”。",
-  ["suibian"] = "随变",
-  [":suibian"] = "一名角色使用与“掠”花色相同的牌时，你可以选择一项：1.移去所有此花色的“掠”，对其造成1点伤害；"..
-  "2.与其各摸一张牌；3.失去1点体力令此牌无效，然后将此牌交给一名角色并摸一张牌。",
+  ["#ofl__zhangji"] = "武威雄豪",
+  ["illustrator:ofl__zhangji"] = "君桓文化",
 }
 
-General:new(extension, "ofl__fanchou", "qun", 4):addSkills { "xingwei" }--, ""
+--General:new(extension, "ofl2__wangyun", "qun", 3):addSkills { "", "" }
+Fk:loadTranslationTable{
+  ["ofl2__wangyun"] = "王允",
+  ["#ofl2__wangyun"] = "",
+  ["illustrator:ofl2__wangyun"] = "",
+}
+
+General:new(extension, "ofl2__lvbu", "qun", 5):addSkills { "wushuang", "ofl2__liyu" }
+Fk:loadTranslationTable{
+  ["ofl2__lvbu"] = "吕布",
+  ["#ofl2__lvbu"] = "武的化身",
+  ["illustrator:ofl2__lvbu"] = "SY",
+}
+
+General:new(extension, "ofl__fanchou", "qun", 4):addSkills { "xingwei", "qianmu" }
 Fk:loadTranslationTable{
   ["ofl__fanchou"] = "樊稠",
-  ["#ofl__fanchou"] = "",
+  ["#ofl__fanchou"] = "庸生变难",
   ["illustrator:ofl__fanchou"] = "三道纹",
-
-  ["zzxxzxzx"] = "",
-  [":zzxxzxzx"] = "每回合各限一次，你可以xx并将一张<font color='red'>♦</font>牌当、基本牌<font color='red'>♥</font>牌当锦囊牌"..
-  "使用或打出。",
 }
 
 return extension
