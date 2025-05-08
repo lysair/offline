@@ -14,7 +14,23 @@ Fk:loadTranslationTable{
 fansheng:addEffect(fk.EnterDying, {
   anim_type = "support",
   can_trigger = function(self, event, target, player, data)
-    return target == player and player:hasSkill(fansheng.name) and player:getMark(fansheng.name) == 0
+    if not (target == player and player:hasSkill(fansheng.name)) then
+      return false
+    end
+
+    local room = player.room
+    if player:getMark("fansheng_disabled") == 0 then
+      room.logic:getEventsOfScope(GameEvent.Dying, 1, function(e)
+        if e.data.who == player then
+          room:setPlayerMark(player, "fansheng_disabled", e.id)
+          return true
+        end
+
+        return false
+      end, Player.HistoryGame)
+    end
+
+    return player:getMark("fansheng_disabled") == room.logic:getCurrentEvent().id
   end,
   on_cost = function(self, event, target, player, data)
     event:setCostData(self, {tos = player.room:getOtherPlayers(player)})
@@ -36,10 +52,12 @@ fansheng:addEffect(fk.EnterDying, {
         end) then
           table.insert(choices, "xihun-hand")
         end
-        if #p:getCardIds("e") > 0 then
+        if table.find(p:getCardIds("e"), function (id)
+          return not p:prohibitDiscard(id)
+        end) then
           table.insert(choices, "xihun-equip")
         end
-        if #choices then
+        if #choices > 0 then
           local choice = room:askToChoice(p, {
             choices = choices,
             skill_name = fansheng.name,
