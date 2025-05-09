@@ -202,6 +202,25 @@ Fk:loadTranslationTable{
   "<b>装备技能</b>：锁定技，当你受到伤害后，你摸两张牌。",
 }
 
+local chunqiu_brush = fk.CreateCard{
+  name = "&chunqiu_brush",
+  type = Card.TypeEquip,
+  sub_type = Card.SubtypeTreasure,
+  equip_skill = "chunqiu_brush_skill&",
+  on_uninstall = function(self, room, player)
+    Treasure.onUninstall(self, room, player)
+    player:setSkillUseHistory("chunqiu_brush_skill&", 0, Player.HistoryPhase)
+  end,
+}
+extension:addCardSpec("chunqiu_brush", Card.Heart, 5)
+Fk:loadTranslationTable{
+  ["chunqiu_brush"] = "春秋笔",
+  [":chunqiu_brush"] = "装备牌·宝物<br/>"..
+  "<b>宝物技能</b>：出牌阶段限一次，你可以随机选择一项，然后你选择一名角色，其从此项开始正序或逆序执行以下效果：<br>"..
+  "起：失去1点体力；<br>承：摸已损失体力值张牌；<br>转：回复1点体力；<br>合：弃置已损失体力值张手牌。<br>"..
+  "此牌离开你的装备区后销毁。",
+}
+
 extension:loadCardSkels {
   jingxiang_golden_age,
 
@@ -211,10 +230,13 @@ extension:loadCardSkels {
   imperial_sword,
   iron_bud,
   shzj__burning_camps,
+
   populace1,
   populace2,
   populace3,
   populace4,
+
+  chunqiu_brush,
 }
 
 return extension

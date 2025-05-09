@@ -1,6 +1,6 @@
 
 local xianwu = fk.CreateSkill {
-  name = "shzj_yiling__xianwu",
+  name = "xianwu",
 }
 
 Fk:loadTranslationTable{

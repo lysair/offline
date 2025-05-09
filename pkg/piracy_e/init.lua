@@ -181,7 +181,7 @@ Fk:loadTranslationTable{
 }
 
 local pengqi = General:new(extension, "pengqi", "qun", 3, 3, General.Female)
-pengqi:addSkills { "jushoup", "liaoluan", "huaying", "jizhongp" }
+pengqi:addSkills { "jushoup", "liaoluan", "huaying", "ofl__jizhong" }
 pengqi:addRelatedSkill("insurrectionary&")
 Fk:loadTranslationTable{
   ["pengqi"] = "彭绮",

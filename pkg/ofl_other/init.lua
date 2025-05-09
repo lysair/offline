@@ -124,4 +124,20 @@ Fk:loadTranslationTable{
   ["illustrator:ofl__godsimayi"] = "墨三千",
 }
 
+--陈寿道具礼盒
+General:new(extension, "chenshou", "shu", 3):addSkills { "chenzhi", "dianmo", "zaibi" }
+Fk:loadTranslationTable{
+  ["chenshou"] = "陈寿",
+  ["#chenshou"] = "婉而成章",
+  ["illustrator:chenshou"] = "小罗没想好",
+}
+local poker = fk.CreateCard{
+  name = "&poker",
+  type = Card.TypeBasic,
+  skill = "poker_skill",
+  is_passive = true,
+}
+extension:loadCardSkels{poker}
+extension:addCardSpec("poker")
+
 return extension
