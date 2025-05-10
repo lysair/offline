@@ -26,7 +26,7 @@ juqi:addEffect(fk.EventPhaseStart, {
         max_num = 1,
         include_equip = false,
         skill_name = juqi.name,
-        pattern = player:getSwitchSkillState(juqi.name) == fk.SwitchYin and "diamond,heart" or "club,spade",
+        pattern = player:getSwitchSkillState(juqi.name) == fk.SwitchYin and ".|.|diamond,heart" or ".|.|club,spade",
         prompt = "#juqi-give::" .. player.id,
         cancelable = true,
       })

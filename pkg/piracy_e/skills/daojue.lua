@@ -46,21 +46,21 @@ daojue:addEffect(fk.DamageInflicted, {
       end)
       room:useCard(use)
       if not player.dead and player:getMark("daojue1") > 2 and player:hasSkill(daojue.name) then
-        room:updateQuestSkillState(player, daojue.name, false)
-        room:invalidateSkill(player, daojue.name)
-        room:setPlayerMark(player, "@daojue", 0)
-        room:changeKingdom(player, "wei", true)
-        room:handleAddLoseSkills(player, "-jiechu|ofl__qingzheng|ofl__zhian|ol_ex__hujia")
-      end
-    elseif room:getCardArea(data.card) == Card.Processing then
-      room:addPlayerMark(player, "daojue2", 1)
-      room:moveCardTo(data.card, Card.PlayerHand, player, fk.ReasonJustMove, daojue.name, nil, true, player)
-      if not player.dead and player:getMark("daojue2") > 2 and player:hasSkill(daojue.name) then
         room:updateQuestSkillState(player, daojue.name, true)
         room:invalidateSkill(player, daojue.name)
         room:setPlayerMark(player, "@daojue", 0)
         room:changeKingdom(player, "qun", true)
         room:handleAddLoseSkills(player, "-jiechu|shenliy|ofl__zhuni|shishouy")
+      end
+    elseif room:getCardArea(data.card) == Card.Processing then
+      room:addPlayerMark(player, "daojue2", 1)
+      room:moveCardTo(data.card, Card.PlayerHand, player, fk.ReasonJustMove, daojue.name, nil, true, player)
+      if not player.dead and player:getMark("daojue2") > 2 and player:hasSkill(daojue.name) then
+        room:updateQuestSkillState(player, daojue.name, false)
+        room:invalidateSkill(player, daojue.name)
+        room:setPlayerMark(player, "@daojue", 0)
+        room:changeKingdom(player, "wei", true)
+        room:handleAddLoseSkills(player, "-jiechu|ofl__qingzheng|ofl__zhian|ol_ex__hujia")
       end
     end
   end,
@@ -85,7 +85,7 @@ daojue:addAcquireEffect(function (self, player, is_start)
     room.logic:getActualDamageEvents(1, function (e)
       local damage = e.data
       if damage.to == player and damage.card and damage.card.suit ~= Card.NoSuit then
-        table.insertTableIfNeed(record, damage.card:getSuitString(true))
+        table.insertIfNeed(record, damage.card:getSuitString(true))
         return #record == 4
       end
     end, Player.HistoryGame)

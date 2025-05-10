@@ -4,7 +4,10 @@ local mingdao = fk.CreateSkill {
 
 Fk:loadTranslationTable{
   ["ofl__mingdao"] = "瞑道",
-  [":ofl__mingdao"] = "游戏开始时，你可以将一张<a href='populace_href'>【众】</a>置入你的装备区，【众】进入离开你的装备区时销毁。",
+  [":ofl__mingdao"] = "游戏开始时，你可以将一张<a href='populace_href'>【众】</a>置入你的装备区，【众】离开你的装备区时销毁。",
+
+  ["populace_href"] = "【众】共有四张，分别为♠A/<font color='red'>♥A</font>/♣A/<font color='red'>♦A</font>，类别为装备牌·武器/防具/坐骑，"..
+  "每种花色的【众】可以置入任意武器/防具/坐骑，效果各不相同。",
 
   ["#ofl__mingdao-invoke"] = "瞑道：将一张“众”置入你的装备区（选择一种“众”及副类别，右键/长按可查看技能）",
 }
