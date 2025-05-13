@@ -115,7 +115,7 @@ Fk:loadTranslationTable{
   "若其受到伤害前处于横置状态，此牌结算后，你获得此【火烧连营】。",
 
   ["shzj__burning_camps_skill"] = "火烧连营",
-  ["#shzj__burning_camps_skill"] = "选择一名有牌的角色，展示其一张牌，然后可以弃置一张花色相同的手牌对其造成1点火焰伤害并弃置其展示牌",
+  ["#shzj__burning_camps_skill"] = "展示一名角色的一张牌，然后可以弃置一张花色相同的手牌对其造成1点火焰伤害并弃置其展示牌",
 }
 
 local populace1 = fk.CreateCard{
@@ -221,6 +221,24 @@ Fk:loadTranslationTable{
   "此牌离开你的装备区后销毁。",
 }
 
+local cure_poison_with_poison = fk.CreateCard{
+  name = "&cure_poison_with_poison",
+  type = Card.TypeTrick,
+  skill = "cure_poison_with_poison_skill",
+  is_damage_card = true,
+}
+extension:addCardSpec("cure_poison_with_poison", Card.Heart, 5)
+Fk:loadTranslationTable{
+  ["cure_poison_with_poison"] = "以毒攻毒",
+  [":cure_poison_with_poison"] = "锦囊牌<br/>"..
+  "<b>时机</b>：出牌阶段<br/>"..
+  "<b>目标</b>：一名已受伤的角色<br/>"..
+  "<b>效果</b>：你观看目标角色的所有手牌，若你与其手牌中均有【毒】，你弃置其中一张并与其各摸两张牌；否则，你与其各受到1点无来源伤害。",
+
+  ["cure_poison_with_poison_skill"] = "以毒攻毒",
+  ["#cure_poison_with_poison_skill"] = "选择一名已受伤角色观看其手牌，若你与其手牌中均有【毒】，弃置其中一张并与其各摸两张牌，否则各受到1点伤害",
+}
+
 extension:loadCardSkels {
   jingxiang_golden_age,
 
@@ -237,6 +255,8 @@ extension:loadCardSkels {
   populace4,
 
   chunqiu_brush,
+
+  cure_poison_with_poison,
 }
 
 return extension

@@ -368,7 +368,7 @@ Fk:loadTranslationTable{
   ["illustrator:godzhujun"] = "鱼仔",
 }
 
---官盗E10：蛇年限定礼盒
+--官盗E11001T：蛇年限定礼盒
 General:new(extension, "ofl__zhangrang", "qun", 4):addSkills { "ofl__taoluan", "changshi" }
 Fk:loadTranslationTable{
   ["ofl__zhangrang"] = "张让",
@@ -469,13 +469,13 @@ Fk:loadTranslationTable{
   ["illustrator:caocaoyuanshao"] = "荆芥",
 }
 
---官盗E9：全武将太虚幻境
+--官盗E9004T：全武将太虚幻境
 local quexiaojiang = General:new(extension, "quexiaojiang", "qun", 4)
 quexiaojiang:addSkills { "yingzhen", "yuanjue", "aoyong" }
 quexiaojiang:addRelatedSkill("tongkai")
 Fk:loadTranslationTable{
   ["quexiaojiang"] = "曲阿小将",
-  ["#quexiaojiang"] = "神",
+  ["#quexiaojiang"] = "神人何惧",
   ["illustrator:quexiaojiang"] = "荆芥",
 }
 

@@ -7,6 +7,7 @@ Fk:loadTranslationTable{
   ["shzj"] = "线下-山河煮酒",
   ["shzj_xiangfan"] = "龙起襄樊",
   ["shzj_yiling"] = "桃园挽歌",
+  ["shzj_guansuo"] = "关索传",
 }
 
 General:new(extension, "shzj_xiangfan__guanyu", "shu", 4):addSkills { "chaojue", "junshen" }
@@ -200,6 +201,62 @@ Fk:loadTranslationTable{
   ["anying"] = "暗影",
   ["#anying"] = "黑影笼罩",
   ["illustrator:anying"] = "黑白画谱",
+}
+
+General:new(extension, "huaci", "qun", 3, 6, General.Bigender):addSkills { "shiyao", "zuoyu", "shzj_guansuo__duyi", "juliaoh" }
+Fk:loadTranslationTable{
+  ["huaci"] = "华雌",
+  ["#huaci"] = "献躯验方",
+  ["illustrator:huaci"] = "小罗没想好",
+}
+
+local guansuo = General:new(extension, "shzj_guansuo__guansuo", "shu", 4)
+guansuo:addSkills { "qianfu", "chengyuan", "yuxiangs" }
+guansuo:addRelatedSkills { "yinglong", "shzj_guansuo__xiefang" }
+Fk:loadTranslationTable{
+  ["shzj_guansuo__guansuo"] = "关索",
+  ["#shzj_guansuo__guansuo"] = "蜃龙傲天",
+  ["illustrator:shzj_guansuo__guansuo"] = "荆芥",
+}
+
+local lvmeng = General:new(extension, "shzj_guansuo__lvmeng", "wu", 3, 4)
+lvmeng.shield = 1
+lvmeng:addSkills { "fujingl", "fujiang", "tonglu" }
+lvmeng:addRelatedSkills { "gongxin", "botu", "duojing" }
+Fk:loadTranslationTable{
+  ["shzj_guansuo__lvmeng"] = "吕蒙",
+  ["#shzj_guansuo__lvmeng"] = "青龙入命",
+  ["illustrator:shzj_guansuo__lvmeng"] = "小罗没想好",
+}
+
+General:new(extension, "shzj_guansuo__lvchang", "wei", 4):addSkills { "shzj_guansuo__shouxiang", "shzj_guansuo__juwu" }
+Fk:loadTranslationTable{
+  ["shzj_guansuo__lvchang"] = "吕常",
+  ["#shzj_guansuo__lvchang"] = "御敌用威",
+  ["illustrator:shzj_guansuo__lvchang"] = "荆芥",
+}
+
+General:new(extension, "shendan", "shu", 4):addSkills { "lianxiang", "pingmeng" }
+Fk:loadTranslationTable{
+  ["shendan"] = "申耽",
+  ["#shendan"] = "败阵降曹",
+  ["illustrator:shendan"] = "狗爷",
+}
+
+General:new(extension, "shenyis", "shu", 4):addSkills { "lianxiang", "panfengs" }
+Fk:loadTranslationTable{
+  ["shenyis"] = "申仪",
+  ["#shenyis"] = "背汉顺曹",
+  ["illustrator:shenyis"] = "狗爷",
+}
+
+General:new(extension, "shzj_guansuo__xusheng", "wu", 4):addSkills { "shzj_guansuo__pojun" }
+Fk:loadTranslationTable{
+  ["shzj_guansuo__xusheng"] = "徐盛",
+  ["#shzj_guansuo__xusheng"] = "江东的铁壁",
+  ["illustrator:shzj_guansuo__xusheng"] = "凡果",
+
+  ["~shzj_guansuo__xusheng"] = "来世…愿再为我江东之臣！",
 }
 
 return extension

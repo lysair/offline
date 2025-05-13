@@ -6,12 +6,15 @@ local junshen = fk.CreateSkill{
 Fk:loadTranslationTable{
   ["junshen"] = "军神",
   [":junshen"] = "你可以将一张红色牌当【杀】使用或打出。"..
-  "当你以此法使用【杀】对一名角色造成伤害时，其选择一项：1.弃置装备区内所有牌；2.此伤害+1。<br>"..
-  "你使用<font color='red'>♦</font>【杀】无距离限制、<font color='red'>♥</font>【杀】可以多选择一个目标。",
+  "当你以此法使用【杀】对一名角色造成伤害时，其弃置装备区所有牌，你可以重复X次，选择一项（X为其以此法弃置的装备数，至少为1）："..
+  "1.弃置其一张手牌；2.此伤害+1。<br>"..
+  "你使用<font color='red'>♦</font>【杀】无距离限制、<font color='red'>♥</font>【杀】可以多指定一个目标。",
 
   ["#junshen"] = "军神：将一张红色牌当【杀】使用或打出",
   ["#junshen-choose"] = "军神：你可以为此%arg额外指定一个目标",
-  ["#junshen-ask"] = "军神：弃置装备区所有牌，或点“取消”此伤害+1。",
+  ["#junshen-choice"] = "军神：你可以选择一项（第%arg次，共%arg2次）",
+  ["junshen_discard"] = "弃置%dest一张手牌",
+  ["junshen_damage"] = "此伤害+1",
 }
 
 junshen:addEffect("viewas", {
@@ -84,14 +87,49 @@ junshen:addEffect(fk.DamageCaused, {
   end,
   on_use = function (self, event, target, player, data)
     local room = player.room
-    if #data.to:getCardIds("e") == 0 or
-      not room:askToSkillInvoke(data.to, {
-        skill_name = junshen.name,
-        prompt = "#junshen-ask",
-      }) then
-      data:changeDamage(1)
-    else
+    local n = #data.to:getCardIds("e")
+    if n > 0 then
       data.to:throwAllCards("e", junshen.name)
+    end
+    n = math.min(n, 1)
+    for i = 1, n do
+      if data.to.dead or player.dead then return end
+      local all_choices = {
+        "junshen_discard::"..data.to.id,
+        "junshen_damage",
+        "Cancel",
+      }
+      local choices = table.simpleClone(all_choices)
+      if data.to:isKongcheng() then
+        table.remove(choices, 1)
+      end
+      local choice = room:askToChoice(player, {
+        choices = choices,
+        skill_name = junshen.name,
+        prompt = "#junshen-choice:::"..i..":"..n,
+      })
+      if choice == "Cancel" then
+        break
+      elseif choice:startsWith("junshen_discard") then
+        if data.to == player then
+        room:askToDiscard(player, {
+          min_num = 1,
+          max_num = 1,
+          include_equip = false,
+          skill_name = junshen.name,
+          cancelable = false,
+        })
+        else
+          local card = room:askToChooseCard(player, {
+            target = data.to,
+            flag = "h",
+            skill_name = junshen.name,
+          })
+          room:throwCard(card, junshen.name, data.to, player)
+        end
+      elseif choice:startsWith("junshen_damage") then
+        data:changeDamage(1)
+      end
     end
   end,
 })
