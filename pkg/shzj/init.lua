@@ -10,6 +10,7 @@ Fk:loadTranslationTable{
   ["shzj_guansuo"] = "关索传",
 }
 
+--龙起襄樊
 General:new(extension, "shzj_xiangfan__guanyu", "shu", 4):addSkills { "chaojue", "junshen" }
 Fk:loadTranslationTable{
   ["shzj_xiangfan__guanyu"] = "关羽",
@@ -38,6 +39,7 @@ Fk:loadTranslationTable{
   ["illustrator:lvchang"] = "戚屹",
 }
 
+--桃园挽歌
 local liubei = General:new(extension, "shzj_yiling__liubei", "shu", 4)
 liubei:addSkills { "qingshil", "yilin", "chengming" }
 liubei:addRelatedSkill("ex__rende")
@@ -203,37 +205,32 @@ Fk:loadTranslationTable{
   ["illustrator:anying"] = "黑白画谱",
 }
 
-General:new(extension, "huaci", "qun", 3, 6, General.Bigender):addSkills { "shiyao", "zuoyu", "shzj_guansuo__duyi", "juliaoh" }
+--关索传
+General:new(extension, "shzj_guansuo__guanping", "shu", 4):addSkills { "shzj_guansuo__longyin", "shzj_guansuo__jiezhong" }
 Fk:loadTranslationTable{
-  ["huaci"] = "华雌",
-  ["#huaci"] = "献躯验方",
-  ["illustrator:huaci"] = "小罗没想好",
+  ["shzj_guansuo__guanping"] = "关平",
+  ["#shzj_guansuo__guanping"] = "忠臣孝子",
+  ["illustrator:shzj_guansuo__guanping"] = "枭瞳",
+
+  ["~shzj_guansuo__guanping"] = "荆州已失守，还请父亲……暂退……",
 }
 
-local guansuo = General:new(extension, "shzj_guansuo__guansuo", "shu", 4)
-guansuo:addSkills { "qianfu", "chengyuan", "yuxiangs" }
-guansuo:addRelatedSkills { "yinglong", "shzj_guansuo__xiefang" }
+General:new(extension, "shzj_guansuo__zhoucang", "shu", 4):addSkills { "shzj_guansuo__zhongyong" }
 Fk:loadTranslationTable{
-  ["shzj_guansuo__guansuo"] = "关索",
-  ["#shzj_guansuo__guansuo"] = "蜃龙傲天",
-  ["illustrator:shzj_guansuo__guansuo"] = "荆芥",
+  ["shzj_guansuo__zhoucang"] = "周仓",
+  ["#shzj_guansuo__zhoucang"] = "忠勇当先",
+  ["illustrator:shzj_guansuo__zhoucang"] = "黑夜",
+
+  ["~shzj_guansuo__zhoucang"] = "将军既死，何求苟活。",
 }
 
-local lvmeng = General:new(extension, "shzj_guansuo__lvmeng", "wu", 3, 4)
-lvmeng.shield = 1
-lvmeng:addSkills { "fujingl", "fujiang", "tonglu" }
-lvmeng:addRelatedSkills { "gongxin", "botu", "duojing" }
+local liaohua = General:new(extension, "shzj_guansuo__liaohua", "shu", 4, 5)
+liaohua:addSkills { "zhawang", "xigui" }
+liaohua:addRelatedSkills { "ol_ex__zhaxiang", "m_ex__dangxian" }
 Fk:loadTranslationTable{
-  ["shzj_guansuo__lvmeng"] = "吕蒙",
-  ["#shzj_guansuo__lvmeng"] = "青龙入命",
-  ["illustrator:shzj_guansuo__lvmeng"] = "小罗没想好",
-}
-
-General:new(extension, "shzj_guansuo__lvchang", "wei", 4):addSkills { "shzj_guansuo__shouxiang", "shzj_guansuo__juwu" }
-Fk:loadTranslationTable{
-  ["shzj_guansuo__lvchang"] = "吕常",
-  ["#shzj_guansuo__lvchang"] = "御敌用威",
-  ["illustrator:shzj_guansuo__lvchang"] = "荆芥",
+  ["shzj_guansuo__liaohua"] = "廖化",
+  ["#shzj_guansuo__liaohua"] = "历尽沧桑",
+  ["illustrator:shzj_guansuo__liaohua"] = "巴萨小马",
 }
 
 General:new(extension, "shendan", "shu", 4):addSkills { "lianxiang", "pingmeng" }
@@ -257,6 +254,56 @@ Fk:loadTranslationTable{
   ["illustrator:shzj_guansuo__xusheng"] = "凡果",
 
   ["~shzj_guansuo__xusheng"] = "来世…愿再为我江东之臣！",
+}
+
+local lvmeng = General:new(extension, "shzj_guansuo__lvmeng", "wu", 3, 4)
+lvmeng.shield = 1
+lvmeng:addSkills { "fujingl", "fujiang", "tonglu" }
+lvmeng:addRelatedSkills { "gongxin", "botu", "duojing" }
+Fk:loadTranslationTable{
+  ["shzj_guansuo__lvmeng"] = "吕蒙",
+  ["#shzj_guansuo__lvmeng"] = "青龙入命",
+  ["illustrator:shzj_guansuo__lvmeng"] = "小罗没想好",
+}
+
+local guansuo = General:new(extension, "shzj_guansuo__guansuo", "shu", 4)
+guansuo:addSkills { "qianfu", "chengyuan", "yuxiangs" }
+guansuo:addRelatedSkills { "yinglong", "shzj_guansuo__xiefang" }
+Fk:loadTranslationTable{
+  ["shzj_guansuo__guansuo"] = "关索",
+  ["#shzj_guansuo__guansuo"] = "蜃龙傲天",
+  ["illustrator:shzj_guansuo__guansuo"] = "荆芥",
+}
+
+General:new(extension, "huaci", "qun", 3, 6, General.Bigender):addSkills { "shiyao", "zuoyu", "shzj_guansuo__duyi", "juliaoh" }
+Fk:loadTranslationTable{
+  ["huaci"] = "华雌",
+  ["#huaci"] = "献躯验方",
+  ["illustrator:huaci"] = "小罗没想好",
+}
+
+General:new(extension, "shzj_guansuo__guanyinping", "shu", 3, 3, General.Female):addSkills {
+  "shzj_guansuo__xueji", "shzj_guansuo__huxiao", "shzj_guansuo__wuji" }
+Fk:loadTranslationTable{
+  ["shzj_guansuo__guanyinping"] = "关银屏",
+  ["#shzj_guansuo__guanyinping"] = "凤舞九天",
+  ["illustrator:shzj_guansuo__guanyinping"] = "鬼画府",
+
+  ["~shzj_guansuo__guanyinping"] = "既已新年，自当欣颜……",
+}
+
+General:new(extension, "shzj_guansuo__lvchang", "wei", 4):addSkills { "shzj_guansuo__shouxiang", "shzj_guansuo__juwu" }
+Fk:loadTranslationTable{
+  ["shzj_guansuo__lvchang"] = "吕常",
+  ["#shzj_guansuo__lvchang"] = "御敌用威",
+  ["illustrator:shzj_guansuo__lvchang"] = "荆芥",
+}
+
+General:new(extension, "shzj_guansuo__luxun", "wu", 3):addSkills { "shzj_guansuo__qianxun", "shzj_guansuo__lianying" }
+Fk:loadTranslationTable{
+  ["shzj_guansuo__luxun"] = "陆逊",
+  ["#shzj_guansuo__luxun"] = "儒生雄才",
+  ["illustrator:shzj_guansuo__luxun"] = "深圳枭瞳",
 }
 
 return extension

@@ -140,4 +140,92 @@ local poker = fk.CreateCard{
 extension:loadCardSkels{poker}
 extension:addCardSpec("poker")
 
+--青史翰墨
+--General:new(extension, "caohuan", "wei", 3):addSkills { "junweic", "moran" }
+Fk:loadTranslationTable{
+  ["caohuan"] = "曹奂",
+  ["#caohuan"] = "陈留王",
+  ["illustrator:caohuan"] = "小罗没想好",
+
+  ["junweic"] = "君威",
+  [":junweic"] = "每回合限一次，你可以将两张相同颜色的牌当【无懈可击】使用，然后你可以为目标普通锦囊牌额外指定至多两个目标。",
+  ["moran"] = "默然",
+  [":moran"] = "锁定技，当你受到伤害后，你选择1~3的数字，你在所选数字个回合结束后（包括当前回合）摸两倍的牌，在此期间你的所有技能失效。",
+}
+
+--General:new(extension, "liuxuan", "shu", 3):addSkills { "sifen", "funanl" }
+Fk:loadTranslationTable{
+  ["liuxuan"] = "刘璿",
+  ["#liuxuan"] = "暗渊龙吟",
+  ["illustrator:liuxuan"] = "荆芥",
+
+  ["sifen"] = "俟奋",
+  [":sifen"] = "出牌阶段限一次，你可以令一名其他角色将任意张牌当一张【决斗】使用，然后你摸两张牌，此阶段你可以将等量张红色牌当【决斗】对其使用。",
+  ["funanl"] = "赴难",
+  [":funanl"] = "主公技，每回合限一次，你可以发动〖激将〗，若没有角色响应，你失去1点体力并摸两张牌。",
+}
+
+--General:new(extension, "ofl__sunhao", "wu", 5):addSkills { "shezuo" }
+Fk:loadTranslationTable{
+  ["ofl__sunhao"] = "孙皓",
+  ["#ofl__sunhao"] = "归命侯",
+  ["illustrator:ofl__sunhao"] = "小罗没想好",
+
+  ["shezuo"] = "设座",
+  [":shezuo"] = "准备阶段，你可以选择一项，本回合下次拼点结算后拼点没赢的角色执行：1.依次弃置两张牌，不足则失去等量体力；"..
+  "2.横置并受到1点火焰伤害；3.将所有手牌当任意一张普通锦囊牌使用。出牌阶段限一次，你可以摸一张牌并拼点。",
+}
+
+--General:new(extension, "ofl__liuxie", "qun", 3):addSkills { "jixul", "youchong" }
+Fk:loadTranslationTable{
+  ["ofl__liuxie"] = "刘协",
+  ["#ofl__liuxie"] = "山阳公",
+  ["illustrator:ofl__liuxie"] = "荆芥",
+
+  ["jixul"] = "济恤",
+  [":jixul"] = "出牌阶段每个角色组合限一次，你可以选择两名角色，若其手牌数之和小于任意两名除其以外角色的手牌数之和，你观看牌堆顶三张牌"..
+  "并分配给选择的角色（每名角色至少一张）。",
+  ["youchong"] = "优崇",
+  [":youchong"] = "每回合限一次，当你需使用基本牌时，你可以选择任意名手牌数大于你的角色，这些角色可以将三张牌当一张你需要的牌代替你使用。",
+}
+
+--风云际会
+--General:new(extension, "vd__caocao", "wei", 4):addSkills { "juebing", "fengxie" }
+Fk:loadTranslationTable{
+  ["vd__caocao"] = "曹操",
+  ["#vd__caocao"] = "奉天从人望",
+  ["illustrator:vd__caocao"] = "小罗没想好",
+
+  ["juebing"] = "谲兵",
+  [":juebing"] = "你可以将一张非【杀】手牌当【杀】使用，以此法使用的【杀】仅能被目标角色将一张非【闪】手牌当【闪】使用来响应。"..
+  "若以此法使用的【杀】造成伤害，此【杀】不计入次数限制。此【杀】结算结束后，你和唯一目标角色依次可以使用弃牌堆中一张双方用于转化的牌。",
+  ["fengxie"] = "奉挟",
+  [":fengxie"] = "限定技，出牌阶段，你可以选择一名其他角色，你依次选择除其以外每名角色装备区内的一张牌，移动至目标角色的装备区内，"..
+  "若无法移动，改为你获得之。然后明忠失去忠臣技，你获得之。",
+}
+
+--General:new(extension, "es__liubei", "shu", 4):addSkills { "huji", "houfa" }
+Fk:loadTranslationTable{
+  ["es__liubei"] = "刘备",
+  ["#es__liubei"] = "仁兵伐无道",
+  ["illustrator:es__liubei"] = "荆芥",
+  ["huji"] = "互忌",
+  [":huji"] = "每轮开始时，你可以选择一名不在你攻击范围内且你不在其攻击范围内的其他角色，其需赠予你一张手牌。若如此做，本轮每个回合结束时，"..
+  "你与其攻击范围内包含对方的角色需弃置两张手牌，对对方造成1点伤害。",
+  ["houfa"] = "后发",
+  [":houfa"] = "准备阶段，你本轮攻击范围增加你已损失体力值。每回合限一次，当你对座次小于你的角色造成伤害时，你可以将手牌摸至其体力上限。",
+}
+
+--General:new(extension, "var__sunquan", "wu", 4):addSkills { "zhanlun", "jueyi" }
+Fk:loadTranslationTable{
+  ["var__sunquan"] = "孙权",
+  ["#var__sunquan"] = "年少万兜鍪",
+  ["illustrator:var__sunquan"] = "阿诚",
+  ["zhanlun"] = "战论",
+  [":zhanlun"] = "你的【杀】拥有助战：不计次数。此【杀】结算后，根据助战牌的颜色：黑色，你本回合使用的下一张【杀】伤害基数值+1；"..
+  "红色，你和本回合参与过助战的角色各摸两张牌，此技能本回合失效。",
+  ["jueyi"] = "决意",
+  [":jueyi"] = "出牌阶段开始时，你可以重铸至多两张牌，所有角色本回合不能弃置与重铸牌花色相同的牌，直到有角色进入濒死状态。",
+}
+
 return extension

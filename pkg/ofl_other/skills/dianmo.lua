@@ -43,59 +43,53 @@ local skill_pool = {
   "ofl__sangu", "ofl_mou__luanji", "ofl_mou__lianhuan", "ofl_mou__guose", "ofl_mou__wusheng",
   "longyi", "ofl__moucheng", "xijun", "bimeng", "ofl__dishi", "ofl__cuiji", "qianmu", "ofl__yanggu", "yangwu",
   "junshen", "fenwu", "qingkou", "shzj_yiling__longnu", "shzj_yiling__wusheng", "siji", "ansha", "daifa", "xianwu",
-  "sxfy__xiongxia", "sxfy__shuchen", "sxfy__chengjiz", "sxfy__zhanjue", "sxfy__zhengnan", "sxfy__youdi",
+  "sxfy__xiongxia", "sxfy__shuchen", "sxfy__chengjiz", "sxfy__zhanjue", "sxfy__zhengnan", "sxfy__youdi", "sxfy__zhitu",
 }
 
----@param player ServerPlayer
-local on_use = function (self, event, target, player, data)
-  local room = player.room
-  local pool = room:getBanner("dianmo_pool")
-  if not pool then
-    pool = table.filter(skill_pool, function (s)
-      return not not Fk.skills[s]
+local spec = {
+  on_use = function (self, event, target, player, data)
+    local room = player.room
+    local skills = table.filter(skill_pool, function (s)
+      return Fk.skills[s] and not player:hasSkill(s, true)
     end)
-    room:setBanner("dianmo_pool", pool)
-  end
-  local skills = table.filter(pool, function (s)
-    return not player:hasSkill(s, true)
-  end)
-  local choice = room:askToChoice(player, {
-    choices = table.random(skills, 2),
-    skill_name = dianmo.name,
-    detailed = true,
-  })
-  local exist_skills = table.filter(player:getTableMark(dianmo.name), function (s)
-    return player:hasSkill(s, true)
-  end)
-  if #exist_skills > 0 then
-    if #exist_skills == 4 or
-      room:askToSkillInvoke(player, {
-        skill_name = dianmo.name,
-        prompt = "#dianmo-replace:::"..#exist_skills,
-      }) then
-      local choice2 = room:askToChoice(player, {
-        choices = exist_skills,
-        skill_name = dianmo.name,
-        prompt = "#dianmo-discard",
-        detailed = true,
-      })
-      table.removeOne(exist_skills, choice2)
-      table.insert(exist_skills, choice)
-      room:setPlayerMark(player, dianmo.name, exist_skills)
-      room:handleAddLoseSkills(player, choice.."|-"..choice2)
-      if #exist_skills < 4 and not player.dead then
-        player:drawCards(4 - #exist_skills, dianmo.name)
+    local choice = room:askToChoice(player, {
+      choices = table.random(skills, 2),
+      skill_name = dianmo.name,
+      detailed = true,
+    })
+    local exist_skills = table.filter(player:getTableMark(dianmo.name), function (s)
+      return player:hasSkill(s, true)
+    end)
+    if #exist_skills > 0 then
+      if #exist_skills == 4 or
+        room:askToSkillInvoke(player, {
+          skill_name = dianmo.name,
+          prompt = "#dianmo-replace:::"..#exist_skills,
+        }) then
+        local choice2 = room:askToChoice(player, {
+          choices = exist_skills,
+          skill_name = dianmo.name,
+          prompt = "#dianmo-discard",
+          detailed = true,
+        })
+        table.removeOne(exist_skills, choice2)
+        table.insert(exist_skills, choice)
+        room:setPlayerMark(player, dianmo.name, exist_skills)
+        room:handleAddLoseSkills(player, choice.."|-"..choice2)
+        if #exist_skills < 4 and not player.dead then
+          player:drawCards(4 - #exist_skills, dianmo.name)
+        end
+        return
       end
-      return
     end
-  end
-  table.insert(exist_skills, choice)
-  room:setPlayerMark(player, dianmo.name, exist_skills)
-  room:handleAddLoseSkills(player, choice)
-  if #exist_skills < 4 and not player.dead then
-    player:drawCards(4 - #exist_skills, dianmo.name)
-  end
-end
+    table.insert(exist_skills, choice)
+    room:setPlayerMark(player, dianmo.name, exist_skills)
+    room:handleAddLoseSkills(player, choice)
+    if #exist_skills < 4 and not player.dead then
+      player:drawCards(4 - #exist_skills, dianmo.name)
+    end
+  end,
+}
 
 dianmo:addEffect(fk.Damaged, {
   anim_type = "masochism",
@@ -107,14 +101,14 @@ dianmo:addEffect(fk.Damaged, {
       return #damage_events == 1 and damage_events[1].data == data
     end
   end,
-  on_use = on_use,
+  on_use = spec.on_use,
 })
 
 dianmo:addEffect(fk.EventPhaseStart, {
   can_trigger = function (self, event, target, player, data)
     return target == player and player:hasSkill(dianmo.name) and player.phase == Player.Start
   end,
-  on_use = on_use,
+  on_use = spec.on_use,
 })
 
 return dianmo

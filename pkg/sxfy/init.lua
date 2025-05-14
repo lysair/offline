@@ -464,4 +464,54 @@ Fk:loadTranslationTable{
   ["illustrator:sxfy__zhoufang"] = "匠人绘",
 }
 
+--青龙
+General:new(extension, "sxfy__baoxin", "qun", 4):addSkills { "sxfy__yimou", "sxfy__mutao" }
+Fk:loadTranslationTable{
+  ["sxfy__baoxin"] = "鲍信",
+  ["#sxfy__baoxin"] = "坚朴的忠相",
+  ["illustrator:sxfy__baoxin"] = "尼乐小丑",
+}
+
+General:new(extension, "sxfy__peixiu", "qun", 3):addSkills { "sxfy__zhitu" }
+Fk:loadTranslationTable{
+  ["sxfy__peixiu"] = "裴秀",
+  ["#sxfy__peixiu"] = "晋图开秘",
+  ["illustrator:sxfy__peixiu"] = "潘潘",
+}
+
+General:new(extension, "sxfy__yangbiao", "qun", 3):addSkills { "sxfy__yizheng", "sxfy__rangjie" }
+Fk:loadTranslationTable{
+  ["sxfy__yangbiao"] = "杨彪",
+  ["#sxfy__yangbiao"] = "德彰海内",
+  ["illustrator:sxfy__yangbiao"] = "凡果",
+}
+
+General:new(extension, "sxfy__huangfusong", "qun", 4):addSkills { "sxfy__taoluanh" }
+Fk:loadTranslationTable{
+  ["sxfy__huangfusong"] = "皇甫嵩",
+  ["#sxfy__huangfusong"] = "定巾平寇",
+  ["illustrator:sxfy__huangfusong"] = "苍月白龙",
+}
+
+General:new(extension, "sxfy__zerong", "qun", 4):addSkills { "sxfy__cansi" }
+Fk:loadTranslationTable{
+  ["sxfy__zerong"] = "笮融",
+  ["#sxfy__zerong"] = "沉寂的浮屠",
+  ["illustrator:sxfy__zerong"] = "塞拉斯",
+}
+
+General:new(extension, "sxfy__pangdegong", "qun", 3):addSkills { "sxfy__lingjian", "sxfy__mingship" }
+Fk:loadTranslationTable{
+  ["sxfy__pangdegong"] = "庞德公",
+  ["#sxfy__pangdegong"] = "以德服人",
+  ["illustrator:sxfy__pangdegong"] = "塞拉斯",
+}
+
+General:new(extension, "sxfy__nanhualaoxian", "qun", 3):addSkills { "sxfy__xianlu", "sxfy__tianshu" }
+Fk:loadTranslationTable{
+  ["sxfy__nanhualaoxian"] = "南华小仙",
+  ["#sxfy__nanhualaoxian"] = "祓炁除煞",
+  ["illustrator:sxfy__nanhualaoxian"] = "塞拉斯",
+}
+
 return extension
