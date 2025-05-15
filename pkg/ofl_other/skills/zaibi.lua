@@ -6,7 +6,7 @@ Fk:loadTranslationTable {
   ["zaibi"] = "载笔",
   [":zaibi"] = "出牌阶段限一次，你可以重铸至少两张点数连续的牌，从游戏外将<a href=':chunqiu_brush'>【春秋笔】</a>置入你的装备区。",
 
-  ["#zaibi"] = "围铸：重铸至少两张点数连续的牌，将【春秋笔】置入装备区",
+  ["#zaibi"] = "载笔：重铸至少两张点数连续的牌，将【春秋笔】置入装备区",
 }
 
 zaibi:addEffect("active", {

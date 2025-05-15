@@ -44,11 +44,16 @@ yingzhen:addEffect(fk.GameStart, {
         p = to:getNextAlive()
       end
       if p ~= player then
-        local yes = current == player
+        local yes1 = current == player
+        local yes2 = current == p
         room:swapSeat(player, p)
-        if yes then
+        if yes1 then
           current = p
           room:setCurrent(p)
+        end
+        if yes2 then
+          current = player
+          room:setCurrent(player)
         end
       end
     end
