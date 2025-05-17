@@ -91,7 +91,7 @@ junshen:addEffect(fk.DamageCaused, {
     if n > 0 then
       data.to:throwAllCards("e", junshen.name)
     end
-    n = math.min(n, 1)
+    n = math.max(n, 1)
     for i = 1, n do
       if data.to.dead or player.dead then return end
       local all_choices = {

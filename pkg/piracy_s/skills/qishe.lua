@@ -25,7 +25,7 @@ qishe:addEffect(fk.GameStart, {
 qishe:addEffect(fk.EventPhaseStart, {
   anim_type = "drawcard",
   can_trigger = function(self, event, target, player, data)
-    return target == player and player.phase == Player.Finish and
+    return target == player and player:hasSkill(qishe.name) and player.phase == Player.Finish and
       table.find(player.room.discard_pile, function (id)
         return Fk:getCardById(id).trueName == "archery_attack"
       end)

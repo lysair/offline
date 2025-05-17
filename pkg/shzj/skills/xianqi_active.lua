@@ -21,7 +21,7 @@ xianqi_active:addEffect("active", {
     end)
   end,
   card_filter = function(self, player, to_select, selected)
-    return #selected < 2 and not player:prohibitDiscard(to_select)
+    return #selected < 2 and table.contains(player:getHandlyIds(), to_select) and not player:prohibitDiscard(to_select)
   end,
   target_filter = function(self, player, to_select, selected)
     return #selected == 0 and to_select:hasSkill("xianqi") and to_select:usedSkillTimes("xianqi", Player.HistoryPhase) == 0

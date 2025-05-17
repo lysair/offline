@@ -17,6 +17,54 @@ Fk:loadTranslationTable{
   ["illustrator:caesar"] = "青骑士",
 }
 
+--三国杀·幻
+General:new(extension, "sgsh__nanhualaoxian", "qun", 3):addSkills { "sgsh__jidao", "sgsh__feisheng", "sgsh__jinghe" }
+Fk:loadTranslationTable{
+  ["sgsh__nanhualaoxian"] = "幻南华老仙",
+  ["#sgsh__nanhualaoxian"] = "虚步太清",
+  ["illustrator:sgsh__nanhualaoxian"] = "鬼画府",
+
+  ["~sgsh__nanhualaoxian"] = "此理闻所未闻，参不透啊。",
+}
+
+General:new(extension, "sgsh__zuoci", "qun", 3):addSkills { "sgsh__huashen", "sgsh__xinsheng" }
+Fk:loadTranslationTable{
+  ["sgsh__zuoci"] = "幻左慈",
+  ["#sgsh__zuoci"] = "谜之仙人",
+  ["illustrator:sgsh__zuoci"] = "JanusLausDeo",
+
+  ["~sgsh__zuoci"] = "万事，皆有因果。",
+}
+
+General:new(extension, "sgsh__jianggan", "wei", 3):addSkills { "sgsh__daoshu", "weicheng" }
+Fk:loadTranslationTable{
+  ["sgsh__jianggan"] = "蒋干",
+  ["#sgsh__jianggan"] = "",
+  ["illustrator:sgsh__jianggan"] = "",
+
+  ["$weicheng_sgsh__jianggan1"] = "公瑾，吾之诚心，天地可鉴。",
+  ["$weicheng_sgsh__jianggan2"] = "遥闻芳烈，故来叙阔。",
+  ["~sgsh__jianggan"] = "蔡张之罪，非我之过呀！",
+}
+
+General:new(extension, "sgsh__huaxiong", "qun", 4):addSkills { "sgsh__yaowu" }
+Fk:loadTranslationTable{
+  ["sgsh__huaxiong"] = "华雄",
+  ["#sgsh__huaxiong"] = "魔将",
+  ["illustrator:sgsh__huaxiong"] = "沉睡千年",
+
+  ["~sgsh__huaxiong"] = "错失先机，呃啊！",
+}
+
+General:new(extension, "sgsh__lisu", "qun", 3):addSkills { "sgsh__kuizhul", "sgsh__qiaoyan" }
+Fk:loadTranslationTable{
+  ["sgsh__lisu"] = "李肃",
+  ["#sgsh__lisu"] = "",
+  ["illustrator:sgsh__lisu"] = "",
+
+  ["~sgsh__lisu"] = "见利忘义，必遭天谴。",
+}
+
 --神马超道具礼盒
 General:new(extension, "ofl__godmachao", "god", 4):addSkills { "ofl__shouli", "ofl__hengwu" }
 Fk:loadTranslationTable{
@@ -28,7 +76,7 @@ Fk:loadTranslationTable{
 }
 
 --风花雪月：七夕模式？
---General:new(extension, "rom__liuhong", "qun", 4):addSkills { "rom__zhenglian" }
+General:new(extension, "rom__liuhong", "qun", 4):addSkills { "rom__zhenglian" }
 Fk:loadTranslationTable{
   ["rom__liuhong"] = "刘宏",
   ["#rom__liuhong"] = "汉灵帝",
@@ -148,7 +196,7 @@ Fk:loadTranslationTable{
   ["illustrator:caohuan"] = "小罗没想好",
 }
 
-General:new(extension, "liuxuan", "shu", 3):addSkills { "sifen", "funanl" }
+General:new(extension, "liuxuan", "shu", 4):addSkills { "sifen", "funanl" }
 Fk:loadTranslationTable{
   ["liuxuan"] = "刘璿",
   ["#liuxuan"] = "暗渊龙吟",

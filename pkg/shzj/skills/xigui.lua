@@ -22,7 +22,7 @@ local spec = {
     })
     if target ~= player then
       room.logic:getCurrentEvent():findParent(GameEvent.Round):addCleaner(function()
-        room:handleAddLoseSkills(player, "-xigui|m_ex__dangxian")
+        room:handleAddLoseSkills(player, "-xigui|ty_ex__dangxian")
       end)
     end
   end,

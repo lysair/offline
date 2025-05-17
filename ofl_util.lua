@@ -80,6 +80,148 @@ Utility.PrepareExtraPile = function(room)
 end
 
 ------------------------------------------------------------------------------------------------------
+--- SgshData 数据
+---@class SgshDataSpec
+---@field public general string @ 获得/失去的副将
+
+---@class Utility.SgshData: SgshDataSpec, TriggerData
+Utility.SgshData = TriggerData:subclass("SgshData")
+
+--- TriggerEvent
+---@class Utility.SgshTriggerEvent: TriggerEvent
+---@field public data Utility.SgshData
+Utility.SgshTriggerEvent = TriggerEvent:subclass("SgshEvent")
+
+--- 获得副将前
+---@class Utility.SgshBeforeAcquireDeputy: Utility.SgshTriggerEvent
+Utility.SgshBeforeAcquireDeputy = Utility.SgshTriggerEvent:subclass("fk.SgshBeforeAcquireDeputy")
+
+--- 失去副将前
+---@class Utility.SgshBeforeLoseDeputy: Utility.SgshTriggerEvent
+Utility.SgshBeforeLoseDeputy = Utility.SgshTriggerEvent:subclass("fk.SgshBeforeLoseDeputy")
+
+--- 获得副将后
+---@class Utility.SgshAcquireDeputy: Utility.SgshTriggerEvent
+Utility.SgshAcquireDeputy = Utility.SgshTriggerEvent:subclass("fk.SgshAcquireDeputy")
+
+--- 失去副将后
+---@class Utility.SgshLoseDeputy: Utility.SgshTriggerEvent
+Utility.SgshLoseDeputy = Utility.SgshTriggerEvent:subclass("fk.SgshLoseDeputy")
+
+---@alias SgshTrigFunc fun(self: TriggerSkill, event: Utility.SgshTriggerEvent,
+---  target: ServerPlayer, player: ServerPlayer, data: Utility.SgshData):any
+
+---@class SkillSkeleton
+---@field public addEffect fun(self: SkillSkeleton, key: Utility.SgshTriggerEvent,
+---  data: TrigSkelSpec<SgshTrigFunc>, attr: TrigSkelAttribute?): SkillSkeleton
+
+local blacklist = {
+  "zuoci", "ol_ex__zuoci", "js__xushao", "js_re__xushao", "shichangshi", "starsp__xiahoudun"
+}
+
+---失去副将
+---@param player ServerPlayer 玩家
+---@param general? string 失去的副将，不填则自选失去
+Utility.sgshLoseDeputy = function (player, general)
+  local room = player.room
+  local deputy = player:getTableMark("@&sgsh_deputy")
+  if #deputy == 0 then return end
+  local data = { general = general }
+  if general == nil then
+    data.general = room:askToChooseGeneral(player, {
+      generals = deputy,
+      n = 1,
+      no_convert = true,
+    })
+  end
+  room.logic:trigger(Utility.SgshBeforeLoseDeputy, player, data)
+  if data.general == nil then
+    return
+  end
+  general = data.general
+
+  table.removeOne(deputy, general)
+  table.insert(room.general_pile, general)
+  room:setPlayerMark(player, "@&sgsh_deputy", deputy)
+  local skills = Fk.generals[general]:getSkillNameList(player.role == "lord")
+  room:handleAddLoseSkills(player, "-"..table.concat(skills, "|-"), nil, false, false)
+
+  room:sendLog{
+    type = "#SgshLoseDeputy",
+    from = player.id,
+    arg = general,
+    toast = true,
+  }
+  room.logic:trigger(Utility.SgshLoseDeputy, player, { general = general })
+end
+
+---获得副将
+---@param player ServerPlayer 玩家
+---@param general? string 获得的副将，不填则随机获得
+Utility.sgshAcquireDeputy = function (player, general)
+  local room = player.room
+  local data = { general = general }
+  room.logic:trigger(Utility.SgshBeforeAcquireDeputy, player, data)
+  if data.general == nil then
+    local generals = table.filter(room.general_pile, function(name)
+      return not table.contains(blacklist, name)
+    end)
+    if #generals == 0 then
+      room:sendLog{
+        type = "#NoGeneralDraw",
+        toast = true,
+      }
+      room:gameOver("")
+    end
+    data.general = table.random(generals)
+  end
+  if data.general == nil then
+    return
+  end
+
+  if #player:getTableMark("@&sgsh_deputy") > 2 then
+    Utility.sgshLoseDeputy(player)
+    if player.dead or #player:getTableMark("@&sgsh_deputy") > 2 then
+      return
+    end
+  end
+  general = data.general
+  table.removeOne(room.general_pile, general)
+  room:addTableMark(player, "@&sgsh_deputy", general)
+
+  local addRoleModSkills = function(p, skillName)
+    local skill = Fk.skills[skillName]
+    if not skill then
+      fk.qCritical("Skill: "..skillName.." doesn't exist!")
+      return
+    end
+    if (skill:hasTag(Skill.Lord) and p.role ~= "lord") or skill:hasTag(Skill.MainPlace) then
+      return
+    end
+    if skill:hasTag(Skill.AttachedKingdom) and not table.contains(skill:getSkeleton().attached_kingdom, player.kingdom) then
+      return
+    end
+    room:handleAddLoseSkills(p, skillName, nil, false)
+  end
+  for _, s in ipairs(Fk.generals[general]:getSkillNameList(player.role == "lord")) do
+    addRoleModSkills(player, s)
+  end
+
+  room:sendLog{
+    type = "#SgshAcquireDeputy",
+    from = player.id,
+    arg = general,
+    toast = true,
+  }
+  room.logic:trigger(Utility.SgshAcquireDeputy, player, { general = general })
+end
+
+Fk:loadTranslationTable{
+  ["#SgshLoseDeputy"] = "%from 失去了副将 %arg",
+  ["#SgshAcquireDeputy"] = "%from 获得了副将 %arg",
+}
+
+------------------------------------------------------------------------------------------------------
 --- OflShouliData 数据
 ---@class OflShouliDataSpec
 ---@field public n integer @ 数量

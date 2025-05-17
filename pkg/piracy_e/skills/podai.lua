@@ -37,7 +37,11 @@ local spec = {
           end
         end
         for _, s in ipairs(target:getSkillNameList()) do
-          if table.find({"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"}, function (str)
+          if table.find({
+            "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+            "零", "一", "二", "三", "四", "五", "六", "七", "八", "九",
+            "两", "十", "百", "千", "万"
+          }, function (str)
             return string.find(Fk:translate(":"..s, "zh_CN"), str) ~= nil
           end) then
             table.insert(choices, "ofl__podai1")
@@ -84,7 +88,11 @@ local spec = {
         end
       end
       for _, s in ipairs(target:getSkillNameList()) do
-        if table.find({"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"}, function (str)
+          if table.find({
+            "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+            "零", "一", "二", "三", "四", "五", "六", "七", "八", "九",
+            "两", "十", "百", "千", "万"
+          }, function (str)
           return string.find(Fk:translate(":"..s, "zh_CN"), str) ~= nil
           end) then
           table.insertIfNeed(skills, s)

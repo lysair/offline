@@ -49,7 +49,7 @@ shezuo:addEffect("active", {
 shezuo:addEffect(fk.EventPhaseStart, {
   anim_type = "offensive",
   can_trigger = function (self, event, target, player, data)
-    return target == player and player:hasSkill(shezuo.name) and player.phase == Player.Play
+    return target == player and player:hasSkill(shezuo.name) and player.phase == Player.Start
   end,
   on_cost = function (self, event, target, player, data)
     local room = player.room
@@ -157,7 +157,7 @@ shezuo:addEffect(fk.PindianFinished, {
               card.skillName = shezuo.name
               card:addSubcards(to:getCardIds("h"))
               if #dat.targets == 0 then
-                dat.targets = card:getDefaultTarget(to, {bypass_times = true})
+                dat.targets = card:getAvailableTargets(to, {bypass_times = true})
               end
               room:useCard{
                 from = to,

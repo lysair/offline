@@ -7,39 +7,90 @@ Fk:loadTranslationTable{
   ["piracy_s"] = "线下-官盗S系列",
 }
 
---官盗S0-004神威九伐 神将篇：神马超
---General:new(extension, "ofl2__godmachao", "god", 4):addSkills { "ofl2__shouli", "ofl2__hengwu" }
-Fk:loadTranslationTable{
-  ["ofl2__godmachao"] = "神马超",
-  ["#ofl2__godmachao"] = "神威天将军",
-  ["illustrator:ofl2__godmachao"] = "",
+--官盗S1074过关斩将：双势力关羽
 
-  ["ofl2__shouli"] = "狩骊",
-  [":ofl2__shouli"] = "锁定技，游戏开始时，所有角色依次选择一项：1。使用一张坐骑牌，然后摸一张牌；2.随机从游戏外使用一张坐骑牌。你可以将场上的一张进攻坐骑当【杀】（无次数限制）、防御马当【闪】使用或打出，"..
-  "以此法失去坐骑的其他角色本回合非锁定技失效，你与其本回合受到的伤害+1且改为雷电伤害。",
-  ["ofl2__hengwu"] = "横骛",
-  [":ofl2__hengwu"] = "当你使用或打出牌时，若场上有与之花色相同的装备牌，你可以弃置任意张与之花色相同的手牌，然后摸X张牌(X为你以此法弃置的牌数与场上该花色的装备牌数之和)",
+--官盗S2063赵子龙传
+General:new(extension, "ofl__zhaoyun", "shu", 4):addSkills { "ofl__qijin", "ofl__qichu", "ofl__longxin" }
+Fk:loadTranslationTable{
+  ["ofl__zhaoyun"] = "赵云",
+  ["#ofl__zhaoyun"] = "寒光凛然",
+  ["illustrator:ofl__zhaoyun"] = "木碗Rae",
 }
 
---官盗S1068主公杀：吕布 董卓
---General:new(extension, "ofl__lvbu", "qun", 4):addSkills { "wushuang", "ofl__sheji" }
+--官盗S2065关云长传
+General:new(extension, "ofl__guanyu", "shu", 4):addSkills { "wusheng", "ofl__zhonghun", "nuzhan" }
+Fk:loadTranslationTable{
+  ["ofl__guanyu"] = "关羽",
+  ["#ofl__guanyu"] = "神武绝伦",
+  ["illustrator:ofl__guanyu"] = "木美人",
+}
+
+--官盗S2070武将传 旷世奇才郭嘉
+General:new(extension, "ofl2__guojia", "wei", 3):addSkills { "yiji", "ofl__quanmou" }
+Fk:loadTranslationTable{
+  ["ofl2__guojia"] = "郭嘉",
+  ["#ofl2__guojia"] = "旷世奇才",
+  ["illustrator:ofl2__guojia"] = "木美人",
+}
+
+--官盗S2079武将传 乱武天下贾诩
+General:new(extension, "ofl2__jiaxu", "qun", 3):addSkills { "ofl__yice", "luanwu" }
+Fk:loadTranslationTable{
+  ["ofl2__jiaxu"] = "贾诩",
+  ["#ofl2__jiaxu"] = "乱武天下",
+  ["illustrator:ofl2__jiaxu"] = "木美人",
+}
+
+--官盗S2080武将传 英才盖世周瑜
+General:new(extension, "ofl4__zhouyu", "wu", 3):addSkills { "ofl4__shiyin", "ofl__quwu", "ofl__liaozou" }
+Fk:loadTranslationTable{
+  ["ofl4__zhouyu"] = "周瑜",
+  ["#ofl4__zhouyu"] = "英才盖世",
+  ["illustrator:ofl4__zhouyu"] = "种风彦",
+}
+
+--官盗S2081武将传 陈思王曹植
+General:new(extension, "ofl__caozhi", "wei", 3):addSkills { "liushang", "qibu" }
+Fk:loadTranslationTable{
+  ["ofl__caozhi"] = "曹植",
+  ["#ofl__caozhi"] = "陈思王",
+  ["illustrator:ofl__caozhi"] = "兴游",
+}
+
+--官盗S1061竞技标准版：吕布 董卓
+General:new(extension, "ofl__lvbu", "qun", 4):addSkills { "wushuang", "ofl__sheji" }
 Fk:loadTranslationTable{
   ["ofl__lvbu"] = "吕布",
   ["#ofl__lvbu"] = "武的化身",
   ["illustrator:ofl__lvbu"] = "7点Game",
-
-  ["ofl__sheji"] = "射戟",
-  [":ofl__sheji"] = "出牌阶段限一次，你可以将所有手牌当一张无距离限制的【杀】使用，若对目标角色造成伤害，你获得其装备区的武器和坐骑牌。",
 }
 
---General:new(extension, "ofl__dongzhuo", "qun", 4):addSkills { "ofl__hengzheng" }
+General:new(extension, "ofl__dongzhuo", "qun", 4):addSkills { "ofl__hengzheng" }
 Fk:loadTranslationTable{
   ["ofl__dongzhuo"] = "董卓",
   ["#ofl__dongzhuo"] = "魔王",
   ["illustrator:ofl__dongzhuo"] = "巴萨小马",
+}
 
-  ["ofl__hengzheng"] = "横征",
-  [":ofl__hengzheng"] = "回合开始时，若你没有手牌或体力值为1，你可以获得所有角色区域内各一张牌。",
+--官盗S0-004神威九伐 神将篇
+General:new(extension, "ofl2__godmachao", "god", 4):addSkills { "ofl2__shouli", "ofl2__hengwu" }
+Fk:loadTranslationTable{
+  ["ofl2__godmachao"] = "神马超",
+  ["#ofl2__godmachao"] = "神威天将军",
+  ["illustrator:ofl2__godmachao"] = "biou09",
+
+  ["~ofl2__godmachao"] = "七情难掩，六欲难消，何谓之神？",
+}
+
+General:new(extension, "ofl__godjiangwei", "god", 4):addSkills { "tianren", "ofl__jiufa", "ofl__pingxiang" }
+Fk:loadTranslationTable{
+  ["ofl__godjiangwei"] = "神姜维",
+  ["#ofl__godjiangwei"] = "怒麟布武",
+  ["illustrator:ofl__godjiangwei"] = "错落宇宙",
+
+  ["$tianren_ofl__godjiangwei1"] = "残兵盘据雄关险，独梁力支大厦倾！",
+  ["$tianren_ofl__godjiangwei2"] = "雄关高岭壮英姿，一腔热血谱汉风。",
+  ["~ofl__godjiangwei"] = "残阳晦月映秋霜，天命不再计成空。",
 }
 
 --官盗S1058三国杀空城计 诸葛亮
@@ -80,16 +131,6 @@ Fk:loadTranslationTable{
   ["ofl2__simayi"] = "司马懿",
   ["#ofl2__simayi"] = "鹰视狼顾",
   ["illustrator:ofl2__simayi"] = "绘聚艺堂",
-}
-
---官盗S1074过关斩将：双势力关羽
-
---官盗S2079武将传 乱武天下贾诩
---General:new(extension, "ofl2__jiaxu", "qun", 3):addSkills { "ofl__yice", "luanwu" }
-Fk:loadTranslationTable{
-  ["ofl2__jiaxu"] = "贾诩",
-  ["#ofl2__jiaxu"] = "乱武天下",
-  ["illustrator:ofl2__jiaxu"] = "木美人",
 }
 
 --官盗S7幽燕烽火：曹叡 司马懿 公孙渊 公孙瓒 袁绍 文丑

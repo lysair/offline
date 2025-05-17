@@ -13,7 +13,7 @@ Fk:loadTranslationTable{
 youqi:addEffect(fk.EventPhaseStart, {
   anim_type = "control",
   can_trigger = function(self, event, target, player, data)
-    if target == player and player:hasSkill(youqi.name) then
+    if target == player and player:hasSkill(youqi.name) and player.phase == Player.Start then
       for _, p in ipairs(player.room.alive_players) do
         if p.kingdom == "qun" then
           for _, id in ipairs(table.connect(p:getEquipments(Card.SubtypeOffensiveRide), p:getEquipments(Card.SubtypeDefensiveRide))) do

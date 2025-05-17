@@ -226,7 +226,7 @@ Fk:loadTranslationTable{
 
 local liaohua = General:new(extension, "shzj_guansuo__liaohua", "shu", 4, 5)
 liaohua:addSkills { "zhawang", "xigui" }
-liaohua:addRelatedSkills { "ol_ex__zhaxiang", "m_ex__dangxian" }
+liaohua:addRelatedSkills { "ol_ex__zhaxiang", "ty_ex__dangxian" }
 Fk:loadTranslationTable{
   ["shzj_guansuo__liaohua"] = "廖化",
   ["#shzj_guansuo__liaohua"] = "历尽沧桑",

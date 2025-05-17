@@ -1,3 +1,11 @@
+-- SPDX-License-Identifier: GPL-3.0-or-later
+
+local modes = Package:new("ofl__gamemode", Package.SpecialPack)
+
+modes:loadSkillSkelsByPath("./packages/offline/pkg/gamemodes/rule_skills")
+
+modes:addGameMode(require "packages/offline/pkg/gamemodes/sgsh_mode")
+
 local ofl_other = require "packages/offline/pkg/ofl_other"
 local fhyx = require "packages/offline/pkg/fhyx"
 local ofl_mou = require "packages/offline/pkg/ofl_mou"
@@ -16,9 +24,12 @@ Fk:loadTranslationTable{
   ["ofl"] = "线下",
   ["ofl2"] = "线下",
   ["ofl3"] = "线下",
+  ["ofl4"] = "线下",
 }
 
 return {
+  modes,
+
   ofl_other,
   fhyx,
   ofl_mou,

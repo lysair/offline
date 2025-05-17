@@ -97,7 +97,17 @@ Fk:loadTranslationTable{
   ["~ofl__sunchen"] = "愿陛下念臣昔日之功，陛下？陛下！！",
 }
 
---官盗E0051 尊享版2023：曹丕 杜畿 夏侯玄 李严 关银屏 马云騄 黄权 周泰 范疆张达
+--E0051 尊享版2023：曹丕 杜畿 夏侯玄 李严 关银屏 马云騄 黄权 周泰 范疆张达
+
+--E8002全武将大合集奢华版（神张飞盒）
+General:new(extension, "ofl__guozhao", "wei", 3, 3, General.Female):addSkills { "ofl__pianchong", "ofl__zunwei" }
+Fk:loadTranslationTable{
+  ["ofl__guozhao"] = "郭照",
+  ["#ofl__guozhao"] = "碧海青天",
+  ["illustrator:ofl__guozhao"] = "凡果_喵叽",
+
+  ["~ofl__guozhao"] = "君恩易逝难再复……",
+}
 
 --官盗E14至宝：周姬
 General:new(extension, "zhouji", "wu", 3, 3, General.Female):addSkills { "ofl__yanmouz", "ofl__zhanyan", "ofl__yuhuo" }
