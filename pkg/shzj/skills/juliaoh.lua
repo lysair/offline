@@ -24,7 +24,7 @@ juliaoh:addEffect(fk.PreHpLost, {
 juliaoh:addEffect(fk.TargetConfirmed, {
   anim_type = "control",
   can_trigger = function(self, event, target, player, data)
-    return player:hasSkill(juliaoh.name) and target ~= player and
+    return player:hasSkill(juliaoh.name) and data.from == player and target ~= player and
       data.card:isVirtual() and #Card:getIdList(data.card) > 0
   end,
   on_use = function(self, event, target, player, data)

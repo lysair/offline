@@ -20,8 +20,8 @@ local spec = {
       recoverBy = player,
       skillName = xigui.name,
     })
-    if target ~= player then
-      room.logic:getCurrentEvent():findParent(GameEvent.Round):addCleaner(function()
+    if not player.dead then
+      room.logic:getCurrentEvent():findParent(GameEvent.Round, true):addCleaner(function()
         room:handleAddLoseSkills(player, "-xigui|ty_ex__dangxian")
       end)
     end

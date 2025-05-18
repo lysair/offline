@@ -54,7 +54,7 @@ weipo:addEffect("active", {
         skill_name = weipo.name,
         prompt = "#ofl_shiji__weipo-give::" .. target.id,
       })
-      room:moveCardTo(card, Card.PlayerHand, target, fk.ReasonJustMove, weipo.name, nil, true, player)
+      room:moveCardTo(card, Card.PlayerHand, target, fk.ReasonJustMove, weipo.name, nil, true, player, MarkEnum.DestructIntoDiscard)
     end
   end,
 })

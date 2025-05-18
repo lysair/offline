@@ -37,6 +37,7 @@ zaibi:addEffect("active", {
     if player.dead then return end
     local id = room:getBanner(zaibi.name)[1]
     if room:getCardArea(id) == Card.Void and player:canMoveCardIntoEquip(id, false) then
+      room:setCardMark(Fk:getCardById(id), MarkEnum.DestructOutMyEquip, 1)
       room:moveCardIntoEquip(player, id, zaibi.name, false, player)
     end
   end,
@@ -45,9 +46,7 @@ zaibi:addEffect("active", {
 zaibi:addAcquireEffect(function (self, player, is_start)
   local room = player.room
   if not room:setBanner(zaibi.name) then
-    local card = room:printCard("chunqiu_brush", Card.Heart, 5)
-    room:setCardMark(card, MarkEnum.DestructOutMyEquip, 1)
-    room:setBanner(zaibi.name, {card.id})
+    room:setBanner(zaibi.name, {room:printCard("chunqiu_brush", Card.Heart, 5).id})
   end
 end)
 

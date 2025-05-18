@@ -37,16 +37,8 @@ dishi:addEffect(fk.EventPhaseStart, {
     end
   end,
   on_use = function(self, event, target, player, data)
-    local card = Fk:cloneCard("slash")
-    card:addSubcards(player:getCardIds("h"))
-    card.skillName = dishi.name
-    local use = {
-      from = player,
-      tos = event:getCostData(self).extra_data.targets,
-      card = card,
-      extraUse = true,
-      additionalDamage = player:getHandcardNum() - 1,
-    }
+    local use = table.simpleClone(event:getCostData(self).extra_data)
+    use.additionalDamage = player:getHandcardNum() - 1
     player.room:useCard(use)
   end,
 })

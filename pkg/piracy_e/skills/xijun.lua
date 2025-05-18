@@ -71,7 +71,7 @@ xijun:addEffect(fk.Damaged, {
     local dat = event:getCostData(self).extra_data
     local card = Fk:cloneCard(dat.interaction)
     card.skillName = xijun.name
-    card:addSubcard(dat.cards)
+    card:addSubcards(dat.cards)
     room:useCard({
       from = player,
       tos = dat.targets,

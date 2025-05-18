@@ -16,13 +16,20 @@ chenzhi:addEffect(fk.BeforeDrawCard, {
   end,
   on_use = function (self, event, target, player, data)
     local room = player.room
-    local cards = table.random(room:getBanner(chenzhi.name), data.num)
+    local cards = table.simpleClone(room:getBanner(chenzhi.name))
+    cards = table.filter(cards, function (id)
+      return room:getCardArea(id) == Card.Void
+    end)
+    cards = table.random(cards, data.num)
     if #cards < data.num then
       room:sendLog{
         type = "#NoCardDraw",
         toast = true,
       }
       room:gameOver("")
+    end
+    for _, id in ipairs(cards) do
+      room:setCardMark(Fk:getCardById(id), MarkEnum.DestructIntoDiscard, 1)
     end
     room:moveCardTo(cards, Card.PlayerHand, player, fk.ReasonDraw, data.skillName)
     return true

@@ -7,6 +7,7 @@ Fk:loadTranslationTable{
   [":dianmo"] = "准备阶段或当你每回合首次受到伤害后，你可以观看两个转化牌类技能，选择其中一个获得（至多四个）或替换一个已有技能，"..
   "然后摸空置的技能数张牌。",
 
+  ["#dianmo-get"] = "点墨：选择要获得的一个技能",
   ["#dianmo-replace"] = "点墨：是否替换现有的“点墨”技能？（上限4个，现有%arg个）",
   ["#dianmo-discard"] = "点墨：选择丢弃的“点墨”技能",
 }
@@ -33,7 +34,7 @@ local skill_pool = {
   "kouchao", "leiluan", "jiawei",
   --新服
   "ty_ex__zhuhai", "ty_ex__zhanjue", "limu", "ty_ex__jiaozhao",
-  "shouli", "juewu", "lunshi", "wuwei", "lifengc",
+  "shouli", "juewu", "tymou__lunshi", "wuwei", "lifengc",
   "ty__niluan", "weiwu", "xiongmang", "ty__taoluan", "heqia", "jieling", "kuiji", "mansi", "posuo", "huahuo", "ty__shichou", "miaoxian",
   "zhaowen",
   --国际服
@@ -52,11 +53,16 @@ local spec = {
     local skills = table.filter(skill_pool, function (s)
       return Fk.skills[s] and not player:hasSkill(s, true)
     end)
-    local choice = room:askToChoice(player, {
-      choices = table.random(skills, 2),
+    local choice = room:askToCustomDialog(player, {
       skill_name = dianmo.name,
-      detailed = true,
+      qml_path = "packages/utility/qml/ChooseSkillBox.qml",
+      extra_data = { table.random(skills, 2), 1, 1, "#dianmo-get", {} },
     })
+    if choice == "" then
+      choice = table.random(skills)
+    else
+      choice = json.decode(choice)[1]
+    end
     local exist_skills = table.filter(player:getTableMark(dianmo.name), function (s)
       return player:hasSkill(s, true)
     end)
@@ -66,12 +72,16 @@ local spec = {
           skill_name = dianmo.name,
           prompt = "#dianmo-replace:::"..#exist_skills,
         }) then
-        local choice2 = room:askToChoice(player, {
-          choices = exist_skills,
+        local choice2 = room:askToCustomDialog(player, {
           skill_name = dianmo.name,
-          prompt = "#dianmo-discard",
-          detailed = true,
+          qml_path = "packages/utility/qml/ChooseSkillBox.qml",
+          extra_data = { exist_skills, 1, 1, "#dianmo-discard", {} },
         })
+        if choice2 == "" then
+          choice2 = table.random(exist_skills)
+        else
+          choice2 = json.decode(choice2)[1]
+        end
         table.removeOne(exist_skills, choice2)
         table.insert(exist_skills, choice)
         room:setPlayerMark(player, dianmo.name, exist_skills)
@@ -82,7 +92,7 @@ local spec = {
         return
       end
     end
-    table.insert(exist_skills, choice)
+    table.insertIfNeed(exist_skills, choice)
     room:setPlayerMark(player, dianmo.name, exist_skills)
     room:handleAddLoseSkills(player, choice)
     if #exist_skills < 4 and not player.dead then
