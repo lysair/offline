@@ -207,7 +207,7 @@ General:new(extension, "sxfy__liuzhang", "qun", 3):addSkills { "sxfy__yinge", "s
 Fk:loadTranslationTable{
   ["sxfy__liuzhang"] = "刘璋",
   ["#sxfy__liuzhang"] = "求仁失益",
-  ["illustrator:sxfy__liuzhang"] = "HM",
+  ["illustrator:sxfy__liuzhang"] = "HIM",
 }
 
 General:new(extension, "sxfy__gongsunyuan", "qun", 4):addSkills { "sxfy__huaiyi", "sxfy__fengbai" }
@@ -348,7 +348,7 @@ General:new(extension, "sxfy__wangyun", "qun", 3):addSkills { "sxfy__yunji", "sx
 Fk:loadTranslationTable{
   ["sxfy__wangyun"] = "王允",
   ["#sxfy__wangyun"] = "忠魂不泯",
-  ["illustrator:sxfy__wangyun"] = "L",
+  ["illustrator:sxfy__wangyun"] = "HIM",
 }
 
 --太阳

@@ -216,7 +216,7 @@ General:new(extension, "ofl__caocao", "wei", 4):addSkills { "ofl__lijunc", "ofl_
 Fk:loadTranslationTable{
   ["ofl__caocao"] = "曹操",
   ["#ofl__caocao"] = "鲸吞江东",
-  ["illustrator:ofl__caocao"] = "云涯",
+  ["illustrator:ofl__caocao"] = "三叠纪",
 }
 
 General:new(extension, "ofl__caoren", "wei", 4):addSkills { "ofl__beirong", "ofl__yujun" }

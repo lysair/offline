@@ -451,7 +451,7 @@ Fk:loadTranslationTable{
   ["illustrator:ofl__hankui"] = "鬼画府",
 }
 
---官盗E7肃问：雍闿 车胄
+--E7006T肃问
 local yongkai = General:new(extension, "yongkai", "shu", 5)
 yongkai.subkingdom = "wu"
 yongkai:addSkills { "xiaofany", "jiaohu", "quanpan", "huoluan" }
@@ -489,17 +489,12 @@ Fk:loadTranslationTable{
   ["illustrator:quexiaojiang"] = "荆芥",
 }
 
---官盗E：风云志·长安风云
---李傕 郭汜 张济 王允 吕布 樊稠 神贾诩 神曹操 神李傕郭汜 神王允 丧尸
---General:new(extension, "ofl__lijue", "qun", 6):addSkills { "", "jujun" }
+--E5003：长安风云
+General:new(extension, "ofl__lijue", "qun", 6):addSkills { "cuixi", "jujun" }
 Fk:loadTranslationTable{
   ["ofl__lijue"] = "李傕",
-  ["#ofl__lijue"] = "",
-  ["illustrator:ofl__lijue"] = "",
-
-  ["xi"] = "撅袭",
-  [":xi"] = "出牌阶段限两次，你可以弃置任意张手牌，选择两名体力值小于你的角色，你与这些角色依次亮出牌堆顶的一张牌，点数不为最大的角色"..
-  "受到2点伤害。你可以令你的点数+X（X为你弃置的手牌数）。",
+  ["#ofl__lijue"] = "奸谋恶勇",
+  ["illustrator:ofl__lijue"] = "梦回唐朝",
 }
 
 local guosi = General:new(extension, "ofl__guosi", "qun", 4)
@@ -507,22 +502,33 @@ guosi:addSkills { "sixi", "lvedao" }
 guosi:addRelatedSkill("ofl__bixiong")
 Fk:loadTranslationTable{
   ["ofl__guosi"] = "郭汜",
-  ["#ofl__guosi"] = "",
+  ["#ofl__guosi"] = "党豺为虐",
   ["illustrator:ofl__guosi"] = "MUMU",
 }
 
-General:new(extension, "ofl__zhangji", "qun", 4):addSkills { "silve", "suibian" }
+General:new(extension, "ofl__godjiaxu", "god", 3):addSkills { "sangluan", "shibaoj", "chuce", "longmu" }
 Fk:loadTranslationTable{
-  ["ofl__zhangji"] = "张济",
-  ["#ofl__zhangji"] = "武威雄豪",
-  ["illustrator:ofl__zhangji"] = "君桓文化",
+  ["ofl__godjiaxu"] = "神贾诩",
+  ["#ofl__godjiaxu"] = "丧尸出笼",
+  ["illustrator:ofl__godjiaxu"] = "一品咸鱼堡",
 }
 
---General:new(extension, "ofl2__wangyun", "qun", 3):addSkills { "", "" }
+local zombie = General:new(extension, "ofl__zombie", "qun", 2, 4)
+zombie.hidden = true
+zombie:addSkills { "shibian", "ganran" }
+Fk:loadTranslationTable{
+  ["ofl__zombie"] = "丧尸",
+  ["#ofl__zombie"] = "丧尸围城",
+  ["illustrator:ofl__zombie"] = "YanBai",
+}
+
+local wangyun = General:new(extension, "ofl2__wangyun", "qun", 3)
+wangyun:addSkills { "ofl2__lianji", "ofl2__moucheng" }
+wangyun:addRelatedSkill("ofl2__jingong")
 Fk:loadTranslationTable{
   ["ofl2__wangyun"] = "王允",
-  ["#ofl2__wangyun"] = "",
-  ["illustrator:ofl2__wangyun"] = "",
+  ["#ofl2__wangyun"] = "忠魂不泯",
+  ["illustrator:ofl2__wangyun"] = "L",
 }
 
 General:new(extension, "ofl2__lvbu", "qun", 5):addSkills { "wushuang", "ofl2__liyu" }
@@ -532,11 +538,39 @@ Fk:loadTranslationTable{
   ["illustrator:ofl2__lvbu"] = "SY",
 }
 
+General:new(extension, "ofl__godcaocao", "god", 4):addSkills { "zhaozhao", "jieao" }
+Fk:loadTranslationTable{
+  ["ofl__godcaocao"] = "神曹操",
+  ["#ofl__godcaocao"] = "挟圣诏王",
+  ["illustrator:ofl__godcaocao"] = "云涯",
+}
+
+General:new(extension, "godlijueguosi", "god", 5):addSkills { "weiju", "sixiong" }
+Fk:loadTranslationTable{
+  ["godlijueguosi"] = "神李傕郭汜",
+  ["#godlijueguosi"] = "祸乱长安",
+  ["illustrator:godlijueguosi"] = "旭",
+}
+
 General:new(extension, "ofl__fanchou", "qun", 4):addSkills { "xingwei", "qianmu" }
 Fk:loadTranslationTable{
   ["ofl__fanchou"] = "樊稠",
   ["#ofl__fanchou"] = "庸生变难",
   ["illustrator:ofl__fanchou"] = "三道纹",
+}
+
+General:new(extension, "ofl__zhangji", "qun", 4):addSkills { "silve", "suibian" }
+Fk:loadTranslationTable{
+  ["ofl__zhangji"] = "张济",
+  ["#ofl__zhangji"] = "武威雄豪",
+  ["illustrator:ofl__zhangji"] = "君桓文化",
+}
+
+General:new(extension, "godwangyun", "god", 4):addSkills { "anchao", "yurong", "ofl__dingxi" }
+Fk:loadTranslationTable{
+  ["godwangyun"] = "神王允",
+  ["#godwangyun"] = "百策御军",
+  ["illustrator:godwangyun"] = "alien",
 }
 
 return extension

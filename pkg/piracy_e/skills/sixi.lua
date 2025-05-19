@@ -14,9 +14,13 @@ Fk:loadTranslationTable{
 
 sixi:addEffect("active", {
   anim_type = "offensive",
+  prompt = "#sixi",
   card_num = 0,
   target_num = 1,
-  prompt = "#sixi",
+  times = function(self, player)
+    return player.phase == Player.Play and
+      2 - player:usedSkillTimes(sixi.name, Player.HistoryPhase) or -1
+  end,
   can_use = function(self, player)
     return player:usedEffectTimes(self.name, Player.HistoryPhase) < 2
   end,
