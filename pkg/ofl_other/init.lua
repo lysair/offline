@@ -172,51 +172,6 @@ Fk:loadTranslationTable{
   ["illustrator:ofl__godsimayi"] = "墨三千",
 }
 
---陈寿道具礼盒
-General:new(extension, "chenshou", "shu", 3):addSkills { "chenzhi", "dianmo", "zaibi" }
-Fk:loadTranslationTable{
-  ["chenshou"] = "陈寿",
-  ["#chenshou"] = "婉而成章",
-  ["illustrator:chenshou"] = "小罗没想好",
-}
-local poker = fk.CreateCard{
-  name = "&poker",
-  type = Card.TypeBasic,
-  skill = "poker_skill",
-  is_passive = true,
-}
-extension:loadCardSkels{poker}
-extension:addCardSpec("poker")
-
---青史翰墨
-General:new(extension, "caohuan", "wei", 3):addSkills { "junweic", "moran" }
-Fk:loadTranslationTable{
-  ["caohuan"] = "曹奂",
-  ["#caohuan"] = "陈留王",
-  ["illustrator:caohuan"] = "小罗没想好",
-}
-
-General:new(extension, "liuxuan", "shu", 4):addSkills { "sifen", "funanl" }
-Fk:loadTranslationTable{
-  ["liuxuan"] = "刘璿",
-  ["#liuxuan"] = "暗渊龙吟",
-  ["illustrator:liuxuan"] = "荆芥",
-}
-
-General:new(extension, "ofl__sunhao", "wu", 5):addSkills { "shezuo" }
-Fk:loadTranslationTable{
-  ["ofl__sunhao"] = "孙皓",
-  ["#ofl__sunhao"] = "归命侯",
-  ["illustrator:ofl__sunhao"] = "小罗没想好",
-}
-
-General:new(extension, "ofl__liuxie", "qun", 3):addSkills { "jixul", "youchong" }
-Fk:loadTranslationTable{
-  ["ofl__liuxie"] = "刘协",
-  ["#ofl__liuxie"] = "山阳公",
-  ["illustrator:ofl__liuxie"] = "荆芥",
-}
-
 --风云际会
 General:new(extension, "vd__caocao", "wei", 4):addSkills { "juebing", "fengxie" }
 Fk:loadTranslationTable{

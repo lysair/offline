@@ -160,6 +160,18 @@ Fk:loadTranslationTable{
 
 --荀彧
 
---公孙瓒
+General:new(extension, "ofl_mou__gongsunzan", "qun", 4):addSkills { "ofl_mou__yicong", "ofl_mou__qiaomeng" }
+Fk:loadTranslationTable{
+  ["ofl_mou__gongsunzan"] = "谋公孙瓒",
+  ["#ofl_mou__gongsunzan"] = "劲震幽土",
+  ["illustrator:ofl_mou__gongsunzan"] = "XXX",
+}
+
+General:new(extension, "ofl_mou__jiaxu", "qun", 3):addSkills { "ofl_mou__wansha", "ofl_mou__luanwu", "ofl_mou__weimu" }
+Fk:loadTranslationTable{
+  ["ofl_mou__jiaxu"] = "谋贾诩",
+  ["#ofl_mou__jiaxu"] = "计深似海",
+  ["illustrator:ofl_mou__jiaxu"] = "时空立方",
+}
 
 return extension

@@ -71,7 +71,8 @@ qicai:addEffect("active", {
         room:moveCardTo(table.random(cards2, 2), Card.PlayerHand, player, fk.ReasonJustMove, qicai.name, nil, true, player)
       end
     elseif #cards2 > 0 then
-      room:moveCardTo(table.random(cards2, 2), Card.PlayerHand, player, fk.ReasonJustMove, qicai.name, nil, true, player)
+      room:moveCardTo(table.random(cards2, 2), Card.PlayerHand, player, fk.ReasonJustMove, qicai.name, nil, true, player,
+        MarkEnum.DestructIntoDiscard)
     end
   end,
 })

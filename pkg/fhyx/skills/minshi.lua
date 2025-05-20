@@ -48,6 +48,7 @@ minshi:addEffect("active", {
       max_num = #cards,
       prompt = "#ofl_shiji__minshi-give",
       expand_pile = cards,
+      moveMark = MarkEnum.DestructIntoDiscard,
     })
     local n = #table.filter(targets, function(p)
       return #result[p.id] == 0

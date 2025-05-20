@@ -59,7 +59,7 @@ zuici:addEffect(fk.Damaged, {
       cancelable = false,
       expand_pile = cards,
     })
-    room:moveCardTo(card, Card.PlayerHand, to, fk.ReasonJustMove, zuici.name, nil, true, player)
+    room:moveCardTo(card, Card.PlayerHand, to, fk.ReasonJustMove, zuici.name, nil, true, player, MarkEnum.DestructIntoDiscard)
   end,
 })
 

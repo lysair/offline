@@ -39,10 +39,11 @@ rongbei:addEffect("active", {
         end)
         if #cards > 0 then
           local card = Fk:getCardById(table.random(cards))
+          room:setCardMark(card, MarkEnum.DestructIntoDiscard, 1)
           room:useCard{
-          from = target,
-          tos = {target},
-          card = card,
+            from = target,
+            tos = {target},
+            card = card,
           }
         end
       end

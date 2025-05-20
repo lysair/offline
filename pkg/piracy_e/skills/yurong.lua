@@ -23,7 +23,7 @@ yurong:addEffect(fk.TargetConfirming, {
           return true
         end
       end, Player.HistoryRound)
-      return #use_events == 1 and use_events[1].data == data
+      return #use_events == 1 and use_events[1].id == room.logic:getCurrentEvent():findParent(GameEvent.UseCard, true).id
     end
   end,
   on_use = function(self, event, target, player, data)

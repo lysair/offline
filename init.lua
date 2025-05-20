@@ -9,6 +9,7 @@ modes:addGameMode(require "packages/offline/pkg/gamemodes/sgsh_mode")
 local ofl_other = require "packages/offline/pkg/ofl_other"
 local fhyx = require "packages/offline/pkg/fhyx"
 local ofl_mou = require "packages/offline/pkg/ofl_mou"
+local qshm = require "packages/offline/pkg/qshm"
 local piracy_e = require "packages/offline/pkg/piracy_e"
 local piracy_s = require "packages/offline/pkg/piracy_s"
 local espionage_beta = require "packages/offline/pkg/espionage_beta"
@@ -33,6 +34,7 @@ return {
   ofl_other,
   fhyx,
   ofl_mou,
+  qshm,
   piracy_e,
   piracy_s,
   espionage_beta,

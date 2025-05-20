@@ -20,7 +20,7 @@ zhengan:addEffect(fk.TurnEnd, {
       local room = player.room
       local targets = {}
       if #room.logic:getEventsOfScope(GameEvent.Death, 1, Util.TrueFunc, Player.HistoryTurn) > 0 then
-        targets = table.map(room.alive_players, Util.IdMapper)
+        targets = room.alive_players
       else
         room.logic:getEventsOfScope(GameEvent.MoveCards, 1, function(e)
           for _, move in ipairs(e.data) do
@@ -40,7 +40,7 @@ zhengan:addEffect(fk.TurnEnd, {
             for _, info in ipairs(mark[2]) do
               local q = room:getPlayerById(info[1])
               if p:distanceTo(q) ~= info[2] then
-                table.insertIfNeed(targets, mark[1])
+                table.insertIfNeed(targets, p)
                 break
               end
             end
@@ -56,7 +56,7 @@ zhengan:addEffect(fk.TurnEnd, {
   on_cost = function(self, event, target, player, data)
     local room = player.room
     local tos = room:askToChoosePlayers(player, {
-      targets = table.map(event:getCostData(self), Util.Id2PlayerMapper),
+      targets = event:getCostData(self),
       min_num = 1,
       max_num = 2,
       skill_name = zhengan.name,
