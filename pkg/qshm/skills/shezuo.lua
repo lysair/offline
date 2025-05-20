@@ -58,6 +58,7 @@ shezuo:addEffect(fk.EventPhaseStart, {
         "shezuo1",
         "shezuo2",
         "shezuo3",
+        "Cancel",
       },
       skill_name = shezuo.name,
       prompt = "#shezuo-choice",

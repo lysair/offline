@@ -98,6 +98,14 @@ Fk:loadTranslationTable{
 }
 
 --E0051 尊享版2023：曹丕 杜畿 夏侯玄 李严 关银屏 马云騄 黄权 周泰 范疆张达
+General:new(extension, "ofl__xiahouxuan", "wei", 3):addSkills { "ofl__huanfu", "qingyix", "zeyue" }
+Fk:loadTranslationTable{
+  ["ofl__xiahouxuan"] = "夏侯玄",
+  ["#ofl__xiahouxuan"] = "明皎月影",
+  ["illustrator:ofl__xiahouxuan"] = "MUMU",
+
+  ["~ofl__xiahouxuan"] = "吾岂苟存自客于寇虏乎？",
+}
 
 --E8002全武将大合集奢华版（神张飞盒）
 General:new(extension, "ofl__guozhao", "wei", 3, 3, General.Female):addSkills { "ofl__pianchong", "ofl__zunwei" }
