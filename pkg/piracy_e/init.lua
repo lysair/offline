@@ -104,6 +104,10 @@ Fk:loadTranslationTable{
   ["#ofl__xiahouxuan"] = "明皎月影",
   ["illustrator:ofl__xiahouxuan"] = "MUMU",
 
+  ["$qingyix_ofl__xiahouxuan1"] = "今大将军执政，各位何不各抒己见，以言其得失？",
+  ["$qingyix_ofl__xiahouxuan2"] = "天下未定，诸位当为国而进忠言，不可缄默不语。",
+  ["$zeyue_ofl__xiahouxuan1"] = "官才用人，国之柄也，岂可授予他人？",
+  ["$zeyue_ofl__xiahouxuan2"] = "世家豪族把持朝政，实乃国之巨蠹！",
   ["~ofl__xiahouxuan"] = "吾岂苟存自客于寇虏乎？",
 }
 
@@ -112,9 +116,9 @@ General:new(extension, "ofl__guozhao", "wei", 3, 3, General.Female):addSkills { 
 Fk:loadTranslationTable{
   ["ofl__guozhao"] = "郭照",
   ["#ofl__guozhao"] = "碧海青天",
-  ["illustrator:ofl__guozhao"] = "凡果_喵叽",
+  ["illustrator:ofl__guozhao"] = "张晓溪",
 
-  ["~ofl__guozhao"] = "君恩易逝难再复……",
+  ["~ofl__guozhao"] = "红袖揾烟雨，泪尽垂青花。",
 }
 
 --官盗E14至宝：周姬

@@ -23,7 +23,7 @@ shouxi:addEffect(fk.TargetConfirmed, {
     local choice = room:askToChoice(player, {
       choices = {"basic", "trick", "equip", "Cancel"},
       skill_name = shouxi.name,
-      prompt = "#fhyx__shouxi-invoke::"..data.from..":"..data.card:toLogString()
+      prompt = "#fhyx__shouxi-invoke::"..data.from.id..":"..data.card:toLogString()
     })
     if choice ~= "Cancel" then
       event:setCostData(self, {tos = {data.from}, choice = choice})

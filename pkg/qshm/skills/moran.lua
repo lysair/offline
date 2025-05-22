@@ -23,6 +23,7 @@ moran:addEffect(fk.Damaged, {
     })
     room:setPlayerMark(player, "@moran", n)
     room:setPlayerMark(player, moran.name, n)
+    room:invalidateSkill(player, moran.name)
   end,
 })
 
@@ -36,8 +37,10 @@ moran:addEffect(fk.TurnEnd, {
     end
   end,
   on_use = function (self, event, target, player, data)
+    local room = player.room
+    room:validateSkill(player, moran.name)
     local n = player:getMark(moran.name)
-    player.room:setPlayerMark(player, moran.name, 0)
+    room:setPlayerMark(player, moran.name, 0)
     player:drawCards(2 * n, moran.name)
   end,
 })

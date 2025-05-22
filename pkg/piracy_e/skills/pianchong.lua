@@ -10,8 +10,8 @@ Fk:loadTranslationTable{
   ["@ofl__pianchong"] = "偏宠",
   ["@@ofl__pianchong"] = "偏宠",
 
-  ["$ofl__pianchong1"] = "陛下垂青，鸾歌清扬。",
-  ["$ofl__pianchong2"] = "君王恩宠，凤舞丝竹。",
+  ["$ofl__pianchong1"] = "挽指玉瓶绘淡彩，一眸春水映江南。",
+  ["$ofl__pianchong2"] = "小楫行舟慕胧色，烟雨独钟我一人。",
 }
 
 pianchong:addEffect(fk.EventPhaseStart, {

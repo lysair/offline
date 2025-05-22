@@ -76,8 +76,6 @@ local sgsh_getLogic = function()
         addRoleModSkills(p, s)
       end
     end
-
-    room:addSkill(Fk.skills["#sgsh_mode&"])
   end
 
   return sgsh_logic
@@ -88,7 +86,7 @@ local sgsh_mode = fk.CreateGameMode{
   minPlayer = 2,
   maxPlayer = 8,
   main_mode = "role_mode",
-  rule = Fk.skills["#sgsh_mode&"] --[[@as TriggerSkill]],
+  rule = "#sgsh_mode&",
   logic = sgsh_getLogic,
   surrender_func = Fk.game_modes["aaa_role_mode"].surrenderFunc,
 }

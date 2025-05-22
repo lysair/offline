@@ -13,7 +13,7 @@ xiefang:addEffect(fk.AfterCardTargetDeclared, {
   anim_type = "offensive",
   can_trigger = function(self, event, target, player, data)
     return target == player and player:hasSkill(xiefang.name) and
-      (data.card.trueName == "slash" or data.card:isCommonTrick()) and #data:getExtraTargets() > 0
+      (data.card.type == Card.TypeBasic or data.card:isCommonTrick()) and #data:getExtraTargets() > 0
   end,
   on_cost = function(self, event, target, player, data)
     local room = player.room

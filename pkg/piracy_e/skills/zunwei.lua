@@ -29,8 +29,8 @@ Fk:loadTranslationTable{
   ["ofl__zunwei2"] = "随机使用装备牌至全场最多",
   ["ofl__zunwei3"] = "回复体力至全场最多",
 
-  ["$ofl__zunwei1"] = "皇后位尊，当居后宫之极。",
-  ["$ofl__zunwei2"] = "位尊着霞帔，名重戴凤冠。",
+  ["$ofl__zunwei1"] = "桂子三秋叠清嘉，惠风十里尽烟霞。",
+  ["$ofl__zunwei2"] = "细雨春风缀石桥，素胚青瓷嫁桃花。",
 }
 
 zunwei:addLoseEffect(function (self, player, is_death)
