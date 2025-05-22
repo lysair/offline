@@ -31,10 +31,12 @@ weiju:addEffect(fk.EventPhaseStart, {
           max_num = p:getHandcardNum(),
           include_equip = false,
           skill_name = weiju.name,
-          cancelable = false,
+          cancelable = true,
           prompt = "#weiju-ask",
         })
-        p:addToPile("$weiju", cards, false, weiju.name, p)
+        if #cards > 0 then
+          p:addToPile("$weiju", cards, false, weiju.name, p)
+        end
       end
     end
   end,

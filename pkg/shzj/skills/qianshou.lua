@@ -9,6 +9,13 @@ Fk:loadTranslationTable{
   "且你与其不能成为牌的目标；阴：你可以令其展示并交给你一张牌，若不为黑色，你失去1点体力。<br>"..
   "游戏开始时，将<a href=':imperial_sword'>【尚方宝剑】</a>置入你的装备区。",
 
+  [":qianshou_yang"] = "转换技，其他角色回合开始时，若其体力值大于你，或其未处于横置状态，"..
+  "<font color=\"#E0DB2F\">阳：你可以展示并交给其一张红色牌，本回合你不能使用手牌且你与其不能成为牌的目标；</font>" ..
+  "阴：你可以令其展示并交给你一张牌，若不为黑色，你失去1点体力。",
+  [":qianshou_yin"] = "转换技，其他角色回合开始时，若其体力值大于你，或其未处于横置状态，"..
+  "阳：你可以展示并交给其一张红色牌，本回合你不能使用手牌且你与其不能成为牌的目标；" ..
+  "<font color=\"#E0DB2F\">阴：你可以令其展示并交给你一张牌，若不为黑色，你失去1点体力。</font>",
+
   ["#qianshou-yang"] = "谦守：是否交给 %dest 一张红色牌，令你本回合不能使用手牌、你与其不能成为牌的目标？",
   ["#qianshou-yin"] = "谦守：是否令 %dest 交给你一张牌？若不为黑色，你失去1点体力",
   ["#qianshou-give"] = "谦守：请交给 %src 一张牌，若不为黑色，其失去1点体力",
@@ -106,6 +113,8 @@ qianshou:addEffect(fk.GameStart, {
     local room = player.room
     local id = room:printCard("imperial_sword", Card.Spade, 5).id
     room:moveCardIntoEquip(player, id, qianshou.name, false, player)
+    room:setPlayerMark(player, MarkEnum.SwithSkillPreName .. qianshou.name, fk.SwitchYang)
+    player:setSkillUseHistory(qianshou.name, 0, Player.HistoryGame)
   end,
 })
 

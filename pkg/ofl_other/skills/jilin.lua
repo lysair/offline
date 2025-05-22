@@ -74,7 +74,7 @@ jilin:addEffect(fk.TargetConfirming, {
       expand_pile = player:getPile("$yingtian_ambition"),
     })
     if #card > 0 then
-      event:setCostData(skill, {cards = card})
+      event:setCostData(self, {cards = card})
       return true
     end
   end,

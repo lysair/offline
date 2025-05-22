@@ -1,5 +1,5 @@
 local yingyou = fk.CreateSkill {
-  name = "yingyou"
+  name = "yingyou",
 }
 
 Fk:loadTranslationTable{

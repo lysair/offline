@@ -59,7 +59,7 @@ local spec = {
     if #card_data == 0 then
       table.remove(choices, 1)
     end
-    local choice = room:askToChoice(player, {
+    local choice = room:askToChoice(to, {
       choices = choices,
       skill_name = zhaozhao.name,
       all_choices = all_choices,
