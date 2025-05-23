@@ -35,7 +35,6 @@ cailve:addEffect("viewas", {
     if not player.dead and not player:isNude() and use.tos and #use.tos > 0 then
       room:sortByAction(use.tos)
       for _, p in ipairs(use.tos) do
-        if player:isNude() then break end
         if not p.dead and
           room:askToSkillInvoke(p, {
           skill_name = cailve.name,
@@ -58,6 +57,7 @@ cailve:addEffect("viewas", {
             })
             room:throwCard(card, cailve.name, player, player)
           end
+          if player.dead or player:isNude() then return end
         end
       end
     end

@@ -6,7 +6,7 @@ local wuhun = fk.CreateSkill {
 Fk:loadTranslationTable {
   ["shzj_yiling__wuhun"] = "武魂",
   [":shzj_yiling__wuhun"] = "锁定技，当你受到1点伤害后，伤害来源获得1枚“梦魇”；当你死亡时，你令凶手或“梦魇”最多的一名其他角色判定，"..
-  "若不为【桃】或【桃园结义】，其死亡。",
+  "若不为【桃】，其死亡。",
 
   ["#shzj_yiling__wuhun-choose"] = "武魂：选择一名角色进行判定",
 }
