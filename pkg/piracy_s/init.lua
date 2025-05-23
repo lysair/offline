@@ -133,7 +133,16 @@ Fk:loadTranslationTable{
   ["illustrator:ofl2__simayi"] = "绘聚艺堂",
 }
 
---官盗S7幽燕烽火：曹叡 司马懿 公孙渊 公孙瓒 袁绍 文丑
+--S4028用间篇
+--贾诩 甄姬 诸葛诞 官渡许攸 用间甘宁
+General:new(extension, "es__zhenji", "wei", 3, 3, General.Female):addSkills { "es__luoshen", "qingguo" }
+Fk:loadTranslationTable{
+  ["es__zhenji"] = "甄姬",
+  ["#es__zhenji"] = "薄幸的美人",
+  ["illustrator:es__zhenji"] = "石婵",
+}
+
+--S7001幽燕烽火
 General:new(extension, "ofl__caorui", "wei", 3):addSkills { "ofl__huituo", "ofl__mingjian", "xingshuai" }
 Fk:loadTranslationTable{
   ["ofl__caorui"] = "曹叡",
@@ -176,7 +185,7 @@ Fk:loadTranslationTable{
   ["illustrator:ofl__wenchou"] = "错落宇宙",
 }
 
---官盗S7荆扬对垒：张昭 鲁肃 诸葛亮 黄盖 周瑜 曹操 曹仁 庞统
+--S7002荆扬对垒
 General:new(extension, "ofl__zhangzhao", "wu", 3):addSkills { "ofl__boyan", "ofl__jianshi" }
 Fk:loadTranslationTable{
   ["ofl__zhangzhao"] = "张昭",

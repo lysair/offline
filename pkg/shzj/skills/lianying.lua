@@ -11,6 +11,9 @@ Fk:loadTranslationTable{
   ["shzj_guansuo__lianying2"] = "弃置两张牌，令一种牌名对你无效直到回合开始",
   ["#shzj_guansuo__lianying-choice"] = "连营：选择一种牌名，此牌对你无效直到你回合开始",
   ["@$shzj_guansuo__lianying"] = "连营",
+
+  ["$shzj_guansuo__lianying1"] = "火烧蜀营八百里，扬我东吴万世名。",
+  ["$shzj_guansuo__lianying2"] = "蜀营连绵不断，待我一场大火，尽摧敌军心胆。",
 }
 
 local U = require "packages/utility/utility"

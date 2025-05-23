@@ -1,14 +1,15 @@
 local tuicheng = fk.CreateSkill {
-  name = "tuicheng"
+  name = "tuicheng",
 }
 
 Fk:loadTranslationTable{
-  ['tuicheng'] = '推诚',
-  ['#tuicheng'] = '推诚：你可以失去1点体力，视为使用一张【推心置腹】',
-  [':tuicheng'] = '你可以失去1点体力，视为使用一张【推心置腹】。',
+  ["tuicheng"] = "推诚",
+  [":tuicheng"] = "你可以失去1点体力，视为使用一张【推心置腹】。",
+
+  ["#tuicheng"] = "推诚：失去1点体力，视为使用【推心置腹】",
 }
 
-tuicheng:addEffect('viewas', {
+tuicheng:addEffect("viewas", {
   anim_type = "control",
   pattern = "sincere_treat",
   prompt = "#tuicheng",

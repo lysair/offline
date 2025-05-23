@@ -7,14 +7,6 @@ Fk:loadTranslationTable{
   ["piracy_e"] = "线下-官盗E系列",
 }
 
---E0034暗金豪华版/S1标准版龙魂 龙羽飞
-General:new(extension, "longyufei", "shu", 3, 4, General.Female):addSkills { "longyi", "zhenjue" }
-Fk:loadTranslationTable{
-  ["longyufei"] = "龙羽飞",
-  ["#longyufei"] = "将星之魂",
-  ["illustrator:longyufei"] = "DH",
-}
-
 --官盗E系列战役-群雄逐鹿E0026：
 --黄巾之乱：神张梁 神张宝 神张角
 --虎牢关之战：虎牢关吕布
@@ -25,6 +17,22 @@ Fk:loadTranslationTable{
   ["ofl__wangyun"] = "王允",
   ["#ofl__wangyun"] = "计随鞘出",
   ["illustrator:ofl__wangyun"] = "YanBai",
+}
+
+--E0033兵合一处
+General:new(extension, "es__caocao", "qun", 4):addSkills { "xiandao", "sancai", "yibing" }
+Fk:loadTranslationTable{
+  ["es__caocao"] = "曹操",
+  ["#es__caocao"] = "谯水击蛟",
+  ["illustrator:es__caocao"] = "墨心绘意",
+}
+
+--E0034暗金豪华版/S1标准版龙魂 龙羽飞
+General:new(extension, "longyufei", "shu", 3, 4, General.Female):addSkills { "longyi", "zhenjue" }
+Fk:loadTranslationTable{
+  ["longyufei"] = "龙羽飞",
+  ["#longyufei"] = "将星之魂",
+  ["illustrator:longyufei"] = "DH",
 }
 
 --官盗E系列战役-问鼎中原E0035：
@@ -55,7 +63,7 @@ Fk:loadTranslationTable{
 --夷陵之战
 --南中平定战：一堆神孟获？
 --五丈原之战：神诸葛亮 神司马懿
---天下一统：文鸯
+--天下一统：
 local wenyang = General:new(extension, "ofl__wenyang", "wei", 4)
 wenyang.subkingdom = "wu"
 wenyang:addSkills { "quedi", "ofl__choujue", "ofl__chuifeng", "ofl__chongjian" }
@@ -65,7 +73,6 @@ Fk:loadTranslationTable{
   ["illustrator:ofl__wenyang"] = "biou09",
 }
 
---国战转身份：文钦 钟会 孙綝
 local wenqin = General:new(extension, "ofl__wenqin", "wei", 4)
 wenqin.subkingdom = "wu"
 wenqin:addSkills { "ofl__jinfa" }

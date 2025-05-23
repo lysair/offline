@@ -11,6 +11,27 @@ Fk:loadTranslationTable{
 }
 
 --龙起襄樊
+General:new(extension, "shzj_xiangfan__yujin", "wei", 4):addSkills { "shzj_xiangfan__yizhong" }
+Fk:loadTranslationTable{
+  ["shzj_xiangfan__yujin"] = "于禁",
+  ["#shzj_xiangfan__yujin"] = "讨暴坚垒",
+  ["illustrator:shzj_xiangfan__yujin"] = "幽色工作室",
+}
+
+General:new(extension, "lvchang", "wei", 3):addSkills { "juwu", "shouxiang" }
+Fk:loadTranslationTable{
+  ["lvchang"] = "吕常",
+  ["#lvchang"] = "险守襄阳",
+  ["illustrator:lvchang"] = "戚屹",
+}
+
+General:new(extension, "shzj_xiangfan__pangde", "wei", 4):addSkills { "taiguan", "mashu" }
+Fk:loadTranslationTable{
+  ["shzj_xiangfan__pangde"] = "庞德",
+  ["#shzj_xiangfan__pangde"] = "意怒气壮",
+  ["illustrator:shzj_xiangfan__pangde"] = "鬼画府",
+}
+
 General:new(extension, "shzj_xiangfan__guanyu", "shu", 4):addSkills { "chaojue", "junshen" }
 Fk:loadTranslationTable{
   ["shzj_xiangfan__guanyu"] = "关羽",
@@ -25,37 +46,7 @@ Fk:loadTranslationTable{
   ["illustrator:shzj_xiangfan__caoren"] = "鬼画府",
 }
 
-General:new(extension, "shzj_xiangfan__pangde", "wei", 4):addSkills { "taiguan", "mashu" }
-Fk:loadTranslationTable{
-  ["shzj_xiangfan__pangde"] = "庞德",
-  ["#shzj_xiangfan__pangde"] = "意怒气壮",
-  ["illustrator:shzj_xiangfan__pangde"] = "鬼画府",
-}
-
-General:new(extension, "lvchang", "wei", 4):addSkills { "juwu", "shouxiang" }
-Fk:loadTranslationTable{
-  ["lvchang"] = "吕常",
-  ["#lvchang"] = "险守襄阳",
-  ["illustrator:lvchang"] = "戚屹",
-}
-
 --桃园挽歌
-local liubei = General:new(extension, "shzj_yiling__liubei", "shu", 4)
-liubei:addSkills { "qingshil", "yilin", "chengming" }
-liubei:addRelatedSkill("ex__rende")
-Fk:loadTranslationTable{
-  ["shzj_yiling__liubei"] = "刘备",
-  ["#shzj_yiling__liubei"] = "见龙渊献",
-  ["illustrator:shzj_yiling__liubei"] = "鬼画府",
-}
-
-General:new(extension, "shzj_yiling__luxun", "wu", 3):addSkills { "qianshou", "tanlong", "xibei" }
-Fk:loadTranslationTable{
-  ["shzj_yiling__luxun"] = "陆逊",
-  ["#shzj_yiling__luxun"] = "社稷心膂",
-  ["illustrator:shzj_yiling__luxun"] = "鬼画府",
-}
-
 General:new(extension, "shzj_yiling__wuban", "shu", 4):addSkills { "youjun", "jicheng" }
 Fk:loadTranslationTable{
   ["shzj_yiling__wuban"] = "吴班",
@@ -98,6 +89,13 @@ Fk:loadTranslationTable{
   ["illustrator:zhaorong"] = "荆芥",
 }
 
+General:new(extension, "shzj_yiling__huangzhong", "shu", 4):addSkills { "ol_ex__liegong", "yizhuang" }
+Fk:loadTranslationTable{
+  ["shzj_yiling__huangzhong"] = "黄忠",
+  ["#shzj_yiling__huangzhong"] = "炎汉后将军",
+  ["illustrator:shzj_yiling__huangzhong"] = "吴涛",
+}
+
 General:new(extension, "tanxiong", "wu", 4):addSkills { "lengjian", "sheju" }
 Fk:loadTranslationTable{
   ["tanxiong"] = "谭雄",
@@ -112,6 +110,13 @@ Fk:loadTranslationTable{
   ["illustrator:liue"] = "荆芥",
 }
 
+General:new(extension, "shzj_yiling__ganning", "wu", 4):addSkills { "shzj_yiling__qixi", "shzj_yiling__fenwei" }
+Fk:loadTranslationTable{
+  ["shzj_yiling__ganning"] = "甘宁",
+  ["#shzj_yiling__ganning"] = "锦帆英豪",
+  ["illustrator:shzj_yiling__ganning"] = "鬼画府",
+}
+
 General:new(extension, "shzj_yiling__shamoke", "shu", 4):addSkills { "jilis", "manyong" }
 Fk:loadTranslationTable{
   ["shzj_yiling__shamoke"] = "沙摩柯",
@@ -119,11 +124,48 @@ Fk:loadTranslationTable{
   ["illustrator:shzj_yiling__shamoke"] = "铁杵文化",
 }
 
+General:new(extension, "shzj_yiling__buzhi", "wu", 3):addSkills { "shzj_yiling__hongde", "shzj_yiling__dingpan" }
+Fk:loadTranslationTable{
+  ["shzj_yiling__buzhi"] = "步骘",
+  ["#shzj_yiling__buzhi"] = "积跬靖边",
+  ["illustrator:shzj_yiling__buzhi"] = "匠人绘",
+}
+
 General:new(extension, "shzj_yiling__godliubei", "god", 6):addSkills { "shzj_yiling__longnu", "jieying", "taoyuan" }
 Fk:loadTranslationTable{
   ["shzj_yiling__godliubei"] = "神刘备",
   ["#shzj_yiling__godliubei"] = "桃园挽歌",
   ["illustrator:shzj_yiling__godliubei"] = "点睛",
+}
+
+General:new(extension, "shzj_yiling__godguanyu", "god", 5):addSkills { "shzj_yiling__wushen", "shzj_yiling__wuhun" }
+Fk:loadTranslationTable{
+  ["shzj_yiling__godguanyu"] = "神关羽",
+  ["#shzj_yiling__godguanyu"] = "桃园挽歌",
+  ["illustrator:shzj_yiling__godguanyu"] = "梦想君",
+}
+
+local liubei = General:new(extension, "shzj_yiling__liubei", "shu", 4)
+liubei:addSkills { "qingshil", "yilin", "chengming" }
+liubei:addRelatedSkill("ex__rende")
+Fk:loadTranslationTable{
+  ["shzj_yiling__liubei"] = "刘备",
+  ["#shzj_yiling__liubei"] = "见龙渊献",
+  ["illustrator:shzj_yiling__liubei"] = "鬼画府",
+}
+
+General:new(extension, "shzj_yiling__luxun", "wu", 3):addSkills { "qianshou", "tanlong", "xibei" }
+Fk:loadTranslationTable{
+  ["shzj_yiling__luxun"] = "陆逊",
+  ["#shzj_yiling__luxun"] = "社稷心膂",
+  ["illustrator:shzj_yiling__luxun"] = "鬼画府",
+}
+
+General:new(extension, "anying", "qun", 3):addSkills { "liupo", "zhuiling", "xihun", "xianqi", "fansheng" }
+Fk:loadTranslationTable{
+  ["anying"] = "暗影",
+  ["#anying"] = "黑影笼罩",
+  ["illustrator:anying"] = "黑白画谱",
 }
 
 General:new(extension, "fanjiang", "wu", 4):addSkills { "bianzhua", "benxiang", "xiezhan" }
@@ -182,27 +224,6 @@ Fk:loadTranslationTable{
   ["shzj_yiling__sunquan"] = "孙权",
   ["#shzj_yiling__sunquan"] = "<font color='green'>大汉吴王</font>",
   ["illustrator:shzj_yiling__sunquan"] = "荆芥",
-}
-
-General:new(extension, "shzj_yiling__ganning", "wu", 4):addSkills { "shzj_yiling__qixi", "shzj_yiling__fenwei" }
-Fk:loadTranslationTable{
-  ["shzj_yiling__ganning"] = "甘宁",
-  ["#shzj_yiling__ganning"] = "锦帆英豪",
-  ["illustrator:shzj_yiling__ganning"] = "鬼画府",
-}
-
-General:new(extension, "shzj_yiling__buzhi", "wu", 3):addSkills { "shzj_yiling__hongde", "shzj_yiling__dingpan" }
-Fk:loadTranslationTable{
-  ["shzj_yiling__buzhi"] = "步骘",
-  ["#shzj_yiling__buzhi"] = "积跬靖边",
-  ["illustrator:shzj_yiling__buzhi"] = "匠人绘",
-}
-
-General:new(extension, "anying", "qun", 3):addSkills { "liupo", "zhuiling", "xihun", "xianqi", "fansheng" }
-Fk:loadTranslationTable{
-  ["anying"] = "暗影",
-  ["#anying"] = "黑影笼罩",
-  ["illustrator:anying"] = "黑白画谱",
 }
 
 --关索传
@@ -304,6 +325,8 @@ Fk:loadTranslationTable{
   ["shzj_guansuo__luxun"] = "陆逊",
   ["#shzj_guansuo__luxun"] = "儒生雄才",
   ["illustrator:shzj_guansuo__luxun"] = "深圳枭瞳",
+
+  ["~shzj_guansuo__luxun"] = "陛下欲令二宫相争，臣惶恐，先行一步！",
 }
 
 return extension

@@ -24,7 +24,7 @@ pojun:addEffect(fk.TargetSpecified, {
   anim_type = "offensive",
   can_trigger = function(self, event, target, player, data)
     return target == player and player:hasSkill(pojun.name) and data.card.trueName == "slash" and
-      player.phase == Player.Play and not data.to.dead and data.to.hp > 0 and not data.to:isNude()
+      data.to.hp > 0 and not data.to:isNude()
   end,
   on_cost = function(self, event, target, player, data)
     if player.room:askToSkillInvoke(player, {

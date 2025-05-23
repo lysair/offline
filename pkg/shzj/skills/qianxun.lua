@@ -9,8 +9,8 @@ Fk:loadTranslationTable{
   ["#shzj_guansuo__qianxun"] = "谦逊：你可以弃置两张手牌，摸一张牌",
   ["#shzj_guansuo__qianxun-invoke"] = "谦逊：你可以弃置两张手牌，弃置判定区里的一张牌",
 
-  ["$shzj_guansuo__qianxun1"] = "",
-  ["$shzj_guansuo__qianxun2"] = "",
+  ["$shzj_guansuo__qianxun1"] = "谦虚谨慎，乃乱世立身之道。",
+  ["$shzj_guansuo__qianxun2"] = "谦谦君子，卑以自牧也。",
 }
 
 qianxun:addEffect("active", {

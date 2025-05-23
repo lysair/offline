@@ -30,8 +30,10 @@ paiyi:addEffect("active", {
   local player = effect.from
   local target = effect.tos[1]
   room:moveCardTo(effect.cards, Card.DiscardPile, nil, fk.ReasonPutIntoDiscardPile, paiyi.name, nil, true, player)
-  if target.dead or #player:getPile("zhonghui_quan") == 0 then return end
-  target:drawCards(math.min(#player:getPile("zhonghui_quan"), 7), paiyi.name)
+  if target.dead then return end
+  if #player:getPile("zhonghui_quan") > 0 then
+    target:drawCards(math.min(#player:getPile("zhonghui_quan"), 7), paiyi.name)
+  end
   if not target.dead and target:getHandcardNum() > player:getHandcardNum() then
     room:damage{
         from = player,
