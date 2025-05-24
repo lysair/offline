@@ -18,7 +18,6 @@ Fk:loadTranslationTable{
 
 yijue:addEffect(fk.EventPhaseStart, {
   anim_type = "control",
-  events = {fk.EventPhaseStart},
   can_trigger = function(self, event, target, player, data)
     return target == player and player:hasSkill(yijue.name) and player.phase == Player.Start and
       table.find(player.room.alive_players, function(p)

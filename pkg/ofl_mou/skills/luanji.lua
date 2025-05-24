@@ -18,7 +18,7 @@ luanji:addEffect("viewas", {
   prompt = "#ofl_mou__luanji",
   handly_pile = true,
   card_filter = function(self, player, to_select, selected)
-    return #selected < 2 and table.contains(Self:getHandlyIds(), to_select)
+    return #selected < 2 and table.contains(player:getHandlyIds(), to_select)
   end,
   view_as = function(self, player, cards)
     if #cards ~= 2 then return end

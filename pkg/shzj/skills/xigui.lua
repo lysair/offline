@@ -22,7 +22,7 @@ local spec = {
     })
     if not player.dead then
       room.logic:getCurrentEvent():findParent(GameEvent.Round, true):addCleaner(function()
-        room:handleAddLoseSkills(player, "-xigui|ty_ex__dangxian")
+        room:handleAddLoseSkills(player, "-zhawang|ty_ex__dangxian")
       end)
     end
   end,

@@ -23,7 +23,7 @@ qixi:addEffect("active", {
   card_num = 1,
   target_num = 1,
   card_filter = function (self, player, to_select, selected)
-    return #selected == 0 and table.contains(Self:getCardIds("h"), to_select)
+    return #selected == 0 and table.contains(player:getCardIds("h"), to_select)
   end,
   target_filter = function(self, player, to_select, selected)
     return #selected == 0 and to_select ~= player

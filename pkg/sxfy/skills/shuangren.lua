@@ -14,7 +14,6 @@ Fk:loadTranslationTable{
 
 shuangren:addEffect(fk.EventPhaseStart, {
   anim_type = "offensive",
-  events = {fk.EventPhaseStart},
   can_trigger = function(self, event, target, player, data)
     return target == player and player:hasSkill(shuangren.name) and player.phase == Player.Play and
       not player:isKongcheng() and

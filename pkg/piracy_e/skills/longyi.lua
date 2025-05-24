@@ -17,7 +17,7 @@ longyi:addEffect("viewas", {
   prompt = "#longyi",
   interaction = function(self, player)
     local all_names = Fk:getAllCardNames("b")
-    local names = player:getViewAsCardNames(longyi.name, all_names, Self:getCardIds("h"))
+    local names = player:getViewAsCardNames(longyi.name, all_names, player:getCardIds("h"))
     if #names > 0 then
       return U.CardNameBox { choices = names, all_choices = all_names }
     end

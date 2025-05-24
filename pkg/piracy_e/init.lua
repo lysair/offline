@@ -12,6 +12,13 @@ Fk:loadTranslationTable{
 --虎牢关之战：虎牢关吕布
 --界桥之战：神袁绍 神文丑 神公孙瓒 神赵云
 --长安之战（文和乱武）：神贾诩 樊稠 王允
+General:new(extension, "ofl2__godjiaxu", "god", 3):addSkills { "ofl__bishi", "ofl__jianbing", "weimu" }
+Fk:loadTranslationTable{
+  ["ofl2__godjiaxu"] = "神贾诩",
+  ["#ofl2__godjiaxu"] = "乱世之观者",
+  ["illustrator:ofl2__godjiaxu"] = "小牛",
+}
+
 General:new(extension, "ofl__wangyun", "qun", 3):addSkills { "ofl__lianji", "ofl__moucheng" }
 Fk:loadTranslationTable{
   ["ofl__wangyun"] = "王允",
@@ -37,6 +44,13 @@ Fk:loadTranslationTable{
 
 --官盗E系列战役-问鼎中原E0035：
 --宛城之战：神曹操 神典韦 曹安民
+General:new(extension, "ofl__caoanmin", "wei", 4):addSkills { "ofl__kuishe" }
+Fk:loadTranslationTable{
+  ["ofl__caoanmin"] = "曹安民",
+  ["#ofl__caoanmin"] = "瓢取祸水",
+  ["illustrator:ofl__caoanmin"] = "柏桦",
+}
+
 --下邳之战：神吕布
 --官渡之战：神淳于琼 神张郃 神袁绍
 --赤壁之战：神周瑜 神诸葛亮 神曹操 郭嘉
@@ -44,6 +58,13 @@ Fk:loadTranslationTable{
 --官盗E系列战役-三分天下E0037：
 --渭水之战：神马超 神许褚
 --合肥之战：神张辽
+General:new(extension, "ofl__godzhangliao", "god", 4):addSkills { "ofl__tuji", "ofl__weizhen", "ofl__zhiti" }
+Fk:loadTranslationTable{
+  ["ofl__godzhangliao"] = "神张辽",
+  ["#ofl__godzhangliao"] = "威震逍遥津",
+  ["illustrator:ofl__godzhangliao"] = "Thinking",
+}
+
 --襄樊之战：神关羽 神于禁
 --定军山之战：神法正 神黄忠 神张郃 神夏侯渊
 --国战转身份：孟达
@@ -104,7 +125,14 @@ Fk:loadTranslationTable{
   ["~ofl__sunchen"] = "愿陛下念臣昔日之功，陛下？陛下！！",
 }
 
---E0051 尊享版2023：曹丕 杜畿 夏侯玄 李严 关银屏 马云騄 黄权 周泰 范疆张达
+--E0051 尊享版2023：曹丕 李严 关银屏 马云騄 黄权 周泰 范疆张达
+General:new(extension, "ofl__duji", "wei", 3):addSkills { "ofl__yingshi", "ofl__andong" }
+Fk:loadTranslationTable{
+  ["ofl__duji"] = "杜畿",
+  ["#ofl__duji"] = "卧镇京畿",
+  ["illustrator:ofl__duji"] = "梦回唐朝_久吉",
+}
+
 General:new(extension, "ofl__xiahouxuan", "wei", 3):addSkills { "ofl__huanfu", "qingyix", "zeyue" }
 Fk:loadTranslationTable{
   ["ofl__xiahouxuan"] = "夏侯玄",

@@ -51,7 +51,7 @@ dinghan:addEffect(fk.EventPhaseStart, {
       all_choices = Fk:getAllCardNames("t"),
     })
     table.insert(zhinang, choice)
-    room:setTag("Zhinang", zhinang)
+    room:setBanner("Zhinang", zhinang)
     room:setPlayerMark(player, "@$ofl_shiji__dinghan", room:getBanner("Zhinang"))
   end,
 })
