@@ -34,7 +34,7 @@ Fk:loadTranslationTable{
 }
 
 --S2067武将传 武神赵子龙
---General:new(extension, "ofl2__zhaoyun", "shu", 4):addSkills { "longdan", "回枪", "" }
+General:new(extension, "ofl2__zhaoyun", "shu", 4):addSkills { "longdan", "ofl__huiqiang", "ofl__huntu" }
 Fk:loadTranslationTable{
   ["ofl2__zhaoyun"] = "赵云",
   ["#ofl2__zhaoyun"] = "单骑救主",

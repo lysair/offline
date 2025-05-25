@@ -52,22 +52,7 @@ tonglu:addEffect(fk.RoundEnd, {
             dest_seat = 1
           end
         end
-        if to.seat ~= dest_seat then
-          local players = table.simpleClone(room.players)
-          table.removeOne(players, to)
-          table.insert(players, dest_seat, to)
-          room.players = players
-          local player_circle = {}
-          for i = 1, #room.players do
-            room.players[i].seat = i
-            table.insert(player_circle, room.players[i].id)
-          end
-          for i = 1, #room.players - 1 do
-            room.players[i].next = room.players[i + 1]
-          end
-          room.players[#room.players].next = room.players[1]
-          room:doBroadcastNotify("ArrangeSeats", json.encode(player_circle))
-        end
+        room:moveSeatTo(to, dest_seat)
         player:gainAnExtraTurn(false, tonglu.name)
       end
     end
