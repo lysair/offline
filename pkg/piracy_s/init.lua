@@ -9,7 +9,7 @@ Fk:loadTranslationTable{
 
 --官盗S1074过关斩将：双势力关羽
 
---官盗S2063赵子龙传
+--S2063赵子龙传
 General:new(extension, "ofl__zhaoyun", "shu", 4):addSkills { "ofl__qijin", "ofl__qichu", "ofl__longxin" }
 Fk:loadTranslationTable{
   ["ofl__zhaoyun"] = "赵云",
@@ -17,7 +17,7 @@ Fk:loadTranslationTable{
   ["illustrator:ofl__zhaoyun"] = "木碗Rae",
 }
 
---官盗S2065关云长传
+--S2065关云长传
 General:new(extension, "ofl__guanyu", "shu", 4):addSkills { "wusheng", "ofl__zhonghun", "nuzhan" }
 Fk:loadTranslationTable{
   ["ofl__guanyu"] = "关羽",
@@ -25,7 +25,39 @@ Fk:loadTranslationTable{
   ["illustrator:ofl__guanyu"] = "木美人",
 }
 
---官盗S2070武将传 旷世奇才郭嘉
+--S2066武将传 卧龙诸葛亮
+General:new(extension, "ofl__wolong", "shu", 3):addSkills { "ofl__zhijiz", "ofl__jiefeng", "kongcheng" }
+Fk:loadTranslationTable{
+  ["ofl__wolong"] = "卧龙诸葛亮",
+  ["#ofl__wolong"] = "谋定天下",
+  ["illustrator:ofl__wolong"] = "第七个桔子",
+}
+
+--S2067武将传 武神赵子龙
+--General:new(extension, "ofl2__zhaoyun", "shu", 4):addSkills { "longdan", "回枪", "" }
+Fk:loadTranslationTable{
+  ["ofl2__zhaoyun"] = "赵云",
+  ["#ofl2__zhaoyun"] = "单骑救主",
+  ["illustrator:ofl2__zhaoyun"] = "天空之城",
+}
+
+--S2068武将传 大军师司马懿
+General:new(extension, "ofl3__simayi", "wei", 3):addSkills { "ex__fankui", "ex__guicai", "ofl__zhonghu" }
+Fk:loadTranslationTable{
+  ["ofl3__simayi"] = "司马懿",
+  ["#ofl3__simayi"] = "大军师",
+  ["illustrator:ofl3__simayi"] = "DH",
+}
+
+--S2069武将传 西凉雄狮马超
+General:new(extension, "ofl__machao", "shu", 4):addSkills { "mashu", "tieqi", "ofl__weihou" }
+Fk:loadTranslationTable{
+  ["ofl__machao"] = "马超",
+  ["#ofl__machao"] = "西凉雄狮",
+  ["illustrator:ofl__machao"] = "depp",
+}
+
+--S2070武将传 旷世奇才郭嘉
 General:new(extension, "ofl2__guojia", "wei", 3):addSkills { "yiji", "ofl__quanmou" }
 Fk:loadTranslationTable{
   ["ofl2__guojia"] = "郭嘉",
@@ -33,7 +65,38 @@ Fk:loadTranslationTable{
   ["illustrator:ofl2__guojia"] = "木美人",
 }
 
---官盗S2079武将传 乱武天下贾诩
+--S2073虎啸龙吟
+General:new(extension, "ofl4__simayi", "wei", 3):addSkills { "ex__guicai", "ofl__huxiao" }
+Fk:loadTranslationTable{
+  ["ofl4__simayi"] = "司马懿",
+  ["#ofl4__simayi"] = "冢虎",
+  ["illustrator:ofl4__simayi"] = "木美人",
+}
+
+General:new(extension, "ofl2__wolong", "shu", 3):addSkills { "ofl__guanxing", "ofl__longyin" }
+Fk:loadTranslationTable{
+  ["ofl2__wolong"] = "卧龙诸葛亮",
+  ["#ofl2__wolong"] = "卧龙",
+  ["illustrator:ofl2__wolong"] = "biou09",
+}
+
+--S2075武将传 霸业天子曹丕
+General:new(extension, "ofl__caopi", "wei", 3):addSkills { "ofl__jianwei", "fangzhu", "songwei" }
+Fk:loadTranslationTable{
+  ["ofl__caopi"] = "曹丕",
+  ["#ofl__caopi"] = "霸业天子",
+  ["illustrator:ofl__caopi"] = "biou09",
+}
+
+--S2076武将传 血修罗吕布
+--General:new(extension, "ofl3__lvbu", "qun", 5):addSkills { "ofl__wushuang", "" }
+Fk:loadTranslationTable{
+  ["ofl3__lvbu"] = "吕布",
+  ["#ofl3__lvbu"] = "血修罗",
+  ["illustrator:ofl3__lvbu"] = "",
+}
+
+--S2079武将传 乱武天下贾诩
 General:new(extension, "ofl2__jiaxu", "qun", 3):addSkills { "ofl__yice", "luanwu" }
 Fk:loadTranslationTable{
   ["ofl2__jiaxu"] = "贾诩",
@@ -41,7 +104,7 @@ Fk:loadTranslationTable{
   ["illustrator:ofl2__jiaxu"] = "木美人",
 }
 
---官盗S2080武将传 英才盖世周瑜
+--S2080武将传 英才盖世周瑜
 General:new(extension, "ofl4__zhouyu", "wu", 3):addSkills { "ofl4__shiyin", "ofl__quwu", "ofl__liaozou" }
 Fk:loadTranslationTable{
   ["ofl4__zhouyu"] = "周瑜",
@@ -49,7 +112,7 @@ Fk:loadTranslationTable{
   ["illustrator:ofl4__zhouyu"] = "种风彦",
 }
 
---官盗S2081武将传 陈思王曹植
+--S2081武将传 陈思王曹植
 General:new(extension, "ofl__caozhi", "wei", 3):addSkills { "liushang", "qibu" }
 Fk:loadTranslationTable{
   ["ofl__caozhi"] = "曹植",
@@ -57,22 +120,7 @@ Fk:loadTranslationTable{
   ["illustrator:ofl__caozhi"] = "兴游",
 }
 
---官盗S1061竞技标准版：吕布 董卓
-General:new(extension, "ofl__lvbu", "qun", 4):addSkills { "wushuang", "ofl__sheji" }
-Fk:loadTranslationTable{
-  ["ofl__lvbu"] = "吕布",
-  ["#ofl__lvbu"] = "武的化身",
-  ["illustrator:ofl__lvbu"] = "7点Game",
-}
-
-General:new(extension, "ofl__dongzhuo", "qun", 4):addSkills { "ofl__hengzheng" }
-Fk:loadTranslationTable{
-  ["ofl__dongzhuo"] = "董卓",
-  ["#ofl__dongzhuo"] = "魔王",
-  ["illustrator:ofl__dongzhuo"] = "巴萨小马",
-}
-
---官盗S0-004神威九伐 神将篇
+--S0-004神威九伐 神将篇
 General:new(extension, "ofl2__godmachao", "god", 4):addSkills { "ofl2__shouli", "ofl2__hengwu" }
 Fk:loadTranslationTable{
   ["ofl2__godmachao"] = "神马超",
@@ -93,7 +141,7 @@ Fk:loadTranslationTable{
   ["~ofl__godjiangwei"] = "残阳晦月映秋霜，天命不再计成空。",
 }
 
---官盗S1058三国杀空城计 诸葛亮
+--S1058三国杀空城计 诸葛亮
 General:new(extension, "ofl__zhugeliang", "shu", 3):addSkills { "kongcheng", "ofl__qixingz" }
 Fk:loadTranslationTable{
   ["ofl__zhugeliang"] = "诸葛亮",
@@ -101,7 +149,7 @@ Fk:loadTranslationTable{
   ["illustrator:ofl__zhugeliang"] = "聚一工作室",
 }
 
---官盗S1059乱世奇佐 郭嘉
+--S1059乱世奇佐 郭嘉
 General:new(extension, "ofl__guojia", "wei", 3):addSkills { "tiandu", "ofl__qizuo" }
 Fk:loadTranslationTable{
   ["ofl__guojia"] = "郭嘉",
@@ -109,7 +157,22 @@ Fk:loadTranslationTable{
   ["illustrator:ofl__guojia"] = "小牛",
 }
 
---官盗S1062少年英姿 周瑜
+--S1061竞技标准版：吕布 董卓
+General:new(extension, "ofl__lvbu", "qun", 4):addSkills { "wushuang", "ofl__sheji" }
+Fk:loadTranslationTable{
+  ["ofl__lvbu"] = "吕布",
+  ["#ofl__lvbu"] = "武的化身",
+  ["illustrator:ofl__lvbu"] = "7点Game",
+}
+
+General:new(extension, "ofl__dongzhuo", "qun", 4):addSkills { "ofl__hengzheng" }
+Fk:loadTranslationTable{
+  ["ofl__dongzhuo"] = "董卓",
+  ["#ofl__dongzhuo"] = "魔王",
+  ["illustrator:ofl__dongzhuo"] = "巴萨小马",
+}
+
+--S1062少年英姿 周瑜
 General:new(extension, "ofl2__zhouyu", "wu", 3):addSkills { "yingzi", "ofl__shiyin" }
 Fk:loadTranslationTable{
   ["ofl2__zhouyu"] = "周瑜",
@@ -117,7 +180,7 @@ Fk:loadTranslationTable{
   ["illustrator:ofl2__zhouyu"] = "木美人",
 }
 
---官盗S1066控魂驱魄 贾诩
+--S1066控魂驱魄 贾诩
 General:new(extension, "ofl__jiaxu", "qun", 3):addSkills { "wansha", "ofl__qupo", "ofl__baoquan" }
 Fk:loadTranslationTable{
   ["ofl__jiaxu"] = "贾诩",
@@ -125,7 +188,7 @@ Fk:loadTranslationTable{
   ["illustrator:ofl__jiaxu"] = "光域",
 }
 
---官盗S1067鹰视狼顾 司马懿
+--S1067鹰视狼顾 司马懿
 General:new(extension, "ofl2__simayi", "jin", 3):addSkills { "yingshis", "ofl__quanyi" }
 Fk:loadTranslationTable{
   ["ofl2__simayi"] = "司马懿",

@@ -7,7 +7,7 @@ Fk:loadTranslationTable{
   ["piracy_e"] = "线下-官盗E系列",
 }
 
---官盗E系列战役-群雄逐鹿E0026：
+--E0026群雄逐鹿：
 --黄巾之乱：神张梁 神张宝 神张角
 --虎牢关之战：虎牢关吕布
 --界桥之战：神袁绍 神文丑 神公孙瓒 神赵云
@@ -42,7 +42,7 @@ Fk:loadTranslationTable{
   ["illustrator:longyufei"] = "DH",
 }
 
---官盗E系列战役-问鼎中原E0035：
+--E0035问鼎中原：
 --宛城之战：神曹操 神典韦 曹安民
 General:new(extension, "ofl__caoanmin", "wei", 4):addSkills { "ofl__kuishe" }
 Fk:loadTranslationTable{
@@ -55,7 +55,7 @@ Fk:loadTranslationTable{
 --官渡之战：神淳于琼 神张郃 神袁绍
 --赤壁之战：神周瑜 神诸葛亮 神曹操 郭嘉
 
---官盗E系列战役-三分天下E0037：
+--E0037三分天下：
 --渭水之战：神马超 神许褚
 --合肥之战：神张辽
 General:new(extension, "ofl__godzhangliao", "god", 4):addSkills { "ofl__tuji", "ofl__weizhen", "ofl__zhiti" }
@@ -80,7 +80,7 @@ Fk:loadTranslationTable{
   ["~ofl__mengda"] = "吾一生寡信，今报应果然来矣……",
 }
 
---官盗E系列战役-分久必合E0041：
+--E0041分久必合：
 --夷陵之战
 --南中平定战：一堆神孟获？
 --五丈原之战：神诸葛亮 神司马懿
@@ -156,7 +156,7 @@ Fk:loadTranslationTable{
   ["~ofl__guozhao"] = "红袖揾烟雨，泪尽垂青花。",
 }
 
---官盗E14至宝：周姬
+--E14001T至宝
 General:new(extension, "zhouji", "wu", 3, 3, General.Female):addSkills { "ofl__yanmouz", "ofl__zhanyan", "ofl__yuhuo" }
 Fk:loadTranslationTable{
   ["zhouji"] = "周姬",
@@ -164,7 +164,7 @@ Fk:loadTranslationTable{
   ["illustrator:zhouji"] = "xerez",
 }
 
---官盗E14001T匡鼎炎汉：鄂焕
+--E14001T匡鼎炎汉：鄂焕
 local ehuan = General:new(extension, "ehuan", "qun", 5)
 ehuan.subkingdom = "shu"
 ehuan:addSkills { "ofl__diwan", "ofl__suiluan", "ofl__conghan" }
@@ -174,7 +174,7 @@ Fk:loadTranslationTable{
   ["illustrator:ehuan"] = "小强",
 }
 
---官盗E7005T决战巅峰：钟会
+--E7005T决战巅峰：钟会
 local zhonghui = General:new(extension, "ofl__zhonghui", "wei", 4)
 zhonghui:addSkills { "mouchuan", "zizhong", "jizun", "qingsuan" }
 zhonghui:addRelatedSkills { "daohe", "zhiyiz" }
@@ -187,7 +187,7 @@ Fk:loadTranslationTable{
   ["~ofl__zhonghui"] = "时也…命也…",
 }
 
---官盗E5003T荆襄风云：周瑜 关羽 神刘表 神曹仁
+--E5003T荆襄风云
 General:new(extension, "ofl__zhouyu", "wu", 3):addSkills { "ofl__xiongzi", "ofl__zhanyanz" }
 Fk:loadTranslationTable{
   ["ofl__zhouyu"] = "周瑜",
@@ -211,7 +211,7 @@ Fk:loadTranslationTable{
   ["illustrator:godcaoren"] = "凡果",
 }
 
---官盗E10全武将尊享：田钏
+--E1002T全武将尊享
 General:new(extension, "tianchuan", "qun", 3, 3, General.Female):addSkills { "huying", "qianjing", "bianchi" }
 Fk:loadTranslationTable{
   ["tianchuan"] = "田钏",
@@ -219,7 +219,7 @@ Fk:loadTranslationTable{
   ["illustrator:tianchuan"] = "苍月白龙",
 }
 
---官盗E3至臻·权谋：纪灵
+--E3005至臻·权谋
 General:new(extension, "ofl__jiling", "qun", 4):addSkills { "ofl__shuangren" }
 Fk:loadTranslationTable{
   ["ofl__jiling"] = "纪灵",
@@ -227,7 +227,7 @@ Fk:loadTranslationTable{
   ["illustrator:ofl__jiling"] = "铁杵文化",
 }
 
---官盗E24侠客行：彭虎 彭绮 罗厉 祖郎 崔廉 单福
+--E24001T至臻·侠客行
 local penghu = General:new(extension, "penghu", "qun", 5)
 penghu:addSkills { "juqian", "zhepo", "yizhongp" }
 penghu:addRelatedSkill("insurrectionary&")
@@ -281,7 +281,7 @@ Fk:loadTranslationTable{
   ["illustrator:ofl__xushu"] = "木美人",
 }
 
---官盗E5002：风云志·汉末风云
+--E5002风云志·汉末风云
 General:new(extension, "ofl__godzhangjiao", "god", 4):addSkills { "ofl__mingdao", "ofl__zhongfu", "ofl__dangjing", "ofl__sanshou" }
 Fk:loadTranslationTable{
   ["ofl__godzhangjiao"] = "神张角",
@@ -425,7 +425,7 @@ Fk:loadTranslationTable{
   ["illustrator:godzhujun"] = "鱼仔",
 }
 
---官盗E11001T：蛇年限定礼盒
+--E11001T蛇年限定礼盒
 General:new(extension, "ofl__zhangrang", "qun", 4):addSkills { "ofl__taoluan", "changshi" }
 Fk:loadTranslationTable{
   ["ofl__zhangrang"] = "张让",
@@ -515,7 +515,7 @@ Fk:loadTranslationTable{
   ["illustrator:ofl__chezhou"] = "YanBai",
 }
 
---官盗E150017：至臻-全武将典藏
+--E150017至臻-全武将典藏
 local caocaoyuanshao = General:new(extension, "caocaoyuanshao", "qun", 4)
 caocaoyuanshao.subkingdom = "wei"
 caocaoyuanshao:addSkills { "guibei", "jiechu", "daojue", "tuonan" }
@@ -526,7 +526,7 @@ Fk:loadTranslationTable{
   ["illustrator:caocaoyuanshao"] = "荆芥",
 }
 
---官盗E9004T：全武将太虚幻境
+--E9004T全武将太虚幻境
 local quexiaojiang = General:new(extension, "quexiaojiang", "qun", 4)
 quexiaojiang:addSkills { "yingzhen", "yuanjue", "aoyong" }
 quexiaojiang:addRelatedSkill("tongkai")
@@ -536,7 +536,7 @@ Fk:loadTranslationTable{
   ["illustrator:quexiaojiang"] = "荆芥",
 }
 
---E5003：长安风云
+--E5003长安风云
 General:new(extension, "ofl__lijue", "qun", 6):addSkills { "cuixi", "jujun" }
 Fk:loadTranslationTable{
   ["ofl__lijue"] = "李傕",

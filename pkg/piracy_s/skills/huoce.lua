@@ -21,7 +21,7 @@ huoce:addEffect("active", {
   end,
   card_filter = Util.FalseFunc,
   target_filter = function(self, player, to_select, selected, selected_cards)
-    return #selected == 0 and to_select ~= player
+    return #selected == 0 and to_select ~= player and not to_select:isKongcheng()
   end,
   on_use = function(self, room, effect)
     local player = effect.from
@@ -31,7 +31,6 @@ huoce:addEffect("active", {
       min_num = 1,
       max_num = 1,
       cancelable = false,
-      include_equip = false,
       skill_name = huoce.name,
       prompt = "#ofl__huoce-discard",
       will_throw = true,

@@ -26,7 +26,7 @@ fuluan:addEffect("active", {
       end)
   end,
   target_filter = function(self, player, to_select, selected, cards)
-    return #cards == 3 and #selected == 0 and player:inMyAttackRange(to_select)
+    return #cards == 3 and #selected == 0 and player:inMyAttackRange(to_select, nil, cards)
   end,
   on_use = function(self, room, effect)
     local player = effect.from

@@ -5,7 +5,7 @@ local andong = fk.CreateSkill {
 Fk:loadTranslationTable{
   ["ofl__andong"] = "安东",
   [":ofl__andong"] = "每回合限一次，当你受到其他角色造成的伤害时，你可以观看其手牌，弃置其中一至两张牌，然后你获得弃置的"..
-  "<font color='red'>♥</font>牌该角色摸X张牌，若X为2，你防止此伤害（X为你弃置的非<font color='red'>♥</font>牌数）。",
+  "<font color='red'>♥</font>牌，该角色摸X张牌，若X为2，你防止此伤害（X为你弃置的非<font color='red'>♥</font>牌数）。",
 
   ["#ofl__andong-invoke"] = "安东：你可以观看 %dest 的手牌并弃置其中一至两张牌",
   ["#ofl__andong-discard"] = "安东：弃置其中一至两张牌，你获得<font color='red'>♥</font>牌，若弃置两张非<font color='red'>♥</font>"..
@@ -45,15 +45,18 @@ andong:addEffect(fk.DamageInflicted, {
       return Fk:getCardById(id).suit == Card.Heart
     end)
     room:throwCard(cards, andong.name, data.from, player)
-    if #cards == 2 and #heart == 0 then
+    local n = #cards - #heart
+    if n == 2 then
       data:preventDamage()
     end
-    if player.dead then return end
     heart = table.filter(heart, function (id)
       return table.contains(room.discard_pile, id)
     end)
-    if #heart > 0 then
+    if #heart > 0 and not player.dead then
       room:moveCardTo(heart, Card.PlayerHand, player, fk.ReasonJustMove, andong.name, nil, true, player)
+    end
+    if n > 0 and not data.from.dead then
+      data.from:drawCards(n, andong.name)
     end
   end,
 })

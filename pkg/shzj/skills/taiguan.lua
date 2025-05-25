@@ -26,8 +26,8 @@ taiguan:addEffect("active", {
   card_filter = function(self, player, to_select, selected)
     return #selected == 0 and not player:prohibitDiscard(to_select)
   end,
-  target_filter = function(self, player, to_select, selected)
-    return #selected == 0 and not to_select:isNude() and player:inMyAttackRange(to_select)
+  target_filter = function(self, player, to_select, selected, selected_cards)
+    return #selected == 0 and not to_select:isNude() and player:inMyAttackRange(to_select, nil, selected_cards)
   end,
   on_use = function(self, room, effect)
     local player = effect.from

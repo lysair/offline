@@ -53,7 +53,7 @@ fengtu:addEffect(fk.EventTurnChanging, {
     return table.contains(player:getTableMark("@fengtu"), data.to.seat)
   end,
   on_refresh = function (self, event, target, player, data)
-    player:gainAnExtraTurn(false, "game_rule")
+    data.to = player
   end,
 })
 
