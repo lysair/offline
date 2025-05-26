@@ -89,11 +89,11 @@ Fk:loadTranslationTable{
 }
 
 --S2076武将传 血修罗吕布
---General:new(extension, "ofl3__lvbu", "qun", 5):addSkills { "ofl__wushuang", "" }
+General:new(extension, "ofl3__lvbu", "qun", 5):addSkills { "ofl__wushuang", "ofl__xiuluo" }
 Fk:loadTranslationTable{
   ["ofl3__lvbu"] = "吕布",
   ["#ofl3__lvbu"] = "血修罗",
-  ["illustrator:ofl3__lvbu"] = "",
+  ["illustrator:ofl3__lvbu"] = "干橘子",
 }
 
 --S2079武将传 乱武天下贾诩

@@ -20,6 +20,7 @@ moran:addEffect(fk.Damaged, {
       prompt = "#moran-choice",
       min = 1,
       max = 3,
+      cancelable = false,
     })
     room:setPlayerMark(player, "@moran", n)
     room:setPlayerMark(player, moran.name, n)

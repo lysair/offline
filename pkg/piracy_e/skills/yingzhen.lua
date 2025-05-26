@@ -12,6 +12,7 @@ Fk:loadTranslationTable{
 }
 
 yingzhen:addEffect(fk.GameStart, {
+  priority = 0.001,
   anim_type = "offensive",
   can_trigger = function(self, event, target, player, data)
     return player:hasSkill(yingzhen.name) and #player.room:getOtherPlayers(player, false) > 0

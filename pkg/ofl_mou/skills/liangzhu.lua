@@ -27,7 +27,7 @@ liangzhu:addEffect("active", {
   end,
   card_filter = Util.FalseFunc,
   target_filter = function(self, player, to_select, selected, selected_cards)
-    return #selected == 0 and to_select ~= player and to_select:getCardIds("e") > 0
+    return #selected == 0 and to_select ~= player and #to_select:getCardIds("e") > 0
   end,
   on_use = function(self, room, effect)
     local player = effect.from

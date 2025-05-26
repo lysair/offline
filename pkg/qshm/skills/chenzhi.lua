@@ -5,9 +5,10 @@ local chenzhi = fk.CreateSkill {
 
 Fk:loadTranslationTable{
   ["chenzhi"] = "沉滞",
-  [":chenzhi"] = "锁定技，当你摸牌时，改为从游戏外扑克牌摸等量的牌（包括初始手牌）。扑克牌视为基本牌，进入弃牌堆后销毁。",
+  [":chenzhi"] = "锁定技，当你摸牌时，改为从游戏外扑克牌摸等量的牌（包括初始手牌）。",
 
   ["poker"] = "",
+  [":poker"] = "这是一张扑克牌",
 }
 
 chenzhi:addEffect(fk.BeforeDrawCard, {
