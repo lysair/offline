@@ -1,5 +1,7 @@
 local suiluan = fk.CreateSkill {
   name = "ofl__suiluan",
+  tags = { Skill.AttachedKingdom },
+  attached_kingdom = {"qun"},
 }
 
 Fk:loadTranslationTable{

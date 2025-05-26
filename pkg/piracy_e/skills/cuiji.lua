@@ -18,26 +18,33 @@ cuiji:addEffect(fk.EventPhaseStart, {
   end,
   on_cost = function(self, event, target, player, data)
     local room = player.room
-    local success, dat = room:askToUseActiveSkill(player, {
-      skill_name = "ofl__cuiji_viewas",
+    local use = room:askToUseVirtualCard(player, {
+      name = "thunder__slash",
+      skill_name = cuiji.name,
       prompt = "#ofl__cuiji-invoke::" .. target.id,
       cancelable = true,
       extra_data = {
         bypass_distances = true,
         bypass_times = true,
         must_targets = {target.id},
-      }
+      },
+      card_filter = {
+        n = { 1, 999 },
+        cards = player:getHandlyIds(),
+      },
+      skip = true,
     })
-    if success and dat then
-      event:setCostData(self, {cards = dat.cards})
+    if use then
+      event:setCostData(self, {extra_data = use})
       return true
     end
   end,
   on_use = function(self, event, target, player, data)
     local room = player.room
-    local use = room:useVirtualCard("thunder__slash", event:getCostData(self).cards, player, target, cuiji.name, true)
+    local use = event:getCostData(self).extra_data
+    room:useCard(use)
     if use and use.damageDealt and not player.dead then
-      player:drawCards(#event:getCostData(self).cards, cuiji.name)
+      player:drawCards(#Card:getIdList(use.card), cuiji.name)
     end
   end,
 })
