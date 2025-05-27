@@ -40,7 +40,6 @@ fuhans:addEffect(fk.AfterCardsMove, {
     end
   end,
   on_trigger = function(self, event, target, player, data)
-    local room = player.room
     local dat = {}
     for _, move in ipairs(data) do
       if move.toArea == Card.PlayerHand then
@@ -90,7 +89,7 @@ fuhans:addEffect(fk.AfterCardsMove, {
       slot = room:askToChoice(to, {
         choices = slots,
         skill_name = fuhans.name,
-        prompt = "#fuhans1-invoke:"..player.id,
+        prompt = "#fuhans1-invoke:"..player.id..":"..room.current.id,
       })
     else
       local slots = table.simpleClone(player.sealedSlots)
@@ -99,7 +98,7 @@ fuhans:addEffect(fk.AfterCardsMove, {
       slot = room:askToChoice(to, {
         choices = slots,
         skill_name = fuhans.name,
-        prompt = "#fuhans2-invoke:"..player.id,
+        prompt = "#fuhans2-invoke:"..player.id..":"..room.current.id,
       })
     end
     if slot ~= "Cancel" then
