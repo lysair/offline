@@ -4,7 +4,7 @@ local zhaozhao = fk.CreateSkill {
 
 Fk:loadTranslationTable{
   ["zhaozhao"] = "诏昭",
-  [":zhaozhao"] = "当你造成或受到1点伤害后，你可以摸一张牌，然后令伤害来源或受伤角色选择一项：1.从弃牌堆或场上获得一张装备牌并使用之，"..
+  [":zhaozhao"] = "当你造成或受到1点伤害后，你可以摸一张牌，然后选择一项令伤害来源或受伤角色执行：1.从弃牌堆或场上获得一张装备牌并使用之，"..
   "此牌置于一个额外装备栏；2.翻面并摸一张牌；3.减1点体力上限。",
 
   ["#zhaozhao-choose"] = "诏昭：令你或对方选择一项",
@@ -59,7 +59,7 @@ local spec = {
     if #card_data == 0 then
       table.remove(choices, 1)
     end
-    local choice = room:askToChoice(to, {
+    local choice = room:askToChoice(player, {
       choices = choices,
       skill_name = zhaozhao.name,
       all_choices = all_choices,

@@ -33,6 +33,7 @@ sanshou:addEffect(fk.EventPhaseChanging, {
 })
 
 sanshou:addEffect(fk.EventPhaseEnd, {
+  late_refresh = true,
   can_refresh = function(self, event, target, player, data)
     return target == player and player:getMark("ofl__sanshou-phase") > 0
   end,

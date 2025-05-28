@@ -25,16 +25,7 @@ local spec = {
             return true
           end
         end, Player.HistoryRound)
-        if #use_events == 0 then
-          use_events = room.logic:getEventsOfScope(GameEvent.RespondCard, 1, function (e)
-            local use = e.data
-            if use.from == player and use.card.trueName == data.card.trueName then
-              room:addTableMark(player, "zizhong-round", data.card.trueName)
-              return true
-            end
-          end, Player.HistoryRound)
-        end
-        return #use_events == 1 and use_events[1].data == data
+        return (#use_events == 1 and use_events[1].data == data) or (#use_events == 0 and event == fk.CardResponding)
       end
     end
   end,
