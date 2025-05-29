@@ -30,7 +30,7 @@ local function AddYuqi(player, skillName, num)
       prompt = "#ofl__yuqi-upgrade:::"..skillName..":"..num,
       all_choices = all_choices,
     })
-    room:setPlayerMark(player, choice, math.min(5 - yuqi_initial[table.indexOf(all_choices, choice)], player:getMark(choice) + num))
+    room:setPlayerMark(player, choice, math.min(3 - yuqi_initial[table.indexOf(all_choices, choice)], player:getMark(choice) + num))
   end
 end
 

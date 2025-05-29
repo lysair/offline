@@ -35,7 +35,8 @@ longmu:addEffect(fk.Deathed, {
   anim_type = "offensive",
   can_trigger = function (self, event, target, player, data)
     return player:hasSkill(longmu.name) and table.contains(player:getTableMark(longmu.name), target.id) and
-      target.general ~= "ofl__zombie" and target.dead
+      target.general ~= "ofl__zombie" and target.dead and target.rest < 1 and
+      target.role ~= "lord"
   end,
   on_cost = function (self, event, target, player, data)
     event:setCostData(self, {tos = {target}})
