@@ -47,7 +47,7 @@ huoshou:addEffect(fk.EventPhaseEnd, {
     end
     local card = Fk:cloneCard("savage_assault")
     card.skillName = huoshou.name
-    local targets = card:getAvailableTargets(player)
+    local targets = card:getDefaultTarget(player)
     if #targets > 0 then
       room:useVirtualCard("savage_assault", nil, player, targets, huoshou.name)
     end

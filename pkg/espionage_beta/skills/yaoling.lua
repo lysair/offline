@@ -50,7 +50,7 @@ yaoling:addEffect(fk.EventPhaseEnd, {
     local use = room:askToUseCard(to, {
       skill_name = yaoling.name,
       pattern = "slash",
-      prompt = "#yaoling-use:" .. player.id .. ":" .. dest,
+      prompt = "#yaoling-use:" .. player.id .. ":" .. dest.id,
       cancelable = true,
       extra_data = {
         bypass_times = true,

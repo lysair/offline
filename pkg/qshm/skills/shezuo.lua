@@ -158,7 +158,7 @@ shezuo:addEffect(fk.PindianFinished, {
               card.skillName = shezuo.name
               card:addSubcards(to:getCardIds("h"))
               if #dat.targets == 0 then
-                dat.targets = card:getAvailableTargets(to, {bypass_times = true})
+                dat.targets = card:getDefaultTarget(to, {bypass_times = true})
               end
               room:useCard{
                 from = to,

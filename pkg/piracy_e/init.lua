@@ -499,9 +499,7 @@ Fk:loadTranslationTable{
 }
 
 --E7006T肃问
-local yongkai = General:new(extension, "yongkai", "shu", 5)
-yongkai.subkingdom = "wu"
-yongkai:addSkills { "xiaofany", "jiaohu", "quanpan", "huoluan" }
+General:new(extension, "yongkai", "shu", 5):addSkills { "xiaofany", "jiaohu", "quanpan", "huoluan" }
 Fk:loadTranslationTable{
   ["yongkai"] = "雍闿",
   ["#yongkai"] = "惑动南中",

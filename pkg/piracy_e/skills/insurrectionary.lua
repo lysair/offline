@@ -5,12 +5,12 @@ local insurrectionary = fk.CreateSkill {
 
 Fk:loadTranslationTable{
   ["insurrectionary&"] = "起义军",
-  [":insurrectionary&"] = "锁定技，<br>起义军出牌阶段使用【杀】次数上限+1。<br>起义军的回合结束时，若本回合未对起义军角色使用过【杀】且"..
+  [":insurrectionary&"] = "锁定技，<br>起义军出牌阶段使用【杀】次数上限+1。<br>起义军的回合结束时，若本回合未对非起义军角色使用过【杀】且"..
   "未对非起义军角色造成过伤害，需选择一项：1.失去起义军标记并弃置所有手牌；2.失去1点体力。<br>非起义军角色对起义军角色使用【杀】次数上限+1。",
 
   ["@[:]insurrectionary"] = "",
   ["insurrectionary_banner"] = "起义军",
-  [":insurrectionary_banner"] = "锁定技，<br>起义军出牌阶段使用【杀】次数上限+1。<br>起义军的回合结束时，若本回合未对起义军角色使用过【杀】且"..
+  [":insurrectionary_banner"] = "锁定技，<br>起义军出牌阶段使用【杀】次数上限+1。<br>起义军的回合结束时，若本回合未对非起义军角色使用过【杀】且"..
   "未对非起义军角色造成过伤害，需选择一项：1.失去起义军标记并弃置所有手牌；2.失去1点体力。<br>非起义军角色对起义军角色使用【杀】次数上限+1。",
   ["#JoinInsurrectionary"] = "%from 加入了起义军",
   ["#QuitInsurrectionary"] = "%from 退出了起义军",
@@ -27,7 +27,7 @@ insurrectionary:addEffect(fk.TurnEnd, {
         local use = e.data
         return use.from == player and use.card.trueName == "slash" and
           table.find(use.tos, function (p)
-            return U.isInsurrectionary(p)
+            return not U.isInsurrectionary(p)
           end) ~= nil
       end, Player.HistoryTurn) == 0 and
       #player.room.logic:getActualDamageEvents(1, function(e)

@@ -25,7 +25,7 @@ xihun:addEffect(fk.RoundEnd, {
     for _, p in ipairs(room:getOtherPlayers(player)) do
       if not p.dead then
         if #p:getCardIds("h") < 2 or
-        #room:askToDiscard(player, {
+        #room:askToDiscard(p, {
           min_num = 2,
           max_num = 2,
           include_equip = false,
