@@ -4,7 +4,7 @@ local wushen = fk.CreateSkill{
 
 Fk:loadTranslationTable {
   ["shzj_yiling__wushen"] = "武神",
-  [":shzj_yiling__wushen"] = "你可以将<font color='red'>♥</font>牌当【杀】使用或打出，你以此法使用发【杀】无距离次数限制且不能被响应。",
+  [":shzj_yiling__wushen"] = "你可以将<font color='red'>♥</font>牌当【杀】使用或打出，你以此法使用【杀】无距离次数限制且不能被响应。",
 
   ["#shzj_yiling__wushen"] = "武神：将<font color='red'>♥</font>牌当【杀】使用或打出（无距离次数限制、不能被响应）",
 }
