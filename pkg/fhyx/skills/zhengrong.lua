@@ -15,6 +15,7 @@ Fk:loadTranslationTable{
 
 zhengrong:addEffect(fk.GameStart, {
   anim_type = "switch",
+  is_delay_effect = true,
   can_trigger = function (self, event, target, player, data)
     return player:hasSkill(zhengrong.name)
   end,

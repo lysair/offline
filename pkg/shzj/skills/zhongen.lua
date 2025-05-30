@@ -45,6 +45,10 @@ zhongen:addEffect(fk.EventPhaseStart, {
     })
     if choice == "zhongen_ex_nihilo::"..target.id then
       local cards = table.filter(player:getHandlyIds(), function (id)
+        if Fk:getCardById(id).trueName ~= "slash" then
+          return false
+        end
+
         local card = Fk:cloneCard("ex_nihilo")
         card:addSubcard(id)
         return not player:isProhibited(target, card)
