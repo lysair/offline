@@ -618,4 +618,42 @@ Fk:loadTranslationTable{
   ["illustrator:godwangyun"] = "alien",
 }
 
+--E7君霸天下 刘备 刘禅 曹操 曹丕 刘宏 刘协 孙策 孙权 袁绍 张角
+
+--E5004渭南风云 曹操 韩遂
+General:new(extension, "ofl3__godmachao", "god", 5):addSkills { "qiangshu", "yuma" }
+Fk:loadTranslationTable{
+  ["ofl3__godmachao"] = "神马超",
+  ["#ofl3__godmachao"] = "",
+  ["illustrator:ofl3__godmachao"] = "君桓文化",
+}
+
+General:new(extension, "ofl__godxuchu", "god", 5):addSkills { "jiangzhan", "ofl__zhenweix" }
+Fk:loadTranslationTable{
+  ["ofl__godxuchu"] = "神许褚",
+  ["#ofl__godxuchu"] = "",
+  ["illustrator:ofl__godxuchu"] = "鬼画府",
+}
+
+General:new(extension, "houxuan", "qun", 4):addSkills { "zhongtao", "mashu" }
+Fk:loadTranslationTable{
+  ["houxuan"] = "侯选",
+  ["#houxuan"] = "",
+  ["illustrator:houxuan"] = "陈鑫",
+}
+
+General:new(extension, "chengyi", "qun", 4):addSkills { "dutan" }
+Fk:loadTranslationTable{
+  ["chengyi"] = "成宜",
+  ["#chengyi"] = "",
+  ["illustrator:chengyi"] = "陈鑫",
+}
+
+General:new(extension, "yangqiuq", "qun", 5):addSkills { "qifeng" }
+Fk:loadTranslationTable{
+  ["yangqiuq"] = "杨秋",
+  ["#yangqiuq"] = "",
+  ["illustrator:yangqiuq"] = "Neko",
+}
+
 return extension

@@ -175,6 +175,15 @@ Fk:loadTranslationTable{
   ["illustrator:ofl_shiji__liuzhang"] = "",
 }
 
+General:new(extension, "ofl_shiji__liuba", "shu", 3):addSkills { "ofl_shiji__duanbi", "ofl_shiji__tongdu" }
+Fk:loadTranslationTable{
+  ["ofl_shiji__liuba"] = "刘巴",
+  ["#ofl_shiji__liuba"] = "撰科行律",
+  ["illustrator:ofl_shiji__liuba"] = "匠人绘",
+
+  ["~ofl_shiji__liuba"] = "唉，国之兴亡，岂能改之……",
+}
+
 General:new(extension, "fhyx__zhugeshang", "shu", 3):addSkills { "ofl__sangu", "yizu" }
 Fk:loadTranslationTable{
   ["fhyx__zhugeshang"] = "诸葛尚",
