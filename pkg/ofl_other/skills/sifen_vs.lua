@@ -39,7 +39,7 @@ sifen_vs:addEffect("viewas", {
 
 sifen_vs:addEffect("prohibit", {
   is_prohibited = function (self, from, to, card)
-    if card and table.contains(card.skillNames, sifen_vs.name) and to then
+    if card and table.contains(card.skillNames, sifen_vs.name) and to and from then
       return not table.find(from:getMark("sifen-phase"), function (info)
         return info[1] == to.id and info[2] == #card.subcards
       end)

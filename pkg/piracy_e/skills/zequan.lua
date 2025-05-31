@@ -47,7 +47,7 @@ end)
 
 zequan:addEffect("prohibit", {
   is_prohibited = function(self, from, to, card)
-    return table.contains(card.skillNames, zequan.name) and (from == to or from.hp > to.hp)
+    return table.contains(card.skillNames, zequan.name) and from and (from == to or from.hp > to.hp)
   end,
 })
 

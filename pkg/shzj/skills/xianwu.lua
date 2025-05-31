@@ -72,7 +72,7 @@ xianwu:addEffect(fk.Damaged, {
 
 xianwu:addEffect("prohibit", {
   is_prohibited = function(self, from, to, card)
-    return card and table.contains(card.skillNames, xianwu.name) and
+    return card and table.contains(card.skillNames, xianwu.name) and from and
       not table.contains(to:getTableMark("@@xianwu-round"), from.id)
   end,
 })

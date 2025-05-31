@@ -88,7 +88,7 @@ mingfa:addEffect(fk.PindianCardsDisplayed, {
 
 mingfa:addEffect("prohibit", {
   is_prohibited = function(self, from, to, card)
-    return from:getMark("@@ofl_shiji__mingfa-turn") > 0 and card and from ~= to
+    return from and from:getMark("@@ofl_shiji__mingfa-turn") > 0 and card and from ~= to
   end,
 })
 

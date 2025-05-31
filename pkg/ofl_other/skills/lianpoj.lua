@@ -213,7 +213,7 @@ lianpoj:addEffect("atkrange", {
 
 lianpoj:addEffect("prohibit", {
   is_prohibited = function (self, from, to, card)
-    if card and card.name == "peach" and from ~= to and to.dying then
+    if card and card.name == "peach" and from and from ~= to and to.dying then
       return table.find(Fk:currentRoom().alive_players, function(p)
         return table.contains(p:getTableMark("@lianpoj"), "lianpoj1") and p ~= from
       end)

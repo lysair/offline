@@ -10,7 +10,7 @@ Fk:loadTranslationTable{
 
 jiaozong:addEffect("prohibit", {
   is_prohibited = function(self, from, to, card)
-    if card and from.phase == Player.Play and card.color == Card.Red and from:getMark("jiaozong-phase") == 0 then
+    if card and from and from.phase == Player.Play and card.color == Card.Red and from:getMark("jiaozong-phase") == 0 then
       return table.find(Fk:currentRoom().alive_players, function(p)
         return p:hasSkill(jiaozong.name) and p ~= from and p ~= to
       end)
