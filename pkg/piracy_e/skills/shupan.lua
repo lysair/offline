@@ -72,7 +72,7 @@ shupan:addEffect("active", {
 
 shupan:addEffect("targetmod", {
   bypass_times = function(self, player, skill, scope, card, to)
-    return card and table.contains(player:getTableMark("@@ofl__shupan"), to.id)
+    return card and to and table.contains(player:getTableMark("@@ofl__shupan"), to.id)
   end,
 })
 

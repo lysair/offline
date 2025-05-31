@@ -22,18 +22,22 @@ nitian:addEffect("active", {
 })
 
 nitian:addEffect(fk.CardUsing, {
-  anim_type = "offensive",
+  is_delay_effect = true,
+  mute = true,
   can_trigger = function(self, event, target, player, data)
     return target == player and player:usedSkillTimes(nitian.name, Player.HistoryTurn) > 0 and
       (data.card.trueName == "slash" or data.card:isCommonTrick())
   end,
   on_use = function (self, event, target, player, data)
-    data.unoffsetableList = table.shuffle(player.room.players)
+    player:broadcastSkillInvoke(nitian.name)
+    player.room:notifySkillInvoked(player, self.name, "offensive")
+    data.unoffsetableList = player.room:getAllPlayers(false)
   end,
 })
 
 nitian:addEffect(fk.EventPhaseStart, {
-  anim_type = "negative",
+  is_delay_effect = true,
+  mute = true,
   can_trigger = function(self, event, target, player, data)
     return target == player and player:usedSkillTimes(nitian.name, Player.HistoryTurn) > 0 and
       player.phase == Player.Finish and
@@ -42,6 +46,8 @@ nitian:addEffect(fk.EventPhaseStart, {
       end, Player.HistoryTurn) == 0
   end,
   on_use = function (self, event, target, player, data)
+    player:broadcastSkillInvoke(nitian.name)
+    player.room:notifySkillInvoked(player, self.name, "negative")
     player.room:killPlayer({who = player})
   end,
 })

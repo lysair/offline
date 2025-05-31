@@ -51,8 +51,8 @@ guolun:addEffect(fk.TargetSpecified, {
           {player, card},
           {data.to, {id1}},
         }, guolun.name)
-        if n2 > n1 and not target.dead then
-          target:drawCards(1, guolun.name)
+        if n2 > n1 and not data.to.dead then
+          data.to:drawCards(1, guolun.name)
         elseif n1 > n2 and not player.dead then
           player:drawCards(1, guolun.name)
         end

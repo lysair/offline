@@ -12,7 +12,7 @@ Fk:loadTranslationTable{
 zhonghu:addEffect(fk.Death, {
   anim_type = "offensive",
   can_trigger = function(self, event, target, player, data)
-    return player:hasSkill(zhonghu.name) and target.rest < 1 and
+    return player:hasSkill(zhonghu.name) and target.rest < 1 and player.phase == Player.NotActive and
       player.room.logic:getCurrentEvent():findParent(GameEvent.Turn) ~= nil
   end,
   on_cost = function(self, event, target, player, data)

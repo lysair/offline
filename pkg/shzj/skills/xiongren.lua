@@ -36,10 +36,10 @@ xiongren:addEffect(fk.PreCardUse, {
 xiongren:addEffect("targetmod", {
   bypass_times = function(self, player, skill, scope, card, to)
     return player:hasSkill(xiongren.name) and skill.trueName == "slash_skill" and scope == Player.HistoryPhase and
-      to:distanceTo(player) <= 1
+      to and to:distanceTo(player) <= 1
   end,
   bypass_distances = function(self, player, skill, card, to)
-    return player:hasSkill(xiongren.name) and skill.trueName == "slash_skill" and
+    return player:hasSkill(xiongren.name) and skill.trueName == "slash_skill" and to and
       to:distanceTo(player) <= 1
   end,
 })

@@ -44,7 +44,7 @@ anmou:addEffect(fk.PreCardUse, {
 
 anmou:addEffect("targetmod", {
   bypass_times = function(self, player, skill, scope, card, to)
-    return card and (player:getMark(anmou.name) == to.id or to:getMark(anmou.name) == player.id)
+    return card and to and (player:getMark(anmou.name) == to.id or to:getMark(anmou.name) == player.id)
   end,
 })
 
