@@ -34,7 +34,7 @@ zhangwu:addEffect("active", {
     player:drawCards(self.interaction.data)
     if player.dead then return end
     room:setPlayerMark(player, zhangwu.name, 1)
-    room:invalidateSkill(player, "mou__rende")
+    room:invalidateSkill(player, "mou__rende", nil, zhangwu.name)
   end,
 })
 
@@ -45,7 +45,7 @@ zhangwu:addEffect(fk.EnterDying, {
   on_refresh = function (self, event, target, player, data)
     local room = player.room
     room:setPlayerMark(player, zhangwu.name, 0)
-    room:validateSkill(player, "mou__rende")
+    room:validateSkill(player, "mou__rende", nil, zhangwu.name)
   end,
 })
 

@@ -116,7 +116,7 @@ local spec = {
           arg = choice,
           toast = true,
         }
-        room:invalidateSkill(target, choice)
+        room:invalidateSkill(target, choice, nil, podai.name)
       end
     else
       target:drawCards(3, podai.name)
