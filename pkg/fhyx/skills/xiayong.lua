@@ -43,4 +43,42 @@ xiayong:addEffect(fk.EventPhaseStart, {
   end,
 })
 
+xiayong:addTest(function (room, me)
+  local comp2 = room.players[2]
+  FkTest.runInRoom(function() room:handleAddLoseSkills(me, xiayong.name) end)
+  local slash = Fk:getCardById(1)
+  FkTest.setNextReplies(me, { FkTest.replyCard(slash, {comp2}), "__cancel", "1" })
+  FkTest.setNextReplies(comp2, { "__cancel" })
+
+  FkTest.runInRoom(function()
+    room:obtainCard(me, 1)
+    me:gainAnExtraTurn(nil, nil, {Player.Play, Player.Finish})
+  end)
+  lu.assertEquals(me:getHandcardNum(), 1)
+
+  local duel = room:printCard("duel")
+  FkTest.setNextReplies(me, { FkTest.replyCard(slash, {comp2}), FkTest.replyCard(duel, {comp2}), "__cancel", "1" })
+  FkTest.setNextReplies(comp2, { "__cancel", "__cancel" })
+
+  FkTest.runInRoom(function()
+    room:obtainCard(me, 1)
+    room:obtainCard(me, duel)
+    me:gainAnExtraTurn(nil, nil, {Player.Play, Player.Finish})
+  end)
+  lu.assertEquals(me:getHandcardNum(), 3)
+
+  local jink = room:printCard("jink")
+  FkTest.setNextReplies(me, { FkTest.replyCard(slash, {comp2}), FkTest.replyCard(duel, {comp2}), "__cancel", "1" })
+  FkTest.setNextReplies(comp2, { FkTest.replyCard(jink), "__cancel" })
+
+  FkTest.runInRoom(function()
+    room:obtainCard(me, 1)
+    room:obtainCard(me, duel)
+    room:obtainCard(comp2, jink)
+    room:changeHp(comp2, 3)
+    me:gainAnExtraTurn(nil, nil, {Player.Play, Player.Finish})
+  end)
+  lu.assertEquals(me:getHandcardNum(), 3)
+end)
+
 return xiayong

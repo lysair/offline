@@ -34,7 +34,7 @@ daoshu:addEffect(fk.EventPhaseStart, {
       cancelable = true,
     })
     if #to > 0 then
-      event:setCostData(self, {tos = {target, to}})
+      event:setCostData(self, { tos = {target, to[1]} })
       return true
     end
   end,
