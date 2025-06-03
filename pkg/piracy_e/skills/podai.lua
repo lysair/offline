@@ -26,7 +26,8 @@ local spec = {
         for _, card in pairs(Fk.all_card_types) do
           if card.type == Card.TypeBasic then
             for _, s in ipairs(target:getSkillNameList()) do
-              if string.find(Fk:translate(":"..s, "zh_CN"), "【"..Fk:translate(card.trueName, "zh_CN").."】") then
+              if target:hasSkill(s) and
+                string.find(Fk:translate(":"..s, "zh_CN"), "【"..Fk:translate(card.trueName, "zh_CN").."】") then
                 table.insert(choices, "ofl__podai1")
                 if #choices > 0 then
                   event:setCostData(self, choices)
@@ -37,7 +38,8 @@ local spec = {
           end
         end
         for _, s in ipairs(target:getSkillNameList()) do
-          if table.find({
+          if target:hasSkill(s) and
+          table.find({
             "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
             "零", "一", "二", "三", "四", "五", "六", "七", "八", "九",
             "两", "十", "百", "千", "万"
@@ -81,20 +83,22 @@ local spec = {
       for _, card in pairs(Fk.all_card_types) do
         if card.type == Card.TypeBasic then
           for _, s in ipairs(target:getSkillNameList()) do
-            if string.find(Fk:translate(":"..s, "zh_CN"), "【"..Fk:translate(card.trueName, "zh_CN").."】") then
+            if target:hasSkill(s) and
+            string.find(Fk:translate(":"..s, "zh_CN"), "【"..Fk:translate(card.trueName, "zh_CN").."】") then
               table.insertIfNeed(skills, s)
             end
           end
         end
       end
       for _, s in ipairs(target:getSkillNameList()) do
-          if table.find({
-            "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
-            "零", "一", "二", "三", "四", "五", "六", "七", "八", "九",
-            "两", "十", "百", "千", "万"
-          }, function (str)
+        if target:hasSkill(s) and
+        table.find({
+          "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+          "零", "一", "二", "三", "四", "五", "六", "七", "八", "九",
+          "两", "十", "百", "千", "万"
+        }, function (str)
           return string.find(Fk:translate(":"..s, "zh_CN"), str) ~= nil
-          end) then
+        end) then
           table.insertIfNeed(skills, s)
         end
       end

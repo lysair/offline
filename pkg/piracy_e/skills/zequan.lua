@@ -34,7 +34,6 @@ zequan:addEffect("viewas", {
   before_use = function(self, player, use)
     player.room:addTableMark(player, zequan.name, use.card.trueName)
   end,
-  enabled_at_play = Util.TrueFunc,
   enabled_at_response = function(self, player, response)
     return not response and
       #player:getViewAsCardNames(zequan.name, Fk:getAllCardNames("t"), nil, player:getTableMark(zequan.name)) > 0
@@ -46,6 +45,9 @@ zequan:addLoseEffect(function (self, player, is_death)
 end)
 
 zequan:addEffect("prohibit", {
+  prohibit_use = function (self, player, card)
+    return card and table.contains(card.skillNames, zequan.name) and card.is_passive
+  end,
   is_prohibited = function(self, from, to, card)
     return table.contains(card.skillNames, zequan.name) and from and (from == to or from.hp > to.hp)
   end,

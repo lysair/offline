@@ -5,7 +5,7 @@ local huanfu = fk.CreateSkill{
 Fk:loadTranslationTable{
   ["ofl__huanfu"] = "宦浮",
   [":ofl__huanfu"] = "当你使用【杀】指定目标后或成为【杀】的目标后，你可以弃置至多你的体力上限张牌，然后摸2X张牌，若如此做，"..
-  "此【杀】对目标角色造成的伤害改为X（X为你弃置的牌数）。",
+  "此【杀】对此目标角色造成的伤害改为X（X为你弃置的牌数）。",
 
   ["#ofl__huanfu-invoke"] = "宦浮：弃置至多%arg张牌，摸两倍的牌，此【杀】对 %dest 的伤害改为弃牌数",
 

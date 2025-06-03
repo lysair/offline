@@ -620,7 +620,7 @@ Fk:loadTranslationTable{
 
 --E7君霸天下 刘备 刘禅 曹操 曹丕 刘宏 刘协 孙策 孙权 袁绍 张角
 
---E5004渭南风云 曹操 韩遂
+--E5004渭南风云
 General:new(extension, "ofl3__godmachao", "god", 5):addSkills { "qiangshu", "yuma" }
 Fk:loadTranslationTable{
   ["ofl3__godmachao"] = "神马超",
@@ -633,6 +633,22 @@ Fk:loadTranslationTable{
   ["ofl__godxuchu"] = "神许褚",
   ["#ofl__godxuchu"] = "",
   ["illustrator:ofl__godxuchu"] = "鬼画府",
+}
+
+General:new(extension, "ofl2__caocao", "wei", 4):addSkills { "dingluan", "qianjiang" }
+Fk:loadTranslationTable{
+  ["ofl2__caocao"] = "曹操",
+  ["#ofl2__caocao"] = "",
+  ["illustrator:ofl2__caocao"] = "小牛",
+}
+
+local hansui = General:new(extension, "ofl__hansui", "qun", 4, 5)
+hansui:addSkills { "jubing", "ofl__xiongju" }
+hansui:addRelatedSkill("mashu")
+Fk:loadTranslationTable{
+  ["ofl__hansui"] = "韩遂",
+  ["#ofl__hansui"] = "",
+  ["illustrator:ofl__hansui"] = "磐蒲",
 }
 
 General:new(extension, "houxuan", "qun", 4):addSkills { "zhongtao", "mashu" }

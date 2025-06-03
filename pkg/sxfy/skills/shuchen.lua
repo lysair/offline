@@ -21,7 +21,7 @@ shuchen:addEffect("viewas", {
   view_as = function(self, player, cards)
     if #cards ~= (player:getHandcardNum() - player:getMaxCards()) then return end
     local c = Fk:cloneCard("peach")
-    c.skillName = self.name
+    c.skillName = shuchen.name
     c:addSubcards(cards)
     return c
   end,

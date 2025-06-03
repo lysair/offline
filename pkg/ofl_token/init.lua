@@ -239,6 +239,23 @@ Fk:loadTranslationTable{
   ["#cure_poison_with_poison_skill"] = "选择一名已受伤角色观看其手牌，若你与其手牌中均有【毒】，弃置其中一张并与其各摸两张牌，否则各受到1点伤害",
 }
 
+local bearing_down_border = fk.CreateCard{
+  name = "&bearing_down_border",
+  type = Card.TypeTrick,
+  skill = "bearing_down_border_skill",
+}
+extension:addCardSpec("bearing_down_border")
+Fk:loadTranslationTable{
+  ["bearing_down_border"] = "大军压境",
+  [":bearing_down_border"] = "锦囊牌<br/>"..
+  "<b>时机</b>：出牌阶段<br/>"..
+  "<b>目标</b>：一名角色<br/>"..
+  "<b>效果</b>：除目标角色以外的所有角色依次可以将一张牌当无距离次数限制的【杀】对其使用。",
+
+  ["bearing_down_border_skill"] = "大军压境",
+  ["#bearing_down_border_skill"] = "选择一名角色，除其以外的所有角色可以将一张牌当【杀】对其使用",
+}
+
 extension:loadCardSkels {
   jingxiang_golden_age,
 
@@ -257,6 +274,8 @@ extension:loadCardSkels {
   chunqiu_brush,
 
   cure_poison_with_poison,
+
+  bearing_down_border,
 }
 
 return extension

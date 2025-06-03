@@ -43,7 +43,9 @@ Fk:loadTranslationTable{
   ["illustrator:es__ganning"] = "黑山老妖",
 }
 
-General:new(extension, "es__sunluban", "wu", 3, 3, General.Female):addSkills { "jiaozong", "chouyou" }
+local sunluban = General:new(extension, "es__sunluban", "wu", 3, 3, General.Female)
+sunluban.hidden = true
+sunluban:addSkills { "jiaozong", "chouyou" }
 Fk:loadTranslationTable{
   ["es__sunluban"] = "孙鲁班",
   ["#es__sunluban"] = "为虎作伥",
