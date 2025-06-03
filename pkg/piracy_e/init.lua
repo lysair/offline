@@ -619,6 +619,51 @@ Fk:loadTranslationTable{
 }
 
 --E7君霸天下 刘备 刘禅 曹操 曹丕 刘宏 刘协 孙策 孙权 袁绍 张角
+General:new(extension, "ofl__sunquan", "wu", 4):addSkills { "henglv", "jiuyuan" }
+Fk:loadTranslationTable{
+  ["ofl__sunquan"] = "孙权",
+  ["#ofl__sunquan"] = "年轻的贤君",
+  ["illustrator:ofl__sunquan"] = "大鬼",
+
+  ["$jiuyuan_ofl__sunquan1"] = "爱卿勇烈，孤心甚安。",
+  ["$jiuyuan_ofl__sunquan2"] = "幸得爱卿，不至有危。",
+  ["~ofl__sunquan"] = "英雄志远，奈何坎坷难行……",
+}
+
+General:new(extension, "ofl2__caopi", "wei", 3):addSkills { "cuanzun", "liufangc", "songwei" }
+Fk:loadTranslationTable{
+  ["ofl2__caopi"] = "曹丕",
+  ["#ofl2__caopi"] = "霸业的继承者",
+  ["illustrator:ofl2__caopi"] = "宋其金",
+
+  ["$songwei_ofl2__caopi1"] = "魏王世子，定登大统！",
+  ["$songwei_ofl2__caopi2"] = "千古霸业，只在今朝！",
+  ["~ofl2__caopi"] = "大事未成，愧对先父……",
+}
+
+local liushan = General:new(extension, "ofl__liushan", "shu", 3)
+liushan:addSkills { "fuxiang", "lezong", "ruoyu" }
+liushan:addRelatedSkill("jijiang")
+Fk:loadTranslationTable{
+  ["ofl__liushan"] = "刘禅",
+  ["#ofl__liushan"] = "无为的真命主",
+  ["illustrator:ofl__liushan"] = "凝聚永恒",
+
+  ["$ruoyu_ofl__liushan1"] = "风雨飘摇四十载，自欺若愚安此身……",
+  ["$ruoyu_ofl__liushan2"] = "才思不足以济世，仁愗或可安民。",
+  ["$jijiang_ofl__liushan1"] = "长安路远，谁可替朕出征！",
+  ["$jijiang_ofl__liushan2"] = "季汉兴亡，皆系诸位爱卿之手！",
+  ["~ofl__liushan"] = "漫漫北伐路，独行梦中人……",
+}
+
+General:new(extension, "ofl__liuxie", "qun", 3):addSkills { "tianzel", "zhaoyuan", "os__zhuiting" }
+Fk:loadTranslationTable{
+  ["ofl__liuxie"] = "刘协",
+  ["#ofl__liuxie"] = "汉献帝",
+  ["illustrator:ofl__liuxie"] = "鬼画府",
+
+  ["~ofl__liuxie"] = "傀儡天子，生不如死……",
+}
 
 --E5004渭南风云
 General:new(extension, "ofl3__godmachao", "god", 5):addSkills { "qiangshu", "yuma" }

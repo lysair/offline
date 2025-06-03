@@ -28,7 +28,7 @@ qianjiang:addEffect(fk.Death, {
       max_num = 1,
       targets = targets,
       skill_name = qianjiang.name,
-      prompt = "#qianjiang-choose",
+      prompt = "#qianjiang-choose::"..target.id,
       cancelable = true,
     })
     if #to > 0 then
