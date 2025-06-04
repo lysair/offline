@@ -24,8 +24,6 @@ Fk:loadTranslationTable{
   ["$ofl__miaojian2"] = "一人一剑，往荡平魔窟，再肃人间！",
 }
 
-local U = require "packages/utility/utility"
-
 miaojian:addEffect("viewas", {
   prompt = function(self, player)
     if player:getMark("ofl__miaojian-turn") > 0 then
@@ -35,7 +33,7 @@ miaojian:addEffect("viewas", {
     end
   end,
   interaction = function(self, player)
-    return U.CardNameBox {choices = {"stab__slash", "ex_nihilo"}}
+    return UI.CardNameBox {choices = {"stab__slash", "ex_nihilo"}}
   end,
   handly_pile = true,
   card_filter = function(self, player, to_select, selected)

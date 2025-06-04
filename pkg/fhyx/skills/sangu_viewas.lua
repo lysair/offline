@@ -9,15 +9,13 @@ Fk:loadTranslationTable{
   ["#ofl__sangu"] = "三顾：你可以将一张手牌当一张“三顾”牌使用",
 }
 
-local U = require "packages/utility/utility"
-
 sangu_viewas:addEffect("viewas", {
   prompt = "#ofl__sangu",
   interaction = function(self, player)
     local all_names = player:getTableMark("@$ofl__sangu-phase")
     local names = player:getViewAsCardNames("ofl__sangu", all_names)
     if #names == 0 then return end
-    return U.CardNameBox { choices = names, all_choices = all_names }
+    return UI.CardNameBox { choices = names, all_choices = all_names }
   end,
   handly_pile = true,
   card_filter = function(self, player, to_select, selected)

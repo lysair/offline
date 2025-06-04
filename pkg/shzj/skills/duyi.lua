@@ -10,8 +10,6 @@ Fk:loadTranslationTable{
   ["#shzj_guansuo__duyi"] = "毒医：你可以将一张【毒】当【杀】【刮骨疗毒】或【以毒攻毒】使用",
 }
 
-local U = require "packages/utility/utility"
-
 local all_names = {"slash", "scrape_poison", "cure_poison_with_poison"}
 
 duyi:addEffect("viewas", {
@@ -20,7 +18,7 @@ duyi:addEffect("viewas", {
   interaction = function(self, player)
     local names = player:getViewAsCardNames(duyi.name, all_names, nil, player:getTableMark("shzj_guansuo__duyi-turn"))
     if #names == 0 then return end
-    return U.CardNameBox {choices = names, all_choices = all_names}
+    return UI.CardNameBox {choices = names, all_choices = all_names}
   end,
   handly_pile = true,
   card_filter = function(self, player, to_select, selected)

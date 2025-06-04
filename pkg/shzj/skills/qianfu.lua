@@ -9,8 +9,6 @@ Fk:loadTranslationTable{
   ["#qianfu"] = "搴芙：视为使用一张基本牌，然后摸三张牌",
 }
 
-local U = require "packages/utility/utility"
-
 qianfu:addEffect("viewas", {
   pattern = ".|.|.|.|.|basic|",
   prompt = "#qianfu",
@@ -18,7 +16,7 @@ qianfu:addEffect("viewas", {
     local all_names = Fk:getAllCardNames("b")
     local names = player:getViewAsCardNames(qianfu.name, all_names)
     if #names == 0 then return end
-    return U.CardNameBox { choices = names, all_choices = all_names }
+    return UI.CardNameBox { choices = names, all_choices = all_names }
   end,
   card_filter = Util.FalseFunc,
   view_as = function(self, player, cards)

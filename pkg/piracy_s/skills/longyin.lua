@@ -9,8 +9,6 @@ Fk:loadTranslationTable{
   ["#ofl__longyin"] = "龙吟：将点数之和为13的牌当任意基本牌或普通锦囊牌使用或打出",
 }
 
-local U = require "packages/utility/utility"
-
 longyin:addEffect("viewas", {
   pattern = ".",
   prompt = "#ofl__longyin",
@@ -18,7 +16,7 @@ longyin:addEffect("viewas", {
     local all_names = Fk:getAllCardNames("bt")
     local names = player:getViewAsCardNames(longyin.name, all_names)
     if #names == 0 then return end
-    return U.CardNameBox { choices = names, all_choices = all_names }
+    return UI.CardNameBox { choices = names, all_choices = all_names }
   end,
   handly_pile = true,
   card_filter = function(self, player, to_select, selected)

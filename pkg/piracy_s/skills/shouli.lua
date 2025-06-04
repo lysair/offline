@@ -21,8 +21,6 @@ Fk:loadTranslationTable{
   ["$ofl2__shouli2"] = "马踏祁连山河动，兵起玄黄奈何天！",
 }
 
-local U = require "packages/utility/utility"
-
 shouli:addEffect("viewas", {
   pattern = "slash,jink",
   prompt = function(self, player, card, selected_targets)
@@ -44,7 +42,7 @@ shouli:addEffect("viewas", {
       if #names == 2 then break end
     end
     if #names == 0 then return end
-    return U.CardNameBox {choices = names, all_choices = {"slash", "jink"}}
+    return UI.CardNameBox {choices = names, all_choices = {"slash", "jink"}}
   end,
   view_as = function(self, player, cards)
     if self.interaction.data == nil then return end

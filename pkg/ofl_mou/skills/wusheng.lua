@@ -16,8 +16,6 @@ Fk:loadTranslationTable{
   ["$ofl_mou__wusheng3"] = "煮酒待温方适饮！",
 }
 
-local U = require "packages/utility/utility"
-
 wusheng:addEffect("viewas", {
   anim_type = "offensive",
   pattern = "slash",
@@ -27,7 +25,7 @@ wusheng:addEffect("viewas", {
       return Fk:cloneCard(name).trueName == "slash"
     end)
     local names = player:getViewAsCardNames(wusheng.name, all_names)
-    return U.CardNameBox { choices = names, all_choices = all_names }
+    return UI.CardNameBox { choices = names, all_choices = all_names }
   end,
   handly_pile = true,
   card_filter = function(self, player, to_select, selected)

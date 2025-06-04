@@ -11,8 +11,6 @@ Fk:loadTranslationTable{
   ["@@xijun-turn"] = "禁止回复体力",
 }
 
-local U = require "packages/utility/utility"
-
 xijun:addEffect("viewas", {
   anim_type = "offensive",
   pattern = "slash,duel",
@@ -21,7 +19,7 @@ xijun:addEffect("viewas", {
     local all_names = {"slash", "duel"}
     local names = player:getViewAsCardNames(xijun.name, all_names)
     if #names > 0 then
-      return U.CardNameBox { choices = names, all_choices = all_names }
+      return UI.CardNameBox { choices = names, all_choices = all_names }
     end
   end,
   handly_pile = true,

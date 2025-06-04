@@ -9,8 +9,6 @@ Fk:loadTranslationTable{
   ["#sxfy__beiwu"] = "备武：将一张不是本回合进入装备区的牌当【无中生有】或【决斗】使用",
 }
 
-local U = require "packages/utility/utility"
-
 beiwu:addEffect("viewas", {
   anim_type = "special",
   pattern = "ex_nihilo,duel",
@@ -18,7 +16,7 @@ beiwu:addEffect("viewas", {
   interaction = function(self, player)
     local all_names = {"ex_nihilo", "duel"}
     local names = player:getViewAsCardNames(beiwu.name, all_names)
-    return U.CardNameBox { choices = names, all_choices = all_names }
+    return UI.CardNameBox { choices = names, all_choices = all_names }
   end,
   card_filter = function (self, player, to_select, selected)
     return #selected == 0 and table.contains(player:getCardIds("e"), to_select) and

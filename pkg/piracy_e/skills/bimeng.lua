@@ -9,8 +9,6 @@ Fk:loadTranslationTable{
   ["#bimeng"] = "蔽蒙：你可以将%arg张手牌当任意基本牌或普通锦囊牌使用",
 }
 
-local U = require "packages/utility/utility"
-
 bimeng:addEffect("viewas", {
   prompt = function (self, player, selected_cards)
     return "#bimeng:::"..player.hp
@@ -19,7 +17,7 @@ bimeng:addEffect("viewas", {
     local all_names = Fk:getAllCardNames("bt")
     local names = player:getViewAsCardNames(bimeng.name, all_names)
     if #names > 0 then
-      return U.CardNameBox { choices = names, all_choices = all_names }
+      return UI.CardNameBox { choices = names, all_choices = all_names }
     end
   end,
   handly_pile = true,

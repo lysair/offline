@@ -9,8 +9,6 @@ Fk:loadTranslationTable{
   ["#longyi"] = "龙裔：你可以将所有手牌当任意一张基本牌使用或打出",
 }
 
-local U = require "packages/utility/utility"
-
 longyi:addEffect("viewas", {
   anim_type = "special",
   pattern = ".|.|.|.|.|basic",
@@ -19,7 +17,7 @@ longyi:addEffect("viewas", {
     local all_names = Fk:getAllCardNames("b")
     local names = player:getViewAsCardNames(longyi.name, all_names, player:getCardIds("h"))
     if #names > 0 then
-      return U.CardNameBox { choices = names, all_choices = all_names }
+      return UI.CardNameBox { choices = names, all_choices = all_names }
     end
   end,
   card_filter = Util.FalseFunc,

@@ -11,8 +11,6 @@ Fk:loadTranslationTable{
   ["#youchong-ask"] = "优崇：你可以将三张牌当一张【%arg】替 %src 使用",
 }
 
-local U = require "packages/utility/utility"
-
 youchong:addEffect("viewas", {
   mute_card = true,
   pattern = ".|.|.|.|.|basic",
@@ -21,7 +19,7 @@ youchong:addEffect("viewas", {
     local all_names = Fk:getAllCardNames("b")
     local names = player:getViewAsCardNames(youchong.name, all_names)
     if #names > 0 then
-      return U.CardNameBox { choices = names, all_choices = all_names }
+      return UI.CardNameBox { choices = names, all_choices = all_names }
     end
   end,
   card_filter = Util.FalseFunc,

@@ -12,15 +12,13 @@ Fk:loadTranslationTable{
   ["$ofl_shiji__miewu2"] = "九州从来向一统，岂容伪朝至两分？",
 }
 
-local U = require "packages/utility/utility"
-
 miewu:addEffect("viewas", {
   pattern = ".",
   prompt = "#ofl_shiji__miewu",
   interaction = function(self, player)
     local all_names = Fk:getAllCardNames("bt")
     local names = player:getViewAsCardNames(miewu.name, all_names, nil, player:getTableMark("ofl_shiji__miewu-turn"))
-    return U.CardNameBox { choices = names, all_choices = all_names }
+    return UI.CardNameBox { choices = names, all_choices = all_names }
   end,
   handly_pile = true,
   card_filter = function(self, player, to_select, selected)

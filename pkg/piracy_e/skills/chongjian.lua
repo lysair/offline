@@ -11,8 +11,6 @@ Fk:loadTranslationTable{
   ["#ofl__chongjian"] = "冲坚：将装备牌当【酒】或【杀】使用",
 }
 
-local U = require "packages/utility/utility"
-
 chongjian:addEffect("viewas", {
   anim_type = "offensive",
   pattern = "slash,analeptic",
@@ -21,7 +19,7 @@ chongjian:addEffect("viewas", {
     local all_names = {"slash", "analeptic"}
     local names = player:getViewAsCardNames(chongjian.name, all_names)
     if #names == 0 then return end
-    return U.CardNameBox { choices = names, all_choices = all_names }
+    return UI.CardNameBox { choices = names, all_choices = all_names }
   end,
   handly_pile = true,
   card_filter = function(self, player, to_select, selected)

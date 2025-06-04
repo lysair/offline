@@ -17,8 +17,6 @@ Fk:loadTranslationTable{
   ["@dingxi"] = "定西成功",
 }
 
-local U = require "packages/utility/utility"
-
 dingxi:addEffect("viewas", {
   anim_type = "offensive",
   pattern = ".",
@@ -30,7 +28,7 @@ dingxi:addEffect("viewas", {
     local all_names = Fk:getAllCardNames("btd")
     local names = player:getViewAsCardNames(dingxi.name, all_names)
     if #names == 0 then return end
-    return U.CardNameBox { choices = names, all_choices = all_names}
+    return UI.CardNameBox { choices = names, all_choices = all_names}
   end,
   card_filter = Util.FalseFunc,
   view_as = function(self, player, cards)

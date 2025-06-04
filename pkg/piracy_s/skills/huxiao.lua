@@ -10,8 +10,6 @@ Fk:loadTranslationTable{
   ["#ofl__huxiao"] = "虎啸：你可以将对应花色或点数的牌当“虎啸”判定牌使用",
 }
 
-local U = require "packages/utility/utility"
-
 huxiao:addEffect("viewas", {
   pattern = ".",
   prompt = "#ofl__huxiao",
@@ -22,7 +20,7 @@ huxiao:addEffect("viewas", {
     end
     local names = player:getViewAsCardNames(huxiao.name, all_names)
     if #names == 0 then return end
-    return U.CardNameBox { choices = names, all_choices = all_names }
+    return UI.CardNameBox { choices = names, all_choices = all_names }
   end,
   handly_pile = true,
   card_filter = function(self, player, to_select, selected)

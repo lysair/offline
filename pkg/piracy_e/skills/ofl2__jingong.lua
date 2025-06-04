@@ -9,8 +9,6 @@ Fk:loadTranslationTable{
   ["#ofl2__jingong"] = "矜功：你可以将一张【杀】或装备牌当任意锦囊牌使用",
 }
 
-local U = require "packages/utility/utility"
-
 jingong:addEffect("viewas", {
   anim_type = "offensive",
   prompt = "#ofl2__jingong",
@@ -18,7 +16,7 @@ jingong:addEffect("viewas", {
     local all_names = Fk:getAllCardNames("td")
     table.insertTable(all_names, { "honey_trap", "daggar_in_smile" })
     local names = player:getViewAsCardNames(jingong.name, all_names)
-    return U.CardNameBox { choices = names, all_choices = all_names }
+    return UI.CardNameBox { choices = names, all_choices = all_names }
   end,
   handly_pile = true,
   card_filter = function(self, player, to_select, selected)

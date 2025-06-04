@@ -9,8 +9,6 @@ Fk:loadTranslationTable{
   ["#ofl__zequan"] = "责权：将一张装备牌当任意锦囊牌对体力不小于你的其他角色使用",
 }
 
-local U = require "packages/utility/utility"
-
 zequan:addEffect("viewas", {
   pattern = ".|.|.|.|.|trick",
   prompt = "#ofl__zequan",
@@ -18,7 +16,7 @@ zequan:addEffect("viewas", {
     local all_names = Fk:getAllCardNames("t")
     local names = player:getViewAsCardNames(zequan.name, all_names, nil, player:getTableMark(zequan.name))
     if #names == 0 then return end
-    return U.CardNameBox { choices = names, all_choices = all_names }
+    return UI.CardNameBox { choices = names, all_choices = all_names }
   end,
   handly_pile = true,
   card_filter = function(self, player, to_select, selected)

@@ -9,15 +9,13 @@ Fk:loadTranslationTable{
   ["#ofl_shiji__yuejian"] = "约俭：你可以视为使用一张基本牌",
 }
 
-local U = require "packages/utility/utility"
-
 yuejian:addEffect("viewas", {
   pattern = ".|.|.|.|.|basic",
   prompt = "#ofl_shiji__yuejian",
   interaction = function(self, player)
     local all_names = Fk:getAllCardNames("b")
     local names = player:getViewAsCardNames(yuejian.name, all_names)
-    return U.CardNameBox { choices = names, all_choices = all_names }
+    return UI.CardNameBox { choices = names, all_choices = all_names }
   end,
   card_filter = Util.FalseFunc,
   view_as = function(self, player, cards)

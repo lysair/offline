@@ -12,8 +12,6 @@ Fk:loadTranslationTable{
   ["#chuce-use"] = "出策：你可以视为使用【%arg】",
 }
 
-local U = require "packages/utility/utility"
-
 chuce:addEffect("viewas", {
   pattern = ".",
   prompt = "#chuce",
@@ -21,7 +19,7 @@ chuce:addEffect("viewas", {
     local all_names = Fk:getAllCardNames("btd")
     local names = player:getViewAsCardNames(chuce.name, all_names)
     if #names == 0 then return end
-    return U.CardNameBox { choices = names, all_choices = all_names}
+    return UI.CardNameBox { choices = names, all_choices = all_names}
   end,
   handly_pile = true,
   card_filter = function(self, player, to_select, selected)

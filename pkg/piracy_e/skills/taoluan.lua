@@ -12,8 +12,6 @@ Fk:loadTranslationTable{
   ["$ofl__taoluan2"] = "吾乃当今帝父，汝岂配与我同列？",
 }
 
-local U = require "packages/utility/utility"
-
 taoluan:addEffect("viewas", {
   prompt = "#ofl__taoluan",
   times = function(self, player)
@@ -26,7 +24,7 @@ taoluan:addEffect("viewas", {
     local all_names = Fk:getAllCardNames("bt")
     local names = player:getViewAsCardNames(taoluan.name, all_names, nil, player:getTableMark("ofl__taoluan-turn"))
     if #names == 0 then return end
-    return U.CardNameBox { choices = names, all_choices = all_names}
+    return UI.CardNameBox { choices = names, all_choices = all_names}
   end,
   handly_pile = true,
   card_filter = function(self, player, to_select, selected)

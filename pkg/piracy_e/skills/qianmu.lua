@@ -11,8 +11,6 @@ Fk:loadTranslationTable{
   ["#qianmu"] = "浅目：将<font color='red'>♦</font>牌当基本牌、<font color='red'>♥</font>牌当锦囊牌使用或打出",
 }
 
-local U = require "packages/utility/utility"
-
 qianmu:addEffect("viewas", {
   pattern = ".",
   prompt = "#qianmu",
@@ -26,7 +24,7 @@ qianmu:addEffect("viewas", {
     end
     local names = player:getViewAsCardNames(qianmu.name, all_names)
     if #names == 0 then return end
-    return U.CardNameBox {choices = names, all_choices = all_names}
+    return UI.CardNameBox {choices = names, all_choices = all_names}
   end,
   handly_pile = true,
   card_filter = function(self, player, to_select, selected)

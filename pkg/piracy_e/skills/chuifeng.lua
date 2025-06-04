@@ -11,8 +11,6 @@ Fk:loadTranslationTable{
   ["#ofl__chuifeng"] = "椎锋：失去1点体力，视为使用一张【杀】或【决斗】",
 }
 
-local U = require "packages/utility/utility"
-
 chuifeng:addEffect("viewas", {
   anim_type = "offensive",
   pattern = "slash,duel",
@@ -21,7 +19,7 @@ chuifeng:addEffect("viewas", {
     local all_names = {"slash", "duel"}
     local names = player:getViewAsCardNames(chuifeng.name, all_names)
     if #names == 0 then return end
-    return U.CardNameBox { choices = names, all_choices = all_names }
+    return UI.CardNameBox { choices = names, all_choices = all_names }
   end,
   card_filter = Util.FalseFunc,
   view_as = function(self, player, cards)
