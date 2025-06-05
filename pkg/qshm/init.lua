@@ -74,7 +74,14 @@ Fk:loadTranslationTable{
   ["~qshm__godzhangjiao"] = "书中皆记王侯事，青史不载人间名。",
 }
 
---神姜维 手杀成济
+--神姜维
+
+General:new(extension, "qshm__chengjiw", "wei", 4):addSkills { "qshm__kuangli", "xiongsi" }
+Fk:loadTranslationTable{
+  ["qshm__chengjiw"] = "成济",
+  ["#qshm__chengjiw"] = "劣犬良弓",
+  ["illustrator:qshm__chengjiw"] = "凝聚永恒",
+}
 
 General:new(extension, "qshm__zhaoxiang", "shu", 4, 4, General.Female):addSkills { "ty__fanghun", "qshm__fuhan" }
 Fk:loadTranslationTable{

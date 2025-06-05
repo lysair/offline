@@ -59,8 +59,9 @@ qianhuan:addEffect(fk.TargetConfirming, {
       include_equip = false,
       skill_name = qianhuan.name,
       pattern = ".|.|.|yuji_sorcery",
-      prompt = "##sgsh__qianhuan-nullify:::"..data.card:toLogString(),
+      prompt = "#sgsh__qianhuan-nullify:::"..data.card:toLogString(),
       cancelable = true,
+      expand_pile = "yuji_sorcery",
     })
     if #card > 0 then
       event:setCostData(self, {cards = card})
