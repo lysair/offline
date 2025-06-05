@@ -116,7 +116,7 @@ Utility.SgshLoseDeputy = Utility.SgshTriggerEvent:subclass("fk.SgshLoseDeputy")
 ---  data: TrigSkelSpec<SgshTrigFunc>, attr: TrigSkelAttribute?): SkillSkeleton
 
 local blacklist = {
-  "zuoci", "ol_ex__zuoci", "js__xushao", "js_re__xushao", "shichangshi", "starsp__xiahoudun"
+  "zuoci", "ol_ex__zuoci", "js__xushao", "js_re__xushao", "shichangshi", "starsp__xiahoudun", "ofl__godjiaxu"
 }
 
 ---失去副将
@@ -128,14 +128,16 @@ Utility.sgshLoseDeputy = function (player, general)
   if #deputy == 0 then return end
   local data = { general = general }
   if general == nil then
+    local choices = deputy
+    table.removeOne(choices, "sgsh__yuji")
     data.general = room:askToChooseGeneral(player, {
-      generals = deputy,
+      generals = choices,
       n = 1,
       no_convert = true,
     })
   end
   room.logic:trigger(Utility.SgshBeforeLoseDeputy, player, data)
-  if data.general == nil then
+  if data.general == nil or data.general == "sgsh__yuji" then  --耦！
     return
   end
   general = data.general
@@ -178,13 +180,6 @@ Utility.sgshAcquireDeputy = function (player, general)
   if data.general == nil then
     return
   end
-
-  if #player:getTableMark("@&sgsh_deputy") > 2 then
-    Utility.sgshLoseDeputy(player)
-    if player.dead or #player:getTableMark("@&sgsh_deputy") > 2 then
-      return
-    end
-  end
   general = data.general
   table.removeOne(room.general_pile, general)
   room:addTableMark(player, "@&sgsh_deputy", general)
@@ -214,6 +209,10 @@ Utility.sgshAcquireDeputy = function (player, general)
     toast = true,
   }
   room.logic:trigger(Utility.SgshAcquireDeputy, player, { general = general })
+
+  while #player:getTableMark("@&sgsh_deputy") > 3 do
+    Utility.sgshLoseDeputy(player)
+  end
 end
 
 Fk:loadTranslationTable{

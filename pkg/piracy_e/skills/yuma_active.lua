@@ -3,7 +3,7 @@ local yuma_active = fk.CreateSkill {
 }
 
 Fk:loadTranslationTable{
-  ["yuma_active"] = "御马",
+  ["#yuma_active"] = "御马",
 }
 
 yuma_active:addEffect("active", {

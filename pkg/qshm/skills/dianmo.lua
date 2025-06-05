@@ -1,16 +1,3 @@
-local dianmo = fk.CreateSkill {
-  name = "dianmo",
-}
-
-Fk:loadTranslationTable{
-  ["dianmo"] = "点墨",
-  [":dianmo"] = "准备阶段或当你每回合首次受到伤害后，你可以观看两个转化牌类技能，选择其中一个获得（至多四个）或替换一个已有技能，"..
-  "然后摸空置的技能数张牌。",
-
-  ["#dianmo-get"] = "点墨：选择要获得的一个技能",
-  ["#dianmo-replace"] = "点墨：是否替换现有的“点墨”技能？（上限4个，现有%arg个）",
-  ["#dianmo-discard"] = "点墨：选择丢弃的“点墨”技能",
-}
 
 local skill_pool = {
   --标
@@ -30,7 +17,7 @@ local skill_pool = {
   --OL
   "ol_ex__huoji", "ol_ex__kanpo", "ol_ex__lianhuan", "ol_ex__shuangxiong", "ol_ex__luanji", "ol_ex__duanliang", "changbiao", "ol_ex__fuhun",
   "qingleng", "caiwang", "pozhu", "cihuang", "miuyan", "suji", "ol__niluan", "zonglue", "kanpod", "kenshang", "liyongw",
-  "weilingy", "lunzhan", "jiewan", "guifu", "zhanding", "chengqi", "jiexuan", "fuxun", "liantao", "xixiang", "zhujiu",
+  "weilingy", "lunzhan", "jiewan", "guifu", "zhanding", "jiexuan", "fuxun", "liantao", "xixiang", "zhujiu",
   "kouchao", "leiluan", "jiawei",
   --新服
   "ty_ex__zhuhai", "ty_ex__zhanjue", "limu", "ty_ex__jiaozhao",
@@ -38,6 +25,7 @@ local skill_pool = {
   "ty__niluan", "weiwu", "xiongmang", "ty__taoluan", "heqia", "jieling", "kuiji", "mansi", "posuo", "huahuo", "ty__shichou", "miaoxian",
   "zhaowen",
   --国际服
+  "os__cairu",
   --江山如故
   "nianen", "js__chuanxin", "danxinl", "ciying", "qinrao",
   --线下
@@ -47,10 +35,36 @@ local skill_pool = {
   "sxfy__xiongxia", "sxfy__shuchen", "sxfy__chengjiz", "sxfy__zhanjue", "sxfy__zhengnan", "sxfy__youdi", "sxfy__zhitu",
 }
 
+local dianmo = fk.CreateSkill {
+  name = "dianmo",
+  dynamic_desc = function (self, player, lang)
+    Fk:loadTranslationTable{
+      ["dianmo_skill_pool"] = "技能池如下（已排除房间禁卡）：<br>"..
+      table.concat(table.map(Fk:currentRoom():getBanner(self.name), function (s)
+        return "<a href=':"..s.."'>"..Fk:translate(s, lang).."</a>"
+      end), "  "),
+    }
+    return "dianmo_inner"
+  end,
+}
+
+Fk:loadTranslationTable{
+  ["dianmo"] = "点墨",
+  [":dianmo"] = "准备阶段或当你每回合首次受到伤害后，你可以观看两个转化牌类技能，选择其中一个获得（至多四个）"..
+  "或替换一个已有技能，然后摸空置的技能数张牌。",
+
+  [":dianmo_inner"] = "准备阶段或当你每回合首次受到伤害后，你可以观看两个<a href='dianmo_skill_pool'>转化牌类技能</a>，"..
+  "选择其中一个获得（至多四个）或替换一个已有技能，然后摸空置的技能数张牌。",
+
+  ["#dianmo-get"] = "点墨：选择要获得的一个技能",
+  ["#dianmo-replace"] = "点墨：是否替换现有的“点墨”技能？（上限4个，现有%arg个）",
+  ["#dianmo-discard"] = "点墨：选择丢弃的“点墨”技能",
+}
+
 local spec = {
   on_use = function (self, event, target, player, data)
     local room = player.room
-    local skills = table.filter(skill_pool, function (s)
+    local skills = table.filter(room:getBanner(dianmo.name), function (s)
       return Fk.skills[s] and not player:hasSkill(s, true)
     end)
     local choice = room:askToCustomDialog(player, {
@@ -120,5 +134,21 @@ dianmo:addEffect(fk.EventPhaseStart, {
   end,
   on_use = spec.on_use,
 })
+
+dianmo:addAcquireEffect(function (self, player, is_start)
+  local room = player.room
+  if not room:getBanner(dianmo.name) then
+    local all_skills = {}
+    for _, g in ipairs(room.general_pile) do
+      for _, s in ipairs(Fk.generals[g]:getSkillNameList()) do
+        table.insert(all_skills, s)
+      end
+    end
+    local skills = table.filter(skill_pool, function(s)
+      return table.contains(all_skills, s)
+    end)
+    room:setBanner(dianmo.name, skills)
+  end
+end)
 
 return dianmo

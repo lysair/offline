@@ -33,7 +33,7 @@ henglv:addEffect("active", {
     local player = effect.from
     local n = math.max(player:usedSkillTimes(henglv.name, Player.HistoryTurn) - 1, 0)
     if n > 0 then
-      room:loseHp(player, 1, henglv.name)
+      room:loseHp(player, n, henglv.name)
       if player:isKongcheng() or player.dead then return end
     end
     local cards = room:askToDiscard(player, {

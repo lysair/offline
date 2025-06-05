@@ -20,7 +20,7 @@ Fk:loadTranslationTable{
 --三国杀·幻
 General:new(extension, "sgsh__nanhualaoxian", "qun", 3):addSkills { "sgsh__jidao", "sgsh__feisheng", "sgsh__jinghe" }
 Fk:loadTranslationTable{
-  ["sgsh__nanhualaoxian"] = "幻南华老仙",
+  ["sgsh__nanhualaoxian"] = "南华老仙",
   ["#sgsh__nanhualaoxian"] = "虚步太清",
   ["illustrator:sgsh__nanhualaoxian"] = "鬼画府",
 
@@ -29,17 +29,24 @@ Fk:loadTranslationTable{
 
 General:new(extension, "sgsh__zuoci", "qun", 3):addSkills { "sgsh__huashen", "sgsh__xinsheng" }
 Fk:loadTranslationTable{
-  ["sgsh__zuoci"] = "幻左慈",
+  ["sgsh__zuoci"] = "左慈",
   ["#sgsh__zuoci"] = "谜之仙人",
   ["illustrator:sgsh__zuoci"] = "JanusLausDeo",
 
   ["~sgsh__zuoci"] = "万事，皆有因果。",
 }
 
+General:new(extension, "sgsh__yuji", "qun", 3):addSkills { "sgsh__qianhuan", "sgsh__chanyuan" }
+Fk:loadTranslationTable{
+  ["sgsh__yuji"] = "于吉",
+  ["#sgsh__yuji"] = "魂绕左右",
+  ["illustrator:sgsh__yuji"] = "biou09",
+}
+
 General:new(extension, "sgsh__jianggan", "wei", 3):addSkills { "sgsh__daoshu", "weicheng" }
 Fk:loadTranslationTable{
   ["sgsh__jianggan"] = "蒋干",
-  ["#sgsh__jianggan"] = "",
+  ["#sgsh__jianggan"] = "锋镝悬信",
   ["illustrator:sgsh__jianggan"] = "",
 
   ["$weicheng_sgsh__jianggan1"] = "公瑾，吾之诚心，天地可鉴。",
