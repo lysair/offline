@@ -19,11 +19,11 @@ qianhu:addEffect("viewas", {
     if #cards ~= 2 then return end
     local card = Fk:cloneCard("duel")
     card.skillName = qianhu.name
-    self.cost_data = cards
+    card:addFakeSubcards(cards)
     return card
   end,
   before_use = function(self, player, use)
-    player.room:throwCard(self.cost_data, qianhu.name, player, player)
+    player.room:throwCard(use.card.fake_subcards, qianhu.name, player, player)
   end,
   after_use = function (self, player, use)
     if not player.dead and use.damageDealt and

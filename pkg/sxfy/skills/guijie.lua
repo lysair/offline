@@ -20,11 +20,11 @@ guijie:addEffect("viewas", {
     if #cards ~= 2 then return end
     local card = Fk:cloneCard("jink")
     card.skillName = guijie.name
-    self.cost_data = cards
+    card:addFakeSubcards(cards)
     return card
   end,
-  before_use = function(self, player)
-    player.room:throwCard(self.cost_data, guijie.name, player, player)
+  before_use = function(self, player, use)
+    player.room:throwCard(use.card.fake_subcards, guijie.name, player, player)
     if not player.dead then
       player:drawCards(1, guijie.name)
     end

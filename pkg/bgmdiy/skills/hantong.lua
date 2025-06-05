@@ -22,10 +22,10 @@ hantong:addEffect("viewas", {
   end,
   view_as = function(self, player, cards)
     if #cards ~= 1 then return end
-    local c = Fk:cloneCard("slash")
-    c.skillName = "jijiang"
-    self.cost_data = cards
-    return c
+    local card = Fk:cloneCard("slash")
+    card.skillName = "jijiang"
+    card:addFakeSubcards(cards)
+    return card
   end,
   before_use = function(self, player, use)
     local room = player.room
@@ -33,7 +33,7 @@ hantong:addEffect("viewas", {
       room:doIndicate(player, use.tos)
     end
     room:moveCards({
-      ids = self.cost_data,
+      ids = use.card.fake_subcards,
       from = player,
       toArea = Card.DiscardPile,
       moveReason = fk.ReasonPutIntoDiscardPile,

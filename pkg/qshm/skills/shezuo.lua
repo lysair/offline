@@ -142,30 +142,15 @@ shezuo:addEffect(fk.PindianFinished, {
               }
             end
           elseif choice == 3 then
-            if not to:isKongcheng() then
-              local names = to:getViewAsCardNames(shezuo.name, Fk:getAllCardNames("t"), to:getCardIds("h"))
-              local success, dat = room:askToUseActiveSkill(to, {
-                skill_name = "shezuo_viewas",
+            if not to:isKongcheng() and
+              #to:getViewAsCardNames(shezuo.name, Fk:getAllCardNames("t"), nil, to:getCardIds("h")) > 0 then
+              room:askToUseVirtualCard(to, {
+                name = Fk:getAllCardNames("t"),
+                skill_name = shezuo.name,
                 prompt = "#shezuo-use",
-                cancelable = #names == 0,
+                cancelable = false,
+                subcards = to:getCardIds("h"),
               })
-              if not (success and dat) then
-                dat = {}
-                dat.interaction = table.random(names)
-                dat.targets = {}
-              end
-              local card = Fk:cloneCard(dat.interaction)
-              card.skillName = shezuo.name
-              card:addSubcards(to:getCardIds("h"))
-              if #dat.targets == 0 then
-                dat.targets = card:getDefaultTarget(to, {bypass_times = true})
-              end
-              room:useCard{
-                from = to,
-                tos = dat.targets,
-                card = card,
-                extraUse = true,
-              }
             end
           end
         end

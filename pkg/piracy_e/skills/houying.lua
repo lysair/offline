@@ -19,12 +19,12 @@ houying:addEffect("viewas", {
     if #cards ~= 2 then return end
     local card = Fk:cloneCard("slash")
     card.skillName = houying.name
-    self.cost_data = cards
+    card:addFakeSubcards(cards)
     return card
   end,
   before_use = function(self, player, use)
     use.extraUse = true
-    player.room:throwCard(self.cost_data, houying.name, player, player)
+    player.room:throwCard(use.card.fake_subcards, houying.name, player, player)
   end,
   after_use = function (self, player, use)
     if not player.dead and use.damageDealt and
