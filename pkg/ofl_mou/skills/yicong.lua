@@ -11,7 +11,7 @@ Fk:loadTranslationTable{
   ["ofl_mou__yicong_defensive"] = "本轮其他角色至你距离+1",
   ["@@ofl_mou__yicong_offensive-round"] = "义从 -1",
   ["@@ofl_mou__yicong_defensive-round"] = "义从 +1",
-  ["ofl_mou__yicong_hu&"] = "扈",
+  ["ofl_mou__yicong_hu"] = "扈",
 }
 
 yicong:addEffect(fk.RoundStart, {
@@ -43,8 +43,8 @@ yicong:addEffect(fk.RoundStart, {
     local ids = table.filter(cards, function (id)
       return Fk:getCardById(id).trueName == (choice == "ofl_mou__yicong_defensive" and "jink" or "slash")
     end)
-    if #ids > 0 and #player:getPile("ofl_mou__yicong_hu&") < 4 then
-      player:addToPile("ofl_mou__yicong_hu&", table.random(ids, 4 - #player:getPile("ofl_mou__yicong_hu&")), true, yicong.name)
+    if #ids > 0 and #player:getPile("ofl_mou__yicong_hu") < 4 then
+      player:addToPile("ofl_mou__yicong_hu", table.random(ids, 4 - #player:getPile("ofl_mou__yicong_hu")), true, yicong.name)
     end
     room:cleanProcessingArea(cards)
   end,
@@ -60,6 +60,14 @@ yicong:addEffect("distance", {
       n = n + 1
     end
     return n
+  end,
+})
+
+yicong:addEffect("filter", {
+  handly_cards = function (self, player)
+    if player:hasSkill(yicong.name) then
+      return player:getPile("ofl_mou__yicong_hu")
+    end
   end,
 })
 
