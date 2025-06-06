@@ -44,10 +44,10 @@ tongdu:addEffect(fk.TargetConfirmed, {
   on_use = function(self, event, target, player, data)
     local room = player.room
     local to = event:getCostData(self).tos[1]
-    local cards = room:askToCards(player, {
+    local cards = room:askToCards(to, {
       min_num = 1,
       max_num = 1,
-      include_equip = false,
+      include_equip = true,
       skill_name = tongdu.name,
       prompt = "#ofl_shiji__tongdu-card:"..player.id,
       cancelable = false,
