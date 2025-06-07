@@ -63,7 +63,7 @@ shouxi:addEffect(fk.TargetConfirmed, {
         prompt = "#fhyx__shouxi-prey:"..player.id,
       })
       if #card > 0 then
-        room:moveCardTo(cards, Card.PlayerHand, data.from, fk.ReasonPrey, shouxi.name, nil, false, data.from)
+        room:moveCardTo(card, Card.PlayerHand, data.from, fk.ReasonPrey, shouxi.name, nil, false, data.from)
       end
     end
   end,

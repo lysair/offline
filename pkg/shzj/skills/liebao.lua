@@ -30,13 +30,15 @@ liebao:addEffect(fk.TargetConfirmed, {
     end
   end,
   on_use = function (self, event, target, player, data)
-    data:cancelTarget(target)
+    if target ~= player then
+      data:cancelTarget(target)
+      if not data.from:isProhibited(player, data.card) then
+        table.insert(data.tos[AimData.Done], player)
+        data:addTarget(player)
+      end
+    end
     data.extra_data = data.extra_data or {}
     data.extra_data.liebao = {player, target}
-    if not data.from:isProhibited(player, data.card) then
-      table.insert(data.tos[AimData.Done], player)
-      table.insert(data.use.tos, player)
-    end
     player:drawCards(1, liebao.name)
   end,
 })
