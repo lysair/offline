@@ -6,8 +6,8 @@ local yuxian = fk.CreateSkill {
 Fk:loadTranslationTable{
   ["yuxiangs"] = "羽现",
   [":yuxiangs"] = "使命技，每轮限一次，一名角色的回合结束后，若你或其本回合回复过体力，你可以获得一个额外回合。<br>\
-  <strong>成功</strong>：准备阶段，若你本局游戏已进行过至少四个回合，你失去〖羽现〗，获得〖应龙〗和〖撷芳〗。<br>\
-  <strong>失败</strong>：当一名女性角色造成伤害使你进入濒死状态时，你失去〖羽现〗。",
+  ⬤　成功：准备阶段，若你本局游戏已进行过至少四个回合，你失去〖羽现〗，获得〖应龙〗和〖撷芳〗。<br>\
+  ⬤　失败：当一名女性角色造成伤害使你进入濒死状态时，你失去〖羽现〗。",
 }
 
 yuxian:addEffect(fk.TurnEnd, {
