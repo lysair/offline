@@ -65,6 +65,7 @@ shouxiang:addEffect(fk.EventPhaseStart, {
       prompt = "#shouxiang-give:::"..n,
       cancelable = true,
       skip = true,
+      single_max = 1,
     })
     for _, ids in pairs(result) do
       if #ids > 0 then

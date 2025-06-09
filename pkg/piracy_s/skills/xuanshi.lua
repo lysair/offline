@@ -21,6 +21,7 @@ xuanshi:addEffect("active", {
   end,
   can_use = function(self, player)
     return player:usedSkillTimes(xuanshi.name, Player.HistoryPhase) < 2 and
+      not player:isKongcheng() and
       #table.filter(player:getCardIds("h"), function (id)
         return Fk:getCardById(id).color == Card.Red
       end) == #table.filter(player:getCardIds("h"), function (id)
@@ -30,10 +31,8 @@ xuanshi:addEffect("active", {
   card_filter = Util.FalseFunc,
   on_use = function(self, room, effect)
     local player = effect.from
-    if not player:isKongcheng() then
-      player:showCards(player:getCardIds("h"))
-      if player.dead then return end
-    end
+    player:showCards(player:getCardIds("h"))
+    if player.dead then return end
     local targets = table.filter(room:getOtherPlayers(player, false), function (p)
       return not p:isNude()
     end)

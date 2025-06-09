@@ -12,7 +12,7 @@ Fk:loadTranslationTable{
 chengshig:addEffect(fk.Damage, {
   anim_type = "offensive",
   can_trigger = function(self, event, target, player, data)
-    if target == player and player:hasSkill(self) and
+    if target == player and player:hasSkill(chengshig.name) and
       data.card and data.card.trueName == "slash" and data.card.color == Card.Red and
       player:usedSkillTimes(chengshig.name, Player.HistoryTurn) == 0 then
       if player.room.current == player then

@@ -13,7 +13,7 @@ Fk:loadTranslationTable{
 yilin:addEffect(fk.AfterCardsMove, {
   anim_type = "support",
   can_trigger = function(self, event, target, player, data)
-    if player:hasSkill(self) then
+    if player:hasSkill(yilin.name) then
       for _, move in ipairs(data) do
         if move.toArea == Card.PlayerHand then
           if move.from == player and move.to ~= player and
