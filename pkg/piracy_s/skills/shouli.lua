@@ -72,7 +72,6 @@ shouli:addEffect("viewas", {
     end
     room:addPlayerMark(to, MarkEnum.UncompulsoryInvalidity .. "-turn")
     use.card:addSubcards(to:getEquipments(horse_type))
-    use.extraUse = true
   end,
   enabled_at_play = function(self, player)
     for _, p in ipairs(Fk:currentRoom().alive_players) do

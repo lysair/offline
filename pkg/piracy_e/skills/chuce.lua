@@ -32,6 +32,9 @@ chuce:addEffect("viewas", {
     card.skillName = chuce.name
     return card
   end,
+  before_use = function (self, player, use)
+    use.extraUse = true
+  end,
   enabled_at_response = function (self, player, response)
     return not response
   end,
