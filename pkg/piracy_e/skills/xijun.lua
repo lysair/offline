@@ -55,7 +55,7 @@ xijun:addEffect(fk.Damaged, {
       cancelable = true,
       extra_data = {
         bypass_times = true,
-        extra_use = true,
+        extraUse = true,
       },
       skip = true,
     })
