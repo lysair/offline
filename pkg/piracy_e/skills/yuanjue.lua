@@ -10,6 +10,9 @@ Fk:loadTranslationTable{
 
   ["#yuanjue-invoke"] = "援绝：是否跳过摸牌阶段，切换“援绝”状态？",
   ["@yuanjue"] = "援绝",
+
+  ["$yuanjue1"] = "我杀尔等，何须援手！",
+  ["$yuanjue2"] = "老卒！若再围上三刻，或可为孙策收尸！",
 }
 
 yuanjue:addEffect(fk.EventPhaseChanging, {

@@ -10,6 +10,9 @@ Fk:loadTranslationTable{
   ["#tongkai-invoke"] = "同忾：你可以摸一张牌，然后交给 %dest 一张牌",
   ["#tongkai-give"] = "同忾：交给 %dest 一张牌，若为装备牌其可以使用",
   ["#tongkai-use"] = "同忾：你可以使用%arg",
+
+  ["$tongkai1"] = "将军且捉孙策，余众，交由末将应付！",
+  ["$tongkai2"] = "要围便围，要战便战，何故逡巡不前！",
 }
 
 tongkai:addEffect(fk.TargetConfirmed, {

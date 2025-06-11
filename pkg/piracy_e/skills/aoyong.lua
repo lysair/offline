@@ -10,6 +10,9 @@ Fk:loadTranslationTable{
   ["aoyong_use"] = "使用一张牌",
   ["aoyong_beishui"] = "背水：减1点体力上限",
   ["#aoyong-use"] = "鏖勇：你可以使用一张牌",
+
+  ["$aoyong1"] = "战十二人，正合我意！",
+  ["$aoyong2"] = "战他个痛快，战他个天昏地暗！",
 }
 
 aoyong:addEffect(fk.AfterCardsMove, {

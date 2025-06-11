@@ -9,6 +9,9 @@ Fk:loadTranslationTable{
   ["yingzhen-choose"] = "应阵：选择一名角色，你与其上家或下家交换座次，然后你与其依次执行一个额外回合",
   ["yingzhen_last"] = "与%dest交换座次",
   ["yingzhen_next"] = "与%dest交换座次",
+
+  ["$yingzhen1"] = "将军真壮士也！吾可助之！",
+  ["$yingzhen2"] = "今日，定要活捉那孙策！",
 }
 
 yingzhen:addEffect(fk.GameStart, {

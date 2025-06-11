@@ -532,6 +532,8 @@ Fk:loadTranslationTable{
   ["quexiaojiang"] = "曲阿小将",
   ["#quexiaojiang"] = "神人何惧",
   ["illustrator:quexiaojiang"] = "荆芥",
+  ["cv:quexiaojiang"] = "notify",
+  ["~quexiaojiang"] = "壮士同仇，唯死而已。",
 }
 
 --E5003长安风云
