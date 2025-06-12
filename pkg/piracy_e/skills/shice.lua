@@ -12,6 +12,9 @@ Fk:loadTranslationTable{
   ["#ofl__shice-yin"] = "势策：是否令 %dest 弃置任意张装备并使%arg额外结算？",
   ["#ol__xiaoxi-fire_attack"] = "势策：你可以视为使用一张【火攻】",
   ["#ofl__shice-discard"] = "势策：弃置任意张装备，此%arg将额外结算你装备区牌数的次数！",
+
+  ["$ofl__shice1"] = "治乱麻合用快刀，斩之无赦！",
+  ["$ofl__shice2"] = "飞蓬遇风千里，亦不过草民尔尔。",
 }
 
 shice:addEffect(fk.DamageInflicted, {

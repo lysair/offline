@@ -12,6 +12,9 @@ Fk:loadTranslationTable{
   ["ofl__podai1"] = "令其一个描述中含有基本牌名或数字的技能失效",
   ["#ofl__podai-skill"] = "破怠：令 %dest 的一个技能失效！",
   ["#ofl__podai"] = "%from 令 %to 的技能“%arg”失效！",
+
+  ["$ofl__podai1"] = "筑京观二邑，用彰武功！",
+  ["$ofl__podai2"] = "乱民不识天威，宜草薙而禽狝！",
 }
 
 local spec = {

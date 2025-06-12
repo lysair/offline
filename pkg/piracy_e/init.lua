@@ -408,7 +408,10 @@ General:new(extension, "godhuangfusong", "god", 4):addSkills { "ofl__shice", "of
 Fk:loadTranslationTable{
   ["godhuangfusong"] = "神皇甫嵩",
   ["#godhuangfusong"] = "厥功至伟",
+  ["cv:godhuangfusong"] = "妙啊",
   ["illustrator:godhuangfusong"] = "王宁",
+
+  ["~godhuangfusong"] = "天下大乱兮市如墟，忠臣如梦兮复如痴。",
 }
 
 General:new(extension, "godluzhi", "god", 4):addSkills { "ofl__zhengan", "ofl__weizhu", "ofl__zequan" }
