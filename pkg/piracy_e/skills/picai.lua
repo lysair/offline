@@ -22,7 +22,7 @@ picai:addEffect("active", {
   end,
   card_num = 0,
   min_target_num = 1,
-  max_target_num = function (player)
+  max_target_num = function(self, player)
     return player.hp
   end,
   can_use = function(self, player)
@@ -40,9 +40,9 @@ picai:addEffect("active", {
         local card = room:askToCards(p, {
           min_num = 1,
           max_num = 1,
-          pattern = ".|hand",
           prompt = "#ofl__picai-put:"..player.id,
           skill_name = picai.name,
+          cancelable = false,
         })
         room:moveCards({
           ids = card,
