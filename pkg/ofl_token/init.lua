@@ -256,6 +256,36 @@ Fk:loadTranslationTable{
   ["#bearing_down_border_skill"] = "选择一名角色，除其以外的所有角色可以将一张牌当【杀】对其使用",
 }
 
+local xuanhua_axe = fk.CreateCard{
+  name = "&xuanhua_axe",
+  type = Card.TypeEquip,
+  sub_type = Card.SubtypeWeapon,
+  attack_range = 3,
+  equip_skill = "#xuanhua_axe_skill",
+}
+extension:addCardSpec("xuanhua_axe", Card.Diamond, 5)
+Fk:loadTranslationTable{
+  ["xuanhua_axe"] = "宣花斧",
+  [":xuanhua_axe"] = "装备牌·武器<br/>"..
+  "<b>攻击范围</b>：3<br/>"..
+  "<b>武器技能</b>：锁定技，当你使用【杀】指定第一个目标时，你令与其距离为1的另一名角色成为此【杀】的额外目标。",
+}
+
+local baibi_dagger = fk.CreateCard{
+  name = "&baibi_dagger",
+  type = Card.TypeEquip,
+  sub_type = Card.SubtypeWeapon,
+  attack_range = 1,
+  equip_skill = "#baibi_dagger_skill",
+}
+extension:addCardSpec("baibi_dagger", Card.Spade, 2)
+Fk:loadTranslationTable{
+  ["baibi_dagger"] = "百辟双匕",
+  [":baibi_dagger"] = "装备牌·武器<br/>"..
+  "<b>攻击范围</b>：1<br/>"..
+  "<b>武器技能</b>：锁定技，当你使用【杀】指定与你性别不同的一名角色为目标后，若你没有手牌，此【杀】伤害+1。",
+}
+
 extension:loadCardSkels {
   jingxiang_golden_age,
 
@@ -276,6 +306,9 @@ extension:loadCardSkels {
   cure_poison_with_poison,
 
   bearing_down_border,
+
+  xuanhua_axe,
+  baibi_dagger,
 }
 
 return extension
