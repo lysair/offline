@@ -20,7 +20,7 @@ lianrong:addEffect(fk.AfterCardsMove, {
       for _, move in ipairs(data) do
         if move.from and move.from ~= player and move.toArea == Card.DiscardPile and move.moveReason == fk.ReasonDiscard then
           for _, info in ipairs(move.moveInfo) do
-            if info.fromArea == Card.PlayerHand or info.fromArea == Card.PlayerEquip and
+            if (info.fromArea == Card.PlayerHand or info.fromArea == Card.PlayerEquip) and
               Fk:getCardById(info.cardId).suit == Card.Heart then
               table.insertIfNeed(ids, info.cardId)
             end
