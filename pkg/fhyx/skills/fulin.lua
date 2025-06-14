@@ -66,7 +66,7 @@ fulin:addEffect(fk.AfterCardsMove, {
     else
       local result = room:askToGuanxing(player, {
         cards = cards,
-        top_limit = {0, 0},
+        bottom_limit = {0, 0},
         skill_name = fulin.name,
         skip = true,
       })
