@@ -41,7 +41,15 @@ lianrong:addEffect(fk.AfterCardsMove, {
     local room = player.room
     local ids = table.simpleClone(event:getCostData(self).cards)
     if #ids > 1 then
-      local cards, _ = U.askforChooseCardsAndChoice(player, ids, {"OK"}, lianrong.name, "#lianrong-choose", {"get_all"}, 1, #ids)
+      local cards, _ = room:askToChooseCardsAndChoice(player, {
+        cards = ids,
+        choices = {"OK"},
+        skill_name = lianrong.name,
+        prompt = "#lianrong-choose",
+        cancel_choices = {"get_all"},
+        min_num = 1,
+        max_num = #ids
+      })
       if #cards > 0 then
         ids = cards
       end
