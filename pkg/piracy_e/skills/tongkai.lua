@@ -39,28 +39,23 @@ tongkai:addEffect(fk.TargetConfirmed, {
     local room = player.room
     player:drawCards(1, tongkai.name)
     if target == player or player:isNude() or player.dead or target.dead then return end
-    local cards = room:askToCards(player, {
+    local card = room:askToCards(player, {
       skill_name = tongkai.name,
       min_num = 1,
       max_num = 1,
-      include_equip = true,
       prompt = "#tongkai-give::"..target.id,
+      include_equip = true,
       cancelable = false,
-    })
-    room:moveCardTo(cards, Card.PlayerHand, target, fk.ReasonGive, tongkai.name, nil, true, player)
-    if not table.contains(target:getCardIds("h"), cards[1]) or target.dead then return end
-    target:showCards(cards)
-    if not table.contains(target:getCardIds("h"), cards[1]) or target.dead then return end
-    local card = Fk:getCardById(cards[1])
-    if card.type == Card.TypeEquip and not target:isProhibited(target, card) and not target:prohibitUse(card) and
-      room:askToSkillInvoke(target, {
+    })[1]
+    room:moveCardTo(card, Card.PlayerHand, target, fk.ReasonGive, tongkai.name, nil, true, player)
+    if not table.contains(target:getCardIds("h"), card) or target.dead then return end
+    target:showCards(card)
+    if not table.contains(target:getCardIds("h"), card) or target.dead then return end
+    if Fk:getCardById(card).type == Card.TypeEquip then
+      room:askToUseRealCard(target, {
+        pattern = {card},
         skill_name = tongkai.name,
-        prompt = "#tongkai-use:::"..card:toLogString(),
-      }) then
-      room:useCard({
-        from = target,
-        tos = {target},
-        card = card,
+        prompt = "#tongkai-use:::"..Fk:getCardById(card):toLogString(),
       })
     end
   end,

@@ -623,7 +623,7 @@ Fk:loadTranslationTable{
   ["illustrator:godwangyun"] = "alien",
 }
 
---E7009T君霸天下 刘备 刘禅 曹操 曹丕 刘宏 刘协 孙策 孙权 袁绍 张角
+--E7009T君霸天下
 General:new(extension, "ofl__liuxie", "qun", 3):addSkills { "tianzel", "zhaoyuan", "os__zhuiting" }
 Fk:loadTranslationTable{
   ["ofl__liuxie"] = "刘协",
@@ -642,7 +642,23 @@ Fk:loadTranslationTable{
   ["~ofl__liuhong"] = "时也！命也！",
 }
 
---袁绍 张角
+General:new(extension, "ofl2__yuanshao", "qun", 4):addSkills { "hefa", "xueyi" }
+Fk:loadTranslationTable{
+  ["ofl2__yuanshao"] = "袁绍",
+  ["#ofl2__yuanshao"] = "高贵的名门",
+  ["illustrator:ofl2__yuanshao"] = "琛·美弟奇",
+
+  ["~ofl2__yuanshao"] = "我袁家，怎么会输！",
+}
+
+General:new(extension, "ofl__zhangjiao", "qun", 3):addSkills { "huanlei", "xiandaoz", "huangtian" }
+Fk:loadTranslationTable{
+  ["ofl__zhangjiao"] = "张角",
+  ["#ofl__zhangjiao"] = "天公将军",
+  ["illustrator:ofl__zhangjiao"] = "鬼画府",
+
+  ["~ofl__zhangjiao"] = "时也！命也！",
+}
 
 General:new(extension, "ofl__sunquan", "wu", 4):addSkills { "henglv", "jiuyuan" }
 Fk:loadTranslationTable{
@@ -675,7 +691,14 @@ Fk:loadTranslationTable{
   ["~ofl2__caopi"] = "大事未成，愧对先父……",
 }
 
---曹操
+General:new(extension, "ofl3__caocao", "wei", 4):addSkills { "xiongtu", "hujia" }
+Fk:loadTranslationTable{
+  ["ofl3__caocao"] = "曹操",
+  ["#ofl3__caocao"] = "魏武帝",
+  ["illustrator:ofl3__caocao"] = "Town",
+
+  ["~ofl3__caocao"] = "旧疾复发，吾命……恐不久矣。",
+}
 
 local liushan = General:new(extension, "ofl__liushan", "shu", 3)
 liushan:addSkills { "fuxiang", "lezong", "ruoyu" }

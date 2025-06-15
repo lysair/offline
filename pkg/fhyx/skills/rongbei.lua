@@ -35,7 +35,7 @@ rongbei:addEffect("active", {
       if target:hasEmptyEquipSlot(type) then
         local cards = table.filter(room:getBanner("@$fhyx_extra_pile"), function(id)
         local card = Fk:getCardById(id)
-          return card.sub_type == type and not target:isProhibited(target, card)
+          return card.sub_type == type and target:canUseTo(card, target)
         end)
         if #cards > 0 then
           local card = Fk:getCardById(table.random(cards))
