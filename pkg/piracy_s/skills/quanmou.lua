@@ -27,6 +27,7 @@ quanmou:addEffect(fk.CardUseFinished, {
       pattern = pattern,
       prompt = "#ofl__quanmou-invoke:::"..data.card:getColorString()..":"..data.card:toLogString(),
       cancelable = true,
+      skip = true,
     })
     if #card > 0 then
       event:setCostData(self, {cards = card})
