@@ -87,7 +87,7 @@ yilin:addEffect(fk.AfterCardsMove, {
     local to = event:getCostData(self).tos[1]
     room:addTableMark(player, "yilin-turn", to.id)
     local cards = {}
-    if target == player then
+    if to == player then
       for _, move in ipairs(data) do
         if move.toArea == Card.PlayerHand and move.to == player and move.from and move.from ~= player then
           for _, info in ipairs(move.moveInfo) do
