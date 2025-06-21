@@ -38,21 +38,11 @@ tonglu:addEffect(fk.RoundEnd, {
           choices = {"tonglu_last:"..player.id, "tonglu_next:"..player.id},
           skill_name = tonglu.name,
         })
-        local dest_seat
         if choice:startsWith("tonglu_last") then
-          if player.seat > 1 then
-            dest_seat = player.seat - 1
-          else
-            dest_seat = #room.players
-          end
+          room:moveSeatToNext(to, player, true)
         else
-          if player.seat < #room.players then
-            dest_seat = player.seat + 1
-          else
-            dest_seat = 1
-          end
+          room:moveSeatToNext(to, player)
         end
-        room:moveSeatTo(to, dest_seat)
         player:gainAnExtraTurn(false, tonglu.name)
       end
     end
