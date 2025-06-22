@@ -53,7 +53,9 @@ shilus:addEffect(fk.Deathed, {
       table.insertTableIfNeed(generals, room:getNGenerals(2))
     end
     if #generals > 0 then
-      room:addTableMarkIfNeed(player, "@&massacre", generals)
+      for _, general in ipairs(generals) do
+        room:addTableMarkIfNeed(player, "@&massacre", general)
+      end
     end
   end,
 })

@@ -154,7 +154,7 @@ xiongnve:addEffect(fk.DamageInflicted, {
   anim_type = "defensive",
   is_delay_effect = true,
   can_trigger = function(self, event, target, player, data)
-    return player:getMark("@@ofl__xiongnve") > 0 and data.from and data.from ~= player
+    return target == player and player:getMark("@@ofl__xiongnve") > 0 and data.from and data.from ~= player
   end,
   on_use = function(self, event, target, player, data)
     data:changeDamage(-1)

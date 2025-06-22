@@ -16,6 +16,7 @@ Fk:loadTranslationTable{
 
 jijun:addEffect(fk.TargetSpecified, {
   anim_type = "drawcard",
+  derived_piles = "ofl__godzhangliang_fang",
   can_trigger = function(self, event, target, player, data)
     return target == player and player:hasSkill(jijun.name) and data.to == player
   end,
