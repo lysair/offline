@@ -36,6 +36,7 @@ zequan:addEffect("viewas", {
     return not response and
       #player:getViewAsCardNames(zequan.name, Fk:getAllCardNames("t"), nil, player:getTableMark(zequan.name)) > 0
   end,
+  enabled_at_nullification = Util.FalseFunc,
 })
 
 zequan:addLoseEffect(function (self, player, is_death)
