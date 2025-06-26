@@ -13,7 +13,8 @@ Fk:loadTranslationTable{
 xingsha:addEffect("active", {
   anim_type = "offensive",
   prompt = "#xingsha",
-  card_num = 2,
+  min_card_num = 1,
+  max_card_num = 2,
   target_num = 0,
   can_use = function(self, player)
     return player:usedSkillTimes(xingsha.name, Player.HistoryPhase) == 0
