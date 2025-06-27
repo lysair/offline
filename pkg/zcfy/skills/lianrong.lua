@@ -10,8 +10,6 @@ Fk:loadTranslationTable{
   ["get_all"] = "全部获得",
 }
 
-local U = require "packages/utility/utility"
-
 lianrong:addEffect(fk.AfterCardsMove, {
   anim_type = "drawcard",
   can_trigger = function(self, event, target, player, data)

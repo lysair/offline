@@ -18,8 +18,6 @@ Fk:loadTranslationTable{
   ["$shzj_guansuo__pojun5"] = "嗬！！！",
 }
 
-local U = require "packages/utility/utility"
-
 pojun:addEffect(fk.TargetSpecified, {
   anim_type = "offensive",
   can_trigger = function(self, event, target, player, data)
@@ -44,7 +42,7 @@ pojun:addEffect(fk.TargetSpecified, {
       min = 1,
       max = data.to.hp,
     })
-    U.viewCards(player, cards, pojun.name)
+    room:viewCards(player, { cards = cards, skill_name = pojun.name })
     data.to:addToPile("$shzj_guansuo__pojun", cards, false, pojun.name, player)
     if player.dead or data.to.dead then return end
     local equips = table.filter(cards, function (id)
