@@ -39,6 +39,17 @@ zequan:addEffect("viewas", {
   enabled_at_nullification = Util.FalseFunc,
 })
 
+zequan:addAcquireEffect(function (self, player, is_start)
+  local room = player.room
+  local mark = {}
+  for _, name in ipairs(Fk:getAllCardNames("t")) do
+    if Fk:cloneCard(name).is_passive then
+      table.insert(mark, name)
+    end
+  end
+  room:setPlayerMark(player, zequan.name, mark)
+end)
+
 zequan:addLoseEffect(function (self, player, is_death)
   player.room:setPlayerMark(player, zequan.name, 0)
 end)

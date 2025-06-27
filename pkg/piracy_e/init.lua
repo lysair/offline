@@ -730,21 +730,21 @@ Fk:loadTranslationTable{
 General:new(extension, "ofl3__godmachao", "god", 5):addSkills { "qiangshu", "yuma" }
 Fk:loadTranslationTable{
   ["ofl3__godmachao"] = "神马超",
-  ["#ofl3__godmachao"] = "",
+  ["#ofl3__godmachao"] = "麾骑撚枪",
   ["illustrator:ofl3__godmachao"] = "君桓文化",
 }
 
-General:new(extension, "ofl__godxuchu", "god", 5):addSkills { "jiangzhan", "ofl__zhenweix" }
+General:new(extension, "ofl__godxuchu", "god", 5):addSkills { "bozhan", "piwei" }
 Fk:loadTranslationTable{
   ["ofl__godxuchu"] = "神许褚",
-  ["#ofl__godxuchu"] = "",
+  ["#ofl__godxuchu"] = "猛虎战骊",
   ["illustrator:ofl__godxuchu"] = "鬼画府",
 }
 
 General:new(extension, "ofl2__caocao", "wei", 4):addSkills { "dingluan", "qianjiang" }
 Fk:loadTranslationTable{
   ["ofl2__caocao"] = "曹操",
-  ["#ofl2__caocao"] = "",
+  ["#ofl2__caocao"] = "乱世的奸雄",
   ["illustrator:ofl2__caocao"] = "小牛",
 }
 
@@ -753,29 +753,57 @@ hansui:addSkills { "jubing", "ofl__xiongju" }
 hansui:addRelatedSkill("mashu")
 Fk:loadTranslationTable{
   ["ofl__hansui"] = "韩遂",
-  ["#ofl__hansui"] = "",
+  ["#ofl__hansui"] = "征西将军",
   ["illustrator:ofl__hansui"] = "磐蒲",
 }
 
-General:new(extension, "houxuan", "qun", 4):addSkills { "zhongtao", "mashu" }
+General:new(extension, "ofl__xuhuang", "wei", 4):addSkills { "ofl__zhuying", "ofl__chiyuan" }
 Fk:loadTranslationTable{
-  ["houxuan"] = "侯选",
-  ["#houxuan"] = "",
-  ["illustrator:houxuan"] = "陈鑫",
-}
-
-General:new(extension, "chengyi", "qun", 4):addSkills { "dutan" }
-Fk:loadTranslationTable{
-  ["chengyi"] = "成宜",
-  ["#chengyi"] = "",
-  ["illustrator:chengyi"] = "陈鑫",
+  ["ofl__xuhuang"] = "徐晃",
+  ["#ofl__xuhuang"] = "乘虚渡江",
+  ["illustrator:ofl__xuhuang"] = "凝聚永恒",
 }
 
 General:new(extension, "yangqiuq", "qun", 5):addSkills { "qifeng" }
 Fk:loadTranslationTable{
   ["yangqiuq"] = "杨秋",
-  ["#yangqiuq"] = "",
+  ["#yangqiuq"] = "似若无敌",
   ["illustrator:yangqiuq"] = "Neko",
+}
+
+General:new(extension, "chengyi", "qun", 4):addSkills { "dutan" }
+Fk:loadTranslationTable{
+  ["chengyi"] = "成宜",
+  ["#chengyi"] = "气高志远",
+  ["illustrator:chengyi"] = "陈鑫",
+}
+
+General:new(extension, "houxuan", "qun", 4):addSkills { "zhongtao", "mashu" }
+Fk:loadTranslationTable{
+  ["houxuan"] = "侯选",
+  ["#houxuan"] = "合众复相",
+  ["illustrator:houxuan"] = "陈鑫",
+}
+
+General:new(extension, "ofl__zhanghe", "wei", 4):addSkills { "ofl__qiaobian" }
+Fk:loadTranslationTable{
+  ["ofl__zhanghe"] = "张郃",
+  ["#ofl__zhanghe"] = "料敌机先",
+  ["illustrator:ofl__zhanghe"] = "君桓文化",
+}
+
+General:new(extension, "ofl__zhuling", "wei", 4):addSkills { "ofl__zhanyi" }
+Fk:loadTranslationTable{
+  ["ofl__zhuling"] = "朱灵",
+  ["#ofl__zhuling"] = "良将之亚",
+  ["illustrator:ofl__zhuling"] = "新艺族",
+}
+
+General:new(extension, "ofl3__jiaxu", "wei", 3):addSkills { "ofl__jianshu", "ofl__zhenlue" }
+Fk:loadTranslationTable{
+  ["ofl3__jiaxu"] = "贾诩",
+  ["#ofl3__jiaxu"] = "巧施间策",
+  ["illustrator:ofl3__jiaxu"] = "匠人绘",
 }
 
 return extension

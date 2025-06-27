@@ -1,12 +1,12 @@
 
 local zhenweix = fk.CreateSkill{
-  name = "ofl__zhenweix",
+  name = "piwei",
   tags = { Skill.Compulsory },
 }
 
 Fk:loadTranslationTable{
-  ["ofl__zhenweix"] = "震威",
-  [":ofl__zhenweix"] = "锁定技，摸牌阶段，你多摸X张牌（X为你废除的装备栏数）。",
+  ["piwei"] = "羆威",
+  [":piwei"] = "锁定技，摸牌阶段，你多摸X张牌（X为你废除的装备栏数）。",
 }
 
 zhenweix:addEffect(fk.DrawNCards, {
