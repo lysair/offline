@@ -66,7 +66,7 @@ xiongye:addEffect("active", {
     targets = {}
     for id, _ in pairs(list) do
       if list[id] then
-        table.insert(targets, id)
+        table.insert(targets, room:getPlayerById(id))
       end
     end
     room:sortByAction(targets)

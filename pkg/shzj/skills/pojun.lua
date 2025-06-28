@@ -46,7 +46,7 @@ pojun:addEffect(fk.TargetSpecified, {
     data.to:addToPile("$shzj_guansuo__pojun", cards, false, pojun.name, player)
     if player.dead or data.to.dead then return end
     local equips = table.filter(cards, function (id)
-      return Fk:getCardById(id).type == Card.TypeEquip
+      return Fk:getCardById(id).type == Card.TypeEquip and table.contains(data.to:getPile("$shzj_guansuo__pojun"), id)
     end)
     if #equips > 0 then
       local card = room:askToChooseCard(player, {

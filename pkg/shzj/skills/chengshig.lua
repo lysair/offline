@@ -51,7 +51,7 @@ chengshig:addEffect(fk.Damage, {
 
 chengshig:addEffect("prohibit", {
   is_prohibited = function(self, from, to, card)
-    return from:getMark("chengshig-turn") ~= 0 and card and card.is_damage_card and from and
+    return from and from:getMark("chengshig-turn") ~= 0 and card and card.is_damage_card and
       not table.contains(from:getTableMark("chengshig-turn"), to.id)
   end,
 })

@@ -46,6 +46,7 @@ fuhan:addEffect(fk.EventPhaseStart, {
     generals = table.random(generals, n)
 
     local skills = {}
+    local singleSkillList = {}
     for _, general_name in ipairs(generals) do
       local general = Fk.generals[general_name]
       local general_skills = {}
@@ -59,6 +60,7 @@ fuhan:addEffect(fk.EventPhaseStart, {
         end
       end
       table.insertIfNeed(skills, general_skills)
+      table.insertTableIfNeed(singleSkillList, general_skills)
     end
     if #skills > 0 then
       local result = player.room:askToCustomDialog(player, {
@@ -66,7 +68,7 @@ fuhan:addEffect(fk.EventPhaseStart, {
         qml_path = "packages/tenyear/qml/ChooseGeneralSkillsBox.qml",
         extra_data = {generals, skills, 1, 2, "#qshm__fuhan-choice", false}
       })
-      local choices = result ~= "" and json.decode(result) or table.random(skills, 2)
+      local choices = result ~= "" and json.decode(result) or table.random(singleSkillList, 2)
       room:handleAddLoseSkills(player, table.concat(choices, "|"))
     end
 
