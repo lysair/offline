@@ -24,8 +24,15 @@ mingship:addEffect("active", {
     return UI.ComboBox { choices = choices , all_choices = all_choices }
   end,
   card_num = 0,
-  min_target_num = 0,
-  max_target_num = 2,
+  target_num = function(self)
+    if self.interaction.data == "sxfy__mingship_damage" then
+      return 1
+    elseif self.interaction.data == "sxfy__mingship_move" then
+      return 2
+    end
+
+    return 0
+  end,
   can_use = function(self, player)
     return player:usedSkillTimes(mingship.name, Player.HistoryGame) == 0
   end,

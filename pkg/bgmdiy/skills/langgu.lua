@@ -42,7 +42,7 @@ langgu:addEffect(fk.Damaged, {
         include_equip = false,
         skill_name = langgu.name,
         cancelable = true,
-        pattern = ".|.|"..data.card:getSuitString(),
+        pattern = ".|.|"..judge.card:getSuitString(),
         prompt = "#langgu-discard",
       })
     else
