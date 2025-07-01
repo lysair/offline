@@ -28,6 +28,7 @@ local spec = {
         cancelable = true,
         pattern = ".|.|.|equip",
         prompt = "#sxfy__polu1-invoke",
+        skip = true,
       })
       if #card > 0 then
         event:setCostData(self, {cards = card})
