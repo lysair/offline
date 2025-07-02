@@ -16,6 +16,7 @@ jiaozong:addEffect("prohibit", {
       end)
     end
   end,
+  --[[
   prohibit_use = function(self, player, card)
     if card and player.phase == Player.Play and card.color == Card.Red and player:getMark("jiaozong-phase") == 0 then
       return table.find(Fk:currentRoom().alive_players, function(p)
@@ -23,12 +24,26 @@ jiaozong:addEffect("prohibit", {
       end) and card.skill.min_target_num == 0 and not card.multiple_targets
     end
   end,
+  --]]
 })
 
 jiaozong:addEffect("targetmod", {
   bypass_distances = function(self, player, skill_name, card, to)
     return to:hasSkill(jiaozong.name) and player.phase == Player.Play and player:getMark("jiaozong-phase") == 0 and
       card and card.color == Card.Red
+  end,
+  fix_target_func = function (self, player, skill, card, extra_data)
+    if player.phase == Player.Play and player:getMark("jiaozong-phase") == 0 and card and card.color == Card.Red
+    and card.skill:getMinCardNum(player) == 0 then
+      local mes = table.filter(Fk:currentRoom().alive_players, function(p)
+        return p ~= player and p:hasSkill(jiaozong.name)
+      end)
+      if #mes > 1 and not card.multiple_targets then
+        return {}
+      else
+        return table.map(mes, Util.IdMapper)
+      end
+    end
   end,
 })
 

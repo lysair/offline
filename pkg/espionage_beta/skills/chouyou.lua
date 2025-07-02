@@ -11,7 +11,7 @@ Fk:loadTranslationTable{
   ["chouyou_slash"] = "此【杀】转移给你",
   ["chouyou_control"] = "发动非锁定技前需经 %src 同意，直到你令其回复体力",
   ["@@chouyou"] = "仇幽",
-  ["#chouyou-control"] = "仇幽：是否允许 %dest 发动“%arg”？",
+  ["#chouyou-control"] = "仇幽：是否允许 %dest 发动“%arg”？（“确定”：同意，“取消”：拒绝）",
   ["#chouyou_prohibit"] = "%from 不允许 %to 发动 “%arg”！",
 }
 
@@ -81,16 +81,13 @@ chouyou:addEffect(fk.SkillEffect, {
   end,
   on_use = function(self, event, target, player, data)
     local room = player.room
-    local e = room.logic:getCurrentEvent():findParent(GameEvent.SkillEffect)
-    if e then
-      room:sendLog{
-        type = "#chouyou_prohibit",
-        from = player.id,
-        to = {target.id},
-        arg = data.skill:getSkeleton().name,
-      }
-      e:shutdown()
-    end
+    room:sendLog{
+      type = "#chouyou_prohibit",
+      from = player.id,
+      to = {target.id},
+      arg = data.skill:getSkeleton().name,
+    }
+    data.prevent = true
   end,
 })
 
