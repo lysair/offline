@@ -74,12 +74,9 @@ zhaoluan:addEffect(fk.AskForPeachesDone, {
     room:notifySkillInvoked(player, zhaoluan.name, "big")
     room:changeMaxHp(target, 3)
     local skills = table.filter(target:getSkillNameList(), function (s)
-      return not Fk.skills[s]:hasTag(Skill.Compulsory)
+      local skill = Fk.skills[s]
+      return not skill:hasTag(Skill.Compulsory) and skill:isPlayerSkill(player)
     end)
-    if room.settings.gameMode == "m_1v2_mode" and target.role == "lord" then
-      table.removeOne(skills, "m_feiyang")
-      table.removeOne(skills, "m_bahu")
-    end
     if #skills > 0 then
       room:handleAddLoseSkills(target, "-" .. table.concat(skills, "|-"))
     end
