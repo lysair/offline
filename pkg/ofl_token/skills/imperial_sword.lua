@@ -102,7 +102,7 @@ skill:addEffect(fk.TargetSpecified, {
       })
       room:moveCardTo(card, Card.PlayerHand, player, fk.ReasonPrey, skill.name, nil, false, player)
     else
-      room:moveCardTo(event:getCostData(self), Card.PlayerHand, target, fk.ReasonGive, skill.name, nil, false, player)
+      room:moveCardTo(event:getCostData(self).cards, Card.PlayerHand, target, fk.ReasonGive, skill.name, nil, false, player)
     end
   end,
 })
