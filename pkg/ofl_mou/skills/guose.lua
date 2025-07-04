@@ -78,7 +78,7 @@ guose:addEffect("active", {
       local target = effect.tos[1]
       room:useVirtualCard("indulgence", effect.cards, player, target, guose.name)
     elseif self.interaction.data == "ofl_mou__guose_move" then
-      local targets = table.map(effect.tos, Util.Id2PlayerMapper)
+      local targets = effect.tos
       local excludeIds = {}
       for _, id in ipairs(targets[1]:getCardIds("j")) do
         local card = targets[1]:getVirualEquip(id)
