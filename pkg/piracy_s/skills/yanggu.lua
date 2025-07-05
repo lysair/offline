@@ -5,7 +5,7 @@ local yanggu = fk.CreateSkill {
 
 Fk:loadTranslationTable{
   ["ofl__yanggu"] = "佯固",
-  [":ofl__yanggu"] = "转换技，阳：当你受到伤害后，你可以回复1点体力；阴：你可以将一张手牌当【声东击西】使用。",
+  [":ofl__yanggu"] = "转换技，阳：当你受到伤害后，你可以回复1点体力；阴：你可以将一张手牌当<a href=':diversion'>【声东击西】</a>使用。",
 
   ["#ofl__yanggu-yang"] = "佯固：是否回复1点体力？",
   ["#ofl__yanggu-yin"] = "佯固：你可以将一张手牌当【声东击西】使用",
