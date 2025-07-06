@@ -63,7 +63,7 @@ Fk:loadTranslationTable{
   ["illustrator:wangfuren"] = "绘绘子酱",
 }
 
---成济 张虎√ 乐綝√ 牛金× 张春华× 王异× 曹冲× 陈琳√ 蔡文姬 诸葛诞× 曹纯 鲁芝× 张昌蒲× 王双× 阎柔× 清河公主× 王凌 蔡贞姬× 胡班× 曹安民
+--成济 张虎√ 乐綝√ 牛金× 张春华× 王异× 曹冲× 陈琳√ 蔡文姬√ 诸葛诞× 曹纯 鲁芝× 张昌蒲× 王双× 阎柔× 清河公主× 王凌√ 蔡贞姬× 胡班× 曹安民
 --阮慧× 周不疑 卞喜 臧霸×
 General:new(extension, "sxfy__zhanghu", "wei", 4):addSkills { "sxfy__cuijian" }
 Fk:loadTranslationTable{
@@ -86,13 +86,34 @@ Fk:loadTranslationTable{
   ["illustrator:sxfy__chenlin"] = "biou09",
 }
 
---陈式 沙摩柯 张星彩× 伊籍× 花鬘√ 许靖× 吴班× 李丰× 诸葛果 赵统赵广× 陈震× 胡金定 雷铜 傅肜 向朗√
+General:new(extension, "sxfy__caiwenji", "wei", 3, 3, General.Female):addSkills { "sxfy__mozhi" }
+Fk:loadTranslationTable{
+  ["sxfy__caiwenji"] = "蔡文姬",
+  ["#sxfy__caiwenji"] = "金璧之才",
+  ["illustrator:sxfy__caiwenji"] = "漫想族",
+}
+
+General:new(extension, "sxfy__wangling", "wei", 4):addSkills { "sxfy__xingqi" }
+Fk:loadTranslationTable{
+  ["sxfy__wangling"] = "王凌",
+  ["#sxfy__wangling"] = "风节格尚",
+  ["illustrator:sxfy__wangling"] = "六道目",
+}
+
+--陈式 沙摩柯 张星彩× 伊籍× 花鬘√ 许靖× 吴班× 李丰 诸葛果√ 赵统赵广× 陈震× 胡金定 雷铜 傅肜 向朗√
 
 General:new(extension, "sxfy__huaman", "shu", 3, 3, General.Female):addSkills { "sxfy__manyi", "sxfy__mansi" }
 Fk:loadTranslationTable{
   ["sxfy__huaman"] = "花鬘",
   ["#sxfy__huaman"] = "芳踪载馨",
   ["illustrator:sxfy__huaman"] = "匠人绘",
+}
+
+General:new(extension, "sxfy__zhugeguo", "shu", 3, 3, General.Female):addSkills { "sxfy__qirang", "sxfy__yuhua" }
+Fk:loadTranslationTable{
+  ["sxfy__zhugeguo"] = "诸葛果",
+  ["#sxfy__zhugeguo"] = "凤阁乘烟",
+  ["illustrator:sxfy__zhugeguo"] = "任玉帝",
 }
 
 General:new(extension, "sxfy__xianglang", "shu", 3):addSkills { "sxfy__kanji", "sxfy__qianzheng" }
@@ -102,7 +123,7 @@ Fk:loadTranslationTable{
   ["illustrator:sxfy__xianglang"] = "尼乐小丑",
 }
 
---蒋钦 孙綝 吕岱 苏飞× 孙弘 吴景 范疆张达
+--蒋钦 孙綝 吕岱× 苏飞× 孙弘 吴景 范疆张达
 
 --王荣 杜预 段煨 丘力居 穆顺 张宁 童渊 刘辟× 轲比能× 邢道荣× 张勋√ 张闿√ 马元义 阎象 贾充× 王匡× 刘磐 韩遂 张让 郭图 樊稠 忙牙长×
 --高览× 高干 马日磾×
@@ -121,8 +142,30 @@ Fk:loadTranslationTable{
   ["illustrator:sxfy__zhangkai"] = "白夜",
 }
 
+General:new(extension, "sxfy__gaogan", "qun", 4):addSkills { "sxfy__juguan" }
+Fk:loadTranslationTable{
+  ["sxfy__gaogan"] = "高干",
+  ["#sxfy__gaogan"] = "才志弘邈",
+  ["illustrator:sxfy__gaogan"] = "梦回唐朝",
+}
+
 --王祥×
 
---神貂蝉× 神贾诩× 神华佗 神典韦× 神荀彧 神鲁肃 神郭嘉 神孙策 神太史慈 神马超 神许褚 神姜维
+--神典韦 神贾诩 神郭嘉√ 神荀彧√ 神孙策 神太史慈 神鲁肃 神华佗 神貂蝉× 神姜维 神马超 神许褚
+local godguojia = General:new(extension, "sxfy__godguojia", "god", 3)
+godguojia:addSkills { "sxfy__huishi", "sxfy__tianyi" }
+godguojia:addRelatedSkill("sxfy__zuoxing")
+Fk:loadTranslationTable{
+  ["sxfy__godguojia"] = "神郭嘉",
+  ["#sxfy__godguojia"] = "星月奇佐",
+}
+
+General:new(extension, "sxfy__godxunyu", "god", 3):addSkills { "tianzuo", "sxfy__dinghan" }
+Fk:loadTranslationTable{
+  ["sxfy__godxunyu"] = "神荀彧",
+  ["#sxfy__godxunyu"] = "洞心先识",
+  ["illustrator:sxfy__godxunyu"] = "JJGG",
+}
+
 
 return extension

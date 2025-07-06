@@ -1,23 +1,20 @@
 local huishi = fk.CreateSkill {
-  name = "ofl_shiji__huishi",
+  name = "sxfy__huishi",
 }
 
 Fk:loadTranslationTable{
-  ["ofl_shiji__huishi"] = "慧识",
-  [":ofl_shiji__huishi"] = "出牌阶段限一次，你可以进行判定，若结果的花色与本阶段以此法进行判定的结果均不同，你可以重复此流程。"..
+  ["sxfy__huishi"] = "慧识",
+  [":sxfy__huishi"] = "出牌阶段限一次，你可以进行判定，若结果的颜色与本阶段以此法进行判定的结果均不同，你可以重复此流程。"..
   "然后你可以将所有生效的判定牌交给一名角色。",
 
-  ["#ofl_shiji__huishi"] = "慧识：连续判定直到出现相同花色，然后将判定牌交给一名角色",
-  ["#ofl_shiji__huishi-ask"] = "慧识：是否继续判定？",
-  ["#ofl_shiji__huishi-choose"] = "慧识：你可以令一名角色获得这些判定牌",
-
-  ["$ofl_shiji__huishi1"] = "察才识贤，以翊公之事。",
-  ["$ofl_shiji__huishi2"] = "观滴水而知沧海，窥一举而察人心。",
+  ["#sxfy__huishi"] = "慧识：连续判定直到出现相同颜色，然后将判定牌交给一名角色",
+  ["#sxfy__huishi-ask"] = "慧识：是否继续判定？",
+  ["#sxfy__huishi-choose"] = "慧识：你可以令一名角色获得这些判定牌",
 }
 
 huishi:addEffect("active", {
   anim_type = "drawcard",
-  prompt = "#ofl_shiji__huishi",
+  prompt = "#sxfy__huishi",
   can_use = function(self, player)
     return player:usedSkillTimes(huishi.name, Player.HistoryPhase) == 0
   end,
@@ -26,26 +23,30 @@ huishi:addEffect("active", {
     local player = effect.from
 
     local cards = {}
+    local pattern = "."
     while not player.dead do
-      local parsePattern = table.concat(table.map(cards, function(card)
-        return card:getSuitString()
-      end), ",")
-
       local judge = {
         who = player,
         reason = huishi.name,
-        pattern = ".|.|" .. (parsePattern == "" and "." or "^(" .. parsePattern .. ")"),
+        pattern = pattern,
         skipDrop = true,
       }
       room:judge(judge)
-      table.insert(cards, judge.card)
+      if judge.card then
+        table.insert(cards, judge.card)
+        if judge.card.color == Card.Black then
+          pattern = ".|.|spade,club"
+        elseif judge.card.color == Card.Red then
+          pattern = ".|.|heart,diamond"
+        end
+      end
       if not table.every(cards, function(card)
-          return card == judge.card or judge.card:compareSuitWith(card, true)
+          return card == judge.card or judge.card:compareColorWith(card, true)
         end) or
         player.dead or
         not room:askToSkillInvoke(player, {
           skill_name = huishi.name,
-          prompt = "#ofl_shiji__huishi-ask",
+          prompt = "#sxfy__huishi-ask",
         })
       then
         break
@@ -67,7 +68,7 @@ huishi:addEffect("active", {
       max_num = 1,
       targets = room.alive_players,
       skill_name = huishi.name,
-      prompt = "#ofl_shiji__huishi-choose",
+      prompt = "#sxfy__huishi-choose",
       cancelable = true,
     })
     if #to > 0 then
