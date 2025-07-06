@@ -61,7 +61,7 @@ tianxiang:addEffect(fk.DamageInflicted, {
     end
     local yes = Fk:getCardById(card).suit == Card.Heart
     local type = Fk:getCardById(card):getTypeString()
-    room:moveCardTo(cards, Card.PlayerHand, to, fk.ReasonPrey, tianxiang.name, nil, true, to)
+    room:moveCardTo(card, Card.PlayerHand, to, fk.ReasonPrey, tianxiang.name, nil, true, to)
     if yes then
       if not to.dead then
         local n = data.damage
