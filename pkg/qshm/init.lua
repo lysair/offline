@@ -15,14 +15,21 @@ Fk:loadTranslationTable{
   ["#chenshou"] = "婉而成章",
   ["illustrator:chenshou"] = "小罗没想好",
 }
-local poker = fk.CreateCard{
-  name = "&poker",
-  type = Card.TypeBasic,
-  skill = "poker_skill",
-  is_passive = true,
-}
-extension:loadCardSkels{poker}
-extension:addCardSpec("poker")
+
+for _, suit in ipairs {"spade", "club", "heart", "diamond" } do
+  for i = 1, 13 do
+    local name = ("%s%d__poker"):format(suit, i)
+    Fk:loadTranslationTable { [name] = "扑克", [":" .. name] = "只是一张扑克而已" }
+    local poker = fk.CreateCard{
+      name = "&" .. name,
+      type = Card.TypeBasic,
+      skill = "poker_skill",
+      is_passive = true,
+    }
+    extension:loadCardSkels{ poker }
+    extension:addCardSpec(name)
+  end
+end
 
 General:new(extension, "caohuan", "wei", 3):addSkills { "junweic", "moran" }
 Fk:loadTranslationTable{

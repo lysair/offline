@@ -46,13 +46,15 @@ chenzhi:addEffect(fk.DrawInitialCards, {
   end,
 })
 
+local suits = {"spade", "club", "heart", "diamond" }
+
 chenzhi:addAcquireEffect(function (self, player, is_start)
   local room = player.room
   if not room:getBanner(chenzhi.name) then
     local ids = {}
     for suit = 1, 4, 1 do
       for number = 1, 13, 1 do
-        local card = room:printCard("poker", suit, number)
+        local card = room:printCard(("%s%d__poker"):format(suits[suit], number), suit, number)
         room:setCardMark(card, MarkEnum.DestructIntoDiscard, 1)
         table.insert(ids, card.id)
       end
