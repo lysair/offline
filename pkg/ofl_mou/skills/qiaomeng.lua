@@ -28,7 +28,7 @@ qiaomeng:addEffect(fk.Damage, {
       skill_name = qiaomeng.name,
     })
     if choice ~= "Cancel" then
-      event:setCostData(self, {choice = choice})
+      event:setCostData(self, {choice = choice, tos = {data.to}})
       return true
     end
   end,
@@ -66,7 +66,7 @@ qiaomeng:addEffect(fk.Damage, {
     else
       local cards = room:getNCards(4)
       room:turnOverCardsFromDrawPile(player, cards, qiaomeng.name)
-      if #player:getPile("ofl_mou__yicong_hu&") < 4 then
+      if #player:getPile("ofl_mou__yicong_hu") < 4 then
         local slash = table.filter(cards, function (id)
           return Fk:getCardById(id).trueName == "slash"
         end)
@@ -86,7 +86,7 @@ qiaomeng:addEffect(fk.Damage, {
             skill_name = qiaomeng.name,
           })
           local ids = choice == "slash" and slash or jink
-          player:addToPile("ofl_mou__yicong_hu&", table.random(ids, 4 - #player:getPile("ofl_mou__yicong_hu&")), true, qiaomeng.name)
+          player:addToPile("ofl_mou__yicong_hu", table.random(ids, 4 - #player:getPile("ofl_mou__yicong_hu")), true, qiaomeng.name)
         end
       end
       room:cleanProcessingArea(cards)
