@@ -87,7 +87,7 @@ chouyou:addEffect(fk.SkillEffect, {
       to = {target.id},
       arg = data.skill:getSkeleton().name,
     }
-    data.prevent = true
+    data.prevented = true
   end,
 })
 
