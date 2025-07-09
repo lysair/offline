@@ -61,7 +61,7 @@ dunxi:addEffect(fk.CardUsing, {
     if dat[player] and dat[target] then
       if dat[player] < dat[target] then
         if not target.dead then
-          room:loseHp(target, 1, dunxi.name)
+          room:loseHp(player, 1, dunxi.name)
         end
       elseif dat[player] > dat[target] then
         data:removeAllTargets()

@@ -98,12 +98,36 @@ Fk:loadTranslationTable{
   ["illustrator:sxfy__shamoke"] = "鱼仔",
 }
 
---许靖× 傅肜√ 阎柔× 苏飞× 鲁芝× 胡班× 刘辟× 王祥× 阮慧× 轲比能× 杜预 吴景 高览× 蔡贞姬× 阎象 王凌√ 蒋钦 周不疑√ 王双×
+--许靖× 傅肜√ 阎柔× 苏飞× 鲁芝× 胡班× 刘辟× 王祥× 阮慧× 轲比能× 杜预√ 吴景√ 高览× 蔡贞姬× 阎象√ 王凌√ 蒋钦√ 周不疑√ 王双×
 General:new(extension, "sxfy__furong", "shu", 4):addSkills { "sxfy__xiaosi" }
 Fk:loadTranslationTable{
   ["sxfy__furong"] = "傅肜",
   ["#sxfy__furong"] = "矢忠不二",
   ["illustrator:sxfy__furong"] = "凡果",
+}
+
+local duyu = General:new(extension, "sxfy__duyu", "qun", 4)
+duyu.subkingdom = "jin"
+duyu:addSkills { "sxfy__sanchen" }
+duyu:addRelatedSkill("sxfy__miewu")
+Fk:loadTranslationTable{
+  ["sxfy__duyu"] = "杜预",
+  ["#sxfy__duyu"] = "文成武德",
+  ["illustrator:sxfy__duyu"] = "丸点科技",
+}
+
+General:new(extension, "sxfy__wujing", "wu", 4):addSkills { "sxfy__heji" }
+Fk:loadTranslationTable{
+  ["sxfy__wujing"] = "吴景",
+  ["#sxfy__wujing"] = "助吴征战",
+  ["illustrator:sxfy__wujing"] = "RalphR",
+}
+
+General:new(extension, "sxfy__yanxiang", "qun", 3):addSkills { "sxfy__kujian", "sxfy__ruilian" }
+Fk:loadTranslationTable{
+  ["sxfy__yanxiang"] = "阎象",
+  ["#sxfy__yanxiang"] = "明尚夙达",
+  ["illustrator:sxfy__yanxiang"] = "聚一",
 }
 
 General:new(extension, "sxfy__wangling", "wei", 4):addSkills { "sxfy__xingqi" }
@@ -113,6 +137,13 @@ Fk:loadTranslationTable{
   ["illustrator:sxfy__wangling"] = "六道目",
 }
 
+General:new(extension, "sxfy__jiangqin", "wu", 4):addSkills { "sxfy__shangyi" }
+Fk:loadTranslationTable{
+  ["sxfy__jiangqin"] = "蒋钦",
+  ["#sxfy__jiangqin"] = "折节尚义",
+  ["illustrator:sxfy__jiangqin"] = "付玉",
+}
+
 General:new(extension, "sxfy__zhoubuyi", "wei", 3):addSkills { "sxfy__huiyao", "sxfy__quesong" }
 Fk:loadTranslationTable{
   ["sxfy__zhoubuyi"] = "周不疑",
@@ -120,12 +151,40 @@ Fk:loadTranslationTable{
   ["illustrator:sxfy__zhoubuyi"] = "匠人绘",
 }
 
---清河公主× 高干√ 贾充× 成济 郭图 胡金定 张让× 范疆张达 马元义 曹纯√ 马日磾× 孙弘 王匡× 刘磐
+--清河公主× 高干√ 贾充× 成济√ 郭图√ 胡金定√ 张让× 范疆张达 马元义√ 曹纯√ 马日磾× 孙弘 王匡× 刘磐
 General:new(extension, "sxfy__gaogan", "qun", 4):addSkills { "sxfy__juguan" }
 Fk:loadTranslationTable{
   ["sxfy__gaogan"] = "高干",
   ["#sxfy__gaogan"] = "才志弘邈",
   ["illustrator:sxfy__gaogan"] = "梦回唐朝",
+}
+
+General:new(extension, "sxfy__chengjiw", "wei", 4):addSkills { "sxfy__kuangli", "xiongsi" }
+Fk:loadTranslationTable{
+  ["sxfy__chengjiw"] = "成济",
+  ["#sxfy__chengjiw"] = "劣犬良弓",
+  ["illustrator:sxfy__chengjiw"] = "RalphR",
+}
+
+General:new(extension, "sxfy__guotu", "qun", 3):addSkills { "sxfy__qushi", "sxfy__weijie" }
+Fk:loadTranslationTable{
+  ["sxfy__guotu"] = "郭图",
+  ["#sxfy__guotu"] = "凶臣",
+  ["illustrator:sxfy__guotu"] = "厦门塔普",
+}
+
+General:new(extension, "sxfy__hujinding", "shu", 3, 3, General.Female):addSkills { "sxfy__qingyuan", "sxfy__chongshen" }
+Fk:loadTranslationTable{
+  ["sxfy__hujinding"] = "胡金定",
+  ["#sxfy__hujinding"] = "怀子求怜",
+  ["illustrator:sxfy__hujinding"] = "李敏然",
+}
+
+General:new(extension, "sxfy__mayuanyi", "qun", 4):addSkills { "sxfy__jibing", "binghuo" }
+Fk:loadTranslationTable{
+  ["sxfy__mayuanyi"] = "马元义",
+  ["#sxfy__mayuanyi"] = "血动黄帆",
+  ["illustrator:sxfy__mayuanyi"] = "撒呀酱",
 }
 
 General:new(extension, "sxfy__caochun", "wei", 4):addSkills { "sxfy__shanjia" }
@@ -135,7 +194,14 @@ Fk:loadTranslationTable{
   ["illustrator:sxfy__caochun"] = "biou09",
 }
 
---陈式 王荣 段煨 忙牙长× 穆顺 卞喜√ 童渊 张宁 邢道荣× 李丰 吕岱× 张虎√ 乐綝√ 张勋√ 张闿√ 向朗√ 臧霸× 花鬘√ 陈琳√ 丘力居√ 曹安民 孙綝√ 
+--陈式 王荣 段煨 忙牙长× 穆顺√ 卞喜√ 童渊 张宁 邢道荣× 李丰 吕岱× 张虎√ 乐綝√ 张勋√ 张闿√ 向朗√ 臧霸× 花鬘√ 陈琳√ 丘力居√ 曹安民√ 孙綝√ 
+General:new(extension, "sxfy__mushun", "qun", 4):addSkills { "sxfy__jinjianm", "sxfy__shizhao" }
+Fk:loadTranslationTable{
+  ["sxfy__mushun"] = "穆顺",
+  ["#sxfy__mushun"] = "疾风劲草",
+  ["illustrator:sxfy__mushun"] = "鬼画府",
+}
+
 General:new(extension, "sxfy__bianxi", "wei", 4):addSkills { "sxfy__dunxi" }
 Fk:loadTranslationTable{
   ["sxfy__bianxi"] = "卞喜",
@@ -199,6 +265,7 @@ Fk:loadTranslationTable{
   ["illustrator:sxfy__qiuliju"] = "匠人绘",
 }
 
+General:new(extension, "sxfy__caoanmin", "wei", 4):addSkills { "sxfy__xianwei" }
 Fk:loadTranslationTable{
   ["sxfy__caoanmin"] = "曹安民",
   ["#sxfy__caoanmin"] = "履薄临深",
