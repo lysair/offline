@@ -44,7 +44,7 @@ fengxie:addEffect("active", {
     end
     if not player.dead and room:getBanner("ShownLoyalist") then
       local to = room:getPlayerById(room:getBanner("ShownLoyalist"))
-      local all_skills = {"vd_dongcha&", "vd_sheshen&"}
+      local all_skills = {"vd_dongcha", "vd_sheshen"}
       local skills = {}
       for _, skill in ipairs(all_skills) do
         if Fk.skills[skill] and to:hasSkill(skill, true) then
