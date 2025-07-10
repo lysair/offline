@@ -12,7 +12,8 @@ Fk:loadTranslationTable{
 qijin:addEffect(fk.EventPhaseStart, {
   anim_type = "drawcard",
   can_trigger = function(self, event, target, player, data)
-    return target == player and player:hasSkill(qijin.name) and player.phase == Player.Draw
+    return target == player and player:hasSkill(qijin.name) and player.phase == Player.Draw and
+      not data.phase_end
   end,
   on_use = function(self, event, target, player, data)
     local room = player.room

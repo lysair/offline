@@ -151,7 +151,7 @@ Fk:loadTranslationTable{
   ["illustrator:sxfy__zhoubuyi"] = "匠人绘",
 }
 
---清河公主× 高干√ 贾充× 成济√ 郭图√ 胡金定√ 张让× 范疆张达 马元义√ 曹纯√ 马日磾× 孙弘 王匡× 刘磐
+--清河公主× 高干√ 贾充× 成济√ 郭图√ 胡金定√ 张让× 范疆张达 马元义√ 曹纯√ 马日磾× 孙弘√ 王匡× 刘磐√
 General:new(extension, "sxfy__gaogan", "qun", 4):addSkills { "sxfy__juguan" }
 Fk:loadTranslationTable{
   ["sxfy__gaogan"] = "高干",
@@ -194,7 +194,42 @@ Fk:loadTranslationTable{
   ["illustrator:sxfy__caochun"] = "biou09",
 }
 
---陈式 王荣 段煨 忙牙长× 穆顺√ 卞喜√ 童渊 张宁 邢道荣× 李丰 吕岱× 张虎√ 乐綝√ 张勋√ 张闿√ 向朗√ 臧霸× 花鬘√ 陈琳√ 丘力居√ 曹安民√ 孙綝√ 
+General:new(extension, "sxfy__sunhong", "wu", 3):addSkills { "sxfy__xianbi", "sxfy__zenrun" }
+Fk:loadTranslationTable{
+  ["sxfy__sunhong"] = "孙弘",
+  ["#sxfy__sunhong"] = "谮诉构争",
+  ["illustrator:sxfy__sunhong"] = "RalphR",
+}
+
+General:new(extension, "sxfy__liupan", "qun", 4):addSkills { "sxfy__pijingl" }
+Fk:loadTranslationTable{
+  ["sxfy__liupan"] = "刘磐",
+  ["#sxfy__liupan"] = "骁隽悍勇",
+  ["illustrator:sxfy__liupan"] = "RalphR",
+}
+
+--陈式√ 王荣√ 段煨√ 忙牙长× 穆顺√ 卞喜√ 童渊√ 张宁√ 邢道荣× 李丰 吕岱× 张虎√ 乐綝√ 张勋√ 张闿√ 向朗√ 臧霸× 花鬘√ 陈琳√ 丘力居√ 曹安民√ 孙綝√ 
+General:new(extension, "sxfy__chenshi", "shu", 4):addSkills { "sxfy__qingbei" }
+Fk:loadTranslationTable{
+  ["sxfy__chenshi"] = "陈式",
+  ["#sxfy__chenshi"] = "裨将可期",
+  ["illustrator:sxfy__chenshi"] = "游歌",
+}
+
+General:new(extension, "sxfy__wangrongh", "qun", 3, 3, General.Female):addSkills { "sxfy__minsi", "sxfy__jijing", "sxfy__zhuide" }
+Fk:loadTranslationTable{
+  ["sxfy__wangrongh"] = "王荣",
+  ["#sxfy__wangrongh"] = "灵怀皇后",
+  ["illustrator:sxfy__wangrongh"] = "凡果",
+}
+
+General:new(extension, "sxfy__duanwei", "qun", 4):addSkills { "sxfy__langmie" }
+Fk:loadTranslationTable{
+  ["sxfy__duanwei"] = "段煨",
+  ["#sxfy__duanwei"] = "凉国之英",
+  ["illustrator:sxfy__duanwei"] = "鬼画府",
+}
+
 General:new(extension, "sxfy__mushun", "qun", 4):addSkills { "sxfy__jinjianm", "sxfy__shizhao" }
 Fk:loadTranslationTable{
   ["sxfy__mushun"] = "穆顺",
@@ -207,6 +242,20 @@ Fk:loadTranslationTable{
   ["sxfy__bianxi"] = "卞喜",
   ["#sxfy__bianxi"] = "伏龛蛇影",
   ["illustrator:sxfy__bianxi"] = "游歌",
+}
+
+General:new(extension, "sxfy__tongyuan", "qun", 4):addSkills { "sxfy__chaofeng" }
+Fk:loadTranslationTable{
+  ["sxfy__tongyuan"] = "童渊",
+  ["#sxfy__tongyuan"] = "蓬莱枪神散人",
+  ["illustrator:sxfy__tongyuan"] = "黯荧岛",
+}
+
+General:new(extension, "sxfy__zhangning", "qun", 3, 3, General.Female):addSkills { "sxfy__tianze", "sxfy__difa" }
+Fk:loadTranslationTable{
+  ["sxfy__zhangning"] = "张宁",
+  ["#sxfy__zhangning"] = "大贤后人",
+  ["illustrator:sxfy__zhangning"] = "鬼画府",
 }
 
 General:new(extension, "sxfy__zhanghu", "wei", 4):addSkills { "sxfy__cuijian" }
