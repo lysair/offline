@@ -10,7 +10,7 @@ Fk:loadTranslationTable{
   ["#ofl__jushou-invoke"] = "据守：是否令所有角色翻面、摸三张牌、弃置装备，然后你失去“据守”获得“突围”？",
 }
 
-jushou:addEffect(fk.EventPhaseEnd, {
+jushou:addEffect(fk.EventPhaseStart, {
   anim_type = "defensive",
   can_trigger = function(self, event, target, player, data)
     return target == player and player:hasSkill(jushou.name) and player.phase == Player.Finish

@@ -328,7 +328,7 @@ Fk:loadTranslationTable{
   ["illustrator:sxfy__sunchen"] = "游歌",
 }
 
---神典韦 神贾诩 神郭嘉√ 神荀彧√ 神孙策 神太史慈 神鲁肃 神华佗 神貂蝉× 神姜维 神马超 神许褚
+--神典韦× 神贾诩 神郭嘉√ 神荀彧√ 神孙策√ 神太史慈√ 神鲁肃 神华佗√ 神貂蝉× 神姜维√ 神马超 神许褚√
 local godguojia = General:new(extension, "sxfy__godguojia", "god", 3)
 godguojia:addSkills { "sxfy__huishi", "sxfy__tianyi" }
 godguojia:addRelatedSkill("sxfy__zuoxing")
@@ -344,5 +344,46 @@ Fk:loadTranslationTable{
   ["illustrator:sxfy__godxunyu"] = "JJGG",
 }
 
+General:new(extension, "sxfy__godsunce", "god", 1, 6):addSkills { "sxfy__yingba", "sxfy__fuhai", "sxfy__pinghe" }
+Fk:loadTranslationTable{
+  ["sxfy__godsunce"] = "神孙策",
+  ["#sxfy__godsunce"] = "踞江鬼雄",
+  ["illustrator:sxfy__godsunce"] = "第七个桔子",
+}
+
+General:new(extension, "sxfy__godtaishici", "god", 4):addSkills { "sxfy__dulie", "sxfy__shenzhuo" }
+Fk:loadTranslationTable{
+  ["sxfy__godtaishici"] = "神太史慈",
+  ["#sxfy__godtaishici"] = "义信天武",
+  ["illustrator:sxfy__godtaishici"] = "M云涯",
+}
+
+General:new(extension, "sxfy__godhuatuo", "god", 3):addSkills { "sxfy__jingyu", "sxfy__huandao" }
+Fk:loadTranslationTable{
+  ["sxfy__godhuatuo"] = "神华佗",
+  ["#sxfy__godhuatuo"] = "灵魂的医者",
+  ["illustrator:sxfy__godhuatuo"] = "黯荧岛",
+}
+
+General:new(extension, "sxfy__godjiangwei", "god", 4, 5):addSkills { "sxfy__tianren", "sxfy__jiufa" }
+Fk:loadTranslationTable{
+  ["sxfy__godjiangwei"] = "神姜维",
+  ["#sxfy__godjiangwei"] = "怒麟布武",
+  ["illustrator:sxfy__godjiangwei"] = "-鬼宿一",
+}
+
+General:new(extension, "sxfy__godmachao", "god", 4):addSkills { "sxfy__shouli", "sxfy__hengwu" }
+Fk:loadTranslationTable{
+  ["sxfy__godmachao"] = "神马超",
+  ["#sxfy__godmachao"] = "神威天将军",
+  ["illustrator:sxfy__godmachao"] = "RalphR",
+}
+
+General:new(extension, "sxfy__godxuchu", "god", 5):addSkills { "sxfy__zhengqing", "sxfy__zhuangpo" }
+Fk:loadTranslationTable{
+  ["sxfy__godxuchu"] = "神许褚",
+  ["#sxfy__godxuchu"] = "嗜战的熊罴",
+  ["illustrator:sxfy__godxuchu"] = "凡果_Make",
+}
 
 return extension
