@@ -16,7 +16,7 @@ Fk:loadTranslationTable{
   ["$ofl_mou__tianxiang2"] = "容冠国色，华茂天香。",
 }
 
-tianxiang:addEffect(fk.DamageInflicted, {
+tianxiang:addEffect(fk.DetermineDamageInflicted, {
   anim_type = "control",
   can_trigger = function(self, event, target, player, data)
     return target == player and player:hasSkill(tianxiang.name) and
