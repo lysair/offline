@@ -26,6 +26,7 @@ jujing:addEffect(fk.Damaged, {
       skill_name = jujing.name,
       cancelable = true,
       prompt = "#sxfy__jujing-invoke",
+      skip = true,
     })
     if #cards == 2 then
       event:setCostData(self, {cards = cards})
