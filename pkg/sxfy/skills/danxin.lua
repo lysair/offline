@@ -21,7 +21,7 @@ danxin:addEffect(fk.Damaged, {
     local room = player.room
     local success, dat = room:askToUseActiveSkill(player, {
       skill_name = "sxfy__jiaozhao",
-      prompt = "#sxfy__danxin-choose:::"..data.card:toLogString(),
+      prompt = "#sxfy__danxin-choose",
       cancelable = true,
       skip = true,
     })

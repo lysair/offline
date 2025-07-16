@@ -20,7 +20,7 @@ tongbei:addEffect(fk.DamageCaused, {
     local choice = room:askToChoice(player, {
       choices = {"basic", "equip", "trick", "Cancel"},
       skill_name = tongbei.name,
-      prompt = "#ofl__tongbei-choice::"..data.to.id..":"..data.card:toLogString()
+      prompt = "#ofl__tongbei-choice::"..data.to.id
     })
     if choice ~= "Cancel" then
       event:setCostData(self, {tos = {data.to}, choice = choice})
