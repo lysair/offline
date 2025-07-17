@@ -1,5 +1,6 @@
 local quanji = fk.CreateSkill {
   name = "ofl__quanji",
+  derived_piles = "zhonghui_quan",
 }
 
 Fk:loadTranslationTable{
@@ -30,7 +31,6 @@ local spec = {
 
 quanji:addEffect(fk.Damaged, {
   anim_type = "masochism",
-  derived_piles = "zhonghui_quan",
   on_use = spec.on_use,
 })
 quanji:addEffect(fk.Damage, {

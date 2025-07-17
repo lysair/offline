@@ -1,5 +1,6 @@
 local yinbing = fk.CreateSkill {
   name = "qshm__yinbing",
+  derived_piles = "$yinbing",
 }
 
 Fk:loadTranslationTable{
@@ -14,7 +15,6 @@ Fk:loadTranslationTable{
 
 yinbing:addEffect(fk.EventPhaseStart, {
   anim_type = "control",
-  derived_piles = "$yinbing",
   can_trigger = function(self, event, target, player, data)
     return target == player and player:hasSkill(yinbing.name) and player.phase == Player.Finish and
       table.find(player.room:getOtherPlayers(player, false), function (p)

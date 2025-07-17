@@ -1,5 +1,6 @@
 local qianhuan = fk.CreateSkill{
   name = "sgsh__qianhuan",
+  derived_piles = "yuji_sorcery",
 }
 
 Fk:loadTranslationTable{
@@ -14,7 +15,6 @@ Fk:loadTranslationTable{
 
 qianhuan:addEffect(fk.Damaged, {
   anim_type = "masochism",
-  derived_piles = "yuji_sorcery",
   can_trigger = function(self, event, target, player, data)
     return target == player and player:hasSkill(qianhuan.name) and
       not player:isNude() and #player:getPile("yuji_sorcery") < 4

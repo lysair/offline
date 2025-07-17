@@ -1,5 +1,6 @@
 local tianren = fk.CreateSkill {
   name = "sxfy__tianren",
+  derived_piles = "sxfy__tianren",
   tags = { Skill.Compulsory },
 }
 
@@ -13,7 +14,6 @@ Fk:loadTranslationTable{
 
 tianren:addEffect(fk.AfterCardsMove, {
   anim_type = "drawcard",
-  derived_piles = tianren.name,
   can_trigger = function(self, event, target, player, data)
     if player:hasSkill(tianren.name) then
       for _, move in ipairs(data) do

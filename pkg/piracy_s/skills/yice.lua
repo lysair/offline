@@ -1,5 +1,6 @@
 local yice = fk.CreateSkill {
   name = "ofl__yice",
+  derived_piles = "ofl__yice",
   tags = { Skill.Compulsory },
 }
 
@@ -13,7 +14,6 @@ Fk:loadTranslationTable{
 
 yice:addEffect(fk.AfterCardsMove, {
   anim_type = "offensive",
-  derived_piles = yice.name,
   can_trigger = function(self, event, target, player, data)
     if player:hasSkill(yice.name) then
       local cards = {}

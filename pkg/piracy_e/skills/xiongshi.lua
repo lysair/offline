@@ -1,5 +1,6 @@
 local xiongshi = fk.CreateSkill {
   name = "ofl__xiongshi",
+  derived_piles = "ofl__xiongshi",
   attached_skill_name = "ofl__xiongshi&",
 }
 
@@ -15,7 +16,6 @@ xiongshi:addEffect("active", {
   prompt = "#ofl__xiongshi",
   card_num = 1,
   target_num = 0,
-  derived_piles = "ofl__xiongshi",
   can_use = function(self, player)
     return player:usedSkillTimes(xiongshi.name, Player.HistoryPhase) == 0
   end,

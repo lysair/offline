@@ -1,5 +1,6 @@
 local shefu = fk.CreateSkill {
   name = "sxfy__shefu",
+  derived_piles = "$sxfy__shefu",
 }
 
 Fk:loadTranslationTable{
@@ -13,7 +14,6 @@ Fk:loadTranslationTable{
 
 shefu:addEffect(fk.EventPhaseStart, {
   anim_type = "control",
-  derived_piles = "$sxfy__shefu",
   can_trigger = function(self, event, target, player, data)
     return target == player and player:hasSkill(shefu.name) and player.phase == Player.Finish and
       not player:isKongcheng()

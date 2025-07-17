@@ -1,5 +1,6 @@
 local qiuan = fk.CreateSkill {
   name = "ofl__qiuan",
+  derived_piles = "ofl__mengda_letter",
 }
 
 Fk:loadTranslationTable{
@@ -14,7 +15,6 @@ Fk:loadTranslationTable{
 
 qiuan:addEffect(fk.DamageInflicted, {
   mute = true,
-  derived_piles = "ofl__mengda_letter",
   can_trigger = function(self, event, target, player, data)
     return target == player and player:hasSkill(qiuan.name) and
       data.card and #player:getPile("ofl__mengda_letter") == 0 and

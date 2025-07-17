@@ -1,6 +1,7 @@
 
 local silve = fk.CreateSkill{
   name = "silve",
+  derived_piles = "silve",
 }
 
 Fk:loadTranslationTable{
@@ -13,7 +14,6 @@ Fk:loadTranslationTable{
 
 silve:addEffect(fk.EventPhaseStart, {
   anim_type = "control",
-  derived_piles = silve.name,
   can_trigger = function(self, event, target, player, data)
     return target == player and player:hasSkill(silve.name) and player.phase == Player.Draw and
       table.find(player.room:getOtherPlayers(player, false), function(p)

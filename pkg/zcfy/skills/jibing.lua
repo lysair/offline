@@ -1,5 +1,6 @@
 local jibing = fk.CreateSkill {
   name = "sxfy__jibing",
+  derived_piles = "$mayuanyi_bing",
 }
 
 Fk:loadTranslationTable{
@@ -13,7 +14,6 @@ Fk:loadTranslationTable{
 jibing:addEffect("viewas", {
   pattern = ".",
   expand_pile = "$mayuanyi_bing",
-  derived_piles = "$mayuanyi_bing",
   prompt = "#sxfy__jibing",
   card_filter = function(self, player, to_select, selected)
     return #selected == 0 and player:getPileNameOfId(to_select) == "$mayuanyi_bing"

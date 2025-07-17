@@ -1,5 +1,6 @@
 local jiufa = fk.CreateSkill {
   name = "ofl__jiufa",
+  derived_piles = "ofl__jiufa",
 }
 
 Fk:loadTranslationTable{
@@ -14,7 +15,6 @@ Fk:loadTranslationTable{
 }
 
 local spec = {
-  derived_piles = jiufa.name,
   can_trigger = function(self, event, target, player, data)
     return target == player and player:hasSkill(jiufa.name) and
       not table.find(player:getPile(jiufa.name), function (id)

@@ -1,5 +1,6 @@
 local yicong = fk.CreateSkill {
   name = "bgm__yicong",
+  derived_piles = "bgm_follower",
 }
 
 Fk:loadTranslationTable{
@@ -12,7 +13,6 @@ Fk:loadTranslationTable{
 
 yicong:addEffect(fk.EventPhaseEnd, {
   anim_type = "control",
-  derived_piles = "bgm_follower",
   can_trigger = function(self, event, target, player, data)
     return target == player and player:hasSkill(yicong.name) and player.phase == Player.Discard and
       not player:isNude()
@@ -20,7 +20,7 @@ yicong:addEffect(fk.EventPhaseEnd, {
   on_cost = function (self, event, target, player, data)
     local cards = player.room:askToCards(player, {
       min_num = 1,
-      max_num = 999,
+      max_num = #player:getCardIds("he"),
       include_equip = true,
       skill_name = yicong.name,
       cancelable = true,

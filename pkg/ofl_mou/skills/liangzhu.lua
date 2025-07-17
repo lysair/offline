@@ -1,5 +1,6 @@
 local liangzhu = fk.CreateSkill {
   name = "ofl_mou__liangzhu",
+  derived_piles = "mou__liangzhu_dowry",
   tags = { Skill.AttachedKingdom },
   attached_kingdom = {"shu"}
 }
@@ -19,7 +20,6 @@ Fk:loadTranslationTable{
 liangzhu:addEffect("active", {
   anim_type = "control",
   prompt = "#ofl_mou__liangzhu",
-  derived_piles = "mou__liangzhu_dowry",
   card_num = 0,
   target_num = 1,
   can_use = function(self, player)
