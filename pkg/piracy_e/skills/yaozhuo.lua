@@ -63,6 +63,7 @@ yaozhuo:addEffect(fk.Damaged, {
       max_num = 1,
       skill_name = yaozhuo.name,
       cancelable = true,
+      prompt = "#ofl__yaozhuo",
     })
     if #to > 0 then
       event:setCostData(self, {tos = to})

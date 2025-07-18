@@ -2,9 +2,9 @@ local lianhuas = fk.CreateSkill {
   name = "ofl__lianhuas",
   dynamic_desc = function (self, player, lang)
     if player:getMark(self.name) > 0 then
-      return "ofl__lianhuas0"
-    else
       return "ofl__lianhuas_update"
+    else
+      return "ofl__lianhuas0"
     end
   end,
 }
