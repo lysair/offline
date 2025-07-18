@@ -9,7 +9,7 @@ Fk:loadTranslationTable{
 }
 
 guibei:addEffect(fk.GameStart, {
-  priority = 0.001,
+  priority = 0.002,
   anim_type = "drawcard",
   can_trigger = function(self, event, target, player, data)
     return player:hasSkill(guibei.name)
