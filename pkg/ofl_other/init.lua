@@ -200,4 +200,13 @@ Fk:loadTranslationTable{
   ["illustrator:var__sunquan"] = "阿诚",
 }
 
+--龙兴云属
+local sunshangxiang = General:new(extension, "ofl__sunshangxiang", "shu", 4, 4, General.Female)
+sunshangxiang:addSkills { "qiankun" }
+sunshangxiang.subkingdom = "wu"
+Fk:loadTranslationTable{
+  ["ofl__sunshangxiang"] = "孙尚香",
+  ["illustrator:ofl__sunshangxiang"] = "小罗没想好",
+}
+
 return extension
