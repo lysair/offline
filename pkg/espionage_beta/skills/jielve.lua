@@ -39,13 +39,7 @@ jielve:addEffect(fk.PreCardEffect, {
     return player:hasSkill(jielve.name) and data.from == player and data.card.name == "looting"
   end,
   on_refresh = function(self, event, target, player, data)
-    local card = data.card:clone()
-    local c = table.simpleClone(data.card)
-    for k, v in pairs(c) do
-      card[k] = v
-    end
-    card.skill = Fk.skills["jielve__looting_skill"]
-    data.card = card
+    data:changeCardSkill("jielve__looting_skill")
   end,
 })
 
