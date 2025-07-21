@@ -9,7 +9,7 @@ Fk:loadTranslationTable{
 
   ["#huji-choose"] = "互忌：选择一名角色，其需赠予你一张手牌，本轮每个回合结束时执行效果",
   ["#huji-give"] = "互忌：你需将一张手牌赠予 %src",
-  ["@huji-round"] = "互忌",
+  ["@[chara]huji-round"] = "互忌",
   ["#huji-discard"] = "互忌：你需弃置两张手牌，对 %dest 造成1点伤害",
 }
 
@@ -44,8 +44,7 @@ huji:addEffect(fk.RoundStart, {
   on_use = function(self, event, target, player, data)
     local room = player.room
     local to = event:getCostData(self).tos[1]
-    room:setPlayerMark(player, "huji-round", to.id)
-    room:setPlayerMark(player, "@huji-round", to.general)
+    room:setPlayerMark(player, "@[chara]huji-round", to.id)
     if not to:isKongcheng() then
       local card = room:askToCards(to, {
         min_num = 1,
@@ -64,9 +63,8 @@ huji:addEffect(fk.TurnEnd, {
   anim_type = "offensive",
   is_delay_effect = true,
   can_trigger = function (self, event, target, player, data)
-    if player:getMark("huji-round") ~= 0 then
-      local to = player.room:getPlayerById(player:getMark("huji-round"))
-      player.room:setPlayerMark(player, "@huji-round", to.general)
+    if player:getMark("@[chara]huji-round") ~= 0 then
+      local to = player.room:getPlayerById(player:getMark("@[chara]huji-round"))
       if not to.dead then
         if player:inMyAttackRange(to) and
           #table.filter(player:getCardIds("h"), function (id)
@@ -85,7 +83,7 @@ huji:addEffect(fk.TurnEnd, {
   end,
   on_use = function (self, event, target, player, data)
     local room = player.room
-    local to = room:getPlayerById(player:getMark("huji-round"))
+    local to = room:getPlayerById(player:getMark("@[chara]huji-round"))
     local targets = {player, to}
     room:sortByAction(targets)
     local p1, p2 = targets[1], targets[2]
@@ -120,12 +118,11 @@ huji:addEffect(fk.TurnEnd, {
 
 huji:addEffect(fk.Death, {
   can_refresh = function (self, event, target, player, data)
-    return player:getMark("huji-round") == target.id
+    return player:getMark("@[chara]huji-round") == target.id
   end,
   on_refresh = function (self, event, target, player, data)
     local room = player.room
-    room:setPlayerMark(player, "huji-round", 0)
-    room:setPlayerMark(player, "@huji-round", 0)
+    room:setPlayerMark(player, "@[chara]huji-round", 0)
   end,
 })
 
