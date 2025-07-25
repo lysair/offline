@@ -47,7 +47,7 @@ chenlue:addEffect("active", {
     end
     if #cards > 0 then
       room.logic:getCurrentEvent():findParent(GameEvent.Phase, true):addCleaner(function()
-        if not player.dead then
+        if not player.dead and player:hasSkill(chenlue.name) then
           player:addToPile("#qshm__chenlue_pile", cards, true, chenlue.name)
         end
       end)

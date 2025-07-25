@@ -27,6 +27,7 @@ Fk:loadTranslationTable{
   ["ofl2"] = "线下",
   ["ofl3"] = "线下",
   ["ofl4"] = "线下",
+  ["west"] = "西",
 }
 
 return {

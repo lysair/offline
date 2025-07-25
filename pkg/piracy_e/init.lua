@@ -806,4 +806,12 @@ Fk:loadTranslationTable{
   ["illustrator:ofl3__jiaxu"] = "匠人绘",
 }
 
+--欧陆风云
+General:new(extension, "ofl__caesar", "west", 4):addSkills { "ofl__ducai", "ofl__zhitong", "ofl__jiquan" }
+Fk:loadTranslationTable{
+  ["ofl__caesar"] = "恺撒",
+  ["#ofl__caesar"] = "无冕之皇",
+  ["illustrator:ofl__caesar"] = "绘绘子酱",
+}
+
 return extension

@@ -10,7 +10,7 @@ Fk:loadTranslationTable{
 }
 
 --英文版3v3：凯撒
-General:new(extension, "caesar", "god", 4):addSkills { "conqueror" }
+General:new(extension, "caesar", "west", 4):addSkills { "conqueror" }
 Fk:loadTranslationTable{
   ["caesar"] = "Caesar",
   ["illustrator:caesar"] = "青骑士",
