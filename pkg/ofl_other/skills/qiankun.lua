@@ -181,7 +181,7 @@ qiankun:addEffect("invalidity", {
         elseif event.event == GameEvent.CardEffect then
           ---@cast data CardEffectData
           if data.from  ~= player then return false end
-          return data.to:hasSkill(qiankun.name)
+          return data.to and data.to:hasSkill(qiankun.name)
         end
         event = event.parent
       until event == nil
