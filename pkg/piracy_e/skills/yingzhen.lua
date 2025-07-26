@@ -36,7 +36,6 @@ yingzhen:addEffect(fk.GameStart, {
   on_use = function(self, event, target, player, data)
     local room = player.room
     local to = event:getCostData(self).tos[1]
-    local current = room.current
     if to:getLastAlive() ~= to:getNextAlive() then
       local choices = {"yingzhen_last::"..to:getLastAlive().id, "yingzhen_next::"..to:getNextAlive().id}
       local choice = room:askToChoice(player, {
@@ -48,25 +47,11 @@ yingzhen:addEffect(fk.GameStart, {
         p = to:getNextAlive()
       end
       if p ~= player then
-        local yes1 = current == player
-        local yes2 = current == p
         room:swapSeat(player, p)
-        if yes1 then
-          current = p
-          room:setCurrent(p)
-        end
-        if yes2 then
-          current = player
-          room:setCurrent(player)
-        end
       end
     end
-    player:gainAnExtraTurn(false, yingzhen.name)
-    to:gainAnExtraTurn(false, yingzhen.name)
-    if current.dead then
-      current = current:getNextAlive(true, 1, true)
-    end
-    room:setCurrent(current)
+    player:gainAnExtraTurn(true, yingzhen.name)
+    to:gainAnExtraTurn(true, yingzhen.name)
   end,
 })
 
