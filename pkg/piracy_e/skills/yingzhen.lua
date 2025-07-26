@@ -50,8 +50,8 @@ yingzhen:addEffect(fk.GameStart, {
         room:swapSeat(player, p)
       end
     end
-    player:gainAnExtraTurn(true, yingzhen.name)
     to:gainAnExtraTurn(true, yingzhen.name)
+    player:gainAnExtraTurn(true, yingzhen.name)
   end,
 })
 
