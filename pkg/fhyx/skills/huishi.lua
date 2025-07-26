@@ -58,7 +58,7 @@ huishi:addEffect("active", {
     if #cards == 0 then
       return
     elseif player.dead then
-      room:cleanProcessingArea(cards)
+      room:moveCardTo(cards, Card.DiscardPile, nil, fk.ReasonJudge)
       return
     end
 
@@ -74,7 +74,7 @@ huishi:addEffect("active", {
       to = to[1]
       room:moveCardTo(cards, Card.PlayerHand, to, fk.ReasonGive, huishi.name, nil, true, player)
     else
-      room:cleanProcessingArea(cards)
+      room:moveCardTo(cards, Card.DiscardPile, nil, fk.ReasonJudge)
     end
   end,
 })
