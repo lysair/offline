@@ -36,7 +36,7 @@ zhitong:addEffect(fk.CardUsing, {
         }
       end
     else
-      for _, p in ipairs(room:getOtherPlayers(player, false)) do
+      for _, p in ipairs(room:getOtherPlayers(player)) do
         if not p.dead and table.contains(data.tos, p) then
           if #p:getCardIds("e") > 0 and not player.dead then
             room:moveCardTo(p:getCardIds("e"), Card.PlayerHand, player, fk.ReasonPrey, zhitong.name, nil, true, player)
