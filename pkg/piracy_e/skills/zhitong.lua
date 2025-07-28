@@ -7,6 +7,9 @@ Fk:loadTranslationTable{
   ["ofl__zhitong"] = "治统",
   [":ofl__zhitong"] = "转换技，当你使用牌时，若目标：阳：包含自己，你摸两张牌并回复1点体力；阴：包含其他角色，"..
   "你获得其装备区所有牌并对其造成1点伤害。",
+
+  ["$ofl__zhitong1"] = "Will you be here at ten o'clock tomorrow?",
+  ["$ofl__zhitong2"] = "I'd rather have some tea, if you don't mind.",
 }
 
 zhitong:addEffect(fk.CardUsing, {

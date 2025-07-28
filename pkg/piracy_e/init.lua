@@ -812,6 +812,9 @@ Fk:loadTranslationTable{
   ["ofl__caesar"] = "恺撒",
   ["#ofl__caesar"] = "无冕之皇",
   ["illustrator:ofl__caesar"] = "绘绘子酱",
+
+  ["cv:ofl__caesar"] = "English Listening 900",
+  ["~ofl__caesar"] = "Let's talk about something else.",
 }
 
 return extension

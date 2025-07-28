@@ -6,7 +6,22 @@ local ducai = fk.CreateSkill {
 Fk:loadTranslationTable{
   ["ofl__ducai"] = "独裁",
   [":ofl__ducai"] = "持恒技，你的回合内，你使用牌无距离次数限制，其他角色不能使用牌且所有技能失效。",
+
+  ["$ofl__ducai"] = "Please give me a piece of pie.",
 }
+
+-- audio
+ducai:addEffect(fk.TurnStart, {
+  can_refresh = function(self, event, target, player, data)
+    return target == player and player:hasSkill(ducai.name)
+  end,
+  on_refresh = function(_, _, _, player)
+    local room = player.room
+    player:broadcastSkillInvoke(ducai.name)
+    room:notifySkillInvoked(player, ducai.name, "offensive", room:getOtherPlayers(player))
+    room:doIndicate(player, room:getOtherPlayers(player))
+  end,
+})
 
 ducai:addEffect("targetmod", {
   bypass_times = function(self, player, skill, scope, card, to)
