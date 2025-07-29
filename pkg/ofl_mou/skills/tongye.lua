@@ -15,9 +15,11 @@ tongye:addEffect(fk.AfterDrawPileShuffle, {
   on_refresh = function (self, event, target, player, data)
     local room = player.room
     room:setBanner(tongye.name, 1)
-    if player:getMark(tongye.name) ~= 0 then
-      room:handleAddLoseSkills(player, "-"..table.concat(player:getTableMark(tongye.name), "|-"), nil, false, true)
-      room:setPlayerMark(player, tongye.name, 0)
+    for _, p in ipairs(room.players) do
+      if p:getMark(tongye.name) ~= 0 then
+        room:handleAddLoseSkills(p, "-" .. table.concat(p:getTableMark(tongye.name), "|-"), nil, false, true)
+        room:setPlayerMark(p, tongye.name, 0)
+      end
     end
   end,
 })
