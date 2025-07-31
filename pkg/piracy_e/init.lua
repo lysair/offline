@@ -806,6 +806,14 @@ Fk:loadTranslationTable{
   ["illustrator:ofl3__jiaxu"] = "匠人绘",
 }
 
+--E10一将成名精选合集
+General:new(extension, "ofl3__caopi", "wei", 3):addSkills { "ofl__qinyi", "ofl__jixin", "ofl__jiwei" }
+Fk:loadTranslationTable{
+  ["ofl3__caopi"] = "侠曹丕",
+  ["#ofl3__caopi"] = "弃旧学新",
+  ["illustrator:ofl3__caopi"] = "荆芥",
+}
+
 --欧陆风云
 General:new(extension, "ofl__caesar", "west", 4):addSkills { "ofl__ducai", "ofl__zhitong", "ofl__jiquan" }
 Fk:loadTranslationTable{
