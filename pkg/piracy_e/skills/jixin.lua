@@ -4,7 +4,8 @@ local jixin = fk.CreateSkill {
 
 Fk:loadTranslationTable{
   ["ofl__jixin"] = "技新",
-  [":ofl__jixin"] = "当你首次使用一种牌名的牌后，你可以摸X张牌并展示，这些牌不计入手牌上限且使用时无距离次数限制（X为你本轮发动此技能次数）。",
+  [":ofl__jixin"] = "当你使用你本局游戏未使用过的牌名的牌后，你可以摸X张牌并展示，这些牌不计入手牌上限且使用时无距离次数限制"..
+  "（X为你本轮发动此技能次数）。",
 
   ["@@ofl__jixin-inhand"] = "技新",
 }
