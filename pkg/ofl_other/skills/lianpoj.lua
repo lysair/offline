@@ -176,12 +176,9 @@ end)
 
 lianpoj:addEffect("maxcards", {
   correct_func = function(self, player)
-    local n = 0
-    for _, p in ipairs(Fk:currentRoom().alive_players) do
-      if table.contains(p:getTableMark("@lianpoj"), "lianpoj2") and p ~= player then
-        n = n - 1
-      end
-    end
+    return - #table.filter(Fk:currentRoom().alive_players, function(p)
+      return table.contains(p:getTableMark("@lianpoj"), "lianpoj2") and p ~= player
+    end)
   end,
 })
 
