@@ -825,4 +825,46 @@ Fk:loadTranslationTable{
   ["~ofl__caesar"] = "Let's talk about something else.",
 }
 
+General:new(extension, "macrinus", "west", 4):addSkills { "ofl__dengtian", "ofl__mingshu", "ofl__juedou" }
+Fk:loadTranslationTable{
+  ["macrinus"] = "马克里努斯",
+  ["#macrinus"] = "传奇的角斗士",
+  ["illustrator:macrinus"] = "绘绘子酱",
+}
+
+General:new(extension, "ardashirI", "west", 4):addSkills { "ofl__wanwang", "ofl__sashan", "ofl__nagong" }
+Fk:loadTranslationTable{
+  ["ardashirI"] = "阿尔达希尔Ⅰ",
+  ["#ardashirI"] = "萨珊的创始人",
+  ["illustrator:ardashirI"] = "绘绘子酱",
+}
+
+General:new(extension, "makang", "west", 4):addSkills { "ofl__xiru", "ofl__zongma", "mashu" }
+Fk:loadTranslationTable{
+  ["makang"] = "马抗",
+  ["#makang"] = "马米科尼昂",
+  ["illustrator:makang"] = "绘绘子酱",
+}
+
+General:new(extension, "ofl__yujin", "wei", 4):addSkills { "ofl__jieyue" }
+Fk:loadTranslationTable{
+  ["ofl__yujin"] = "于禁",
+  ["#ofl__yujin"] = "讨暴坚垒",
+  ["illustrator:ofl__yujin"] = "Zero",
+}
+
+General:new(extension, "ofl__zhangliao", "wei", 4):addSkills { "ofl__tuxi" }
+Fk:loadTranslationTable{
+  ["ofl__zhangliao"] = "张辽",
+  ["#ofl__zhangliao"] = "前将军",
+  ["illustrator:ofl__zhangliao"] = "YanBai",
+}
+
+General:new(extension, "ofl__yuejin", "wei", 4):addSkills { "ofl__xiaoguo" }
+Fk:loadTranslationTable{
+  ["ofl__yuejin"] = "乐进",
+  ["#ofl__yuejin"] = "奋强突固",
+  ["illustrator:ofl__yuejin"] = "巴萨小马",
+}
+
 return extension

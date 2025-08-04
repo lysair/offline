@@ -307,4 +307,49 @@ Fk:loadTranslationTable{
   ["illustrator:ofl__pangtong"] = "DH",
 }
 
+--S7003徐兖纵横
+--General:new(extension, "ofl__chengyu", "wei", 3):addSkills { "ofl__liaofu", "ofl__jinshou" }
+Fk:loadTranslationTable{
+  ["ofl__chengyu"] = "程昱",
+  ["#ofl__chengyu"] = "腹藉千军",
+  ["illustrator:ofl__chengyu"] = "biou09",
+
+  ["ofl__liaofu"] = "燎伏",
+  [":ofl__liaofu"] = "出牌阶段限一次，你可以扣置一张未以此法扣置过的类别的【杀】，其他角色于你的回合外使用【杀】时，"..
+  "你可以移去一张相同的【杀】，对其造成1点此【杀】属性的伤害。",
+  ["ofl__jinshou"] = "烬守",
+  [":ofl__jinshou"] = "结束阶段，若你本回合体力值未变化过，你可以弃置所有手牌并失去1点体力，若如此做，直到你下回合开始，"..
+  "其他角色使用的仅指定你为目标的伤害牌无效。",
+}
+
+General:new(extension, "ofl4__caocao", "wei", 4):addSkills { "ofl__jingju", "ofl__sitong" }
+Fk:loadTranslationTable{
+  ["ofl4__caocao"] = "曹操",
+  ["#ofl4__caocao"] = "兴兵血仇",
+  ["illustrator:ofl4__caocao"] = "墨心绘意",
+}
+
+General:new(extension, "ofl__xunyu", "wei", 3):addSkills { "ofl__jianjing", "ofl__dishou" }
+Fk:loadTranslationTable{
+  ["ofl__xunyu"] = "荀彧",
+  ["#ofl__xunyu"] = "令君劝战",
+  ["illustrator:ofl__xunyu"] = "墨心绘意",
+}
+
+General:new(extension, "ofl__chengong", "qun", 3):addSkills { "ty_ex__mingce", "ofl__jiaozheng" }
+Fk:loadTranslationTable{
+  ["ofl__chengong"] = "陈宫",
+  ["#ofl__chengong"] = "刚直壮烈",
+  ["illustrator:ofl__chengong"] = "墨心绘意",
+}
+
+General:new(extension, "ofl__zhangkai", "qun", 4):addSkills { "ofl__qingjin" }
+Fk:loadTranslationTable{
+  ["ofl__zhangkai"] = "张闿",
+  ["#ofl__zhangkai"] = "财靡欲壑",
+  ["illustrator:ofl__zhangkai"] = "墨心绘意",
+}
+
+--吕布 张邈
+
 return extension
