@@ -75,7 +75,7 @@ local spec = {
     if choice == "" then
       choice = table.random(skills)
     else
-      choice = json.decode(choice)[1]
+      choice = choice[1]
     end
     local exist_skills = table.filter(player:getTableMark(dianmo.name), function (s)
       return player:hasSkill(s, true)
@@ -94,7 +94,7 @@ local spec = {
         if choice2 == "" then
           choice2 = table.random(exist_skills)
         else
-          choice2 = json.decode(choice2)[1]
+          choice2 = choice2[1]
         end
         table.removeOne(exist_skills, choice2)
         table.insert(exist_skills, choice)

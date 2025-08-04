@@ -12,6 +12,8 @@ Fk:loadTranslationTable{
   ["#qshm__fuhan-choice"] = "扶汉：选择你要获得的至多2个技能",
 }
 
+local U = require "packages/utility/utility"
+
 fuhan:addEffect(fk.EventPhaseStart, {
   can_trigger = function(self, event, target, player, data)
     return target == player and player:hasSkill(fuhan.name) and player.phase == Player.Start and
@@ -63,12 +65,15 @@ fuhan:addEffect(fk.EventPhaseStart, {
       table.insertTableIfNeed(singleSkillList, general_skills)
     end
     if #skills > 0 then
-      local result = player.room:askToCustomDialog(player, {
+      local choices = U.askToChooseGeneralSkills(player, {
+        generals = generals,
+        skills = skills,
+        min_num = 1,
+        max_num = 2,
         skill_name = fuhan.name,
-        qml_path = "packages/tenyear/qml/ChooseGeneralSkillsBox.qml",
-        extra_data = {generals, skills, 1, 2, "#qshm__fuhan-choice", false}
+        prompt = "#qshm__fuhan-choice",
+        cancelable = false
       })
-      local choices = result ~= "" and json.decode(result) or table.random(singleSkillList, 2)
       room:handleAddLoseSkills(player, table.concat(choices, "|"))
     end
 

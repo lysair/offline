@@ -114,7 +114,7 @@ local spec = {
         if choice == "" then
           choice = table.random(skills)
         else
-          choice = json.decode(choice)[1]
+          choice = choice[1]
         end
         room:sendLog{
           type = "#ofl__podai",

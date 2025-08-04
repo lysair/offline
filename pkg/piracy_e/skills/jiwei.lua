@@ -54,7 +54,7 @@ jiwei:addEffect(fk.TurnEnd, {
         },
       })
       if result ~= "" then
-        skills = json.decode(result)
+        skills = result
       else
         skills = table.random(skills, 5)
       end

@@ -11,6 +11,8 @@ Fk:loadTranslationTable{
   ["#sxfy__huandao-choose"] = "寰道：你可以获得其中一个技能，然后选择另一项技能失去",
 }
 
+local U = require "packages/utility/utility"
+
 huandao:addEffect("active", {
   anim_type = "support",
   prompt = "#sxfy__huandao",
@@ -59,14 +61,17 @@ huandao:addEffect("active", {
     for _, general in ipairs(generals) do
       table.insert(skills, Fk.generals[general]:getSkillNameList(target.role == "lord"))
     end
-
-    local result = room:askToCustomDialog(target, {
+    local result = U.askToChooseGeneralSkills(target, {
+      generals = generals,
+      skills = skills,
+      min_num = 1,
+      max_num = 1,
       skill_name = huandao.name,
-      qml_path = "packages/tenyear/qml/ChooseGeneralSkillsBox.qml",
-      extra_data = { generals, skills, 1, 1, "#sxfy__huandao-choose", true }
+      prompt = "#sxfy__huandao-choose",
+      cancelable = true
     })
-    if result == "" then return end
-    local skill = json.decode(result)[1]
+    if #result == 0 then return end
+    local skill = result[1]
     room:handleAddLoseSkills(target, skill)
     local choices = target:getSkillNameList()
     table.removeOne(choices, skill)
