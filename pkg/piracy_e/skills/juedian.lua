@@ -15,16 +15,19 @@ Fk:loadTranslationTable{
 juedian:addEffect(fk.Damage, {
   anim_type = "offensive",
   can_trigger = function(self, event, target, player, data)
-    if target == player and player:hasSkill(juedian.name) and data.card and
-      not data.to.dead and player:canUseTo(Fk:cloneCard("duel"), data.to) then
+    if
+      target == player and
+      player:hasSkill(juedian.name) and
+      data.card and
+      not data.to.dead and
+      player:usedSkillTimes(juedian.name) == 0 and
+      player:canUseTo(Fk:cloneCard("duel"), data.to)
+    then
       local room = player.room
       local use_event = room.logic:getCurrentEvent():findParent(GameEvent.UseCard)
       if use_event == nil then return end
-      local use_events = room.logic:getEventsOfScope(GameEvent.UseCard, 2, function(e)
-        local use = e.data
-        return use.from == player and #use.tos == 1
-      end, Player.HistoryTurn)
-      return #use_events == 1 and use_events[1] == use_event
+      local useData = use_event.data
+      return useData.from == player and useData:isOnlyTarget(useData.tos[1])
     end
   end,
   on_use = function(self, event, target, player, data)
