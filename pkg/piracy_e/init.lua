@@ -867,4 +867,32 @@ Fk:loadTranslationTable{
   ["illustrator:ofl__yuejin"] = "巴萨小马",
 }
 
+General:new(extension, "roma_warrior", "west", 5):addSkills { "ofl__tanyong", "ofl__jiaozir" }
+Fk:loadTranslationTable{
+  ["roma_warrior"] = "罗马力士",
+  ["#roma_warrior"] = "国王的",
+  ["illustrator:roma_warrior"] = "黑桃J",
+}
+
+General:new(extension, "hubaoduwei", "wei", 4):addSkills { "zhenwei", "ofl__daidi" }
+Fk:loadTranslationTable{
+  ["hubaoduwei"] = "虎豹都尉",
+  ["#hubaoduwei"] = "护卫将军",
+  ["illustrator:hubaoduwei"] = "蚂蚁君",
+}
+
+General:new(extension, "envoy", "wei", 3):addSkills { "ofl__dizhao", "chenjie" }
+Fk:loadTranslationTable{
+  ["envoy"] = "使臣",
+  ["#envoy"] = "奉诏出使",
+  ["illustrator:envoy"] = "蒋斯成",
+}
+
+General:new(extension, "ofl__qibing", "qun", 4):addSkills { "ofl__jixiq", "mashu" }
+Fk:loadTranslationTable{
+  ["ofl__qibing"] = "骑兵",
+  --["#ofl__qibing"] = "",
+  ["illustrator:ofl__qibing"] = "李敏然",
+}
+
 return extension

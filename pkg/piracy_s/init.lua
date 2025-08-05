@@ -350,6 +350,24 @@ Fk:loadTranslationTable{
   ["illustrator:ofl__zhangkai"] = "墨心绘意",
 }
 
---吕布 张邈
+--General:new(extension, "ofl4__lvbu", "qun", 5):addSkills { "ty_ex__mingce", "ofl__jiaozheng" }
+Fk:loadTranslationTable{
+  ["ofl4__lvbu"] = "吕布",
+  ["#ofl4__lvbu"] = "",
+  ["illustrator:ofl4__lvbu"] = "第七个桔子",
+  ["ofl__xiaoxi"] = "虓袭",
+  [":ofl__xiaoxi"] = "游戏开始时，你获得7个标记。摸牌阶段，你改为摸标记数的牌，然后移去一个标记。",
+  ["ofl__fenqi"] = "焚骑",
+  [":ofl__fenqi"] = "出牌阶段限一次，你可以移去一个标记，获得一张【一鼓作气】。",
+}
+
+local zhangmiao = General:new(extension, "ofl__zhangmiao", "qun", 4)
+zhangmiao:addSkills { "ofl__mouni", "ofl__zongfan" }
+zhangmiao:addRelatedSkill("ofl__zhangu")
+Fk:loadTranslationTable{
+  ["ofl__zhangmiao"] = "张邈",
+  ["#ofl__zhangmiao"] = "据兖以观",
+  ["illustrator:ofl__zhangmiao"] = "凝聚永恒",
+}
 
 return extension
