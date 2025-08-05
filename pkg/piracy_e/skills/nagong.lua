@@ -34,8 +34,8 @@ nagong:addEffect(fk.EventPhaseStart, {
     local room = player.room
     room:moveCardTo(event:getCostData(self).cards, Card.PlayerHand, player, fk.ReasonGive, nagong.name, nil, false, target)
     if not target.dead and target.kingdom ~= "qun" then
-      room:setPlayerMark(player, nagong.name, player.kingdom)
-      room:changeKingdom(player, "qun", true)
+      room:setPlayerMark(target, nagong.name, player.kingdom)
+      room:changeKingdom(target, "qun", true)
     end
   end,
 })
