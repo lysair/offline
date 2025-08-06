@@ -12,8 +12,14 @@ Fk:loadTranslationTable{
 wanwang:addEffect(fk.EventPhaseStart, {
   anim_type = "control",
   can_trigger = function (self, event, target, player, data)
-    return target ~= player and player:hasSkill(wanwang.name) and target.phase == Player.Play and
-      not target.dead and not data.phase_end and player:usedSkillTimes(wanwang.name, Player.HistoryRound) == 0
+    return
+      target ~= player and
+      target.kingdom == "west" and
+      player:hasSkill(wanwang.name) and
+      target.phase == Player.Play and
+      not target.dead and
+      not data.phase_end and
+      player:usedSkillTimes(wanwang.name, Player.HistoryRound) == 0
   end,
   on_cost = function (self, event, target, player, data)
     local room = player.room

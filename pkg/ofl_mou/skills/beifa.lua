@@ -21,7 +21,7 @@ beifa:addEffect("active", {
   min_card_num = 1,
   target_num = 1,
   can_use = function(self, player)
-    return player:usedSkillTimes(beifa.name, Player.HistoryPhase) == 0
+    return not player:isKongcheng()
   end,
   card_filter = function (self, player, to_select, selected)
     return table.contains(player:getCardIds("h"), to_select) and not player:prohibitDiscard(to_select)
