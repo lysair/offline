@@ -196,6 +196,44 @@ Fk:loadTranslationTable{
   ["illustrator:ofl2__simayi"] = "绘聚艺堂",
 }
 
+--SX015天书乱斗
+General:new(extension, "peachchan", "qun", 4, 4, General.Female):addSkills { "ofl__taoyan", "ofl__yanli" }
+Fk:loadTranslationTable{
+  ["peachchan"] = "小桃",
+  ["#peachchan"] = "虚拟偶像",
+  ["illustrator:peachchan"] = "匠人绘",
+}
+
+General:new(extension, "jinkchan", "qun", 4, 4, General.Female):addSkills { "ofl__shanwu", "ofl__xianli" }
+Fk:loadTranslationTable{
+  ["jinkchan"] = "小闪",
+  ["#jinkchan"] = "虚拟偶像",
+  ["illustrator:jinkchan"] = "匠人绘",
+}
+
+General:new(extension, "slashchan", "qun", 4, 4, General.Female):addSkills { "ofl__guisha", "ofl__shuli" }
+Fk:loadTranslationTable{
+  ["slashchan"] = "小杀",
+  ["#slashchan"] = "虚拟偶像",
+  ["illustrator:slashchan"] = "匠人绘",
+}
+
+General:new(extension, "analepticchan", "qun", 4, 4, General.Female):addSkills { "ofl__meiniang", "ofl__yaoli" }
+Fk:loadTranslationTable{
+  ["analepticchan"] = "小酒",
+  ["#analepticchan"] = "虚拟偶像",
+  ["illustrator:analepticchan"] = "匠人绘",
+}
+
+General:new(extension, "indulgencechan", "qun", 4, 4, General.Female):addSkills { "ofl__leyu", "ofl__yuanli" }
+Fk:loadTranslationTable{
+  ["indulgencechan"] = "小乐",
+  ["#indulgencechan"] = "虚拟偶像",
+  ["illustrator:indulgencechan"] = "匠人绘",
+}
+
+--白起 旱魃 少昊 夸父 玄女 青龙 白虎 朱雀 玄武共工 祝融
+
 --S4028用间篇
 --贾诩 甄姬 诸葛诞 官渡许攸 用间甘宁
 General:new(extension, "es__zhenji", "wei", 3, 3, General.Female):addSkills { "es__luoshen", "qingguo" }
@@ -308,6 +346,13 @@ Fk:loadTranslationTable{
 }
 
 --S7003徐兖纵横
+General:new(extension, "ofl__caosong", "wei", 4):addSkills { "ofl__lilu", "yizhengc" }
+Fk:loadTranslationTable{
+  ["ofl__caosong"] = "曹嵩",
+  ["#ofl__caosong"] = "醉梦折冲",
+  ["illustrator:ofl__caosong"] = "MUMU",
+}
+
 --General:new(extension, "ofl__chengyu", "wei", 3):addSkills { "ofl__liaofu", "ofl__jinshou" }
 Fk:loadTranslationTable{
   ["ofl__chengyu"] = "程昱",
