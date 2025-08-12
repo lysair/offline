@@ -20,7 +20,7 @@ shuli:addEffect(fk.Damage, {
     local room = player.room
     if room:askToSkillInvoke(player, {
       skill_name = shuli.name,
-      prompt = "#ofl__shuli-invoke",
+      prompt = "#ofl__shuli-invoke::" .. target.id,
     }) then
       event:setCostData(self, {tos = {target}})
       return true
