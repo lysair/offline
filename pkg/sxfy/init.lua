@@ -514,4 +514,54 @@ Fk:loadTranslationTable{
   ["illustrator:sxfy__nanhualaoxian"] = "塞拉斯",
 }
 
+--白虎
+General:new(extension, "sxfy__simahui", "qun", 3):addSkills { "sxfy__jianjie", "sxfy__chenghao" }
+Fk:loadTranslationTable{
+  ["sxfy__simahui"] = "司马徽",
+  ["#sxfy__simahui"] = "水镜先生",
+  ["illustrator:sxfy__simahui"] = "小牛",
+}
+
+General:new(extension, "sxfy__liulis", "shu", 3):addSkills { "sxfy__fulil", "sxfy__dehua" }
+Fk:loadTranslationTable{
+  ["sxfy__liulis"] = "刘理",
+  ["#sxfy__liulis"] = "安平王",
+  ["illustrator:sxfy__liulis"] = "鬼画府",
+}
+
+General:new(extension, "sxfy__zhengxuan", "qun", 3):addSkills { "sxfy__zhengjing" }
+Fk:loadTranslationTable{
+  ["sxfy__zhengxuan"] = "郑玄",
+  ["#sxfy__zhengxuan"] = "兼采定道",
+  ["illustrator:sxfy__zhengxuan"] = "JanusLausDeo",
+}
+
+General:new(extension, "sxfy__miheng", "qun", 3):addSkills { "sxfy__kuangcai", "sxfy__shejian" }
+Fk:loadTranslationTable{
+  ["sxfy__miheng"] = "祢衡",
+  ["#sxfy__miheng"] = "狂傲奇人",
+  ["illustrator:sxfy__miheng"] = "YanBai",
+}
+
+General:new(extension, "sxfy__majun", "wei", 3):addSkills { "sxfy__gongqiao" }
+Fk:loadTranslationTable{
+  ["sxfy__majun"] = "马钧",
+  ["#sxfy__majun"] = "名巧天下",
+  ["illustrator:sxfy__majun"] = "塞拉斯",
+}
+
+General:new(extension, "sxfy__zhangfen", "wu", 4):addSkills { "sxfy__wanglu" }
+Fk:loadTranslationTable{
+  ["sxfy__zhangfen"] = "张奋",
+  ["#sxfy__zhangfen"] = "御驰大攻",
+  ["illustrator:sxfy__zhangfen"] = "塞拉斯",
+}
+
+General:new(extension, "sxfy__zhaoyanw", "wu", 3, 3, General.Female):addSkills { "sxfy__jinhui", "sxfy__qingman" }
+Fk:loadTranslationTable{
+  ["sxfy__zhaoyanw"] = "赵嫣",
+  ["#sxfy__zhaoyanw"] = "霞蔚青歇",
+  ["illustrator:sxfy__zhaoyanw"] = "塞拉斯",
+}
+
 return extension
