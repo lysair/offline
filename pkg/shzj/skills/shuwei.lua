@@ -30,7 +30,11 @@ shuwei:addEffect(fk.CardUsing, {
 
 shuwei:addEffect("prohibit", {
   prohibit_use = function(self, player, card)
-    return card and player.phase == Player.Play and player:getMark("shuwei-turn") >= player.hp
+    return
+      card and
+      player.phase == Player.Play and
+      player:getMark("shuwei-turn") >= player.hp and
+      player:hasSkill(shuwei.name)
   end,
 })
 

@@ -25,6 +25,7 @@ zhongwang:addEffect(fk.EventPhaseProceeding, {
   end,
   on_use = function(self, event, target, player, data)
     local room = player.room
+    data.phase_end = true
     for _, p in ipairs(room:getOtherPlayers(player)) do
       if not p.dead and not p:isNude() then
         local cards = room:askToCards(p, {
