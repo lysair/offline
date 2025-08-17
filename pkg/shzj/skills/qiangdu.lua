@@ -64,6 +64,7 @@ qiangdu:addEffect(fk.CardUseFinished, {
       prompt = "#qiangdu-use::"..target.id..":"..data.card.name,
       cancelable = true,
       extra_data = {
+        bypass_distances = true,
         bypass_times = true,
         extraUse = true,
       },
