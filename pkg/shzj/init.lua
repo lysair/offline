@@ -425,18 +425,11 @@ Fk:loadTranslationTable{
   ["illustrator:shzj_juedai__dingfeng"] = "天纵世纪",
 }
 
---General:new(extension, "shield_guard", "wei", 6):addSkills { "shzj_juedai__jianwei", "shzj_juedai__shuwei", "shzj_juedai__shouwei" }
+General:new(extension, "shield_guard", "wei", 6):addSkills { "shzj_juedai__jianwei", "shzj_juedai__shuwei", "shzj_juedai__shouwei" }
 Fk:loadTranslationTable{
   ["shield_guard"] = "重甲侍卫",
   ["#shield_guard"] = "讨灭叛军",
-  ["illustrator:shield_guard"] = "",
-
-  ["shzj_juedai__jianwei"] = "坚卫",
-  [":shzj_juedai__jianwei"] = "锁定技，若你没有防具，视为你装备【白银狮子】。",
-  ["shzj_juedai__shuwei"] = "戍卫",
-  [":shzj_juedai__shuwei"] = "锁定技，出牌阶段，你至多使用X张牌。你使用【杀】伤害基数值改为X（X为你的体力值）。",
-  ["shzj_juedai__shouwei"] = "守卫",
-  [":shzj_juedai__shouwei"] = "每回合每项限一次，当其他角色失去体力后，你摸一张牌或回复1点体力。",
+  ["illustrator:shield_guard"] = "黑白画谱",
 }
 
 General:new(extension, "yaokehui", "qun", 5):addSkills { "qiangdu" }
@@ -467,31 +460,11 @@ Fk:loadTranslationTable{
   ["illustrator:huliew"] = "荆芥",
 }
 
---General:new(extension, "shzj_juedai__zhonghui", "wei", 4):addSkills { "quanwei", "quanshu", "quanqing", "qiangyi" }
+General:new(extension, "shzj_juedai__zhonghui", "wei", 4):addSkills { "quanwei", "quanshu", "quanqing", "qiangyi" }
 Fk:loadTranslationTable{
   ["shzj_juedai__zhonghui"] = "钟会",
   ["#shzj_juedai__zhonghui"] = "荡涤山河",
   ["illustrator:shzj_juedai__zhonghui"] = "鬼画府",
-
-  ["quanwei"] = "权威",
-  [":quanwei"] = "准备阶段，你可以展示一张手牌并和一名其他角色议事，若议事结果与你展示的牌颜色相同，你依次跳过本回合下任意个阶段，"..
-  "令至多两名角色回复等量的体力；否则，你可以减1点体力上限，获得与你意见不同的角色的所有手牌。",
-  ["quanshu"] = "权术",
-  [":quanshu"] = "当你议事结束后或当你受到伤害后，你可以摸X张牌并蓄谋；你的手牌上限+X（X为你场上的牌数）。",
-  ["quanqing"] = "权倾",
-  [":quanqing"] = "限定技，结束阶段，你可以对攻击范围内的所有角色发动〖权威〗，然后你可以变更势力并获得〖戕异〗。",
-  ["qiangyi"] = "戕异",
-  [":qiangyi"] = "主公技，当你蓄谋后，你获得一张【影】；你可以将【影】当"..
-  "<a href=':destroy_indiscrimintely'>【玉石皆碎】</a>对势力与你相同的角色使用。",
-
-  ["destroy_indiscrimintely"] = "玉石皆碎",--红桃4
-  [":destroy_indiscrimintely"] = "锦囊牌<br/>"..
-  "<b>时机</b>：出牌阶段<br/>"..
-  "<b>目标</b>：一名角色<br/>"..
-  "<b>效果</b>：你对目标角色造成1点伤害，然后你失去1点体力。",
-
-  ["destroy_indiscrimintely_skill"] = "玉石皆碎",
-  ["#destroy_indiscrimintely_skill"] = "对一名角色造成1点伤害，你失去1点体力",
 }
 
 General:new(extension, "zhugexu", "wei", 3):addSkills { "tuizhi", "qianjunz", "guluo" }

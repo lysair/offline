@@ -286,6 +286,24 @@ Fk:loadTranslationTable{
   "<b>武器技能</b>：锁定技，当你使用【杀】指定与你性别不同的一名角色为目标后，若你没有手牌，此【杀】伤害+1。",
 }
 
+local destroy_indiscrimintely = fk.CreateCard{
+  name = "&destroy_indiscrimintely",
+  type = Card.TypeTrick,
+  skill = "destroy_indiscrimintely_skill",
+  is_damage_card = true,
+}
+extension:addCardSpec("destroy_indiscrimintely", Card.Heart, 4)
+Fk:loadTranslationTable{
+  ["destroy_indiscrimintely"] = "玉石皆碎",
+  [":destroy_indiscrimintely"] = "锦囊牌<br/>"..
+  "<b>时机</b>：出牌阶段<br/>"..
+  "<b>目标</b>：一名角色<br/>"..
+  "<b>效果</b>：你对目标角色造成1点伤害，然后你失去1点体力。",
+
+  ["destroy_indiscrimintely_skill"] = "玉石皆碎",
+  ["#destroy_indiscrimintely_skill"] = "对一名角色造成1点伤害，你失去1点体力",
+}
+
 extension:loadCardSkels {
   jingxiang_golden_age,
 
@@ -309,6 +327,8 @@ extension:loadCardSkels {
 
   xuanhua_axe,
   baibi_dagger,
+
+  destroy_indiscrimintely,
 }
 
 return extension
