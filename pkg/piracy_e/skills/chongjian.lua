@@ -37,4 +37,6 @@ chongjian:addEffect("viewas", {
   end,
 })
 
+chongjian:addAI(nil, "vs_skill")
+
 return chongjian

@@ -50,4 +50,6 @@ jingong:addEffect(fk.EventPhaseStart, {
   end,
 })
 
+jingong:addAI(nil, "vs_skill")
+
 return jingong

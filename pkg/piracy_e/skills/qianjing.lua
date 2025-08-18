@@ -122,4 +122,6 @@ local spec = {
 qianjing:addEffect(fk.Damage, spec)
 qianjing:addEffect(fk.Damaged, spec)
 
+qianjing:addAI(nil, "vs_skill")
+
 return qianjing

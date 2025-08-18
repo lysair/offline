@@ -102,4 +102,6 @@ dizhao:addEffect("viewas", {
   end,
 })
 
+dizhao:addAI(nil, "vs_skill")
+
 return dizhao

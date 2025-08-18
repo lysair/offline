@@ -48,4 +48,6 @@ taoluan:addEffect("viewas", {
   end,
 })
 
+taoluan:addAI(nil, "vs_skill")
+
 return taoluan

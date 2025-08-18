@@ -38,4 +38,6 @@ chuifeng:addEffect("viewas", {
   end,
 })
 
+chuifeng:addAI(nil, "vs_skill")
+
 return chuifeng

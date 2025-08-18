@@ -71,4 +71,6 @@ huxiao:addEffect(fk.TurnStart, {
   end,
 })
 
+huxiao:addAI(nil, "vs_skill")
+
 return huxiao

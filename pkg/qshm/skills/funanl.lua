@@ -60,4 +60,6 @@ funanl:addEffect("viewas", {
   end,
 })
 
+funanl:addAI(nil, "vs_skill")
+
 return funanl

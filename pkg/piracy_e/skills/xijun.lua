@@ -95,4 +95,6 @@ xijun:addEffect(fk.PreHpRecover, {
   end,
 })
 
+xijun:addAI(nil, "vs_skill")
+
 return xijun

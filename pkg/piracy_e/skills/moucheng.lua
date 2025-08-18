@@ -32,4 +32,6 @@ moucheng:addEffect("viewas", {
   end,
 })
 
+moucheng:addAI(nil, "vs_skill")
+
 return moucheng

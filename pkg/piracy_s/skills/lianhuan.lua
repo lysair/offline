@@ -27,4 +27,6 @@ lianhuan:addEffect("viewas", {
   end,
 })
 
+lianhuan:addAI(nil, "vs_skill")
+
 return lianhuan

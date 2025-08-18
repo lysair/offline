@@ -78,4 +78,6 @@ junweic:addEffect(fk.CardEffectFinished, {
   end,
 })
 
+junweic:addAI(nil, "vs_skill")
+
 return junweic

@@ -46,4 +46,6 @@ qichu:addEffect("viewas", {
   end,
 })
 
+qichu:addAI(nil, "vs_skill")
+
 return qichu

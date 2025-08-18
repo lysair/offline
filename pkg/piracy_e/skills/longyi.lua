@@ -48,4 +48,6 @@ longyi:addEffect("viewas", {
   end,
 })
 
+longyi:addAI(nil, "vs_skill")
+
 return longyi

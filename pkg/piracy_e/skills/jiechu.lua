@@ -114,4 +114,6 @@ jiechu:addEffect(fk.TargetConfirming, {
   end,
 })
 
+jiechu:addAI(nil, "vs_skill")
+
 return jiechu

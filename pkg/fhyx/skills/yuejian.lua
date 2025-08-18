@@ -62,4 +62,6 @@ yuejian:addEffect("maxcards", {
   end,
 })
 
+yuejian:addAI(nil, "vs_skill")
+
 return yuejian

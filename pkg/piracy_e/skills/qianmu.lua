@@ -71,4 +71,6 @@ qianmu:addLoseEffect(function (self, player, is_death)
   player.room:setPlayerMark(player, "qianmu-turn", 0)
 end)
 
+qianmu:addAI(nil, "vs_skill")
+
 return qianmu

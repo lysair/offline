@@ -31,4 +31,6 @@ juebing_viewas:addEffect("viewas", {
   end,
 })
 
+juebing_viewas:addAI(nil, "vs_skill")
+
 return juebing_viewas

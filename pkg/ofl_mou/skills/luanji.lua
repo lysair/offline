@@ -45,4 +45,6 @@ luanji:addEffect(fk.CardResponding, {
   end,
 })
 
+luanji:addAI(nil, "vs_skill")
+
 return luanji

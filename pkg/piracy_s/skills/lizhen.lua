@@ -25,4 +25,6 @@ lizhen:addEffect("viewas", {
   end,
 })
 
+lizhen:addAI(nil, "vs_skill")
+
 return lizhen

@@ -36,4 +36,6 @@ bimeng:addEffect("viewas", {
   end,
 })
 
+bimeng:addAI(nil, "vs_skill")
+
 return bimeng

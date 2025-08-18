@@ -65,8 +65,8 @@ Fk:loadTranslationTable{
 General:new(extension, "sgsh__lisu", "qun", 3):addSkills { "sgsh__kuizhul", "sgsh__qiaoyan" }
 Fk:loadTranslationTable{
   ["sgsh__lisu"] = "李肃",
-  ["#sgsh__lisu"] = "",
-  ["illustrator:sgsh__lisu"] = "",
+  ["#sgsh__lisu"] = "魔使",
+  ["illustrator:sgsh__lisu"] = "福州明暗",
 
   ["~sgsh__lisu"] = "见利忘义，必遭天谴。",
 }
@@ -207,6 +207,16 @@ sunshangxiang.subkingdom = "wu"
 Fk:loadTranslationTable{
   ["ofl__sunshangxiang"] = "孙尚香",
   ["illustrator:ofl__sunshangxiang"] = "小罗没想好",
+}
+
+--太虚幻魇
+General:new(extension, "ofl__zhugeguo", "shu", 3, 3, General.Female):addSkills { "ofl__qirang", "ofl__yuhua" }
+Fk:loadTranslationTable{
+  ["ofl__zhugeguo"] = "诸葛果",
+  ["#ofl__zhugeguo"] = "凤阁乘烟",
+  ["illustrator:ofl__zhugeguo"] = "夏季和杨杨",
+
+  ["~ofl__zhugeguo"] = "浮华落尽轻似梦，淡看苍生几轮回。",
 }
 
 return extension

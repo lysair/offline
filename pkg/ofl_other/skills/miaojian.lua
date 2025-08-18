@@ -70,4 +70,6 @@ miaojian:addEffect("targetmod", {
   end,
 })
 
+miaojian:addAI(nil, "vs_skill")
+
 return miaojian

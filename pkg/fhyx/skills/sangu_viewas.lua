@@ -37,4 +37,6 @@ sangu_viewas:addEffect("viewas", {
   end,
 })
 
+sangu_viewas:addAI(nil, "vs_skill")
+
 return sangu_viewas

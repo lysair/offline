@@ -43,4 +43,6 @@ houying:addEffect("targetmod", {
   end,
 })
 
+houying:addAI(nil, "vs_skill")
+
 return houying

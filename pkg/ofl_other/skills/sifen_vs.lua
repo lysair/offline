@@ -47,4 +47,6 @@ sifen_vs:addEffect("prohibit", {
   end,
 })
 
+sifen_vs:addAI(nil, "vs_skill")
+
 return sifen_vs

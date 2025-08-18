@@ -35,4 +35,6 @@ qianhu:addEffect("viewas", {
   end,
 })
 
+qianhu:addAI(nil, "vs_skill")
+
 return qianhu

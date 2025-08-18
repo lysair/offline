@@ -86,4 +86,6 @@ chuce:addEffect("targetmod", {
   end,
 })
 
+chuce:addAI(nil, "vs_skill")
+
 return chuce

@@ -140,4 +140,6 @@ juebing:addEffect(fk.PreCardEffect, {
   end,
 })
 
+juebing:addAI(nil, "vs_skill")
+
 return juebing

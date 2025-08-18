@@ -63,4 +63,6 @@ zequan:addEffect("prohibit", {
   end,
 })
 
+zequan:addAI(nil, "vs_skill")
+
 return zequan

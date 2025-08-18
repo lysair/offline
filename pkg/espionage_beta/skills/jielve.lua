@@ -43,4 +43,6 @@ jielve:addEffect(fk.PreCardEffect, {
   end,
 })
 
+jielve:addAI(nil, "vs_skill")
+
 return jielve

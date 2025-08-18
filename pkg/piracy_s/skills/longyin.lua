@@ -47,4 +47,6 @@ longyin:addEffect("viewas", {
   end,
 })
 
+longyin:addAI(nil, "vs_skill")
+
 return longyin

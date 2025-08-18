@@ -50,4 +50,6 @@ sheji:addEffect("targetmod", {
   end,
 })
 
+sheji:addAI(nil, "vs_skill")
+
 return sheji

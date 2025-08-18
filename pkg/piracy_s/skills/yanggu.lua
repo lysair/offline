@@ -55,4 +55,6 @@ yanggu:addEffect(fk.Damaged, {
   end,
 })
 
+yanggu:addAI(nil, "vs_skill")
+
 return yanggu

@@ -71,4 +71,6 @@ cailve:addEffect("viewas", {
   end,
 })
 
+cailve:addAI(nil, "vs_skill")
+
 return cailve

@@ -46,4 +46,6 @@ miewu:addEffect("viewas", {
   end,
 })
 
+miewu:addAI(nil, "vs_skill")
+
 return miewu

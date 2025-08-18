@@ -24,4 +24,6 @@ tuicheng:addEffect("viewas", {
   end,
 })
 
+tuicheng:addAI(nil, "vs_skill")
+
 return tuicheng
