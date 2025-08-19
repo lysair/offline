@@ -4,7 +4,7 @@ local juxianh = fk.CreateSkill {
 
 Fk:loadTranslationTable{
   ["shzj_juedai__juxianh"] = "据险",
-  [":shzj_juedai__juxianh"] = "当你失去牌时，你可以失去1点体力防止之；当你受到伤害时，若你的体力值为1，防止此伤害。",
+  [":shzj_juedai__juxianh"] = "当你失去牌时，你可以失去1点体力防止之；当你受到伤害时，若你的手牌数为1，防止此伤害。",
 
   ["#shzj_juedai__juxianh-invoke"] = "据险：是否失去1点体力，防止你失去牌？",
 }
@@ -50,8 +50,7 @@ juxianh:addEffect(fk.BeforeCardsMove, {
 juxianh:addEffect(fk.DetermineDamageInflicted, {
   anim_type = "defensive",
   can_trigger = function (self, event, target, player, data)
-    return target == player and player:hasSkill(juxianh.name) and
-      player.hp == 1
+    return target == player and player:hasSkill(juxianh.name) and player:getHandcardNum() == 1
   end,
   on_cost = Util.TrueFunc,
   on_use = function (self, event, target, player, data)

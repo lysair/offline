@@ -36,7 +36,7 @@ yaoli:addEffect(fk.AfterCardTargetDeclared, {
   anim_type = "offensive",
   is_delay_effect = true,
   can_trigger = function(self, event, target, player, data)
-    return target == player and player:getMark("@@ofl__yaoli-turn") > 0
+    return target == player and data.card.trueName == "slash" and player:getMark("@@ofl__yaoli-turn") > 0
   end,
   on_use = function(self, event, target, player, data)
     local room = player.room
