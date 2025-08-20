@@ -17,15 +17,16 @@ tianjie:addEffect(fk.TurnEnd, {
   anim_type = "offensive",
   can_trigger = function(self, event, target, player, data)
     return player:hasSkill(tianjie.name) and player:getMark("qshm__tianjie-turn") > 0 and
-      #player.room:getOtherPlayers(player, false) > 0
+      table.find(player.room:getOtherPlayers(player, false), function(p) return not p:isKongcheng() end)
   end,
   on_cost = function(self, event, target, player, data)
     local room = player.room
+    local targets = table.filter(player.room:getOtherPlayers(player, false), function(p) return not p:isKongcheng() end)
     local tos = room:askToChoosePlayers(player, {
       skill_name = tianjie.name,
       min_num = 1,
       max_num = 3,
-      targets = room:getOtherPlayers(player, false),
+      targets = targets,
       prompt = "#qshm__tianjie-choose",
       cancelable = true,
     })
