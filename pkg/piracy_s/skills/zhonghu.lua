@@ -13,7 +13,7 @@ zhonghu:addEffect(fk.Deathed, {
   anim_type = "offensive",
   priority = 0.001,
   can_trigger = function(self, event, target, player, data)
-    return player:hasSkill(zhonghu.name) and target.rest < 1 and player.phase == Player.NotActive and
+    return player:hasSkill(zhonghu.name) and player.phase == Player.NotActive and
       player.room.logic:getCurrentEvent():findParent(GameEvent.Turn) ~= nil
   end,
   on_cost = function(self, event, target, player, data)

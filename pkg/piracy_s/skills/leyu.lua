@@ -36,7 +36,7 @@ leyu:addEffect(fk.TurnStart, {
     room:throwCard(event:getCostData(self).cards, leyu.name, player, player)
     if target.dead then return end
     local judge = {
-      who = player,
+      who = target,
       reason = leyu.name,
       pattern = ".|.|^heart",
     }
