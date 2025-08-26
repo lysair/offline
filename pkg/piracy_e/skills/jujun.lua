@@ -51,9 +51,9 @@ jujun:addEffect(fk.PreHpRecover, {
 
 jujun:addEffect(fk.Deathed, {
   can_refresh = function(self, event, target, player, data)
-    return data.killer == player
+    return data.killer == player and player:getMark(jujun.name) > 0
   end,
-  on_use = function(self, event, target, player, data)
+  on_refresh = function(self, event, target, player, data)
     player.room:setPlayerMark(player, jujun.name, 0)
   end,
 })
