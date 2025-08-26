@@ -6,6 +6,9 @@ local hongju = fk.CreateSkill {
 Fk:loadTranslationTable{
   ["fhyx__hongju"] = "鸿举",
   [":fhyx__hongju"] = "觉醒技，准备阶段，若“荣”数不小于3，你摸等同于“荣”数的牌，然后减1点体力上限，获得〖清侧〗。",
+
+  ["$fhyx__hongju1"] = "飞腾冲云天，奋迅协光熙！",
+  ["$fhyx__hongju2"] = "但当养羽翮，鸿举必有期！",
 }
 
 hongju:addEffect(fk.EventPhaseStart, {

@@ -9,6 +9,9 @@ Fk:loadTranslationTable{
   ["@qshm__guanchao-phase"] = "观潮",
   ["qshm__guanchao_discard"] = "弃置一名角色一张牌",
   ["#qshm__guanchao-choose"] = "观潮：你可以弃置一名角色一张牌",
+
+  ["$qshm__guanchao1"] = "阴阳同气相动，潮汐同源相循。",
+  ["$qshm__guanchao2"] = "潮涨潮落，不过阴阳之理。",
 }
 
 guanchao:addEffect(fk.CardUsing, {

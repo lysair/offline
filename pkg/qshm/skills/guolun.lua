@@ -9,6 +9,9 @@ Fk:loadTranslationTable{
 
   ["#qshm__guolun-invoke"] = "过论：你可以展示 %dest 的一张手牌，然后你可以用一张牌与其交换",
   ["#qshm__guolun-card"] = "过论：你可以用一张牌交换 %dest 的%arg，点数小的角色摸一张牌",
+
+  ["$qshm__guolun1"] = "赤壁得胜，八九乃我之功。",
+  ["$qshm__guolun2"] = "若非吾计精妙，则江东易主久矣。",
 }
 
 guolun:addEffect(fk.TargetSpecified, {

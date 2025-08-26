@@ -8,6 +8,9 @@ Fk:loadTranslationTable{
   "你摸等量的牌并回复1点体力。",
 
   ["#ofl_shiji__fuding-invoke"] = "抚定：你可以交给 %dest 至多五张牌，其脱离濒死状态后你摸等量牌并回复1点体力",
+
+  ["$ofl_shiji__fuding1"] = "正使祸至，共死何苦？",
+  ["$ofl_shiji__fuding2"] = "诸君不可自乱阵脚，且暂待消息。",
 }
 
 fuding:addEffect(fk.EnterDying, {

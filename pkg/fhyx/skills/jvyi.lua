@@ -9,6 +9,9 @@ Fk:loadTranslationTable{
   "你获得因此溢出的牌。",
 
   ["#ofl_shiji__jvyi-ask"] = "据益：你可以将一张手牌置入仁区，若因此溢出（仁区超过6张牌会溢出），%src 获得溢出的牌",
+
+  ["$ofl_shiji__jvyi1"] = "罢兵修睦，闭隘养力，方为上策呀。",
+  ["$ofl_shiji__jvyi2"] = "勿忧勿患，此天制之固然也。",
 }
 
 local U = require "packages/utility/utility"

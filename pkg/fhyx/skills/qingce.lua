@@ -7,6 +7,9 @@ Fk:loadTranslationTable{
   [":fhyx__qingce"] = "出牌阶段，你可以移去一张“荣”，然后弃置场上的一张牌。",
 
   ["#fhyx__qingce"] = "清侧：你可以移去一张“荣”，弃置场上的一张牌",
+
+  ["$fhyx__qingce1"] = "奸臣当道，誓以死清君侧！",
+  ["$fhyx__qingce2"] = "案师之罪，宜加大辟，以彰奸慝！",
 }
 
 qingce:addEffect("active", {

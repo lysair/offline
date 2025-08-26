@@ -10,6 +10,9 @@ Fk:loadTranslationTable{
   ["#ofl_mou__lianhuan"] = "连环：你可以将一张♣手牌当【铁索连环】使用或重铸",
   ["#ofl_mou__lianhuan-invoke"] = "连环：是否弃置 %dest 一张牌？",
   ["#ofl_mou__lianhuan-discard"] = "连环：弃置 %dest 一张牌",
+
+  ["$ofl_mou__lianhuan1"] = "大小战船，皆连锁之，则风浪难覆。",
+  ["$ofl_mou__lianhuan2"] = "铁索系舟，遇火难逃。",
 }
 
 lianhuan:addEffect("active", {

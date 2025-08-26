@@ -24,6 +24,8 @@ Fk:loadTranslationTable{
   ["fhyx__guanqiujian"] = "毌丘俭",
   ["#fhyx__guanqiujian"] = "镌功铭征荣",
   ["illustrator:fhyx__guanqiujian"] = "鬼画府",
+
+  ["~fhyx__guanqiujian"] = "空有鸿鹄之志……",
 }
 
 General:new(extension, "fhyx__liyans", "shu", 3):addSkills { "fhyx__duliang", "fhyx__fulin" }
@@ -40,6 +42,8 @@ Fk:loadTranslationTable{
   ["fhyx__caojie"] = "曹节",
   ["#fhyx__caojie"] = "悬壶济世",
   ["illustrator:fhyx__caojie"] = "匠人绘·空山",
+
+  ["~fhyx__caojie"] = "未能守护汉祚，实在遗憾……",
 }
 
 General:new(extension, "fhyx_ex__caiyong", "qun", 3):addSkills { "pizhuan", "fhyx__tongbo" }
@@ -54,6 +58,8 @@ Fk:loadTranslationTable{
   ["ofl_shiji__bianfuren"] = "卞夫人",
   ["#ofl_shiji__bianfuren"] = "内助贤后",
   ["illustrator:ofl_shiji__bianfuren"] = "云涯",
+
+  ["~ofl_shiji__bianfuren"] = "后职内事，君听外政，方是正道。",
 }
 
 General:new(extension, "ofl_shiji__chenzhen", "shu", 3):addSkills { "ofl_shiji__shameng" }
@@ -68,6 +74,8 @@ Fk:loadTranslationTable{
   ["ofl_shiji__luotong"] = "骆统",
   ["#ofl_shiji__luotong"] = "辨如悬河",
   ["illustrator:ofl_shiji__luotong"] = "凡果",
+
+  ["~ofl_shiji__luotong"] = "官民政俗，日以凋敝，势不可久。",
 }
 
 General:new(extension, "ofl_shiji__sunshao", "wu", 3):addSkills { "ofl_shiji__dingyi", "ofl_shiji__zuici" }
@@ -95,7 +103,9 @@ General:new(extension, "ofl_shiji__xunchen", "qun", 3):addSkills { "ofl_shiji__w
 Fk:loadTranslationTable{
   ["ofl_shiji__xunchen"] = "荀谌",
   ["#ofl_shiji__xunchen"] = "谋刃略锋",
-  ["illustrator:ofl_shiji__xunchen"] = "鬼画府",
+  ["illustrator:ofl_shiji__xunchen"] = "枭瞳",
+
+  ["~ofl_shiji__xunchen"] = "吾死则死矣！岂可因主败而弃！",
 }
 
 local godguojia = General:new(extension, "ofl_shiji__godguojia", "god", 3)
@@ -173,6 +183,8 @@ Fk:loadTranslationTable{
   ["ofl_shiji__liuzhang"] = "刘璋",
   ["#ofl_shiji__liuzhang"] = "半圭黯暗",
   ["illustrator:ofl_shiji__liuzhang"] = "",
+
+  ["~ofl_shiji__liuzhang"] = "悔不听王累之言啊……",
 }
 
 General:new(extension, "ofl_shiji__liuba", "shu", 3):addSkills { "ofl_shiji__duanbi", "ofl_shiji__tongdu" }

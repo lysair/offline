@@ -9,6 +9,9 @@ Fk:loadTranslationTable{
 
   ["#ofl_shiji__weipo"] = "危迫：弃置一名角色每个区域各一张牌，令其获得一张【兵临城下】或智囊",
   ["#ofl_shiji__weipo-give"] = "危迫：选择令 %dest 获得的牌",
+
+  ["$ofl_shiji__weipo1"] = "形势危急，将军不可不先图啊。",
+  ["$ofl_shiji__weipo2"] = "如今之势，唯献冀州于袁公耳！",
 }
 
 local U = require "packages/utility/utility"

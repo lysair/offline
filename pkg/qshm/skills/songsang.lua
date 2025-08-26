@@ -6,6 +6,9 @@ local songsang = fk.CreateSkill {
 Fk:loadTranslationTable{
   ["qshm__songsang"] = "送丧",
   [":qshm__songsang"] = "限定技，一名角色死亡后，你可以加1点体力上限并回复1点体力，然后你获得〖展骥〗。",
+
+  ["$qshm__songsang1"] = "江波逆浪，似如驾鹤西归。",
+  ["$qshm__songsang2"] = "天妒英才至此，背负公瑾之躯。",
 }
 
 songsang:addEffect(fk.Death, {

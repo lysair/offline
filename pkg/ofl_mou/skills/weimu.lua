@@ -8,6 +8,9 @@ Fk:loadTranslationTable{
   [":ofl_mou__weimu"] = "锁定技，当你成为黑色锦囊牌的目标时，取消之。每轮开始时，你从额外牌堆获得一张黑色锦囊牌或者防具牌。",
 
   ["#ofl_mou__weimu-prey"] = "帷幕：获得其中一张牌",
+
+  ["$ofl_mou__weimu1"] = "幕后，才是我的主战场。",
+  ["$ofl_mou__weimu2"] = "你对我的了解，不过是管中窥豹！",
 }
 
 local U = require "packages/offline/ofl_util"

@@ -7,6 +7,9 @@ Fk:loadTranslationTable{
   [":ofl_shiji__yuejian"] = "你的手牌上限+X（X为你的体力上限）。当你需使用一张基本牌时，若你本轮未使用过基本牌，你可以视为使用之。",
 
   ["#ofl_shiji__yuejian"] = "约俭：你可以视为使用一张基本牌",
+
+  ["$ofl_shiji__yuejian1"] = "吾性尚俭，不可擅奢。",
+  ["$ofl_shiji__yuejian2"] = "去奢即俭，旷世作显。",
 }
 
 yuejian:addEffect("viewas", {

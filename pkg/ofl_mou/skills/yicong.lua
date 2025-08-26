@@ -12,6 +12,9 @@ Fk:loadTranslationTable{
   ["@@ofl_mou__yicong_offensive-round"] = "义从 -1",
   ["@@ofl_mou__yicong_defensive-round"] = "义从 +1",
   ["ofl_mou__yicong_hu"] = "扈",
+
+  ["$ofl_mou__yicong1"] = "跟着我，一起上！",
+  ["$ofl_mou__yicong2"] = "齐兵后撤！",
 }
 
 yicong:addEffect(fk.RoundStart, {

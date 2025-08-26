@@ -11,6 +11,9 @@ Fk:loadTranslationTable{
   ["ofl_shiji__shiren2"] = "摸两张牌，将一张手牌置入仁区",
   ["#ofl_shiji__shiren-prey"] = "施仁：获得一张“仁”区牌",
   ["#ofl_shiji__shiren-card"] = "施仁：请将一张手牌置入仁区",
+
+  ["$ofl_shiji__shiren1"] = "益州輜重甚富，尔等无需担忧。",
+  ["$ofl_shiji__shiren2"] = "且看，这些都是为尔等准备的。",
 }
 
 local U = require "packages/utility/utility"

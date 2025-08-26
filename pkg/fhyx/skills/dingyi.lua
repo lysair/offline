@@ -15,7 +15,7 @@ Fk:loadTranslationTable{
   "脱离濒死时回复体力<br>♣ 使用牌无距离限制；<font color='red'>♦</font> 摸牌阶段多摸两张牌",
 
   ["$ofl_shiji__dingyi1"] = "制礼以节官吏众庶，国祚方可安稳绵长。",
-  ["$ofl_shiji__dingyi2"] = "礼行则国治，礼弛则国乱矣。", 
+  ["$ofl_shiji__dingyi2"] = "礼行则国治，礼弛则国乱矣。",
 }
 
 dingyi:addEffect(fk.RoundStart, {

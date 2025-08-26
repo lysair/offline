@@ -10,6 +10,9 @@ Fk:loadTranslationTable{
   ["#ofl_shiji__yinge"] = "引戈：令一名角色将一张手牌置入仁区，然后其可以使用一张仁区牌，若为伤害牌则额外指定你为目标",
   ["#ofl_shiji__yinge-ask"] = "引戈：请将一张手牌置入仁区，然后你可以使用一张仁区牌",
   ["#ofl_shiji__yinge-use"] = "引戈：你可以使用一张仁区牌，若为伤害牌，额外指定 %src 为目标",
+
+  ["$ofl_shiji__yinge1"] = "益州之安危，便仰仗宗兄了。",
+  ["$ofl_shiji__yinge2"] = "征鲁之事，未可预量，还需早做打算。",
 }
 
 local U = require "packages/utility/utility"

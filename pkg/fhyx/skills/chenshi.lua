@@ -9,6 +9,9 @@ Fk:loadTranslationTable{
 
   ["#ofl_shiji__chenshi-give"] = "陈势：你可以交给 %src 一张牌，观看牌堆顶三张牌，将其中任意张置入弃牌堆",
   ["#ofl_shiji__chenshi-discard"] = "陈势：你可以将其中任意张牌置入弃牌堆",
+
+  ["$ofl_shiji__chenshi1"] = "博闻多智，可祛战事诸多之不利也。",
+  ["$ofl_shiji__chenshi2"] = "此时不和于军，主公万不可出阵！",
 }
 
 local spec = {

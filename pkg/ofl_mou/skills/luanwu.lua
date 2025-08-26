@@ -9,6 +9,9 @@ Fk:loadTranslationTable{
   "2.失去1点体力。",
 
   ["#ofl_mou__luanwu"] = "乱武：令所有其他角色选择使用【杀】或失去体力！",
+
+  ["$ofl_mou__luanwu1"] = "你们之中谁的命更重要？嗯？自己选择吧！",
+  ["$ofl_mou__luanwu2"] = "这次能活着离开的，不过我一掌之数！",
 }
 
 luanwu:addEffect("active", {

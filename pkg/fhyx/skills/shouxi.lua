@@ -10,6 +10,9 @@ Fk:loadTranslationTable{
   ["#fhyx__shouxi-invoke"] = "守玺：你可以声明类别，%dest 需弃置一张此类别牌并获得你一张手牌，否则%arg对你无效",
   ["#fhyx__shouxi-discard"] = "守玺：弃置一张%arg并获得 %src 一张手牌，否则%arg2对其无效",
   ["#fhyx__shouxi-prey"] = "守玺：你可以获得 %src 一张手牌",
+
+  ["$fhyx__shouxi1"] = "吾父尚不行忤逆之事，汝等安敢？",
+  ["$fhyx__shouxi2"] = "玉玺乃天子之物，岂能擎与窃国之贼？",
 }
 
 shouxi:addEffect(fk.TargetConfirmed, {

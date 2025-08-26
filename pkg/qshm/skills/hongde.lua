@@ -7,6 +7,9 @@ Fk:loadTranslationTable{
   [":qshm__hongde"] = "当你一次获得或失去至少两张牌后，你可以令一名本回合未选择过的其他角色摸等量张牌。",
 
   ["#qshm__hongde-choose"] = "弘德：你可以令一名其他角色摸%arg张牌",
+
+  ["$qshm__hongde1"] = "弘文尚德，雍容泰定。",
+  ["$qshm__hongde2"] = "树德立人，弘毅宽厚。",
 }
 
 hongde:addEffect(fk.AfterCardsMove, {

@@ -8,6 +8,9 @@ Fk:loadTranslationTable{
 
   ["#fhyx__huimin-choose"] = "惠民：选择任意名手牌数小于体力值的角色，你摸等量牌，然后交给这些角色各一张手牌",
   ["#fhyx__huimin-give"] = "惠民：请交给这些角色各一张手牌",
+
+  ["$fhyx__huimin1"] = "惠山阳之民，更愿泽披天下黎庶。",
+  ["$fhyx__huimin2"] = "与夫君救百姓于水火，亦是幸事。",
 }
 
 huimin:addEffect(fk.EventPhaseStart, {

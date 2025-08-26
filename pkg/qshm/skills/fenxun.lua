@@ -9,6 +9,9 @@ Fk:loadTranslationTable{
 
   ["#qshm__fenxun"] = "奋迅：弃任意张牌，本回合你与一名角色的距离视为1，下次对其造成伤害获得其等量手牌",
   ["@qshm__fenxun-turn"] = "被奋迅",
+
+  ["$qshm__fenxun1"] = "端午竞舟，于中流击水，可立潮头！",
+  ["$qshm__fenxun2"] = "百舸争渡，驾艨艟弄潮，舍我其谁！",
 }
 
 fenxun:addEffect("active", {

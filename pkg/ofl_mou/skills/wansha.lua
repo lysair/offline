@@ -12,6 +12,9 @@ Fk:loadTranslationTable{
   ["#ofl_mou__wansha_give"] = "%src分配其选择的牌",
   ["#ofl_mou__wansha_throw"] = "弃置未被选择的牌",
   ["#ofl_mou__wansha-choice"] = "完杀：%src 秘密选择了你的若干张牌，你须选一项",
+
+  ["$ofl_mou__wansha1"] = "哼，无人幸免！无一生还！",
+  ["$ofl_mou__wansha2"] = "嘘~你的痛苦很快结束！",
 }
 
 wansha:addEffect(fk.EnterDying, {

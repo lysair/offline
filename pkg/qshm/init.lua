@@ -113,6 +113,10 @@ Fk:loadTranslationTable{
   ["qshm__pangtong"] = "庞统",
   ["#qshm__pangtong"] = "南州士冠",
   ["illustrator:qshm__pangtong"] = "梦想君",
+
+  ["$zhanji_qshm__pangtong1"] = "伴奂尔游矣，优游尔休矣。",
+  ["$zhanji_qshm__pangtong2"] = "才华得现，放手一搏。",
+  ["~qshm__pangtong"] = "言多必有失……",
 }
 
 General:new(extension, "qshm__buzhi", "wu", 3):addSkills { "qshm__hongde", "dingpan" }
@@ -120,6 +124,10 @@ Fk:loadTranslationTable{
   ["qshm__buzhi"] = "步骘",
   ["#qshm__buzhi"] = "积跬靖边",
   ["illustrator:qshm__buzhi"] = "凡果",
+
+  ["$dingpan_qshm__buzhi1"] = "平定叛乱，乃为臣之职。",
+  ["$dingpan_qshm__buzhi2"] = "武陵百越蠢蠢欲动，骘定当平定其乱。",
+  ["~qshm__buzhi"] = "交州叛军尚存，望陛下留心。",
 }
 
 General:new(extension, "qshm__yanjun", "wu", 3):addSkills { "qshm__guanchao", "xunxian" }
@@ -127,6 +135,10 @@ Fk:loadTranslationTable{
   ["qshm__yanjun"] = "严畯",
   ["#qshm__yanjun"] = "志存补益",
   ["illustrator:qshm__yanjun"] = "铁杵文化",
+
+  ["$xunxian_qshm__yanjun1"] = "吾文治略胜一筹，子明武功远胜于我。",
+  ["$xunxian_qshm__yanjun2"] = "人，才各有异，各处其宜，国乃兴矣。",
+  ["~qshm__yanjun"] = "著作已成，再无憾矣……",
 }
 
 General:new(extension, "qshm__zumao", "wu", 4):addSkills { "qshm__yinbing", "juedi" }
@@ -134,6 +146,10 @@ Fk:loadTranslationTable{
   ["qshm__zumao"] = "祖茂",
   ["#qshm__zumao"] = "碧血染赤帻",
   ["illustrator:qshm__zumao"] = "zoo",
+
+  ["$juedi_qshm__zumao1"] = "",
+  ["$juedi_qshm__zumao2"] = "",
+  ["~qshm__zumao"] = "",
 }
 
 General:new(extension, "qshm__dingfeng", "wu", 4):addSkills { "ol__duanbing", "qshm__fenxun" }
@@ -141,6 +157,10 @@ Fk:loadTranslationTable{
   ["qshm__dingfeng"] = "丁奉",
   ["#qshm__dingfeng"] = "清侧重臣",
   ["illustrator:qshm__dingfeng"] = "鬼画府",
+
+  ["$ol__duanbing_qshm__dingfeng1"] = "置鱼肠短匕，击渊潭蛟龙，寸险寸强！",
+  ["$ol__duanbing_qshm__dingfeng2"] = "操三尺之桨，可驭十丈龙舟，劈波斩浪！",
+  ["~qshm__dingfeng"] = "竟有人比我快！",
 }
 
 return extension

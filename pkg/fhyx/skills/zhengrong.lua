@@ -11,6 +11,9 @@ Fk:loadTranslationTable{
   ["$fhyx__glory"] = "荣",
   ["#fhyx__zhengrong-exchange"] = "征荣：选择任意张手牌替换等量的“荣”",
   ["#fhyx__zhengrong-choose"] = "征荣：将一名其他角色的一张牌置为“荣”",
+
+  ["$fhyx__zhengrong1"] = "王用出征，有嘉折首。",
+  ["$fhyx__zhengrong2"] = "诸将出征，与民除害！",
 }
 
 zhengrong:addEffect(fk.GameStart, {

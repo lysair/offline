@@ -9,6 +9,9 @@ Fk:loadTranslationTable{
 
   ["#ofl_shiji__minshi"] = "悯施：你可以将额外牌堆三张基本牌任意分配",
   ["#ofl_shiji__minshi-give"] = "悯施：分配这些牌，每有一名没获得牌的目标角色，你失去1点体力",
+
+  ["$ofl_shiji__minshi1"] = "据疆土为强富，制威福为尊贵。",
+  ["$ofl_shiji__minshi2"] = "曜德义为荣显，永世胤为丰祚。",
 }
 
 local U = require "packages/offline/ofl_util"
