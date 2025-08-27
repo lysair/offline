@@ -391,6 +391,8 @@ Fk:loadTranslationTable{
   ["shzj_juedai__zhugezhan"] = "诸葛瞻",
   ["#shzj_juedai__zhugezhan"] = "绵竹之殇",
   ["illustrator:shzj_juedai__zhugezhan"] = "凝聚永恒",
+
+  ["~shzj_juedai__zhugezhan"] = "捐躯绵竹，尽吾忠君之志……",
 }
 
 General:new(extension, "xiahouhan", "qun", 3, 3, General.Female):addSkills { "jieyi", "linei", "tongxin" }
@@ -416,6 +418,8 @@ Fk:loadTranslationTable{
   ["shzj_juedai__lukang"] = "陆抗",
   ["#shzj_juedai__lukang"] = "社稷之瑰宝",
   ["illustrator:shzj_juedai__lukang"] = "腥鱼仔",
+
+  ["~shzj_juedai__lukang"] = "乞陛下再立不周，以卫吴境永安……",
 }
 
 General:new(extension, "shzj_juedai__dingfeng", "wu", 4):addSkills { "shzj_juedai__duanbing", "sp__fenxun" }
@@ -423,6 +427,10 @@ Fk:loadTranslationTable{
   ["shzj_juedai__dingfeng"] = "丁奉",
   ["#shzj_juedai__dingfeng"] = "寿春解围",
   ["illustrator:shzj_juedai__dingfeng"] = "天纵世纪",
+
+  ["$sp__fenxun_shzj_juedai__dingfeng1"] = "突若天降，一举歼敌！",
+  ["$sp__fenxun_shzj_juedai__dingfeng2"] = "天下之至迅疾者莫若武技！",
+  ["~shzj_juedai__dingfeng"] = "终是敌不过天命！",
 }
 
 General:new(extension, "shield_guard", "wei", 6):addSkills { "shzj_juedai__jianwei", "shzj_juedai__shuwei", "shzj_juedai__shouwei" }
@@ -451,6 +459,8 @@ Fk:loadTranslationTable{
   ["shzj_juedai__zhanghu"] = "张虎",
   ["#shzj_juedai__zhanghu"] = "晋阳侯",
   ["illustrator:shzj_juedai__zhanghu"] = "君桓文化",
+
+  ["~shzj_juedai__zhanghu"] = "大业未竟，奈何魂归九泉……",
 }
 
 General:new(extension, "huliew", "wei", 4):addSkills { "chengxih", "zhaoeh" }
@@ -479,6 +489,8 @@ Fk:loadTranslationTable{
   ["shzj_juedai__yuechen"] = "乐綝",
   ["#shzj_juedai__yuechen"] = "广昌亭侯",
   ["illustrator:shzj_juedai__yuechen"] = "错落宇宙",
+
+  ["~shzj_juedai__yuechen"] = "恨未死于沙场，而折于奴隶人之手……",
 }
 
 return extension

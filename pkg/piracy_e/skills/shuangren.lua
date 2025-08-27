@@ -9,6 +9,9 @@ Fk:loadTranslationTable{
 
   ["#ofl__shuangren"] = "双刃：你可以拼点，若赢你可以视为使用【杀】，若没赢本回合你的【杀】视为K点的【闪】",
   ["#ofl__shuangren-slash"] = "双刃：你可以视为使用【杀】（第%arg张，共%arg2张）",
+
+  ["$ofl__shuangren2"] = "吾仲家大军已至，匹夫，你何敌我？",
+  ["$ofl__shuangren1"] = "这淮阴城下，正是葬汝尸骨的好地界！",
 }
 
 shuangren:addEffect("active", {

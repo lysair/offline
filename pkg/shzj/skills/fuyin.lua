@@ -9,6 +9,9 @@ Fk:loadTranslationTable{
   "否则你本回合不能回复体力。",
 
   ["@@shzj_xiangfan__fuyin-turn"] = "禁止回复体力",
+
+  ["$shzj_xiangfan__fuyin1"] = "静坐常自省，父训心中留。",
+  ["$shzj_xiangfan__fuyin2"] = "淡泊以明志，宁静以致远。",
 }
 
 fuyin:addEffect(fk.TargetConfirming, {

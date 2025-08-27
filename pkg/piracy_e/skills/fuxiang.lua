@@ -8,8 +8,8 @@ Fk:loadTranslationTable {
 
   ["#fuxiang-choose"] = "付相：令一名角色获得此阶段进入弃牌堆的牌并获得一个额外回合",
 
-  ["$fuxiang1"] = "忠贤明良，朕自当亲而任之。",
-  ["$fuxiang2"] = "相父怀托孤之重，朕自当倾国相付。",
+  ["$fuxiang1"] = "相父怀托孤之重，朕自当倾国相付。",
+  ["$fuxiang2"] = "忠贤明良，朕自当亲而任之。",
 }
 
 fuxiang:addEffect(fk.EventPhaseChanging, {

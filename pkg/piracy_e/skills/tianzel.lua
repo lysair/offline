@@ -10,8 +10,8 @@ Fk:loadTranslationTable {
   ["#tianzel-invoke"] = "天择：弃置两张手牌（不足则全弃，无牌则不弃），观看牌堆顶四张牌并获得其中两张",
   ["#tianzel-choose"] = "天择：令一名其他角色也如此做",
 
-  ["$tianzel1"] = "",
-  ["$tianzel2"] = "",
+  ["$tianzel1"] = "朕祈上帝诸神，佑我汉室不衰！",
+  ["$tianzel2"] = "朕乃天命所归，逆臣岂敢无礼！",
 }
 
 tianzel:addEffect(fk.TargetConfirmed, {

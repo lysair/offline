@@ -10,8 +10,8 @@ Fk:loadTranslationTable{
   ["#shzj_xiangfan__porui-invoke"] = "破锐：你可以弃置两张牌，然后视为对一名角色使用其失去牌数+1张【杀】",
   ["#shzj_xiangfan__porui-choose"] = "破锐：视为对一名角色使用其失去牌数+1张【杀】",
 
-  ["$shzj_xiangfan__porui1"] = "",
-  ["$shzj_xiangfan__porui2"] = "",
+  ["$shzj_xiangfan__porui1"] = "此志无当，纵刀山火海，犹一往无前。 ",
+  ["$shzj_xiangfan__porui2"] = "敌势如芒，我自当之，且试股肱硬否。",
 }
 
 porui:addEffect(fk.EventPhaseStart, {

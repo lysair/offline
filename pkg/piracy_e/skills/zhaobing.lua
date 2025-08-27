@@ -6,8 +6,8 @@ Fk:loadTranslationTable{
   ["ofl__zhaobing"] = "诏兵",
   [":ofl__zhaobing"] = "出牌阶段，你可以将“咒兵”如手牌般使用或打出。",
 
-  ["$ofl__zhaobing1"] = "此计成矣！",
-  ["$ofl__zhaobing2"] = "哈哈，中招了吧！",
+  ["$ofl__zhaobing1"] = "出现吧！",
+  ["$ofl__zhaobing2"] = "你已经跑不出去了！",
 }
 
 zhaobing:addEffect("filter", {

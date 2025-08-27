@@ -8,8 +8,8 @@ Fk:loadTranslationTable{
 
   ["#shzj_xiangfan__cuijian"] = "摧坚：令一名角色展示手牌并将所有【闪】和防具交给你，若未获得牌则摸两张牌",
 
-  ["$shzj_xiangfan__cuijian1"] = "",
-  ["$shzj_xiangfan__cuijian2"] = ""
+  ["$shzj_xiangfan__cuijian1"] = "试问瓮中鼠辈，谁可覆巢余生！",
+  ["$shzj_xiangfan__cuijian2"] = "狭路相逢，唯克坚死战，无躲闪偷生！"
 }
 
 cuijian:addEffect("active", {

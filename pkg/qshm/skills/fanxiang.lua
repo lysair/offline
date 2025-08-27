@@ -7,6 +7,9 @@ Fk:loadTranslationTable{
   ["qshm__fanxiang"] = "返乡",
   [":qshm__fanxiang"] = "觉醒技，准备阶段，若全场有至少一名已受伤的角色，且你令其执行过〖良助〗选项2的效果，则你减1点体力上限并回复1点体力，"..
   "获得技能〖枭姬〗。",
+
+  ["$qshm__fanxiang1"] = "唉，近乡情怯啊。",
+  ["$qshm__fanxiang2"] = "如有缘，再相见。",
 }
 
 fanxiang:addEffect(fk.EventPhaseStart, {

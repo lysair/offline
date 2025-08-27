@@ -11,6 +11,9 @@ Fk:loadTranslationTable{
 
   ["#shzj_xiangfan__zhongwang-ask"] = "众望：你可以将任意张牌置于牌堆顶，回合结束时根据 %src 的条件执行效果",
   ["@@shzj_xiangfan__zhongwang-turn"] = "众望",
+
+  ["$shzj_xiangfan__zhongwang1"] = "有此三罪，吾何颜复立于朝？",
+  ["$shzj_xiangfan__zhongwang2"] = "此战之败，皆我一人之过也！",
 }
 
 zhongwang:addEffect(fk.EventPhaseProceeding, {

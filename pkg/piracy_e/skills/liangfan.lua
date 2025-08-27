@@ -14,15 +14,13 @@ Fk:loadTranslationTable{
 }
 
 liangfan:addEffect(fk.TurnStart, {
-  mute = true,
+  anim_type = "drawcard",
   can_trigger = function(self, event, target, player, data)
     return target == player and player:hasSkill(liangfan.name) and #player:getPile("ofl__mengda_letter") > 0
   end,
   on_cost = Util.TrueFunc,
   on_use = function (self, event, target, player, data)
     local room = player.room
-    player:broadcastSkillInvoke("ld__liangfan")
-    room:notifySkillInvoked(player, liangfan.name, "drawcard")
     for _, id in ipairs(player:getPile("ofl__mengda_letter")) do
       room:setCardMark(Fk:getCardById(id), "@@ofl__mengda_letter-turn", 1)
     end
@@ -34,7 +32,7 @@ liangfan:addEffect(fk.TurnStart, {
 })
 
 liangfan:addEffect(fk.Damage, {
-  mute = true,
+  anim_type = "control",
   can_trigger = function(self, event, target, player, data)
     return target == player and player:usedSkillTimes(liangfan.name, Player.HistoryTurn) > 0 and
       data.card and data.card:getMark("@@ofl__mengda_letter-turn") > 0 and
@@ -53,7 +51,6 @@ liangfan:addEffect(fk.Damage, {
   end,
   on_use = function (self, event, target, player, data)
     local room = player.room
-    room:notifySkillInvoked(player, liangfan.name, "control")
     local card = room:askToChooseCard(player, {
       target = data.to,
       flag = data.to == player and "e" or "he",

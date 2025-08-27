@@ -10,8 +10,8 @@ Fk:loadTranslationTable{
   ["#ofl__yingshi-invoke"] = "应势：展示一张手牌并选择两名角色，后者可以对前者使用一张【杀】",
   ["#ofl__yingshi-slash"] = "应势：你可以对 %dest 使用一张【杀】，然后获得展示牌",
 
-  ["$ofl__yingshi1"] = "",
-  ["$ofl__yingshi2"] = "",
+  ["$ofl__yingshi1"] = "应大势而动，若顺势导流，可润百里。",
+  ["$ofl__yingshi2"] = "择良机而行，如迅风振叶，一举可成。",
 }
 
 yingshi:addEffect(fk.EventPhaseStart, {

@@ -10,6 +10,9 @@ Fk:loadTranslationTable{
 
   ["#qshm__fuhan-invoke"] = "扶汉：你可以移去“梅影”标记，获得等量蜀势力武将的两个技能！",
   ["#qshm__fuhan-choice"] = "扶汉：选择你要获得的至多2个技能",
+
+  ["$qshm__fuhan1"] = "逝者如斯，目古长流，唯英烈之魂悬北斗而长存！",
+  ["$qshm__fuhan2"] = "赵氏之女，跪祈诸公勿渡黄泉，暂留人间、佑大汉万年！",
 }
 
 local U = require "packages/utility/utility"

@@ -9,8 +9,8 @@ Fk:loadTranslationTable{
 
   ["#lezong-ask"] = "乐纵：你须交给 %src 一张%arg2手牌，否则此%arg无效",
 
-  ["$lezong1"] = "大江东流尽，独唱太平谣。",
-  ["$lezong2"] = "冷眼观棋棋不语，笑对樽酒问三分。",
+  ["$lezong1"] = "冷眼观棋棋不语，笑对樽酒问三分。",
+  ["$lezong2"] = "大江东流尽，独唱太平谣。",
 }
 
 lezong:addEffect(fk.TargetConfirming, {

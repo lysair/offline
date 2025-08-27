@@ -11,8 +11,8 @@ Fk:loadTranslationTable{
   ["#ofl__andong-discard"] = "安东：弃置其中一至两张牌，你获得<font color='red'>♥</font>牌，若弃置两张非<font color='red'>♥</font>"..
   "则防止你受到的伤害",
 
-  ["$ofl__andong1"] = "",
-  ["$ofl__andong2"] = "",
+  ["$ofl__andong1"] = "得司空看重，以萧何、寇恂比之，如何不感激涕零？",
+  ["$ofl__andong2"] = "既受司空之令，任河东太守，安敢不竭心用命？",
 }
 
 andong:addEffect(fk.DamageInflicted, {

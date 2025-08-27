@@ -10,6 +10,9 @@ Fk:loadTranslationTable{
 
   ["zhonghui_quan"] = "权",
   ["#ofl__quanji-ask"] = "权计：将一张手牌置为“权”",
+
+  ["$ofl__quanji1"] = "不露圭角，择时而发！",
+  ["$ofl__quanji2"] = "晦养厚积，乘势而起！",
 }
 
 local spec = {

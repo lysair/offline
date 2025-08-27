@@ -7,11 +7,14 @@ Fk:loadTranslationTable{
   [":ofl__paiyi"] = "出牌阶段限一次，你可以将一张“权”置入弃牌堆，令一名角色摸X张牌（X为“权”数，至多为7），然后若其手牌数大于你，你对其造成1点伤害。",
 
   ["#ofl__paiyi"] = "排异：移去一张“权”，令一名角色摸%arg张牌，然后若其手牌数大于你，对其造成1点伤害",
+
+  ["$ofl__paiyi1"] = "排斥异己，为王者必由之路！",
+  ["$ofl__paiyi2"] = "非吾友，则必敌也！",
 }
 
 paiyi:addEffect("active", {
   anim_type = "control",
-  prompt = function (self, player, selected_cards, selected_targets)
+  prompt = function (self, player)
     return "#ofl__paiyi:::"..(math.min(#player:getPile("zhonghui_quan") - 1, 7))
   end,
   card_num = 1,

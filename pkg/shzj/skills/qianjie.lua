@@ -7,8 +7,8 @@ Fk:loadTranslationTable{
   ["shzj_juedai__qianjie"] = "谦节",
   [":shzj_juedai__qianjie"] = "锁定技，当你横置前，防止之；你不能成为延时锦囊牌的目标；你不能拼点。",
 
-  ["$shzj_juedai__qianjie1"] = "",
-  ["$shzj_juedai__qianjie2"] = "",
+  ["$shzj_juedai__qianjie1"] = "君子临渊，更应谦而守心。",
+  ["$shzj_juedai__qianjie2"] = "此身本顽璞，甘为国之基石！",
 }
 
 qianjie:addEffect(fk.BeforeChainStateChange, {

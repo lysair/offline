@@ -9,6 +9,9 @@ Fk:loadTranslationTable{
 
   ["#ofl__jianshu"] = "间书：将一张牌交给一名角色，令其与你选择的角色拼点，赢者弃牌，没赢者失去体力",
   ["#ofl__jianshu-choose"] = "间书：选择另一名其他角色，令其和 %dest 拼点",
+
+  ["$ofl__jianshu1"] = "令其相疑，则一鼓可破也。",
+  ["$ofl__jianshu2"] = "貌合神离，正合用反间之计。",
 }
 
 jianshu:addEffect("active", {

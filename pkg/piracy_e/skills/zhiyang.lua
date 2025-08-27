@@ -7,6 +7,9 @@ Fk:loadTranslationTable{
   [":zhiyang"] = "你的红色拼点牌点数视为K。当你受到伤害后，你可以令伤害来源对你发动两次〖制霸〗。",
 
   ["#zhiyang-invoke"] = "志扬：是否令 %dest 对你发动两次“制霸”？",
+
+  ["$zhiyang1"] = "天下之大，我可尽情驰骋！",
+  ["$zhiyang2"] = "诸位，今日便让天下知我江东男儿勇武！",
 }
 
 zhiyang:addEffect(fk.Damaged, {

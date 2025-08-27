@@ -9,8 +9,8 @@ Fk:loadTranslationTable{
 
   ["#shzj_juedai__duanbing-choose"] = "短兵：你可以额外选择一名距离为1的角色为此【杀】目标",
 
-  ["$shzj_juedai__duanbing1"] = "",
-  ["$shzj_juedai__duanbing2"] = "",
+  ["$shzj_juedai__duanbing1"] = "短兵相接勇者胜！",
+  ["$shzj_juedai__duanbing2"] = "杀他个落花流水，方为痛快！",
 }
 
 duanbing:addEffect(fk.AfterCardTargetDeclared, {

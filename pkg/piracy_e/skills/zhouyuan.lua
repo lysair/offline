@@ -11,8 +11,8 @@ Fk:loadTranslationTable{
   ["#ofl__zhouyuan-choice"] = "咒怨：请选择一种颜色，你将此颜色、%src 将另一种颜色手牌分别置于武将牌上",
   ["$ofl__zhoubing"] = "咒兵",
 
-  ["$ofl__zhouyuan1"] = "习得一道新符，试试看吧！",
-  ["$ofl__zhouyuan2"] = "这事，你管不了！",
+  ["$ofl__zhouyuan1"] = "驱邪缚魅，保命护身！",
+  ["$ofl__zhouyuan2"] = "缚其命，锁其魂！",
 }
 
 zhouyuan:addEffect("active", {

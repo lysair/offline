@@ -4,7 +4,7 @@ extension.extensionName = "offline"
 extension:loadSkillSkelsByPath("./packages/offline/pkg/fhyx/skills")
 
 Fk:loadTranslationTable{
-  ["feihongyinxue"] = "线下-飞鸿映雪",
+  ["feihongyinxue"] = "线下-飞鸿映雪·九鼎",
   ["fhyx"] = "线下",
   ["fhyx_ex"] = "线下界",
   ["ofl_shiji"] = "线下始计篇",
@@ -206,6 +206,35 @@ Fk:loadTranslationTable{
   ["$yizu_fhyx__zhugeshang1"] = "自幼家学渊源，岂会看不穿此等伎俩？",
   ["$yizu_fhyx__zhugeshang2"] = "祖父在上，孩儿定不负诸葛之名！",
   ["~fhyx__zhugeshang"] = "今父既死于敌，我又何能独活？",
+}
+
+General:new(extension, "simayan", "jin", 3):addSkills { "juqi", "fengtu", "taishi" }
+Fk:loadTranslationTable{
+  ["simayan"] = "司马炎",
+  ["#simayan"] = "晋武帝",
+  ["illustrator:simayan"] = "鬼画府",
+}
+
+General:new(extension, "fhyx__huaxin", "wei", 3):addSkills { "ofl__caozhaoh", "ol__xibing" }
+Fk:loadTranslationTable{
+  ["fhyx__huaxin"] = "华歆",
+  ["#fhyx__huaxin"] = "渊清玉洁",
+  ["illustrator:fhyx__huaxin"] = "游漫美绘",
+
+  ["$ol__xibing_fhyx__huaxin1"] = "息兵修士，以安边民。",
+  ["$ol__xibing_fhyx__huaxin2"] = "止战息兵，仁爱为怀。",
+  ["~fhyx__huaxin"] = "唯望君不忘所戒！",
+}
+
+General:new(extension, "fhyx__hanlong", "wei", 4):addSkills { "duwang", "ofl__cibei" }
+Fk:loadTranslationTable{
+  ["fhyx__hanlong"] = "韩龙",
+  ["#fhyx__hanlong"] = "冯河易水",
+  ["illustrator:fhyx__hanlong"] = "鬼宿一",
+
+  ["$duwang_fhyx__hanlong1"] = "今怀徐夫人之匕，当以敌酋之颈试掌中青锋。",
+  ["$duwang_fhyx__hanlong2"] = "昔荆轲慷歌以过易水，今某必以血染漠北。",
+  ["~fhyx__hanlong"] = "大漠风起，可寄吾魂归南乎？",
 }
 
 return extension

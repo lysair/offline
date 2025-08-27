@@ -10,8 +10,8 @@ Fk:loadTranslationTable {
   ["#zhaoyuan-choose"] = "诏援：选择与 %dest 拼点的角色，赢者视为使用无距离限制的【杀】",
   ["#zhaoyuan-slash"] = "诏援：请视为使用一张无距离限制的【杀】",
 
-  ["$zhaoyuan1"] = "",
-  ["$zhaoyuan2"] = "",
+  ["$zhaoyuan1"] = "愿卿纠合忠义之士，按此血诏行事！",
+  ["$zhaoyuan2"] = "环顾朝堂，朕……唯赖爱卿！",
 }
 
 zhaoyuan:addEffect("active", {

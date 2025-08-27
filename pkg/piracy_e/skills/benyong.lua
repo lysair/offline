@@ -1,11 +1,11 @@
 local tanyong = fk.CreateSkill({
-  name = "ofl__tanyong",
+  name = "ofl__benyong",
   tags = { Skill.Compulsory },
 })
 
 Fk:loadTranslationTable{
-  ["ofl__tanyong"] = "贪勇",
-  [":ofl__tanyong"] = "锁定技，你使用牌时，其他角色只能使用点数大于此牌的牌响应。",
+  ["ofl__benyong"] = "贲勇",
+  [":ofl__benyong"] = "锁定技，你使用牌时，其他角色只能使用点数大于此牌的牌响应。",
 }
 
 tanyong:addEffect(fk.HandleAskForPlayCard, {

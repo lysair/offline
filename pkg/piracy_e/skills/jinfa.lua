@@ -15,7 +15,7 @@ Fk:loadTranslationTable{
 }
 
 jinfa:addEffect("active", {
-  mute = true,
+  anim_type = "control",
   prompt = "#ofl__jinfa",
   card_num = 1,
   target_num = 1,
@@ -31,8 +31,6 @@ jinfa:addEffect("active", {
   on_use = function(self, room, effect)
     local player = effect.from
     local target = effect.tos[1]
-    player:broadcastSkillInvoke("ld__jinfa")
-    room:notifySkillInvoked(player, jinfa.name, "control")
     room:throwCard(effect.cards, jinfa.name, player, player)
     if target.dead then return end
     local card = room:askToCards(target, {

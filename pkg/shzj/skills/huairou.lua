@@ -9,8 +9,8 @@ Fk:loadTranslationTable{
   ["#shzj_juedai__huairou"] = "怀柔：你可以重铸装备牌",
   ["#shzj_juedai__huairou-use"] = "怀柔：你可以视为使用一张普通锦囊牌",
 
-  ["$shzj_juedai__huairou1"] = "",
-  ["$shzj_juedai__huairou2"] = "",
+  ["$shzj_juedai__huairou1"] = "彰信行仁爱之德，怀万民生息之心！",
+  ["$shzj_juedai__huairou2"] = "战可保一时之利，息方为万世之功！",
 }
 
 huairou:addEffect("active", {

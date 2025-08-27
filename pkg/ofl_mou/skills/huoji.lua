@@ -72,7 +72,7 @@ huoji:addEffect(fk.EventPhaseStart, {
   on_use = function(self, event, target, player, data)
     local room = player.room
     room:updateQuestSkillState(player, huoji.name, false)
-    room:handleAddLoseSkills(player, "-ofl_mou__huoji|-ofl_mou__kanpo|ofl_mou__guanxing|mou__kongcheng", nil, true, false)
+    room:handleAddLoseSkills(player, "-ofl_mou__huoji|-ofl_mou__kanpo|ofl_mou__guanxing|ofl_mou__kongcheng", nil, true, false)
     if player.general == "ofl_mou__wolong" then
       player.general = "ofl_mou__zhugeliang"
       room:broadcastProperty(player, "general")

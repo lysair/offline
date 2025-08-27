@@ -95,6 +95,10 @@ Fk:loadTranslationTable{
   ["qshm__zhaoxiang"] = "赵襄",
   ["#qshm__zhaoxiang"] = "拾梅鹊影",
   ["illustrator:qshm__zhaoxiang"] = "疾速K",
+
+  ["$ty__fanghun_qshm__zhaoxiang1"] = "凝傲雪之梅为魄，英魂长存，独耀山河万古明！",
+  ["$ty__fanghun_qshm__zhaoxiang2"] = "铸凌霜之寒成剑，青锋出鞘，斩尽天下不臣贼！",
+  ["~qshm__zhaoxiang"] = "世受国恩，今当以身殉国。",
 }
 
 local sunshangxiang = General:new(extension, "qshm__sunshangxiang", "shu", 4, 4, General.Female)
@@ -104,6 +108,12 @@ Fk:loadTranslationTable{
   ["qshm__sunshangxiang"] = "孙尚香",
   ["#qshm__sunshangxiang"] = "梦醉良缘",
   ["illustrator:qshm__sunshangxiang"] = "木美人",
+
+  ["$liangzhu_qshm__sunshangxiang1"] = "呵呵，结发为夫妻，恩爱两不移！",
+  ["$liangzhu_qshm__sunshangxiang2"] = "望君更上一层楼。",
+  ["$xiaoji_qshm__sunshangxiang1"] = "如果不坚强，懦弱给谁看！",
+  ["$xiaoji_qshm__sunshangxiang2"] = "待本姑娘再换把兵器！",
+  ["~qshm__sunshangxiang"] = "一缕香魂散，空留枭姬祠。",
 }
 
 local pangtong = General:new(extension, "qshm__pangtong", "wu", 3)

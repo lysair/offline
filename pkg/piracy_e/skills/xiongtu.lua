@@ -6,8 +6,8 @@ Fk:loadTranslationTable{
   ["xiongtu"] = "雄图",
   [":xiongtu"] = "当你的体力值变化后，你可以从牌堆、弃牌堆、场上、处理区各获得一张伤害牌。",
 
-  ["$xiongtu1"] = "为谋霸业，小损无妨！",
-  ["$xiongtu2"] = "宁负奸雄骂名，胜过英雄短命！",
+  ["$xiongtu1"] = "宁负奸雄骂名，胜过英雄短命！",
+  ["$xiongtu2"] = "为谋霸业，小损无妨！",
 }
 
 xiongtu:addEffect(fk.HpChanged, {
