@@ -8,6 +8,9 @@ Fk:loadTranslationTable{
   "若以此法使用的【杀】均未造成伤害，你结束此回合。",
 
   ["#ofl__mouni-choose"] = "谋逆：令一名角色展示所有手牌，对其使用其中所有【杀】！",
+
+  ["$ofl__mouni1"] = "雄杰并起，天下分崩，岂可受制于人！",
+  ["$ofl__mouni2"] = "州军东征，其处空虚，实乃良机。",
 }
 
 mouni:addEffect(fk.TurnStart, {

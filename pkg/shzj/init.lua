@@ -192,6 +192,13 @@ Fk:loadTranslationTable{
   ["illustrator:shzj_yiling__guanyu"] = "MUMU",
 }
 
+General:new(extension, "attendant", "shu", 4):addSkills { "jinzhong" }
+Fk:loadTranslationTable{
+  ["attendant"] = "侍从",
+  ["#attendant"] = "尽职尽忠",
+  ["illustrator:attendant"] = "depp",
+}
+
 General:new(extension, "yanque", "qun", 4):addSkills { "siji", "cangshen" }
 Fk:loadTranslationTable{
   ["yanque"] = "阎鹊",

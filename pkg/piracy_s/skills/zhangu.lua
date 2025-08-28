@@ -6,6 +6,9 @@ local zhangu = fk.CreateSkill {
 Fk:loadTranslationTable{
   ["ofl__zhangu"] = "战孤",
   [":ofl__zhangu"] = "锁定技，回合开始时，若你体力上限大于1且没有手牌或装备区没有牌，你减1点体力上限，然后摸两张牌。",
+
+  ["$ofl__zhangu1"] = "周身皆为壮士，纵无援军亦可胜之！",
+  ["$ofl__zhangu2"] = "率十万之师，孤战群雄。",
 }
 
 zhangu:addEffect(fk.TurnStart, {

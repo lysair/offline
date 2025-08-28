@@ -8,6 +8,9 @@ Fk:loadTranslationTable{
 
   ["#ofl__jiaozheng-choose"] = "矫诤：你可以放弃摸牌，令一名角色视为使用无距离限制的【杀】",
   ["#ofl__jiaozheng-slash"] = "矫诤：请视为使用一张无距离限制的【杀】",
+
+  ["$ofl__jiaozheng1"] = "曹孟德！我给过你机会！",
+  ["$ofl__jiaozheng2"] = "漂泊半生，所遇皆非良人。",
 }
 
 jiaozheng:addEffect(fk.BeforeDrawCard, {

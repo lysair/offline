@@ -416,6 +416,10 @@ Fk:loadTranslationTable{
   ["ofl__caosong"] = "曹嵩",
   ["#ofl__caosong"] = "醉梦折冲",
   ["illustrator:ofl__caosong"] = "MUMU",
+
+  ["$yizhengc_ofl__caosong1"] = "所谓风云从龙虎，得大势者自当赢粮而从！",
+  ["$yizhengc_ofl__caosong2"] = "一人乘势得道，泽备血裔亲朋！",
+  ["~ofl__caosong"] = "住手！我乃曹孟德之、啊！",
 }
 
 generals.ofl__chengyu = General:new(extension, "ofl__chengyu", "wei", 3)
@@ -443,6 +447,8 @@ Fk:loadTranslationTable{
   ["ofl__xunyu"] = "荀彧",
   ["#ofl__xunyu"] = "令君劝战",
   ["illustrator:ofl__xunyu"] = "墨心绘意",
+
+  ["~ofl__xunyu"] = "百无一用，是书生。",
 }
 
 generals.ofl__chengong = General:new(extension, "ofl__chengong", "qun", 3)
@@ -452,6 +458,10 @@ Fk:loadTranslationTable{
   ["ofl__chengong"] = "陈宫",
   ["#ofl__chengong"] = "刚直壮烈",
   ["illustrator:ofl__chengong"] = "墨心绘意",
+
+  ["$ty_ex__mingce_ofl__chengong1"] = "宁侍庸主餐风露，不从奸雄享社稷！",
+  ["$ty_ex__mingce_ofl__chengong2"] = "智佐吕奉先，计赚兖州城！",
+  ["~ofl__chengong"] = "此生无悔，唯愧奉先。",
 }
 
 generals.ofl__zhangkai = General:new(extension, "ofl__zhangkai", "qun", 4)
@@ -482,6 +492,8 @@ Fk:loadTranslationTable{
   ["ofl__zhangmiao"] = "张邈",
   ["#ofl__zhangmiao"] = "据兖以观",
   ["illustrator:ofl__zhangmiao"] = "凝聚永恒",
+
+  ["~ofl__zhangmiao"] = "术援兵未至，吾已先亡。",
 }
 
 return extension

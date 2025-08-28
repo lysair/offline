@@ -8,8 +8,8 @@ Fk:loadTranslationTable{
 
   ["#shzj_guansuo__xueji"] = "血祭：对至多%arg名角色各造成1点火焰伤害！",
 
-  ["$shzj_guansuo__xueji1"] = "故地覆雪，啮齿长恨！",
-  ["$shzj_guansuo__xueji2"] = "过年又添一岁，旧账何日两清！",
+  ["$shzj_guansuo__xueji1"] = "过年又添一岁，旧账何日两清！",
+  ["$shzj_guansuo__xueji2"] = "故地覆雪，啮齿长恨！",
 }
 
 xueji:addEffect("active", {

@@ -10,8 +10,8 @@ Fk:loadTranslationTable{
 
   ["shzj_guansuo__wuji_blade"] = "获得【青龙偃月刀】",
 
-  ["$shzj_guansuo__wuji1"] = "继父之武，承父之志！",
-  ["$shzj_guansuo__wuji2"] = "每逢佳节，报仇之心益切！",
+  ["$shzj_guansuo__wuji1"] = "每逢佳节，报仇之心益切！",
+  ["$shzj_guansuo__wuji2"] = "继父之武，承父之志！",
 }
 
 wuji:addEffect(fk.EventPhaseStart, {

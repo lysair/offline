@@ -9,6 +9,9 @@ Fk:loadTranslationTable{
   "（X为你交给该角色的牌数且最多为5），失去〖谋逆〗，获得〖战孤〗。",
 
   ["#ofl__zongfan-give"] = "纵反：交给一名其他角色任意张牌，你加等量体力上限并回复等量体力",
+
+  ["$ofl__zongfan1"] = "抚剑顾眄，吾亦足以为人豪！",
+  ["$ofl__zongfan2"] = "吾据兖州，观天下势，可纵横之一时也！",
 }
 
 zongfan:addEffect(fk.TurnEnd, {

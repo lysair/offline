@@ -8,6 +8,9 @@ Fk:loadTranslationTable{
   "重复此流程直到手牌数和体力值相等或进入濒死状态。",
 
   ["#ofl__dishou-discard"] = "砥守：弃置所有手牌，或点“取消”失去1点体力并重复流程！",
+
+  ["$ofl__dishou1"] = "捐躯赴时难，我何惜此头！",
+  ["$ofl__dishou2"] = "书生尚敢战，况君英雄乎！",
 }
 
 dishou:addEffect(fk.DamageInflicted, {

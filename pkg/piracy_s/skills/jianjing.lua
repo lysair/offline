@@ -8,6 +8,9 @@ Fk:loadTranslationTable{
 
   ["#ofl__jianjing"] = "谏旌：与一名角色拼点，赢者对攻击范围内一名角色造成1点伤害",
   ["#ofl__jianjing-choose"] = "谏旌：对攻击范围内一名角色造成1点伤害",
+
+  ["$ofl__jianjing1"] = "狭路相逢，唯勇进得胜，无委屈求全！",
+  ["$ofl__jianjing2"] = "虎狼虽恶，亦能为武所慑、为智所驱！",
 }
 
 jianjing:addEffect("active", {
