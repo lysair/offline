@@ -13,7 +13,7 @@ zhuying:addEffect(fk.DamageInflicted, {
   anim_type = "offensive",
   can_trigger = function(self, event, target, player, data)
     return target ~= player and player:hasSkill(zhuying.name) and
-      not target.chained and data.damageType ~= fk.NormalDamage
+      not target.chained and data.damageType == fk.NormalDamage
   end,
   on_cost = function(self, event, target, player, data)
     local room = player.room
