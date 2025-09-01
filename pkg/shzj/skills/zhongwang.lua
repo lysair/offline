@@ -16,7 +16,7 @@ Fk:loadTranslationTable{
   ["$shzj_xiangfan__zhongwang2"] = "有此三罪，吾何颜复立于朝？",
 }
 
-zhongwang:addEffect(fk.EventPhaseProceeding, {
+zhongwang:addEffect(fk.EventPhaseStart, {
   anim_type = "drawcard",
   can_trigger = function(self, event, target, player, data)
     return target == player and player:hasSkill(zhongwang.name) and data.phase == Player.Draw and
@@ -58,7 +58,7 @@ zhongwang:addEffect(fk.EventPhaseProceeding, {
             })
             room:moveCards({
               ids = table.reverse(result.top),
-              from = player,
+              from = p,
               toArea = Card.DrawPile,
               moveReason = fk.ReasonPut,
               skillName = zhongwang.name,
