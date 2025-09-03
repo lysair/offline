@@ -12,7 +12,7 @@ Fk:loadTranslationTable{
 longmu:addEffect(fk.PreHpRecover, {
   anim_type = "offensive",
   can_trigger = function (self, event, target, player, data)
-    return player:hasSkill(longmu.name) and player.room.current == player and target ~= player
+    return player:hasSkill(longmu.name) and player.room:getCurrent() == player and target ~= player
   end,
   on_use = function (self, event, target, player, data)
     player:broadcastSkillInvoke("wansha")
