@@ -3,11 +3,11 @@ local shouli = fk.CreateSkill {
   tags = { Skill.Compulsory }
 }
 
-Fk:loadTranslationTable{
+Fk:loadTranslationTable {
   ["ofl2__shouli"] = "狩骊",
-  [":ofl2__shouli"] = "锁定技，游戏开始时，所有角色依次选择一项：1.使用一张坐骑牌，然后摸一张牌；2.随机从游戏外使用一张"..
-  "<a href='ofl__shouli_href'>坐骑指示物</a>。<br>你可以将场上的一张进攻坐骑当【杀】、防御马当【闪】使用或打出，"..
-  "以此法失去坐骑的角色本回合非锁定技失效，你与其本回合受到的伤害+1且改为雷电伤害。",
+  [":ofl2__shouli"] = "锁定技，游戏开始时，所有角色依次选择一项：1.使用一张坐骑牌，然后摸一张牌；2.随机从游戏外使用一张" ..
+      "<a href='ofl__shouli_href'>坐骑指示物</a>。<br>你可以将场上的一张进攻坐骑当【杀】、防御马当【闪】使用或打出，" ..
+      "以此法失去坐骑的角色本回合非锁定技失效，你与其本回合受到的伤害+1且改为雷电伤害。",
 
   ["ofl__shouli_href"] = "包括7张标准版和军争篇的坐骑牌和1张国战势备篇的“惊帆”",
 
@@ -29,20 +29,20 @@ shouli:addEffect("viewas", {
   interaction = function(self, player)
     local names = {}
     for _, p in ipairs(Fk:currentRoom().alive_players) do
-      if table.find(p:getEquipments(Card.SubtypeOffensiveRide), function (id)
-        return #player:getViewAsCardNames(shouli.name, {"slash"}, {id}) > 0
-      end) then
+      if table.find(p:getEquipments(Card.SubtypeOffensiveRide), function(id)
+            return #player:getViewAsCardNames(shouli.name, { "slash" }, { id }) > 0
+          end) then
         table.insertIfNeed(names, "slash")
       end
-      if table.find(p:getEquipments(Card.SubtypeDefensiveRide), function (id)
-        return #player:getViewAsCardNames(shouli.name, {"jink"}, {id}) > 0
-      end) then
+      if table.find(p:getEquipments(Card.SubtypeDefensiveRide), function(id)
+            return #player:getViewAsCardNames(shouli.name, { "jink" }, { id }) > 0
+          end) then
         table.insertIfNeed(names, "jink")
       end
       if #names == 2 then break end
     end
     if #names == 0 then return end
-    return UI.CardNameBox {choices = names, all_choices = {"slash", "jink"}}
+    return UI.CardNameBox { choices = names, all_choices = { "slash", "jink" } }
   end,
   view_as = function(self, player, cards)
     if self.interaction.data == nil then return end
@@ -54,7 +54,7 @@ shouli:addEffect("viewas", {
     local room = player.room
     local horse_type = use.card.trueName == "slash" and Card.SubtypeOffensiveRide or Card.SubtypeDefensiveRide
     local horse_name = use.card.trueName == "slash" and "offensive_horse" or "defensive_horse"
-    local targets = table.filter(room.alive_players, function (p)
+    local targets = table.filter(room.alive_players, function(p)
       return #p:getEquipments(horse_type) > 0
     end)
     local to = room:askToChoosePlayers(player, {
@@ -75,23 +75,23 @@ shouli:addEffect("viewas", {
   end,
   enabled_at_play = function(self, player)
     for _, p in ipairs(Fk:currentRoom().alive_players) do
-      if table.find(p:getEquipments(Card.SubtypeOffensiveRide), function (id)
-        return #player:getViewAsCardNames(shouli.name, {"slash"}, {id}) > 0
-      end) then
+      if table.find(p:getEquipments(Card.SubtypeOffensiveRide), function(id)
+            return #player:getViewAsCardNames(shouli.name, { "slash" }, { id }) > 0
+          end) then
         return true
       end
     end
   end,
   enabled_at_response = function(self, player)
     for _, p in ipairs(Fk:currentRoom().alive_players) do
-      if table.find(p:getEquipments(Card.SubtypeOffensiveRide), function (id)
-        return #player:getViewAsCardNames(shouli.name, {"slash"}, {id}) > 0
-      end) then
+      if table.find(p:getEquipments(Card.SubtypeOffensiveRide), function(id)
+            return #player:getViewAsCardNames(shouli.name, { "slash" }, { id }) > 0
+          end) then
         return true
       end
-      if table.find(p:getEquipments(Card.SubtypeDefensiveRide), function (id)
-        return #player:getViewAsCardNames(shouli.name, {"jink"}, {id}) > 0
-      end) then
+      if table.find(p:getEquipments(Card.SubtypeDefensiveRide), function(id)
+            return #player:getViewAsCardNames(shouli.name, { "jink" }, { id }) > 0
+          end) then
         return true
       end
     end
@@ -107,13 +107,13 @@ shouli:addEffect(fk.GameStart, {
     room:doIndicate(player, room.alive_players)
     for _, p in ipairs(room:getAlivePlayers()) do
       if not p.dead then
-        local ids = table.filter(p:getHandlyIds(), function (id)
+        local ids = table.filter(p:getHandlyIds(), function(id)
           return Fk:getCardById(id).sub_type == Card.SubtypeDefensiveRide or
-            Fk:getCardById(id).sub_type == Card.SubtypeOffensiveRide
+              Fk:getCardById(id).sub_type == Card.SubtypeOffensiveRide
         end)
         local use = room:askToUseCard(p, {
           skill_name = shouli.name,
-          pattern = tostring(Exppattern{ id = ids }),
+          pattern = tostring(Exppattern { id = ids, cardType = { "defensive_ride", "offensive_ride" } }),
           prompt = "#ofl2__shouli-use",
           cancelable = true,
         })
@@ -123,14 +123,14 @@ shouli:addEffect(fk.GameStart, {
             p:drawCards(1, shouli.name)
           end
         else
-          local cards = table.filter(room:getBanner(shouli.name), function (id)
+          local cards = table.filter(room:getBanner(shouli.name), function(id)
             return room:getCardArea(id) == Card.Void and p:canUseTo(Fk:getCardById(id), p)
           end)
           if #cards > 0 then
             local horse = Fk:getCardById(table.random(cards))
-            room:useCard{
+            room:useCard {
               from = p,
-              tos = {p},
+              tos = { p },
               card = horse,
             }
           end
@@ -152,7 +152,7 @@ shouli:addEffect(fk.DamageInflicted, {
   end,
 })
 
-shouli:addAcquireEffect(function (self, player, is_start)
+shouli:addAcquireEffect(function(self, player, is_start)
   local room = player.room
   if not room:getBanner(shouli.name) then
     local cards = {
