@@ -8,8 +8,7 @@ Fk:loadTranslationTable{
 
   ["#zhengui-invoke"] = "镇归：你可以视为对本回合对蜀势力角色造成过伤害的角色使用【决斗】！",
 
-  ["$zhengui1"] = "",
-  ["$zhengui2"] = "",
+  ["$zhengui"] = "是时候，让敌人见识赵家真正的本领了！",
 }
 
 zhengui:addEffect(fk.TurnEnd, {

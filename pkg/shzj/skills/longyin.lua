@@ -10,8 +10,8 @@ Fk:loadTranslationTable{
   ["#shzj_guansuo__longyin-invoke"] = "龙吟：你可以摸一张牌，令 %dest 的【杀】不计入次数",
   ["#shzj_guansuo__longyin-extra"] = "龙吟：是否令此【杀】额外结算一次？",
 
-  ["$shzj_guansuo__longyin1"] = "",
-  ["$shzj_guansuo__longyin2"] = "",
+  ["$shzj_guansuo__longyin1"] = "父斩敌将，吾侍左右。",
+  ["$shzj_guansuo__longyin2"] = "龙刃既出，袭营慑敌。",
 }
 
 longyin:addEffect(fk.CardUsing, {

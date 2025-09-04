@@ -382,15 +382,19 @@ Fk:loadTranslationTable{
 General:new(extension, "zhaoguang", "shu", 4):addSkills { "shzj_juedai__yizan", "zhengui" }
 Fk:loadTranslationTable{
   ["zhaoguang"] = "赵广",
-  ["#zhaoguang"] = "还中独断",
-  ["illustrator:zhaoguang"] = "云涯",
+  ["#zhaoguang"] = "沓中独断",
+  ["illustrator:zhaoguang"] = "M云涯",
+
+  ["~zhaoguang"] = "可惜，看不到伯约大人成功了……",
 }
 
 General:new(extension, "zhaotong", "shu", 4):addSkills { "shzj_juedai__yizan", "shuge" }
 Fk:loadTranslationTable{
   ["zhaotong"] = "赵统",
   ["#zhaotong"] = "戍边驻阁",
-  ["illustrator:zhaotong"] = "云涯",
+  ["illustrator:zhaotong"] = "M云涯",
+
+  ["~zhaotong"] = "可惜，看不到伯约大人成功了……",
 }
 
 General:new(extension, "shzj_juedai__zhugezhan", "shu", 4):addSkills { "shzj_xiangfan__zhongwang", "shzj_xiangfan__fuyin" }

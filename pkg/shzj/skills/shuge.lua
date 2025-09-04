@@ -8,8 +8,7 @@ Fk:loadTranslationTable{
 
   ["#shuge-choose"] = "戍阁：你可以令至多%arg名蜀势力角色各摸一张牌",
 
-  ["$shuge1"] = "",
-  ["$shuge2"] = "",
+  ["$shuge"] = "我们的武艺，已经足够精进了！",
 }
 
 shuge:addEffect(fk.TurnEnd, {

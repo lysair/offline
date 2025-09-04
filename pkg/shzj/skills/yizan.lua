@@ -8,8 +8,8 @@ Fk:loadTranslationTable{
 
   ["#shzj_juedai__yizan"] = "翊赞：你可以将两张牌当任意基本牌使用或打出",
 
-  ["$shzj_juedai__yizan1"] = "",
-  ["$shzj_juedai__yizan2"] = "",
+  ["$shzj_juedai__yizan1"] = "我们兄弟齐心合力，也能和父亲一样！",
+  ["$shzj_juedai__yizan2"] = "这一切，都是为了护佑大汉！",
 }
 
 yizan:addEffect("viewas", {

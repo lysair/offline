@@ -19,7 +19,7 @@ yuanzhuo:addEffect("active", {
   end,
   card_filter = Util.FalseFunc,
   target_filter = function(self, player, to_select, selected, selected_cards)
-    return #selected == 0 and not to_select:isNude()
+    return #selected == 0 and to_select ~= player and not to_select:isNude()
   end,
   on_use = function(self, room, effect)
     local player = effect.from
