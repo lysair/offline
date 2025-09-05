@@ -1,5 +1,6 @@
 local jiufa = fk.CreateSkill {
   name = "sxfy__jiufa",
+  tags = { Skill.Limited },
 }
 
 Fk:loadTranslationTable{

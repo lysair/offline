@@ -25,7 +25,7 @@ local spec = {
     local prompt = "#ofl_tx__tanluan-draw"
     if room.current ~= player then
       if room.current:isAllNude() then return end
-      prompt = "#ofl_tx__tanluan-prey::"..room.current
+      prompt = "#ofl_tx__tanluan-prey::"..room.current.id
     end
     if room:askToSkillInvoke(player, {
       skill_name = tanluan.name,

@@ -5,7 +5,7 @@ local jiaodao = fk.CreateSkill {
 
 Fk:loadTranslationTable{
   ["ofl_tx__jiaodao"] = "狡盗",
-  [":ofl_tx__jiaodao"] = "准备阶段和结束阶段，你可以消耗任意点<a href='os__baonue_href'>暴虐值</a>，获得等量名与你距离为1的角色各一张手牌。",
+  [":ofl_tx__jiaodao"] = "准备阶段或结束阶段，你可以消耗任意点<a href='os__baonue_href'>暴虐值</a>，获得等量名与你距离为1的角色各一张手牌。",
 
   ["#ofl_tx__jiaodao-choose"] = "狡盗：消耗至多%arg点暴虐值，获得等量角色各一张手牌",
 

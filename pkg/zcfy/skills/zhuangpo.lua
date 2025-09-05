@@ -1,5 +1,6 @@
 local zhuangpo = fk.CreateSkill {
   name = "sxfy__zhuangpo",
+  tags = { Skill.Compulsory },
 }
 
 Fk:loadTranslationTable{
