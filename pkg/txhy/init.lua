@@ -313,62 +313,43 @@ Fk:loadTranslationTable{
   ["illustrator:ofl_tx__gongsunzan"] = "鱼仔",
 }
 
---[[
 General:new(extension, "ofl_tx__guanyu", "shu", 5):addSkills {
   "ofl_tx__weizhen",
   "ex__wusheng",
   "nuzhan",
   "ofl_tx__jinmo",
   "mashu",
-}]]
+}
 Fk:loadTranslationTable{
   ["ofl_tx__guanyu"] = "关羽",
   ["#ofl_tx__guanyu"] = "太虚幻魇",
   ["illustrator:tqt__fuwan"] = "凝聚永恒",
-
-  ["ofl_tx__weizhen"] = "巍镇",
-  [":ofl_tx__weizhen"] = "出牌阶段开始时，你可以指定一名其他角色，此阶段当你对其造成伤害后，你摸X张牌并令其获得X枚“镇”标记（X为伤害值）。"..
-  "弃牌阶段结束时，有“镇”标记的角色选择一项并移去所有“镇”标记：1.交给你“镇”标记数量张红色牌；2.不能使用或打出手牌直到你下回合开始。"..
-  "若其选择1，则你执行<a href='os__coop'>同心效果</a>：从游戏外获得一张【决斗】。",
 }
 
---[[
 General:new(extension, "ofl_tx__zhangfei", "shu", 5):addSkills {
   "ofl_tx__liyong",
   "os_ex__paoxiao",
   "os_ex__xuhe",
   "ofl_tx__jinmo",
   "mashu",
-}]]
+}
 Fk:loadTranslationTable{
   ["ofl_tx__zhangfei"] = "张飞",
   ["#ofl_tx__zhangfei"] = "太虚幻魇",
   ["illustrator:ofl_tx__zhangfei"] = "凝聚永恒",
-
-  ["ofl_tx__liyong"] = "戾涌",
-  [":ofl_tx__liyong"] = "锁定技，当你使用【杀】指定目标后，随机弃置X张牌，令此【杀】伤害+1（X为你本回合发动此技能次数）。"..
-  "每回合限一次，若你因此弃置了所有手牌，此【杀】结算结束后你执行<a href='os__coop'>同心效果</a>：从游戏外获得一张【杀】和【酒】。",
 }
 
---[[
 General:new(extension, "ofl_tx__liubei", "shu", 5):addSkills {
   "ofl_tx__hengyi",
   "os__jiange",
   "os__jianming",
   "ofl_tx__jinmo",
   "mashu",
-}]]
+}
 Fk:loadTranslationTable{
   ["ofl_tx__liubei"] = "刘备",
   ["#ofl_tx__liubei"] = "太虚幻魇",
   ["illustrator:ofl_tx__liubei"] = "深圳枭瞳",
-
-  ["ofl_tx__hengyi"] = "恒毅",
-  [":ofl_tx__hengyi"] = "锁定技，当你或<a href='os__coop'>同心角色</a>受到伤害后或使用的【杀】被【闪】抵消后，"..
-  "你获得一枚“毅”标记（至多7枚）。<br>"..
-  "你出牌阶段使用【杀】次数+X（X为“毅”标记数）。<br>"..
-  "一名角色回合结束时，若你的“毅”标记数为7，你移去所有“毅”标记，然后执行<a href='os__coop'>同心效果</a>：回复1点体力。<br>"..
-  "你发动此技能可以选择至多两名角色为<a href='os__coop'>同心角色</a>。",
 }
 
 General:new(extension, "ofl_tx2__zhaoyun", "shu", 5):addSkills {
@@ -384,25 +365,16 @@ Fk:loadTranslationTable{
   ["illustrator:ofl_tx2__zhaoyun"] = "深圳枭瞳",
 }
 
---[[
 General:new(extension, "ofl_tx__wolong", "shu", 7):addSkills {
   "ofl_tx__xieyu",
   "ofl_tx__mozun",
   "ex__leiji",
   "ofl_tx__lianyu",
-}]]
+}
 Fk:loadTranslationTable{
   ["ofl_tx__wolong"] = "卧龙诸葛亮",
   ["#ofl_tx__wolong"] = "太虚幻魇",
   ["illustrator:ofl_tx__wolong"] = "深圳枭瞳",
-
-  ["ofl_tx__xieyu"] = "邪域",
-  [":ofl_tx__xieyu"] = "转换技，锁定技，每轮开始时，你令本轮："..
-  "阳：所有角色受到的火焰伤害+1，防止你受到的除火焰伤害以外的伤害；"..
-  "阴：所有角色受到的雷电伤害+1，防止你受到的除雷电伤害以外的伤害。",
-  ["ofl_tx__mozun"] = "魔尊",
-  [":ofl_tx__mozun"] = "锁定技，准备阶段，你从额外牌堆、弃牌堆、所有角色的区域各获得一张牌并展示之；"..
-  "结束阶段，你将以此法获得的牌置入弃牌堆。",
 }
 
 General:new(extension, "ofl_tx__xiaoqiao", "wu", 3, 3, General.Female):addSkills {
@@ -488,26 +460,16 @@ Fk:loadTranslationTable{
   ["illustrator:ofl_tx__shenpei"] = "凝聚永恒",
 }
 
---[[
 General:new(extension, "ofl_tx__jvshou", "qun", 3):addSkills {
   "ofl_tx__zhongjianh",
   "guzheng",
   "ofl_tx__mouduan",
   "ofl_tx__hemou",
-}]]
+}
 Fk:loadTranslationTable{
   ["ofl_tx__jvshou"] = "沮授",
   ["#ofl_tx__jvshou"] = "太虚幻魇",
   ["illustrator:ofl_tx__jvshou"] = "鹿田",
-
-  ["ofl_tx__zhongjianh"] = "忠谏",
-  [":ofl_tx__zhongjianh"] = "当你受到其他角色造成的1点伤害后，你可以与其各摸一张牌并展示之，你使用以此法获得的基本牌无次数限制，"..
-  "你使用以此法获得的普通锦囊牌不能被响应。",
-  ["ofl_tx__mouduan"] = "谋断",
-  [":ofl_tx__mouduan"] = "锁定技，当你使用锦囊牌指定敌方角色为目标时，其需选择一个非锁定技失效，直到其受到伤害后或其回合结束。",
-  ["ofl_tx__hemou"] = "合谋",
-  [":ofl_tx__hemou"] = "每回合限一次，当你使用普通锦囊牌指定唯一目标后，你可以与<a href='os__coop'>同心角色</a>各摸一张牌，"..
-  "当此牌生效后，你再执行一次。",
 }
 
 General:new(extension, "ofl_tx__yuanshao", "qun", 6):addSkills {

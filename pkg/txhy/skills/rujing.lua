@@ -61,11 +61,14 @@ rujing:addEffect(fk.RoundStart, {
         qml_path = "packages/utility/qml/ChooseSkillBox.qml",
         extra_data = { skills, 1, n, "#ofl_tx__rujing-choice::"..to.id..":"..n },
       })
+      if #choices == 0 then
+        choices = table.random(skills, n)
+      end
     end
     room:sendLog{
       type = "#ofl__podai",
       from = player.id,
-      to = { target.id },
+      to = { to.id },
       arg = table.concat(table.map(choices, function (s)
         return Fk:translate(s)
       end), ","),
