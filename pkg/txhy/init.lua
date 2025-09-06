@@ -330,10 +330,6 @@ Fk:loadTranslationTable{
   [":ofl_tx__weizhen"] = "出牌阶段开始时，你可以指定一名其他角色，此阶段当你对其造成伤害后，你摸X张牌并令其获得X枚“镇”标记（X为伤害值）。"..
   "弃牌阶段结束时，有“镇”标记的角色选择一项并移去所有“镇”标记：1.交给你“镇”标记数量张红色牌；2.不能使用或打出手牌直到你下回合开始。"..
   "若其选择1，则你执行<a href='os__coop'>同心效果</a>：从游戏外获得一张【决斗】。",
-  ["ofl_tx__jinmo"] = "浸魔",
-  [":ofl_tx__jinmo"] = "锁定技，当你受到伤害时，你令此伤害-1并获得一枚“魔”标记。"..
-  "弃牌阶段结束时，你受到X点无来源伤害（X为“魔”标记数），然后从牌堆获得Y张伤害类牌（Y为你本次受到的伤害值）。"..
-  "回合结束时，你移去所有“魔”标记。",
 }
 
 --[[
@@ -351,7 +347,7 @@ Fk:loadTranslationTable{
 
   ["ofl_tx__liyong"] = "戾涌",
   [":ofl_tx__liyong"] = "锁定技，当你使用【杀】指定目标后，随机弃置X张牌，令此【杀】伤害+1（X为你本回合发动此技能次数）。"..
-  "若你因此弃置了所有手牌，此【杀】结算结束后你执行<a href='os__coop'>同心效果</a>：从游戏外获得一张【杀】和【酒】（每回合限一次）。",
+  "每回合限一次，若你因此弃置了所有手牌，此【杀】结算结束后你执行<a href='os__coop'>同心效果</a>：从游戏外获得一张【杀】和【酒】。",
 }
 
 --[[
@@ -375,22 +371,17 @@ Fk:loadTranslationTable{
   "你发动此技能可以选择至多两名角色为<a href='os__coop'>同心角色</a>。",
 }
 
---[[
 General:new(extension, "ofl_tx2__zhaoyun", "shu", 5):addSkills {
   "ofl_tx__rulong",
   "longdan",
   "chongzhen",
   "os__jintao",
   "mashu",
-}]]
+}
 Fk:loadTranslationTable{
   ["ofl_tx2__zhaoyun"] = "赵云",
   ["#ofl_tx2__zhaoyun"] = "太虚幻魇",
   ["illustrator:ofl_tx2__zhaoyun"] = "深圳枭瞳",
-
-  ["ofl_tx__rulong"] = "如龙",
-  [":ofl_tx__rulong"] = "与你距离为1的角色被【杀】指定为目标时，你可以取消所有目标，改为你成为此【杀】目标。"..
-  "以你为目标的【杀】结算结束后，若此【杀】未造成伤害，你视为对此【杀】使用者使用一张【决斗】。",
 }
 
 --[[
@@ -471,6 +462,140 @@ Fk:loadTranslationTable{
   ["ofl_tx__sunce"] = "孙策",
   ["#ofl_tx__sunce"] = "太虚幻魇",
   ["illustrator:ofl_tx__sunce"] = "town",
+}
+
+General:new(extension, "ofl_tx__guotupangji", "qun", 3):addSkills {
+  "ofl_tx__jixi",
+  "ol_ex__zhaxiang",
+  "qingzhong",
+  "zhaohan",
+}
+Fk:loadTranslationTable{
+  ["ofl_tx__guotupangji"] = "郭图逄纪",
+  ["#ofl_tx__guotupangji"] = "太虚幻魇",
+  ["illustrator:ofl_tx__guotupangji"] = "凝聚永恒",
+}
+
+General:new(extension, "ofl_tx__shenpei", "qun", 3):addSkills {
+  "ofl_tx__kaishi",
+  "sp__duanbing",
+  "os__fenwu",
+  "yuce",
+}
+Fk:loadTranslationTable{
+  ["ofl_tx__shenpei"] = "审配",
+  ["#ofl_tx__shenpei"] = "太虚幻魇",
+  ["illustrator:ofl_tx__shenpei"] = "凝聚永恒",
+}
+
+--[[
+General:new(extension, "ofl_tx__jvshou", "qun", 3):addSkills {
+  "ofl_tx__zhongjianh",
+  "guzheng",
+  "ofl_tx__mouduan",
+  "ofl_tx__hemou",
+}]]
+Fk:loadTranslationTable{
+  ["ofl_tx__jvshou"] = "沮授",
+  ["#ofl_tx__jvshou"] = "太虚幻魇",
+  ["illustrator:ofl_tx__jvshou"] = "鹿田",
+
+  ["ofl_tx__zhongjianh"] = "忠谏",
+  [":ofl_tx__zhongjianh"] = "当你受到其他角色造成的1点伤害后，你可以与其各摸一张牌并展示之，你使用以此法获得的基本牌无次数限制，"..
+  "你使用以此法获得的普通锦囊牌不能被响应。",
+  ["ofl_tx__mouduan"] = "谋断",
+  [":ofl_tx__mouduan"] = "锁定技，当你使用锦囊牌指定敌方角色为目标时，其需选择一个非锁定技失效，直到其受到伤害后或其回合结束。",
+  ["ofl_tx__hemou"] = "合谋",
+  [":ofl_tx__hemou"] = "每回合限一次，当你使用普通锦囊牌指定唯一目标后，你可以与<a href='os__coop'>同心角色</a>各摸一张牌，"..
+  "当此牌生效后，你再执行一次。",
+}
+
+General:new(extension, "ofl_tx__yuanshao", "qun", 6):addSkills {
+  "ofl_tx__tiancheng",
+  "m_ex__luanji",
+  "tushe",
+  "jueyong",
+}
+Fk:loadTranslationTable{
+  ["ofl_tx__yuanshao"] = "袁绍",
+  ["#ofl_tx__yuanshao"] = "太虚幻魇",
+  ["illustrator:ofl_tx__yuanshao"] = "凝聚永恒",
+}
+
+General:new(extension, "ofl_tx__yanliangwenchou", "qun", 5):addSkills {
+  "ofl_tx__shuangsha",
+  "ofl_tx__xianxi",
+  "ofl_tx__yongdou",
+  "ofl_tx__choujue",
+  "jueyong",
+}
+Fk:loadTranslationTable{
+  ["ofl_tx__yanliangwenchou"] = "颜良文丑",
+  ["#ofl_tx__yanliangwenchou"] = "太虚幻魇",
+  ["illustrator:ofl_tx__yanliangwenchou"] = "错落宇宙",
+}
+
+General:new(extension, "ofl_tx__zhangxiu", "qun", 5):addSkills {
+  "xiongluan",
+  "congjian",
+  "ofl_tx__longdan",
+  "ofl_tx__maojin",
+}
+Fk:loadTranslationTable{
+  ["ofl_tx__zhangxiu"] = "张绣",
+  ["#ofl_tx__zhangxiu"] = "太虚幻魇",
+  ["illustrator:ofl_tx__zhangxiu"] = "深圳枭瞳",
+}
+
+General:new(extension, "ofl_tx__ganning", "qun", 6):addSkills {
+  "jinfan",
+  "sheque",
+  "ofl_tx__shanji",
+  "shelie",
+}
+Fk:loadTranslationTable{
+  ["ofl_tx__ganning"] = "甘宁",
+  ["#ofl_tx__ganning"] = "太虚幻魇",
+  ["illustrator:ofl_tx__ganning"] = "深圳枭瞳",
+}
+
+local liuqi = General:new(extension, "ofl_tx__liuqi", "qun", 4)
+liuqi:addSkills {
+  "wenji",
+  "fengliang",
+  "ofl_tx__chouti",
+  "os__jiezhan",
+}
+liuqi:addRelatedSkills { "tiaoxin", "ofl_tx__duanyuan", "ofl_tx__xianyuan" }
+Fk:loadTranslationTable{
+  ["ofl_tx__liuqi"] = "刘琦",
+  ["#ofl_tx__liuqi"] = "太虚幻魇",
+  ["illustrator:ofl_tx__liuqi"] = "深圳枭瞳",
+}
+
+General:new(extension, "ofl_tx__liubiao", "qun", 4):addSkills {
+  "ofl_tx__jiyang",
+  "m_ex__zongshi",
+  "ofl_tx__rujing",
+  "ofl_tx__huyi",
+  "tiandu",
+}
+Fk:loadTranslationTable{
+  ["ofl_tx__liubiao"] = "刘表",
+  ["#ofl_tx__liubiao"] = "太虚幻魇",
+  ["illustrator:ofl_tx__liubiao"] = "凝聚永恒",
+}
+
+General:new(extension, "ofl_tx__caifuren", "qun", 3, 3, General.Female):addSkills {
+  "ofl_tx__mimou",
+  "ofl_tx__huli",
+  "ofl_tx__lianzhan",
+  "ofl_tx__yingji",
+}
+Fk:loadTranslationTable{
+  ["ofl_tx__caifuren"] = "蔡夫人",
+  ["#ofl_tx__caifuren"] = "太虚幻魇",
+  ["illustrator:ofl_tx__caifuren"] = "凝聚永恒",
 }
 
 return extension

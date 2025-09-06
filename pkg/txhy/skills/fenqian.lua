@@ -36,7 +36,7 @@ fenqian:addEffect(fk.DamageInflicted, {
     return target == player and player:getMark("@@ofl_tx__fenqian-turn") > 0
   end,
   on_use = function (self, event, target, player, data)
-    data:changeDamage(-(data.damage + 1) // 2)
+    data:changeDamage(-math.floor(data.damage / 2))
   end,
 })
 

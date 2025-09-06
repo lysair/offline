@@ -45,7 +45,7 @@ benji:addEffect(fk.TurnStart, {
       room:setPlayerMark(player, "ofl_tx__benji-phase", 0)
       room:loseHp(player, 1, benji.name)
     end
-  end
+  end,
 })
 
 benji:addEffect(fk.EnterDying, {
