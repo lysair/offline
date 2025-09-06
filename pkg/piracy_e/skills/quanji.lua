@@ -5,7 +5,7 @@ local quanji = fk.CreateSkill {
 
 Fk:loadTranslationTable{
   ["ofl__quanji"] = "权计",
-  [":ofl__quanji"] = "当你受到后，或当你使用牌对唯一目标造成伤害后，你可以摸一张牌，然后将一张牌置于武将牌上，称为“权”；"..
+  [":ofl__quanji"] = "当你受到伤害后，或当你使用牌对唯一目标造成伤害后，你可以摸一张牌，然后将一张牌置于武将牌上，称为“权”；"..
   "每有一张“权”，你的手牌上限便+1。",
 
   ["zhonghui_quan"] = "权",
