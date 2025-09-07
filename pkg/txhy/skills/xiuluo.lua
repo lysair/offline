@@ -36,7 +36,7 @@ xiuluo:addEffect(fk.DamageInflicted, {
     return target == player and player:hasSkill(xiuluo.name)
   end,
   on_use = function (self, event, target, player, data)
-    data:changeDamage(-math.floor(data.damage / 2))
+    data:changeDamage(-math.floor((data.damage + 1) // 2))
     if data.from and not data.from.dead and data.from ~= player then
       player.room:useVirtualCard("slash", nil, player, data.from, xiuluo.name, true)
     end
