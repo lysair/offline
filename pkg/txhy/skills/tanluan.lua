@@ -18,6 +18,7 @@ local spec = {
   anim_type = "drawcard",
   can_trigger = function (self, event, target, player, data)
     return target == player and player:hasSkill(tanluan.name) and
+      data.extra_data and data.extra_data.ofl_tx__tanluan and
       player:getMark("@os__baonue") > data.extra_data.ofl_tx__tanluan
   end,
   on_use = function (self, event, target, player, data)

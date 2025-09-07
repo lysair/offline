@@ -19,6 +19,18 @@ local sgsh_getLogic = function()
 
   function sgsh_logic:chooseGenerals()
     local room = self.room
+
+    local ban_list = {
+      "ofl__godjiaxu",
+      "js__xushao", "js_re__xushao",
+      "shichangshi",
+      "zuoci", "ol_ex__zuoci", "mini_ex__zuoci",
+      "nd_story__zhangbao", "nd_story__zhangliang",
+    }
+    for _, g in ipairs(ban_list) do
+      table.removeOne(room.general_pile, g)
+    end
+
     local generalNum = room.settings.generalNum
     local lord = room:getLord()
 

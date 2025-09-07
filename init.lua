@@ -5,6 +5,7 @@ local modes = Package:new("ofl__gamemode", Package.SpecialPack)
 modes:loadSkillSkelsByPath("./packages/offline/pkg/gamemodes/rule_skills")
 
 modes:addGameMode(require "packages/offline/pkg/gamemodes/sgsh_mode")
+modes:addGameMode(require "packages/offline/pkg/gamemodes/ofl_taixu_mode")
 
 local ofl_other = require "packages/offline/pkg/ofl_other"
 local fhyx = require "packages/offline/pkg/fhyx"

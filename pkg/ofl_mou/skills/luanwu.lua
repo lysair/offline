@@ -23,6 +23,9 @@ luanwu:addEffect("active", {
     return player:usedSkillTimes(luanwu.name, Player.HistoryGame) == 0
   end,
   card_filter = Util.FalseFunc,
+  on_cost = function(self, player, data)
+    return { tos = player.room:getOtherPlayers(player) }
+  end,
   on_use = function(self, room, effect)
     local player = effect.from
     local targets = room:getOtherPlayers(player)

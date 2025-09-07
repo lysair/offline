@@ -41,7 +41,7 @@ hemou:addEffect(fk.CardEffectFinished, {
   on_use = function(self, event, target, player, data)
     local tongxin = player:getMark("@ofl_tx__hemou_tongxin")
     player:drawCards(1, hemou.name)
-    if tongxin and not tongxin.dead then
+    if tongxin ~= 0 and not tongxin.dead then
       tongxin:drawCards(1, hemou.name)
     end
   end,
