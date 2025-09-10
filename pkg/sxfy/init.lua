@@ -2,6 +2,7 @@ local extension = Package:new("sixiangfengyin")
 extension.extensionName = "offline"
 
 extension:loadSkillSkelsByPath("./packages/offline/pkg/sxfy/skills")
+extension.game_modes_whitelist = { 'nos_heg_mode', 'new_heg_mode' }
 
 Fk:loadTranslationTable{
   ["sixiangfengyin"] = "线下-四象封印",
